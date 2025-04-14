@@ -1,0 +1,113 @@
+@import "./main.less";
+
+.loader {
+  position: relative;
+  height: 90vh;
+  width: 100%;
+}
+
+.wishlistWrap {
+  min-height: 700px;
+  padding: 10px 16px;
+
+  @media @mobile-up {
+    padding: 24px 16px 88px;
+  }
+
+  @media @desktop {
+    padding: 16px 40px 80px;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 16px;
+
+    @media @mobile-up {
+      margin-bottom: 24px;
+    }
+
+    span {
+      color: @TextDisabled;
+
+      &.active {
+        color: @ButtonPrimary;
+      }
+    }
+  }
+
+  .title__block {
+    .column-gap(8px);
+    margin-bottom: 10px;
+    align-items: baseline;
+
+    @media @mobile-up {
+      margin-bottom: 24px;
+    }
+  }
+
+  .wlLink {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .productsContainer {
+    ::v-deep .list-items {
+      background: none;
+    }
+
+    .loadingAnimation {
+      margin: 10px auto 0 !important;
+    }
+  }
+
+  .gridWrapper {
+    display: grid;
+    .grid-gap(10px, 16px);
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: auto;
+
+    @media @mobile-up {
+      .grid-gap(24px, 16px);
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media @desktop {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .emptyContainer {
+    background: @ThemeAccentL4;
+    flex-grow: 1;
+
+    .emptyState {
+      margin: 0 auto;
+      max-width: 254px;
+      text-align: center;
+
+      @media @mobile-up {
+        max-width: 450px;
+      }
+
+      .title {
+        margin-bottom: 8px;
+      }
+
+      .subTitle {
+        margin-bottom: 32px;
+      }
+
+      .ctaBtn {
+        border: none;
+        min-width: 180px;
+        padding: 17px;
+
+        @media @desktop {
+          min-width: 220px;
+          padding: 20px 24px;
+        }
+      }
+    }
+  }
+}
+.flexRow {
+  display: flex;
+}

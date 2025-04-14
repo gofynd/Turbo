@@ -1,0 +1,130 @@
+@import "../styles/main.less";
+
+.collections {
+  min-height: 50vh;
+  padding: 24px 16px 80px;
+
+  @media @mobile-up {
+    padding: 24px 40px 80px;
+  }
+
+  &__title {
+    text-align: center;
+    margin-bottom: 16px;
+    word-wrap: break-word;
+
+    font-size: 36px;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: -1.08px;
+
+    @media @tablet {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 32px;
+      letter-spacing: -0.96px;
+    }
+  }
+
+  &__description {
+    margin-bottom: 16px;
+    text-align: center;
+    word-wrap: break-word;
+    color: @TextBody;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: -0.24px;
+
+    @media @desktop {
+      margin-bottom: 24px;
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: -0.32px;
+    }
+  }
+
+  &__breadcrumbs {
+    margin-bottom: 16px;
+    @media @desktop {
+      margin-bottom: 24px;
+    }
+    span {
+      color: @TextDisabled;
+
+      &.active {
+        color: @ButtonPrimary;
+      }
+    }
+  }
+
+  &__cards {
+    ::v-deep .list-items {
+      background: none;
+    }
+
+    .view-more-btn-wrapper {
+      margin-top: 16px;
+
+      @media @mobile-up {
+        margin-top: 36px;
+      }
+    }
+
+    .view-more-btn {
+      background: transparent;
+      padding: 12px 16px;
+
+      &:hover {
+        background-color: @ButtonPrimary;
+      }
+
+      @media @desktop {
+        padding: 12px 32px;
+      }
+    }
+  }
+
+  .back-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    color: @ThemeAccentD2;
+    box-shadow:
+      0px 8px 8px -4px rgba(0, 0, 0, 0.6),
+      0px 4px 6px -4px rgba(0, 0, 0, 0.12);
+    background-color: @DialogBackground;
+    border-radius: 24px;
+    border: none;
+    position: fixed;
+    top: 72px;
+    right: 50%;
+    z-index: 1;
+    transform: translateX(50%);
+
+    & > .arrow-top-icon {
+      fill: currentColor;
+      width: 8px;
+      height: 11px;
+    }
+
+    @media @desktop {
+      justify-content: center;
+      top: unset;
+      right: 40px;
+      bottom: 40px;
+      width: 40px;
+      height: 40px;
+
+      & > .text {
+        display: none;
+      }
+
+      & > .arrow-top-icon {
+        width: 10px;
+        height: 14px;
+      }
+    }
+  }
+}

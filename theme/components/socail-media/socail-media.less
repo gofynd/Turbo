@@ -1,0 +1,19 @@
+@import "../../styles/main.less";
+.iconsContainer {
+  display: flex;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 8px;
+  align-self: stretch;
+  flex-wrap: wrap;
+  svg g > path:first-of-type {
+    fill: @TextHeading;
+  }
+  svg > path:nth-of-type(2),
+  svg g > path:nth-of-type(2) {
+    stroke: @TextHeading;
+  }
+  .socialLink {
+    display: flex;
+  }
+}

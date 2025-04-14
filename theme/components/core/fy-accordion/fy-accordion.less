@@ -1,0 +1,26 @@
+@import "../../../styles/main.less";
+
+.accordion {
+  width: 100%;
+  overflow: hidden;
+  border-bottom: 1px solid #d4d1d1;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media @tablet {
+    width: 100%;
+  }
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .accordionHead {
+    padding: 14px 0;
+    cursor: pointer;
+    width: 100%;
+  }
+}

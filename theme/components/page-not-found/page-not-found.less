@@ -1,0 +1,45 @@
+@import "../../styles/main.less";
+
+.notFoundContainer {
+  display: flex;
+  height: 664px;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  @media @tablet {
+    padding: 64px 16px;
+  }
+  .container {
+    display: flex;
+    width: 532px;
+    padding: 0px 24px;
+    flex-direction: column;
+    align-items: center;
+    @media @tablet {
+      width: 100%;
+      padding: 0;
+    }
+    gap: 32px;
+    .title {
+      text-align: center;
+    }
+    .btnPrimary {
+      height: 48px;
+      padding: 12px 32px;
+      gap: 4px;
+      border: 1px solid @ButtonPrimary;
+      border-radius: @ButtonRadius !important;
+      text-transform: uppercase;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.28px;
+
+      @media @tablet {
+        height: 44px;
+        font-size: 12px;
+        letter-spacing: -0.24px;
+        padding: 12px 20px;
+      }
+    }
+  }
+}

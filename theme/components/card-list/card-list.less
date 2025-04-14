@@ -1,0 +1,43 @@
+@import "../../styles/main.less";
+
+.groupCards {
+  --col-count: 2;
+  --row-gap: 16px;
+  --col-gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(
+    var(--col-count),
+    calc(
+      (100% / var(--col-count)) -
+        (var(--col-gap) * (var(--col-count) - 1) / var(--col-count))
+    )
+  );
+  gap: var(--row-gap) var(--col-gap);
+
+  @media @mobile-up {
+    .grid-gap(16px, 24px);
+    --col-count: 4;
+    --row-gap: 16px;
+    --col-gap: 24px;
+  }
+  &[data-card="BRANDS"] {
+    @lg-min: 1024px;
+
+    --col-count: 1;
+    @media @mobile-up {
+      --col-count: 3;
+    }
+    @media @desktop {
+      --col-count: 4;
+    }
+  }
+  &.logoOnlyGroup {
+    .grid-gap(12px);
+    grid-template-columns: repeat(auto-fit, calc((100% - 24px) / 3));
+
+    @media @desktop {
+      .grid-gap(16px, 24px);
+      grid-template-columns: repeat(auto-fit, calc((100% - 72px) / 4));
+    }
+  }
+}

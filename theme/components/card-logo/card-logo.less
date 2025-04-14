@@ -1,0 +1,16 @@
+@import "../../styles/main.less";
+
+.cardItem {
+  overflow: hidden;
+
+  .logoCard {
+    border-radius: @ImageRadius;
+    transition: 300ms transform cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  &:hover {
+    .logoCard {
+      transform: scale(1.1);
+    }
+  }
+}

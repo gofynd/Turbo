@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <clipPath id="clip-card">
+      <rect width="24" height="24"/>
+    </clipPath>
+  </defs>
+  <g id="card" clip-path="url(#clip-card)">
+    <g id="Group_2" data-name="Group 2">
+      <rect id="Rectangle" width="24" height="24" fill="none"/>
+      <g id="Group" transform="translate(2 5)">
+        <g id="Rectangle_18" data-name="Rectangle 18" transform="translate(0.952 0.136)" fill="none" stroke="#41434c" stroke-miterlimit="10" stroke-width="1">
+          <rect width="18.432" height="13.867" rx="2" stroke="none"/>
+          <rect x="0.5" y="0.5" width="17.432" height="12.867" rx="1.5" fill="none"/>
+        </g>
+        <ellipse id="Oval_11" data-name="Oval 11" cx="0.542" cy="0.542" rx="0.542" ry="0.542" transform="translate(15.465 10.029)" fill="#41434c" stroke="#41434c" stroke-miterlimit="10" stroke-width="1"/>
+        <path id="Line" d="M0,1.07H16.146" transform="translate(2.437 3.1)" fill="none" stroke="#41434c" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1"/>
+        <path id="Line_Copy" data-name="Line Copy" d="M0,1.111H16.146" transform="translate(2.437 5.281)" fill="none" stroke="#41434c" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>

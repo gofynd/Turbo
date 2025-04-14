@@ -1,0 +1,33 @@
+@import "../../../styles/main.less";
+
+.beneficiaryItem {
+  input {
+    display: none;
+  }
+  .beneficiaryContent {
+    display: flex;
+    align-items: center;
+    padding: 5px 0px;
+    cursor: pointer;
+    .text {
+      margin-left: 10px;
+      .boldxs {
+        font-weight: 700;
+        font-size: 14px;
+        @media @mobile {
+          font-size: 13px;
+        }
+      }
+      .regularxs {
+        font-weight: 400;
+        font-size: 14px;
+        @media @mobile {
+          font-size: 13px;
+        }
+      }
+      .beneficiarySubtitle {
+        margin-top: 10px;
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+@import '../../styles/main.less';
+
+.loginWrapper {
+	max-width: 400px;
+	padding: 24px;
+	.loginLogoDesktop,
+	.loginLogoMobile {
+		width: 160px;
+		cursor: pointer;
+		display: block;
+		margin: 0 auto;
+	}
+	.loginLogoDesktop {
+		@media @tablet {
+			display: none;
+		}
+	}
+	.loginLogoMobile {
+		@media @desktop {
+			display: none;
+		}
+	}
+	.loginTitle {
+		color: @TextHeading;
+		text-align: center;
+		font-size: 32px;
+		font-style: normal;
+		font-weight: 700;
+		line-height: 44.8px;
+		margin-top: 16px;
+
+		@media @tablet {
+			font-size: 24px;
+			line-height: 33.6px;
+		}
+	}
+	.loginSubText {
+		color: @TextBody;
+		text-align: center;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 500;
+		line-height: 19.6px;
+		margin-top: 8px;
+	}
+	.loginBtnGroup {
+		margin-top: 48px;
+	}
+}

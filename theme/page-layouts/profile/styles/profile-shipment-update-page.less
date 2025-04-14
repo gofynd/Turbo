@@ -1,0 +1,332 @@
+@import "../../../styles/main.less";
+
+.error {
+  background-color: @PageBackground;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  justify-content: center;
+  height: 100%;
+  min-height: 75vh;
+  .bold {
+    font-size: 32px;
+    line-height: 42px;
+    margin: 0 0 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: @TextHeading;
+  }
+  .continueShoppingBtn {
+    display: flex;
+    border: 1px solid @ButtonPrimary;
+    color: @ButtonPrimary;
+    width: 204px;
+    max-width: 484px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 16.42px;
+    cursor: pointer;
+    background-color: @DividerStokes;
+  }
+}
+
+.shipmentWrapper {
+  .shipmentHeader {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+
+    img {
+      width: 40px;
+      height: 50px;
+    }
+    .status {
+      margin: auto;
+      text-align: center;
+      color: @White;
+      padding: 10px;
+      display: inline-flex;
+      border-radius: 3px;
+    }
+  }
+  .shipment {
+    border-radius: 3px;
+    border: 1px solid @DividerStokes;
+    margin: 20px 40px;
+    @media @mobile {
+      margin: 20px 0;
+    }
+  }
+}
+
+.shipment {
+  border-radius: 3px;
+  background-color: @PageBackground;
+
+  &.reasonsList {
+    @media @tablet {
+      padding-top: 0;
+      margin-top: 0;
+    }
+  }
+
+  .accordion {
+    &__header {
+      display: flex;
+      cursor: pointer;
+      align-items: center;
+    }
+  }
+  .refundTitle {
+    /deep/.title {
+      margin-left: 0;
+      font-size: 14px;
+    }
+  }
+  .beneficiaryList {
+    margin-bottom: 15px;
+  }
+  .refundOption {
+    color: @ButtonLink;
+    font-weight: 700;
+    padding: 20px 0px;
+    text-decoration: none;
+    font-size: 18px;
+
+    @media @tablet {
+      font-size: 16px;
+    }
+  }
+  .border {
+    border: none;
+    margin-top: 10px;
+    border-top: 1px solid @LightGray;
+  }
+  .updateBtns {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    // flex-wrap: wrap;
+    margin-top: 16px;
+
+    @media @tablet {
+      padding: 0 16px;
+    }
+
+    button[disabled] {
+      opacity: 0.5;
+    }
+
+    .btn {
+      padding: 15px;
+      border-radius: @ButtonRadius;
+      margin: 10px auto;
+      width: 100%;
+      margin: 10px 0px;
+      border: none;
+      font-weight: 800;
+      text-transform: uppercase;
+      background-color: @ButtonPrimary;
+      color: @ButtonSecondary;
+      &:hover {
+        background-color: @ButtonPrimaryL1;
+        color: @ButtonSecondary;
+      }
+      // margin-right: 10px;
+      @media @mobile {
+        margin-right: 0;
+      }
+    }
+    .cancelBtn {
+      background-color: @PageBackground;
+      color: @ButtonPrimary;
+      border: 1px solid @ButtonPrimary;
+      &:hover {
+        background-color: @ButtonPrimaryL1;
+        color: @ButtonSecondary;
+        border: 1px solid @ButtonPrimaryL1;
+      }
+    }
+  }
+}
+.accordion {
+  &__header {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+  }
+}
+.divider {
+  border-bottom: 1px solid @DividerStokes;
+  margin: 16px 0;
+}
+.animate {
+  transition: 0.3s all;
+  margin-bottom: 10px;
+  @media @mobile {
+    margin: 0;
+  }
+}
+.rotate {
+  transform: rotate(180deg);
+}
+.cancelimg {
+  display: flex;
+  margin: 20px 0px;
+  gap: 10px;
+  flex-direction: column;
+  .header {
+    color: @ButtonLink;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 18px;
+
+    @media @tablet {
+      font-size: 16px;
+    }
+  }
+  .addPhoto {
+    font-size: 14px;
+    line-height: 140%;
+    color: @ButtonLink;
+
+    .addImg {
+      text-decoration: underline;
+      position: relative;
+      top: 2px;
+      cursor: pointer;
+
+      input {
+        display: none;
+      }
+    }
+
+    .fileList {
+      margin-top: 24px;
+      display: flex;
+      gap: 24px;
+
+      .fileItem {
+        position: relative;
+        width: fit-content;
+        display: flex;
+
+        .uploadedImage {
+          width: 72px;
+          height: 72px;
+          border-radius: 4px;
+          border: 1px solid #fff;
+          object-fit: cover;
+          object-position: center;
+
+          @media @tablet {
+            width: 64px;
+            height: 64px;
+          }
+        }
+
+        .cancel {
+          position: absolute;
+          top: -10px;
+          right: -10px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .makesure {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 140%;
+    color: #4d4c50;
+  }
+  .accept {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 140%;
+    color: #a0a0a0;
+  }
+  .previewImg {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 0px;
+    gap: 16px;
+    & > div {
+      position: relative;
+    }
+    .svg {
+      position: absolute;
+      top: 6px;
+      right: 9px;
+      cursor: pointer;
+    }
+
+    img,
+    video {
+      width: 120px;
+      height: 120px;
+      border-radius: 6px;
+    }
+  }
+}
+.textarea {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+
+  @media @tablet {
+    margin-top: 0;
+    gap: 16px;
+    padding: 16px 16px 0;
+  }
+
+  div {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 140%;
+    span {
+      font-weight: 500;
+    }
+  }
+  textarea {
+    overflow-y: hidden;
+    resize: vertical;
+    height: 100%;
+    min-height: 100px;
+    appearance: none;
+    width: 100%;
+    resize: none;
+    padding: 10px;
+    border: 1px solid @DividerStokes;
+    border-radius: 4px;
+  }
+}
+.headerWidth {
+  flex: 1;
+  background-color: @PageBackground;
+}
+.borderBottom {
+  border-bottom: 1px solid @DividerStokes;
+  padding: 16px 0;
+
+  @media @tablet {
+    padding: 16px;
+  }
+}
+.unsetPadding {
+  padding: 0;
+  padding-bottom: 16px;
+  @media @mobile {
+    padding: 12px 0;
+  }
+}

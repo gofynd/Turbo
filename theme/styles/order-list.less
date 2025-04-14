@@ -1,0 +1,56 @@
+@import "../styles/main.less";
+
+.header {
+  padding: 0 0 24px !important;
+  border-bottom: 1px solid @DividerStokes;
+
+  @media @tablet {
+    padding: 16px !important;
+  }
+}
+
+.error {
+  background-color: @PageBackground;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  justify-content: center;
+  height: 100%;
+  min-height: 75vh;
+  .bold {
+    font-size: 32px;
+    line-height: 42px;
+    margin: 0 0 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: @TextHeading;
+  }
+  .continueShoppingBtn {
+    display: flex;
+    border: 1px solid @ButtonPrimary;
+    color: @ButtonPrimary;
+    width: 204px;
+    max-width: 484px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 16.42px;
+    cursor: pointer;
+    background-color: @DividerStokes;
+  }
+}
+
+.myOrders {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 0;
+
+  @media @tablet {
+    padding: 16px;
+  }
+}

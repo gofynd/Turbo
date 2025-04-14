@@ -1,0 +1,142 @@
+@import "../../../styles/main.less";
+
+.loading {
+  div {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.formContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 25px 0px;
+  flex: 1;
+  background-color: inherit;
+  form, 
+  .formItem,
+  .formItem > div,
+  .formItem label {
+    background-color: inherit;
+  }
+
+  .addAccountForm {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    .formItem {
+      margin-bottom: 16px;
+      .paymentInputSecurity {
+        -webkit-text-security: disc;
+        -moz-text-security: disc;
+      }
+    }
+  }
+
+  .footerSectionContinue{
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+    .btn{
+      padding: 15px;
+      border-radius: 5px;
+      // width: 100%;
+    width: 100%;
+    // margin: 10px 0px;
+    border: none;
+    font-weight: 800;
+    text-transform: uppercase;
+    background-color: @ButtonPrimary;
+    color:@ButtonSecondary;
+    @media @mobile {
+      margin-right: 0;
+    }
+  }
+  }
+
+  .footerSection{
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+    .btn {
+      padding: 15px;
+      border-radius: 5px;
+      // width: 100%;
+      width: 48%;
+      // margin: 10px 0px;
+      border: none;
+      font-weight: 800;
+      text-transform: uppercase;
+      background-color: @ButtonPrimary;
+      color:@ButtonSecondary;
+      // margin-right: 10px;
+      margin-top: auto;
+      @media @mobile {
+        margin-right: 0;
+      }
+    }
+
+    @media @mobile{
+      display: flex;
+      position: fixed;
+      bottom: 20px;
+      flex-direction: row;
+      justify-content: space-between;
+      gap:10px;
+      width: 91%;
+    }
+
+    .modalBtn {
+      @media @mobile {
+        display: flex;
+        height: 48px;
+        padding: 20px 24px;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+    .cancelButton{
+      border: 1px solid @ButtonPrimary;
+      color:@ButtonPrimary;
+      background-color: @ButtonSecondary;
+      @media @mobile{
+        display: flex;
+        height: 48px;
+        padding: 20px 24px;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+  
+  .branchName {
+    color: @Profit;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    margin-top: 8px;
+    .inlineSvg {
+      margin-right: 5px;
+      height: 25px;
+      width: 25px;
+    }
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+#accountNo {
+  -webkit-text-security: disc;
+  -moz-text-security: disc;
+}

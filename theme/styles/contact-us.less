@@ -1,0 +1,119 @@
+@import "../styles/main.less";
+
+.contactUs_mainContainer {
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin: 0 auto;
+  @media @tablet {
+    padding: 0;
+  }
+  .imageContainer {
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    .imageWrapper {
+      img {
+        object-fit: cover;
+      }
+      .overlay {
+        opacity: var(--overlay-opacity);
+      }
+    }
+  }
+}
+.onImageContainer {
+  flex-direction: column;
+  width: 50% !important;
+  padding: 80px 120px !important;
+  gap: 56px !important;
+  .flex_item {
+    width: 100%;
+  }
+}
+
+.contact_container {
+  display: flex;
+  width: 61.1%;
+  align-items: flex-start;
+  margin: 0 auto;
+  padding: 80px 0px;
+  gap: 80px;
+  @media @tablet {
+    flex-direction: column;
+    width: 100%;
+    padding: 32px 16px;
+    gap: 48px;
+  }
+}
+
+.flex_item {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 50%;
+  @media @tablet {
+    width: 100%;
+  }
+  .listItems {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-self: stretch;
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      align-self: stretch;
+      svg g > path {
+        fill: @TextHeading;
+      }
+    }
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .form_row {
+    width: 100%;
+    .lableText {
+      background-color: @PageBackground;
+    }
+    .inputPlaceholder {
+      padding: 16px;
+      background-color: @ThemeAccentL5;
+    }
+    textarea {
+      height: 118px;
+    }
+    .inputPlaceholder::placeholder {
+      color: @TextLabel;
+      opacity: 1;
+    }
+    .inputPlaceholder:focus::placeholder {
+      color: @TextBody;
+    }
+  }
+}
+
+.btn_submit {
+  height: 48px;
+  padding: 20px 24px !important;
+  width: unset !important;
+  font-weight: 600;
+  border-radius: @ButtonRadius !important;
+}
+.invert {
+  flex-direction: row-reverse;
+}
+.maxChar {
+  float: right;
+  margin-top: 8px;
+  color: @TextLabel;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.24px;
+}

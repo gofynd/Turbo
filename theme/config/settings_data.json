@@ -1,0 +1,1716 @@
+{
+  "list": [
+    {
+      "name": "Default",
+      "global_config": {
+        "static": {
+          "props": {
+            "colors": {
+              "primary_color": "#7043f7",
+              "secondary_color": "#02d1cb",
+              "accent_color": "#FFFFFF",
+              "link_color": "#7043f7",
+              "button_secondary_color": "#000000",
+              "bg_color": "#F8F8F8"
+            },
+            "auth": {
+              "show_header_auth": true,
+              "show_footer_auth": true
+            },
+            "palette": {
+              "general_setting": {
+                "theme": {
+                  "page_background": "#ffffff",
+                  "theme_accent": "#eeeded"
+                },
+                "text": {
+                  "text_heading": "#585555",
+                  "text_body": "#010e15",
+                  "text_label": "#494e50",
+                  "text_secondary": "#3e4447"
+                },
+                "button": {
+                  "button_primary": "#5e5a5a",
+                  "button_secondary": "#ffffff",
+                  "button_link": "#552531"
+                },
+                "sale_discount": {
+                  "sale_badge_background": "#fa7272",
+                  "sale_badge_text": "#f7f7f7",
+                  "sale_discount_text": "#1867b0",
+                  "sale_timer": "#231f20"
+                },
+                "header": {
+                  "header_background": "#ffffff",
+                  "header_nav": "#000000",
+                  "header_icon": "#000000"
+                },
+                "footer": {
+                  "footer_background": "#efeae9",
+                  "footer_bottom_background": "#efeae9",
+                  "footer_heading_text": "#fe0101",
+                  "footer_body_text": "#050605",
+                  "footer_icon": "#cae30d"
+                }
+              },
+              "advance_setting": {
+                "overlay_popup": {
+                  "dialog_backgroung": "#ffffff",
+                  "overlay": "#716f6f"
+                },
+                "divider_stroke_highlight": {
+                  "divider_strokes": "#efeae9",
+                  "highlight": "#dfd2d4"
+                },
+                "user_alerts": {
+                  "success_background": "#e9f9ed",
+                  "success_text": "#1C958F",
+                  "error_background": "#fff5f5",
+                  "error_text": "#B24141",
+                  "info_background": "#fff359",
+                  "info_text": "#D28F51"
+                }
+              }
+            },
+            "extension": {
+              "header_top": [],
+              "header_bottom": [],
+              "footer_top": [],
+              "footer_bottom": []
+            },
+            "bindings": {
+              "header_top": [],
+              "header_bottom": [],
+              "footer_top": [],
+              "footer_bottom": []
+            },
+            "order_tracking": {
+              "show_header": true,
+              "show_footer": true
+            },
+            "manifest": {
+              "active": true,
+              "name": "",
+              "description": "",
+              "icons": [],
+              "install_desktop": false,
+              "install_mobile": false,
+              "button_text": "",
+              "screenshots": [],
+              "shortcuts": []
+            }
+          }
+        },
+        "custom": {
+          "props": {
+            "header_icon_color": "#000000",
+            "menu_position": "bottom",
+            "artwork": "https://cdn.pixelbin.io/v2/falling-surf-7c8bb8/fyndnp/wrkr/addsale/company/11197/applications/60b8c8a67b0862f85a672571/theme/pictures/free/original/theme-image-1668580342482.jpeg",
+            "enable_artwork": false,
+            "footer_bg_color": "#792a2a",
+            "footer_text_color": "#9f8484",
+            "footer_border_color": "#a6e7bf",
+            "footer_nav_hover_color": "#59e8b9",
+            "menu_layout_desktop": "layout_3",
+            "logo": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/company/5178/applications/671619856d07006ffea459c6/theme/pictures/free/original/theme-image-1729670762584.png",
+            "logo_width": 774,
+            "footer_description": "Welcome to our store! This section is where you can include important links and details about your store. Provide a brief overview of your brand's history, contact information, and key policies to enhance your customers' experience and keep them informed.",
+            "logo_menu_alignment": "layout_4",
+            "header_layout": "double",
+            "section_margin_top": 89,
+            "font_header": {
+              "variants": {
+                "light": {
+                  "name": "300",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32KxfXNigDp6_cOyA.ttf"
+                },
+                "regular": {
+                  "name": "regular",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K0nXNigDp6_cOyA.ttf"
+                },
+                "medium": {
+                  "name": "500",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K3vXNigDp6_cOyA.ttf"
+                },
+                "semi_bold": {
+                  "name": "600",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K5fQNigDp6_cOyA.ttf"
+                },
+                "bold": {
+                  "name": "700",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K67QNigDp6_cOyA.ttf"
+                }
+              },
+              "family": "Work Sans"
+            },
+            "font_body": {
+              "variants": {
+                "light": {
+                  "name": "300",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32KxfXNigDp6_cOyA.ttf"
+                },
+                "regular": {
+                  "name": "regular",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K0nXNigDp6_cOyA.ttf"
+                },
+                "medium": {
+                  "name": "500",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K3vXNigDp6_cOyA.ttf"
+                },
+                "semi_bold": {
+                  "name": "600",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K5fQNigDp6_cOyA.ttf"
+                },
+                "bold": {
+                  "name": "700",
+                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K67QNigDp6_cOyA.ttf"
+                }
+              },
+              "family": "Work Sans"
+            },
+            "section_margin_bottom": 18,
+            "button_border_radius": 11,
+            "product_img_width": "300",
+            "product_img_height": "1000",
+            "image_border_radius": 12,
+            "img_container_bg": "#EAEAEA",
+            "payments_logo": "",
+            "custom_button_link": "",
+            "button_options": "addtocart_buynow",
+            "custom_button_text": "Enquire Now",
+            "show_price": true,
+            "custom_button_icon": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyndnp/wrkr/addsale/company/4108/applications/65dec2e1145986b98e7c377d/theme/pictures/free/original/theme-image-1710322198761.png",
+            "img_fill": true,
+            "disable_cart": false,
+            "is_delivery_minutes": false,
+            "is_delivery_day": true,
+            "is_hyperlocal": false
+          }
+        }
+      },
+      "page": [
+        {
+          "page": "product-description",
+          "settings": {
+            "props": {
+              "reviews": false,
+              "add_to_compare": true,
+              "product_request": false,
+              "store_selection": true,
+              "compare_products": false,
+              "variants": true,
+              "ratings": false,
+              "similar_products": true,
+              "bulk_prices": false,
+              "badge_url_1": "",
+              "badge_url_2": "",
+              "badge_url_3": "",
+              "badge_url_4": "",
+              "badge_url_5": "",
+              "show_products_breadcrumb": true,
+              "show_category_breadcrumb": true,
+              "show_brand_breadcrumb": true,
+              "mrp_label": true,
+              "tax_label": "Price inclusive of all tax",
+              "item_code": true,
+              "product_details_bullets": true,
+              "show_size_guide": true,
+              "show_offers": true,
+              "hide_single_size": false,
+              "badge_logo_1": "",
+              "badge_label_1": "",
+              "badge_label_2": "",
+              "badge_label_3": "",
+              "badge_label_4": "",
+              "badge_label_5": "",
+              "badge_logo_5": "",
+              "badge_logo_3": "",
+              "size_selection_style": "dropdown",
+              "variant_position": "accordion",
+              "mandatory_pincode": true,
+              "preselect_size": true,
+              "badge_logo_4": "",
+              "badge_logo_2": "",
+              "show_seller": true,
+              "return": true,
+              "seller_store_selection": false
+            }
+          }
+        },
+        {
+          "page": "cart-landing",
+          "settings": {
+            "props": {
+              "show_info_message": true,
+              "gst": false,
+              "staff_selection": true,
+              "enable_customer": false,
+              "enable_guest": false
+            }
+          }
+        },
+        {
+          "page": "brands",
+          "settings": {
+            "props": {
+              "title": "",
+              "description": "",
+              "logo_only": false,
+              "infinite_scroll": true,
+              "back_top": true
+            }
+          }
+        },
+        {
+          "page": "product-listing",
+          "settings": {
+            "props": {
+              "hide_brand": false,
+              "infinite_scroll": false,
+              "product_number": true,
+              "loading_options": "pagination",
+              "back_top": true,
+              "in_new_tab": false,
+              "grid_desktop": "4",
+              "grid_tablet": "3",
+              "grid_mob": "2",
+              "description": "",
+              "banner_link": "",
+              "show_add_to_cart": true
+            }
+          }
+        },
+        {
+          "page": "collection-listing",
+          "settings": {
+            "props": {
+              "product_number": true,
+              "loading_options": "pagination",
+              "back_top": true,
+              "in_new_tab": true,
+              "hide_brand": false,
+              "grid_desktop": "4",
+              "grid_tablet": "3",
+              "grid_mob": "2"
+            }
+          }
+        },
+        {
+          "page": "categories",
+          "settings": {
+            "props": {
+              "heading": "",
+              "description": "",
+              "back_top": true
+            }
+          }
+        },
+        {
+          "page": "home",
+          "settings": {
+            "props": {
+              "code": ""
+            }
+          }
+        },
+        {
+          "page": "login",
+          "settings": {
+            "props": {
+              "image_banner": "",
+              "image_layout": "no_banner"
+            }
+          }
+        },
+        {
+          "page": "collections",
+          "settings": {
+            "props": {
+              "title": "",
+              "description": "",
+              "infinite_scroll": true,
+              "back_top": true
+            }
+          }
+        },
+        {
+          "page": "blog",
+          "settings": {
+            "props": {
+              "button_link": "",
+              "show_blog_slide_show": true,
+              "btn_text": "Read More",
+              "show_tags": true,
+              "show_search": true,
+              "show_recent_blog": true,
+              "show_top_blog": true,
+              "show_filters": true,
+              "loading_options": "pagination",
+              "title": "The Unparalleled Shopping Experience",
+              "description": "Everything you need for that ultimate stylish wardrobe, Fynd has got it!",
+              "button_text": "Shop Now"
+            }
+          }
+        },
+        {
+          "page": "contact-us",
+          "settings": {
+            "props": {
+              "align_image": "right",
+              "show_address": true,
+              "show_phone": true,
+              "show_email": true,
+              "show_icons": true,
+              "show_working_hours": true
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "current": "Default",
+  "preset": {
+    "pages": [
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Hero Image",
+            "name": "hero-image",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "props": {
+              "heading": {
+                "type": "text",
+                "value": "Welcome to Your New Store"
+              },
+              "description": {
+                "type": "text",
+                "value": "Begin your journey by adding unique images and banners. This is your chance to create a captivating first impression. Customize it to reflect your brand's personality and style!"
+              },
+              "overlay_option": {
+                "value": "no_overlay",
+                "type": "select"
+              },
+              "button_text": {
+                "type": "text",
+                "value": "EXPLORE NOW"
+              },
+              "button_link": {
+                "type": "url",
+                "value": "https://www.google.com"
+              },
+              "invert_button_color": {
+                "type": "checkbox",
+                "value": false
+              },
+              "desktop_banner": {
+                "type": "image_picker",
+                "value": ""
+              },
+              "text_placement_desktop": {
+                "type": "select",
+                "value": "top_left"
+              },
+              "text_alignment_desktop": {
+                "type": "select",
+                "value": "left"
+              },
+              "mobile_banner": {
+                "type": "image_picker",
+                "value": ""
+              },
+              "text_placement_mobile": {
+                "value": "top_left",
+                "type": "select"
+              },
+              "text_alignment_mobile": {
+                "value": "left",
+                "type": "select"
+              }
+            }
+          },
+          {
+            "blocks": [
+              {
+                "type": "gallery",
+                "name": "Image card",
+                "props": {
+                  "image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "link": {
+                    "type": "url",
+                    "value": ""
+                  }
+                }
+              },
+              {
+                "type": "gallery",
+                "name": "Image card",
+                "props": {
+                  "image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "link": {
+                    "type": "url",
+                    "value": ""
+                  }
+                }
+              },
+              {
+                "type": "gallery",
+                "name": "Image card",
+                "props": {
+                  "image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "link": {
+                    "type": "url",
+                    "value": ""
+                  }
+                }
+              },
+              {
+                "type": "gallery",
+                "name": "Image card",
+                "props": {
+                  "image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "link": {
+                    "type": "url",
+                    "value": ""
+                  }
+                }
+              }
+            ],
+            "label": "Image Gallery",
+            "name": "image-gallery",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "props": {
+              "heading": {
+                "type": "text",
+                "value": "Customize Your Style"
+              },
+              "description": {
+                "type": "text",
+                "value": "This flexible gallery lets you highlight key products and promotions, guiding customers to the right places."
+              },
+              "button_text": {
+                "type": "text",
+                "value": "View all"
+              },
+              "card_radius": {
+                "type": "range",
+                "min": 0,
+                "max": 100,
+                "step": 1,
+                "unit": "%",
+                "label": "Card Radius",
+                "default": 0
+              },
+              "play_slides": {
+                "type": "range",
+                "min": 1,
+                "max": 10,
+                "step": 1,
+                "unit": "sec",
+                "label": "Change slides every",
+                "default": 3
+              },
+              "item_count": {
+                "type": "range",
+                "min": 3,
+                "max": 5,
+                "step": 1,
+                "unit": "",
+                "label": "Items per row(Desktop)",
+                "default": 4,
+                "value": 4,
+                "info": "Maximum items allowed per row for Horizontal view, for gallery max 5 are viewable and only 5 blocks are required"
+              },
+              "item_count_mobile": {
+                "type": "range",
+                "value": 2
+              },
+              "img_fill": {
+                "type": "checkbox",
+                "value": true
+              },
+              "desktop_layout": {
+                "type": "select",
+                "value": "grid"
+              },
+              "mobile_layout": {
+                "type": "select",
+                "value": "grid"
+              }
+            }
+          },
+          {
+            "blocks": [
+              {
+                "type": "gallery",
+                "name": "Image card",
+                "props": {
+                  "image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "mobile_image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "redirect_link": {
+                    "type": "url",
+                    "value": ""
+                  }
+                }
+              },
+              {
+                "type": "gallery",
+                "name": "Image card",
+                "props": {
+                  "image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "mobile_image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "redirect_link": {
+                    "type": "url",
+                    "value": ""
+                  }
+                }
+              }
+            ],
+            "predicate": {
+              "screen": {
+                "mobile": true,
+                "desktop": true,
+                "tablet": true
+              },
+              "user": {
+                "authenticated": true,
+                "anonymous": true
+              },
+              "route": {
+                "selected": "none",
+                "exact_url": ""
+              }
+            },
+            "label": "Image Slideshow",
+            "name": "image-slideshow",
+            "props": {
+              "autoplay": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "slide_interval": {
+                "value": 2,
+                "type": "range"
+              }
+            }
+          },
+          {
+            "blocks": [
+              {
+                "type": "testimonial",
+                "name": "Testimonial",
+                "props": {
+                  "author_image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "author_testimonial": {
+                    "type": "textarea",
+                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                  },
+                  "author_name": {
+                    "type": "text",
+                    "value": "Mark A"
+                  },
+                  "author_description": {
+                    "type": "text",
+                    "value": "Los Angeles, CA"
+                  }
+                }
+              },
+              {
+                "type": "testimonial",
+                "name": "Testimonial",
+                "props": {
+                  "author_image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "author_testimonial": {
+                    "type": "textarea",
+                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                  },
+                  "author_name": {
+                    "type": "text",
+                    "value": "Mark A"
+                  },
+                  "author_description": {
+                    "type": "text",
+                    "value": "Los Angeles, CA"
+                  }
+                }
+              },
+              {
+                "type": "testimonial",
+                "name": "Testimonial",
+                "props": {
+                  "author_image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "author_testimonial": {
+                    "type": "textarea",
+                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                  },
+                  "author_name": {
+                    "type": "text",
+                    "value": "Mark A"
+                  },
+                  "author_description": {
+                    "type": "text",
+                    "value": "Los Angeles, CA"
+                  }
+                }
+              },
+              {
+                "type": "testimonial",
+                "name": "Testimonial",
+                "props": {
+                  "author_image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "author_testimonial": {
+                    "type": "textarea",
+                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                  },
+                  "author_name": {
+                    "type": "text",
+                    "value": "Mark A"
+                  },
+                  "author_description": {
+                    "type": "text",
+                    "value": "Los Angeles, CA"
+                  }
+                }
+              }
+            ],
+            "label": "Testimonial",
+            "name": "testimonials",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {
+              "blocks": [
+                {
+                  "name": "Testimonial",
+                  "props": {
+                    "author_image": {
+                      "type": "image_picker",
+                      "value": ""
+                    },
+                    "author_testimonial": {
+                      "type": "textarea",
+                      "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                    },
+                    "author_name": {
+                      "type": "text",
+                      "value": "Mark A"
+                    },
+                    "author_description": {
+                      "type": "text",
+                      "value": "Los Angeles, CA"
+                    }
+                  }
+                },
+                {
+                  "name": "Testimonial",
+                  "props": {
+                    "author_image": {
+                      "type": "image_picker",
+                      "value": ""
+                    },
+                    "author_testimonial": {
+                      "type": "textarea",
+                      "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                    },
+                    "author_name": {
+                      "type": "text",
+                      "value": "Mark A"
+                    },
+                    "author_description": {
+                      "type": "text",
+                      "value": "Los Angeles, CA"
+                    }
+                  }
+                }
+              ]
+            },
+            "props": {
+              "title": {
+                "value": "What People Are Saying About Us ",
+                "type": "text"
+              },
+              "autoplay": {
+                "value": false,
+                "type": "checkbox"
+              },
+              "slide_interval": {
+                "value": 2,
+                "type": "range"
+              }
+            }
+          }
+        ],
+        "value": "home"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "type": "product_name",
+                "name": "Product Name",
+                "props": {
+                  "show_brand": {
+                    "type": "checkbox",
+                    "value": true
+                  }
+                }
+              },
+              {
+                "type": "product_price",
+                "name": "Product Price",
+                "props": {
+                  "mrp_label": {
+                    "type": "checkbox",
+                    "value": true
+                  }
+                }
+              },
+              {
+                "type": "product_tax_label",
+                "name": "Product Tax Label",
+                "props": {
+                  "tax_label": {
+                    "type": "text",
+                    "label": "Price tax label text",
+                    "value": "Price inclusive of all tax"
+                  }
+                }
+              },
+              {
+                "type": "short_description",
+                "name": "Short Description",
+                "props": {}
+              },
+              {
+                "type": "seller_details",
+                "name": "Seller Details",
+                "props": {
+                  "show_seller": {
+                    "type": "checkbox",
+                    "label": "Show Seller",
+                    "value": true
+                  }
+                }
+              },
+              {
+                "type": "size_guide",
+                "name": "Size Guide",
+                "props": {}
+              },
+              {
+                "type": "size_wrapper",
+                "name": "Size Container with Action Buttons",
+                "props": {
+                  "hide_single_size": {
+                    "type": "checkbox",
+                    "value": false
+                  },
+                  "preselect_size": {
+                    "type": "checkbox",
+                    "value": true
+                  },
+                  "size_selection_style": {
+                    "type": "radio",
+                    "value": "dropdown",
+                    "options": [
+                      {
+                        "value": "dropdown",
+                        "text": "Dropdown style"
+                      },
+                      {
+                        "value": "block",
+                        "text": "Block style"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "pincode",
+                "name": "Pincode",
+                "props": {
+                  "show_logo": {
+                    "type": "checkbox",
+                    "value": true
+                  }
+                }
+              },
+              {
+                "type": "product_variants",
+                "name": "Product Variants",
+                "props": {}
+              },
+              {
+                "type": "add_to_compare",
+                "name": "Add to Compare",
+                "props": {}
+              },
+              {
+                "type": "prod_meta",
+                "name": "Prod Meta",
+                "props": {
+                  "return": {
+                    "type": "checkbox",
+                    "label": "Return",
+                    "value": true
+                  },
+                  "item_code": {
+                    "type": "checkbox",
+                    "label": "Show Item code",
+                    "value": true
+                  }
+                }
+              }
+            ],
+            "label": "Product Description",
+            "name": "product-description",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "product_details_bullets": {
+                "type": "checkbox",
+                "value": true
+              },
+              "icon_color": {
+                "type": "color",
+                "value": "#D6D6D6"
+              },
+              "mandatory_pincode": {
+                "type": "checkbox",
+                "value": true
+              },
+              "variant_position": {
+                "type": "radio",
+                "value": "accordion"
+              },
+              "show_products_breadcrumb": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_category_breadcrumb": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_brand_breadcrumb": {
+                "type": "checkbox",
+                "value": true
+              },
+              "first_accordian_open": {
+                "type": "checkbox",
+                "value": true
+              }
+            }
+          }
+        ],
+        "value": "product-description"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "type": "coupon",
+                "name": "Coupon",
+                "props": {}
+              },
+              {
+                "type": "comment",
+                "name": "Comment",
+                "props": {}
+              },
+              {
+                "type": "gst_card",
+                "name": "GST Card",
+                "props": {}
+              },
+              {
+                "type": "price_breakup",
+                "name": "Price Breakup",
+                "props": {}
+              },
+              {
+                "type": "checkout_buttons",
+                "name": "Log-In/Checkout Buttons",
+                "props": {}
+              },
+              {
+                "type": "share_cart",
+                "name": "Share Cart",
+                "props": {}
+              }
+            ],
+            "label": "Cart Landing",
+            "name": "cart-landing",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "cart-landing"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "type": "order_header",
+                "name": "Order Header",
+                "props": {}
+              },
+              {
+                "type": "shipment_items",
+                "name": "Shipment Items",
+                "props": {}
+              },
+              {
+                "type": "shipment_medias",
+                "name": "Shipment Medias",
+                "props": {}
+              },
+              {
+                "type": "shipment_tracking",
+                "name": "Shipment Tracking",
+                "props": {}
+              },
+              {
+                "type": "shipment_address",
+                "name": "Shipment Address",
+                "props": {}
+              },
+              {
+                "type": "payment_details_card",
+                "name": "Payment Details Card",
+                "props": {}
+              },
+              {
+                "type": "shipment_breakup",
+                "name": "Shipment Breakup",
+                "props": {}
+              }
+            ],
+            "label": "Order Details",
+            "name": "order-details",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "shipment-details"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Login",
+            "name": "login",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "image_layout": {
+                "value": "no_banner",
+                "type": "select"
+              },
+              "image_banner": {
+                "value": "",
+                "type": "image_picker"
+              }
+            }
+          }
+        ],
+        "value": "login"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Register",
+            "name": "register",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "image_layout": {
+                "value": "no_banner",
+                "type": "select"
+              },
+              "image_banner": {
+                "value": "",
+                "type": "image_picker"
+              }
+            }
+          }
+        ],
+        "value": "register"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Contact Us",
+            "name": "contact-us",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "align_image": {
+                "value": "right",
+                "type": "select"
+              },
+              "image_desktop": {
+                "value": "",
+                "type": "image_picker"
+              },
+              "opacity": {
+                "value": 20,
+                "type": "range"
+              },
+              "show_address": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_phone": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_email": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_icons": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_working_hours": {
+                "value": true,
+                "type": "checkbox"
+              }
+            }
+          }
+        ],
+        "value": "contact-us"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Product Listing",
+            "name": "product-listing",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "desktop_banner": {
+                "type": "image_picker",
+                "value": ""
+              },
+              "mobile_banner": {
+                "type": "image_picker",
+                "value": ""
+              },
+              "banner_link": {
+                "type": "url",
+                "value": ""
+              },
+              "product_number": {
+                "type": "checkbox",
+                "value": true
+              },
+              "loading_options": {
+                "type": "select",
+                "value": "infinite"
+              },
+              "back_top": {
+                "type": "checkbox",
+                "value": true
+              },
+              "in_new_tab": {
+                "type": "checkbox",
+                "value": true
+              },
+              "hide_brand": {
+                "type": "checkbox",
+                "value": false
+              },
+              "grid_desktop": {
+                "type": "select",
+                "value": "4"
+              },
+              "grid_tablet": {
+                "type": "select",
+                "value": "2"
+              },
+              "grid_mob": {
+                "type": "select",
+                "value": "1"
+              },
+              "description": {
+                "type": "textarea",
+                "value": ""
+              },
+              "show_add_to_cart": {
+                "type": "checkbox",
+                "value": false
+              },
+              "show_size_guide": {
+                "type": "checkbox",
+                "value": false
+              },
+              "tax_label": {
+                "type": "text",
+                "value": "Tax inclusive of all GST"
+              },
+              "mandatory_pincode": {
+                "type": "checkbox",
+                "value": false
+              },
+              "hide_single_size": {
+                "type": "checkbox",
+                "value": false
+              },
+              "preselect_size": {
+                "type": "checkbox",
+                "value": false
+              },
+              "size_selection_style": {
+                "type": "radio",
+                "value": "block"
+              }
+            }
+          }
+        ],
+        "value": "product-listing"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Collection Product Grid",
+            "name": "collection-listing",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "collection": {
+                "type": "collection",
+                "value": ""
+              },
+              "desktop_banner": {
+                "type": "image_picker",
+                "value": ""
+              },
+              "mobile_banner": {
+                "type": "image_picker",
+                "value": ""
+              },
+              "button_link": {
+                "type": "url",
+                "value": ""
+              },
+              "product_number": {
+                "type": "checkbox",
+                "value": true
+              },
+              "loading_options": {
+                "type": "select",
+                "value": "pagination"
+              },
+              "back_top": {
+                "type": "checkbox",
+                "value": true
+              },
+              "in_new_tab": {
+                "type": "checkbox",
+                "value": true
+              },
+              "hide_brand": {
+                "type": "checkbox",
+                "value": false
+              },
+              "grid_desktop": {
+                "type": "select",
+                "value": "4"
+              },
+              "grid_tablet": {
+                "type": "select",
+                "value": "3"
+              },
+              "grid_mob": {
+                "type": "select",
+                "value": "1"
+              },
+              "show_add_to_cart": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_size_guide": {
+                "type": "checkbox",
+                "value": true
+              },
+              "tax_label": {
+                "type": "text",
+                "value": "Price inclusive of all tax"
+              },
+              "mandatory_pincode": {
+                "type": "checkbox",
+                "value": true
+              },
+              "hide_single_size": {
+                "type": "checkbox",
+                "value": false
+              },
+              "preselect_size": {
+                "type": "checkbox",
+                "value": true
+              },
+              "size_selection_style": {
+                "type": "radio",
+                "value": "dropdown"
+              }
+            }
+          }
+        ],
+        "value": "collection-listing"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Categories",
+            "name": "categories",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "heading": {
+                "type": "text",
+                "value": ""
+              },
+              "description": {
+                "type": "textarea",
+                "value": ""
+              },
+              "back_top": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_category_name": {
+                "type": "checkbox",
+                "value": true
+              },
+              "category_name_placement": {
+                "type": "select",
+                "value": "inside"
+              },
+              "category_name_position": {
+                "type": "select",
+                "value": "bottom"
+              },
+              "category_name_text_alignment": {
+                "type": "select",
+                "value": "text-center"
+              }
+            }
+          }
+        ],
+        "value": "categories"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "All Collections",
+            "name": "collections",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "back_top": {
+                "type": "checkbox",
+                "value": true
+              },
+              "title": {
+                "type": "text",
+                "value": ""
+              },
+              "description": {
+                "type": "textarea",
+                "value": ""
+              }
+            }
+          }
+        ],
+        "value": "collections"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Blog",
+            "name": "blog",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "show_blog_slide_show": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "autoplay": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_tags": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_search": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_recent_blog": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_top_blog": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_filters": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "filter_tags": {
+                "value": "",
+                "type": "tags-list"
+              },
+              "slide_interval": {
+                "value": "3",
+                "type": "range"
+              },
+              "btn_text": {
+                "value": "Read More",
+                "type": "text"
+              },
+              "recent_blogs": {
+                "value": "",
+                "type": "blog-list"
+              },
+              "top_blogs": {
+                "value": "",
+                "type": "blog-list"
+              },
+              "loading_options": {
+                "value": "pagination",
+                "type": "select"
+              },
+              "title": {
+                "value": "The Unparalleled Shopping Experience",
+                "type": "text"
+              },
+              "description": {
+                "value": "Everything you need for that ultimate stylish wardrobe, Fynd has got it!",
+                "type": "textarea"
+              },
+              "button_text": {
+                "value": "Shop Now",
+                "type": "text"
+              },
+              "fallback_image": {
+                "value": "",
+                "type": "image_picker"
+              }
+            }
+          }
+        ],
+        "value": "blog"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Brands Landing",
+            "name": "brands-landing",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "infinite_scroll": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "back_top": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "logo_only": {
+                "value": false,
+                "type": "checkbox"
+              },
+              "title": {
+                "value": "",
+                "type": "text"
+              },
+              "description": {
+                "value": "",
+                "type": "textarea"
+              }
+            }
+          }
+        ],
+        "value": "brands"
+      }
+    ]
+  }
+}

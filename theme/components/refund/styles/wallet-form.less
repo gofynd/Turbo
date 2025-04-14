@@ -1,0 +1,111 @@
+@import "../../../styles/main.less";
+
+.formContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 25px 0px;
+  .formItem {
+    width: 100%;
+    .formTitle {
+      color: @DustyGray2;
+    }
+    .formReq {
+      color: @Required;
+    }
+
+    .phoneInputText {
+      width: 100%;
+      background-color: White;
+      border: none;
+      border-radius: 3px;
+      box-shadow: none !important;
+      height: 40px;
+      /deep/ .dropdown {
+        border: 1px solid #dcdcdc;
+        width: 100px;
+        border-radius: @BorderRadius;
+        .dropdown-arrow {
+          margin-left: auto;
+        }
+      }
+      /deep/ input {
+        color: @Mako;
+        font-weight: 300;
+        border-radius: @BorderRadius;
+        border: 1px solid #dcdcdc;
+        margin-left: 10px;
+        .fontSize(@font-xs);
+        &:focus {
+          outline: 0 none;
+          box-shadow: none;
+        }
+      }
+      /deep/ ul {
+        width: 348px !important;
+        top: 38px;
+        .dropdownItem {
+          padding: 10px 15px;
+        }
+      }
+    }
+    .formInput {
+      .paymentInput {
+        border-bottom: 1px solid #dcdcdc;
+        font-weight: 300;
+        font-size: 14px;
+        color: #41434c;
+        border: 1px solid #d7d7d7;
+        border-radius: @BorderRadius;
+        width: 348px;
+        animation: fadeIn 0.5s ease;
+        height: 40px;
+        padding-left: 10px;
+        box-sizing: border-box;
+      }
+      //margin: 10px 0px;
+      margin: 7px 0px 0px;
+      .formError {
+        // margin: 10px 0px;
+        padding: 5px 0px 7px;
+        margin-bottom: 7px;
+        visibility: hidden;
+        color: @Required;
+      }
+      .resendOtp {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 10px;
+      }
+      .visible {
+        visibility: visible;
+      }
+    }
+  }
+  .paymentInputError {
+    font-weight: bold !important;
+    border-color: @Required !important;
+    /deep/ input {
+      font-weight: bold !important;
+      border-color: @Required !important;
+      color: @Required !important;
+    }
+  }
+  .error {
+    color: @Required !important;
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input:disabled {
+  cursor: not-allowed;
+}

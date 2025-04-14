@@ -1,0 +1,46 @@
+@import '../../../styles/main.less';
+
+.modal {
+	position: fixed;
+	inset: 0;
+	z-index: @header;
+	overflow-y: auto;
+	overflow-x: hidden;
+	transition: opacity 0.25s ease;
+	.flex-center();
+	@media @tablet {
+		align-items: flex-end;
+	}
+	&:before {
+		content: '';
+		background-color: @Overlay;
+		opacity: 0.6;
+		inset: 0;
+		position: fixed;
+		z-index: -1;
+	}
+
+	.modalContainer {
+		min-width: 300px;
+		background-color: @DialogBackground;
+		border: 1px solid @White;
+		border-radius: @border-radius;
+		min-height: 100px;
+		max-width: 720px;
+		overflow: auto;
+		@media @tablet {
+			width: 100%;
+			max-width: unset;
+		}
+	}
+}
+.rightModal {
+	justify-content: flex-end;
+	.modalContainer {
+		height: 100%;
+		width: 40%;
+		@media @tablet {
+			width: 100%;
+		}
+	}
+}

@@ -1,0 +1,68 @@
+@import "../../../../styles/main.less";
+
+.badgeWrapper {
+  display: grid;
+  .grid-gap(28px, 28px);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 40px;
+  justify-items: center;
+
+  @media @mobile {
+    margin-top: 32px;
+    .grid-gap(16px, 16px);
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    justify-items: left;
+  }
+
+  @media @tablet-strict {
+    margin-top: 32px;
+    .grid-gap(52px, 52px);
+    grid-template-columns: repeat(4, fit-content(100%));
+    justify-content: center;
+  }
+
+  &__item {
+    width: fit-content;
+
+    @media @mobile {
+      display: flex;
+      align-items: center;
+    }
+
+    &--hide {
+      visibility: hidden;
+    }
+  }
+
+  &__logo {
+    width: 32px;
+    border-radius: 50%;
+
+    @media @mobile-up {
+      margin-left: auto;
+      margin-right: auto;
+      width: 52px;
+    }
+  }
+
+  &__label {
+    display: block;
+    text-align: center;
+    max-width: 150px;
+
+    &--link {
+      &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+
+    @media @mobile {
+      margin-left: 12px;
+    }
+
+    @media @mobile-up {
+      margin-top: 8px;
+    }
+  }
+}

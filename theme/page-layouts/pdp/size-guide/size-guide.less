@@ -1,0 +1,205 @@
+@import "../../../styles/main.less";
+
+.sidebarHeader {
+  background-color: #efe7d6;
+}
+
+.sizeContainer {
+  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  .sizeWrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .sizeTabs {
+    width: 100%;
+    display: flex;
+    background-color: @ThemeAccentL3;
+
+    .active {
+      color: @ButtonPrimary !important;
+      border-bottom: 1px solid @ButtonPrimary;
+    }
+
+    .tab {
+      padding: 0.75rem 0;
+      cursor: pointer;
+      color: @TextLabel;
+
+      &.tabSizeGuide {
+        margin-left: 1.5rem;
+
+        @media @tablet {
+          margin-left: 1rem;
+        }
+      }
+
+      &.tabMeasure {
+        margin-left: 1.5rem;
+      }
+    }
+  }
+
+  .sidebarBody {
+    height: 100%;
+    position: relative;
+    flex: 1;
+    padding: 32px 24px;
+
+    @media @tablet {
+      padding: 24px;
+    }
+  }
+
+  .rightContainer {
+    flex: 1;
+    align-items: center;
+    height: 100%;
+    display: flex;
+
+    .sizeguideImage {
+      @media @tablet {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.sizeDesc {
+  /deep/ .inline-html {
+    p {
+      font-size: 14px;
+      line-height: 20px;
+      color: @TextHeading;
+    }
+  }
+}
+
+.sizeInfo {
+  overflow-y: auto;
+  overflow-x: auto;
+  margin: 24px 0;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background-color: #ffffff;
+  }
+  /* Track */
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
+    background-color: #ffffff;
+  }
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    border-radius: 2.5px;
+    background-color: #6b6b6b;
+  }
+
+  @media @tablet {
+    max-height: max-content;
+    overflow-x: auto;
+  }
+  @media @mobile {
+    max-height: max-content;
+    overflow-x: auto;
+  }
+}
+
+.sizeTable {
+  width: 100%;
+  padding: 20px;
+  border: 1px solid @DividerStokes;
+  border-collapse: collapse;
+  .sizeHeader {
+    border: 1px solid @DividerStokes;
+    margin: 5px;
+    text-transform: capitalize;
+    padding: 1rem 0px;
+    vertical-align: middle;
+  }
+
+  .sizeRow {
+    .sizeCell {
+      padding: 1rem 0px;
+      text-align: center;
+      border: 1px solid @DividerStokes;
+      min-width: 100px;
+      vertical-align: middle;
+
+      @media @mobile {
+        min-width: 58px;
+      }
+    }
+  }
+}
+//button css
+.btnGroup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .btnContainer {
+    display: flex;
+    height: fit-content;
+    border: 1px solid @DividerStokes;
+    border-radius: 4px;
+    .column-gap(3px);
+    padding: 4px 8px;
+  }
+}
+.unitBtn {
+  padding: 2px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: @ButtonPrimary;
+  background: none;
+  border: none;
+
+  &.unitBtnSelected {
+    background-color: @ButtonPrimary;
+    color: @ButtonSecondary;
+  }
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(20, 19, 14, 0.6);
+  opacity: 0;
+  transition: all 0.4s;
+  z-index: 100;
+  visibility: hidden;
+}
+
+.show {
+  opacity: 0.5;
+  visibility: visible;
+}
+
+.contactUs {
+  margin: 24px 40px 0;
+  width: calc(100% - 80px);
+  padding: 16px 0;
+  border-radius: 4px;
+}
+
+.notAvailable {
+  text-align: center;
+  width: 100%;
+
+  @media @mobile {
+    max-width: 415px;
+  }
+
+  &--label {
+    font-size: 24px;
+    line-height: 32px;
+  }
+}

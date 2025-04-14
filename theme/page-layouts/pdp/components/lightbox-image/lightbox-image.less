@@ -1,0 +1,446 @@
+@import "../../../../styles/main.less";
+
+@HeaderHeight: 56px;
+
+.lbBox {
+  width: 100%;
+}
+
+.lbContainer {
+  background-color: #f3f3ed;
+  box-sizing: border-box;
+  height: 100%;
+  left: 0px;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 101;
+  -moz-box-sizing: border-box;
+  -ms-flex-align: center;
+  -webkit-box-align: center;
+  -ms-flex-pack: center;
+  -webkit-box-pack: center;
+  user-select: auto !important;
+  -webkit-user-drag: auto !important;
+  -webkit-user-select: text !important;
+  -ms-user-select: text !important;
+  -moz-user-select: text !important;
+  touch-action: unset !important;
+
+  @media @desktop {
+    background-color: rgba(20, 19, 14, 0.6);
+  }
+}
+
+.lbContent {
+  position: relative;
+  height: 100%;
+  max-width: @page-width;
+  margin: 0 auto;
+}
+
+.lbHeader {
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  -webkit-box-pack: justify;
+  background-color: #efe7d6;
+  align-items: center;
+  padding: 1rem;
+
+  @media @desktop {
+    display: none;
+  }
+}
+
+.lbButtonClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 24px;
+}
+
+.lbFigure {
+  height: 100%;
+  @media @tablet {
+    height: calc(100vh - @HeaderHeight);
+    display: flex;
+    align-items: center;
+  }
+
+  .mediaWrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin: auto;
+    &::before {
+      content: "";
+      display: block;
+      max-height: calc(100vh - @HeaderHeight);
+      height: calc(100vw / @ProductImgAspectRatio);
+      width: calc((100vh - @HeaderHeight) * @ProductImgAspectRatio);
+      max-width: 100vw;
+    }
+    @media @desktop {
+      height: 90vh;
+      background-color: @DialogBackground;
+      &::before {
+        max-height: unset;
+        max-width: unset;
+        height: 100%;
+        width: calc(90vh * @ProductImgAspectRatio);
+      }
+    }
+    .lbModalMedia:not(.youtubePlayer):not(video) {
+      position: absolute;
+      .inset(0);
+      isolation: isolate;
+    }
+
+    .closeIcon {
+      position: absolute;
+      top: 2%;
+      right: 2%;
+      left: unset;
+      bottom: unset;
+      cursor: pointer;
+      display: none;
+      z-index: 1;
+
+      @media @desktop {
+        display: flex;
+      }
+    }
+
+    .videoCloseIcon {
+      top: -40px;
+      right: 0%;
+    }
+  }
+
+  @media @desktop {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.lbModalMedia {
+  display: block;
+  margin: 0 auto;
+  background-color: @PageBackground;
+}
+
+.type3dModel {
+  .aspect-ratio(@ProductImgAspectRatio);
+}
+
+.lbInfo {
+  visibility: initial;
+  position: absolute;
+  bottom: 25px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  height: 40px;
+  width: 100%;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+}
+
+.lbFooter {
+  box-sizing: border-box;
+  color: white;
+  cursor: auto;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-between;
+  left: 0px;
+  line-height: 1.3;
+  padding-bottom: 5px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 5px;
+  -moz-box-sizing: border-box;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  -webkit-box-pack: justify;
+}
+
+.lbFooterInfo {
+  display: block;
+  flex: 1 1 0;
+  -webkit-flex: 1 1 0;
+  -ms-flex: 1 1 0;
+}
+
+.lbFooterCount {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85em;
+  padding-left: 1em;
+}
+
+.lbThumbnail {
+  text-align: center;
+  white-space: nowrap;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  margin: 0 auto;
+  width: 53%;
+}
+
+.lbModalThumbnail {
+  border-radius: @ImageRadius;
+  cursor: pointer;
+  margin: 0 4px;
+  box-shadow: 0px 0px 0px 3px transparent;
+  background-color: @White;
+}
+
+.lbModalVideoThumbnail {
+  border-radius: @ImageRadius;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0px 0px 0px 3px transparent;
+  background-color: @White;
+}
+
+.lbModalVideoThumbnail-active {
+  .lbModalVideoThumbnail();
+  box-shadow: 0px 0px 0px 3px @ButtonPrimary;
+}
+
+.lbModalThumbnail-active {
+  .lbModalThumbnail();
+  box-shadow: 0px 0px 0px 3px @ButtonPrimary;
+}
+
+.lbModalThumbnail,
+.lbModalThumbnail-active {
+  &.modelThumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    .modelIcon {
+      width: 24px;
+      height: 24px;
+
+      /deep/ svg path {
+        fill: var(--icon-color);
+      }
+    }
+  }
+}
+.modelThumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.lbThumbnailArrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.lbArrow {
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.lbLeft {
+  left: 10px;
+
+  @media @tablet-strict {
+    left: 15%;
+  }
+  @media @desktop {
+    left: 2%;
+  }
+}
+
+.lbRight {
+  right: 10px;
+
+  @media @tablet-strict {
+    right: 15%;
+  }
+  @media @desktop {
+    right: 2%;
+  }
+}
+
+.lbOpen {
+  overflow: hidden;
+}
+
+.lbThumbnailWrapper {
+  bottom: 1rem;
+  left: 0;
+  margin: 0 auto;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  display: none;
+  max-width: @page-width;
+  z-index: 1;
+
+  @media @desktop {
+    display: block;
+  }
+}
+
+.fadeEnterActive,
+.fadeLeaveActive {
+  transition: opacity 0.2s ease;
+}
+
+.fadeEnter,
+.fadeLeaveTo {
+  opacity: 0;
+}
+
+.noScroll {
+  overflow-y: hidden;
+}
+
+.videoContainer {
+  position: absolute;
+  .inset(0);
+  background-color: @DialogBackground;
+}
+
+.viewer3d {
+  width: 100%;
+  height: 100%;
+}
+
+.disableArrow {
+  cursor: default;
+
+  svg {
+    path {
+      stroke: @Gray;
+    }
+  }
+}
+
+.videoThumbnailContainer {
+  position: relative;
+  margin: 0 4px;
+  height: 100%;
+  .aspect-ratio(@ProductImgAspectRatio);
+
+  .videoPlayIcon {
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    cursor: pointer;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    /deep/ svg path {
+      fill: var(--icon-color);
+    }
+  }
+}
+
+.videoPlayerContainer {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  .playerWrapper {
+    position: relative;
+    height: 100%;
+    margin: 0 auto;
+
+    video {
+      max-width: 100%;
+      max-height: 100%;
+      height: auto;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .playerIcon {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+
+    .playerMute {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+    }
+
+    .playerReplay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+.youtubePlayer {
+  position: absolute;
+  height: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+}
+
+.thumbnailItem {
+  width: 20%;
+}
+
+.autoRotateIcon {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.isActive {
+  /deep/ svg path {
+    stroke: #efe7d6;
+  }
+}

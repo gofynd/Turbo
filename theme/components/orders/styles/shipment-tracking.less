@@ -1,0 +1,141 @@
+@import "../../../styles/main.less";
+
+.title {
+  font-weight: bold;
+  color: @Mako;
+  opacity: 1 !important;
+}
+.trackingContainer {
+  padding: 20px;
+
+  @media @mobile {
+    padding: 16px;
+  }
+
+  .shipmentTracking {
+    border: 1px solid @DividerStokes;
+
+    .boldsm {
+      font-weight: 700;
+      font-size: 16px;
+      @media @tablet {
+        font-size: 14px;
+      }
+      @media @mobile {
+        font-size: 14px;
+      }
+    }
+    .awbText {
+      margin-top: 6px;
+    }
+    .lightxxs {
+      font-weight: 300;
+      font-size: 13px;
+      @media @tablet {
+        font-size: 12px;
+      }
+      @media @mobile {
+        font-size: 12px;
+      }
+    }
+    .status {
+      display: flex;
+      padding: 10px;
+      border-bottom: 1px solid @LightGray;
+      position: relative;
+      align-items: center;
+      .subTitle {
+        margin-top: 10px;
+      }
+      .info {
+        position: absolute;
+        right: 20px;
+        text-align: center;
+        color: @White;
+        padding: 10px;
+        display: inline-flex;
+        border-radius: 3px;
+      }
+    }
+    .trackItem {
+      display: flex;
+      padding: 20px;
+      opacity: 0.5;
+      .trackInfo {
+        margin-left: 20px;
+        .boldsm {
+          font-weight: 700;
+          font-size: 14px;
+        }
+        .time {
+          margin-top: 5px;
+        }
+        .lightxxs {
+          font-weight: 300;
+          font-size: 13px;
+          @media @tablet {
+            font-size: 12px;
+          }
+          @media @mobile {
+            font-size: 12px;
+          }
+        }
+      }
+      .inTransitItem,
+      .trackingDetails {
+        display: flex;
+        width: 100%;
+      }
+      .dropdownArrow {
+        margin-left: auto;
+      }
+    }
+    .title {
+      font-weight: bold;
+      color: @Mako;
+      opacity: 1 !important;
+    }
+    .detailedTracking {
+      cursor: pointer;
+      transition: all 0.2s;
+      .inTransitItem,
+      .trackingDetails {
+        display: flex;
+        width: 100%;
+      }
+      .inTransitItem {
+        flex-direction: column;
+        .trackingItem {
+          display: flex;
+          padding: 10px 20px;
+          border-bottom: 1px solid @Gray;
+          &:first-child {
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+    .hover {
+      &:hover {
+        background: @LightGray;
+      }
+    }
+    .links {
+      display: flex;
+      justify-content: center;
+      div,
+      a {
+        flex: 1;
+        justify-content: center;
+        display: flex;
+        cursor: pointer;
+        padding: 15px 10px;
+        border-top: 1px solid @LightGray;
+        border-right: 1px solid @LightGray;
+        text-align: center;
+        align-items: center;
+        font-size: 14px;
+      }
+    }
+  }
+}

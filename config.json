@@ -1,0 +1,30 @@
+{
+  "theme": {
+    "styles": {},
+    "font": {
+      "variants": {
+        "light": {
+          "name": "300",
+          "file": "https://fonts.gstatic.com/s/poppins/v9/pxiByp8kv8JHgFVrLDz8V1tvFP-KUEg.ttf"
+        },
+        "regular": {
+          "name": "regular",
+          "file": "https://fonts.gstatic.com/s/poppins/v9/pxiEyp8kv8JHgFVrFJDUc1NECPY.ttf"
+        },
+        "medium": {
+          "name": "500",
+          "file": "https://fonts.gstatic.com/s/poppins/v9/pxiByp8kv8JHgFVrLGT9V1tvFP-KUEg.ttf"
+        },
+        "semi_bold": {
+          "name": "600",
+          "file": "https://fonts.gstatic.com/s/poppins/v9/pxiByp8kv8JHgFVrLEj6V1tvFP-KUEg.ttf"
+        },
+        "bold": {
+          "name": "700",
+          "file": "https://fonts.gstatic.com/s/poppins/v9/pxiByp8kv8JHgFVrLCz7V1tvFP-KUEg.ttf"
+        }
+      },
+      "family": "Poppins"
+    }
+  }
+}

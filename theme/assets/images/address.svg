@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53 (72520) - https://sketchapp.com -->
+    <title>address</title>
+    <desc>Created with Sketch.</desc>
+    <g id="address" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+            <g id="Stroke-1-+-Stroke-2-+-Stroke-4" transform="translate(1.000000, 3.000000)" stroke="#41434C" stroke-linecap="round" stroke-linejoin="round">
+                <polyline id="Stroke-1-Copy" points="0.852352941 6.53691544 10.8692872 0.117373132 20.6145721 6.50639104"></polyline>
+                <path d="M1.00589252,6.5478678 L20.3865984,6.5478678" id="Line"></path>
+                <path d="M17.6949399,7.04198545 L17.6949399,15.4528497 C17.6949399,16.1648348 17.0558712,16.7418685 16.2680471,16.7418685 L5.35558142,16.7418685 C4.56698452,16.7418685 3.92791579,16.1648348 3.92791579,15.4528497 L3.92791579,7.04198545" id="Stroke-2"></path>
+                <path d="M13.1445697,16.6756066 L13.1445697,10.4867434 C13.1445697,9.89569827 12.625278,9.41730104 11.9854365,9.41730104 L9.61887307,9.41730104 C8.9786452,9.41730104 8.45973994,9.89569827 8.45973994,10.4867434 L8.45973994,16.6756066 L13.1445697,16.6756066 L13.1445697,16.6756066 Z" id="Stroke-4"></path>
+            </g>
+        </g>
+    </g>
+</svg>

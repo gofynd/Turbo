@@ -1,0 +1,75 @@
+@import "../../../styles/main.less";
+
+.orderHeader {
+  background: @ThemeAccentL5;
+  padding: 20px 0px;
+  display: flex;
+  align-items: center;
+  flex: 0.9;
+  @media @mobile {
+    flex-direction: column;
+    align-items: normal;
+    padding: 20px 0;
+  }
+  .boldmd {
+    font-weight: 600;
+    font-size: 18px;
+
+    @media @tablet {
+      font-size: 16px;
+    }
+    @media @mobile {
+      font-size: 16px;
+    }
+  }
+  .bold {
+    font-weight: 700;
+    font-size: 16px;
+    @media @mobile {
+      font-size: 14px;
+    }
+  }
+  .title {
+    color: @Mako;
+    margin-left: 15px;
+    @media @mobile {
+      margin-bottom: 5px;
+      margin-left: 0;
+    }
+  }
+  .subTitle {
+    margin-left: 15px;
+    color: @DustyGray;
+    font-size: 13px;
+    @media @mobile {
+      font-size: 12px;
+    }
+  }
+  .filters {
+    .flex-center();
+    margin-top: 10px;
+  }
+
+  .rightAlign {
+    display: flex;
+    margin-left: auto;
+    padding: 0;
+    @media @mobile {
+      flex-direction: column;
+      margin: 0 15px;
+      font-size: 14px;
+    }
+    .orderDropdown {
+      flex: auto;
+      flex-direction: row;
+      padding: 0;
+      .flex-center();
+      color: @Mako;
+      margin: 0px 20px;
+      @media @mobile {
+        margin: 0;
+        justify-content: space-between;
+      }
+    }
+  }
+}

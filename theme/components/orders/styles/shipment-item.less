@@ -1,0 +1,106 @@
+@import "../../../styles/main.less";
+
+.bagItem {
+  display: flex;
+  border-bottom: 1px solid @LightGray;
+
+  input {
+    display: none;
+  }
+
+  .radiobtn {
+    display: flex;
+    align-items: center;
+  }
+
+  .bagImg {
+    margin: 20px;
+
+    img {
+      max-width: 54px;
+      max-height: 90px;
+      cursor: pointer;
+    }
+  }
+
+  .bagInfo {
+    margin: 20px 0px;
+    .regularxxs {
+      font-weight: 400;
+      font-size: 13px;
+      @media @mobile {
+        font-size: 12px;
+      }
+    }
+    .boldxxs {
+      font-weight: 700;
+      font-size: 13px;
+      @media @mobile {
+        font-size: 12px;
+      }
+    }
+    .lightxxs {
+      font-weight: 300;
+      font-size: 13px;
+      @media @tablet {
+        font-size: 12px;
+      }
+      @media @mobile {
+        font-size: 12px;
+      }
+    }
+    .brand {
+      color: @Mako;
+    }
+    .boldsm {
+      font-weight: 700;
+      font-size: 16px;
+      @media @tablet {
+        font-size: 14px;
+      }
+      @media @mobile {
+        font-size: 14px;
+      }
+    }
+
+    .company,
+    .seller {
+      margin-bottom: 10px;
+    }
+
+    .chip {
+      border-radius: 3px;
+      display: inline-block;
+      margin: 10px 0px;
+    }
+
+    .margin {
+      color: @Required;
+      margin-left: 10px;
+    }
+
+    .total {
+      display: flex;
+      margin-top: 10px;
+
+      .amt {
+        color: @Mako;
+        margin-right: 10px;
+      }
+
+      .delivery-at {
+        margin-left: 5px;
+      }
+    }
+
+    .effectivePrice {
+      font-weight: 500;
+      line-height: 20px;
+      font-size: 14px;
+    }
+  }
+
+  .label {
+    display: flex;
+  }
+}

@@ -1,0 +1,187 @@
+.flex-align-center() {
+  display: flex;
+  align-items: center;
+}
+
+.flex-center() {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-select-none() {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.text-line-clamp(@line-count: 1) {
+  display: -webkit-box;
+  -webkit-line-clamp: @line-count;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.overflow-ellipsis() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+// Mixins for ios 14 and below
+.column-gap(@gap) {
+  & > *:not(:last-child) {
+    margin-right: @gap;
+  }
+}
+
+.row-gap(@gap) {
+  & > *:not(:last-child) {
+    margin-bottom: @gap;
+  }
+}
+
+.inset(@position) {
+  top: @position;
+  bottom: @position;
+  left: @position;
+  right: @position;
+}
+.aspect-ratio(@ratio) {
+  position: relative;
+  & > * {
+    position: absolute;
+    .inset(0);
+  }
+  &:before {
+    content: "";
+    display: block;
+    padding-bottom: ~"calc(100% * (1 /(@{ratio})))";
+  }
+}
+
+.grid-gap(@row-gap, @column-gap: @row-gap) {
+  @supports not (gap: @row-gap @column-gap) {
+    margin-left: -(@column-gap / 2);
+    margin-right: -(@column-gap / 2);
+    margin-bottom: -@row-gap;
+    & > * {
+      padding-left: @column-gap / 2;
+      padding-right: @column-gap / 2;
+      margin-bottom: @row-gap;
+    }
+  }
+
+  @supports (gap: @row-gap @column-gap) {
+    gap: @row-gap @column-gap;
+  }
+}
+
+// Topography Mixin
+.h3(@screen) {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: @TextHeading;
+
+  & when (@screen = desktop) {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  & when (@screen = mobile) {
+    font-size: 24px;
+    line-height: 32px;
+  }
+}
+
+.h4(@screen) {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: @TextHeading;
+
+  & when (@screen = desktop) {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  & when (@screen = mobile) {
+    font-size: 16px;
+    line-height: 18px;
+  }
+}
+
+.b2(@screen) {
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: @TextBody;
+
+  & when (@screen = desktop) {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  & when (@screen = mobile) {
+    font-size: 12px;
+    line-height: 16px;
+  }
+}
+
+.b2(@screen) {
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: @TextBody;
+
+  & when (@screen = desktop) {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  & when (@screen = mobile) {
+    font-size: 12px;
+    line-height: 16px;
+  }
+}
+
+.b5(@screen) {
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: @TextBody;
+
+  & when (@screen = desktop) {
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  & when (@screen = mobile) {
+  }
+}
+
+.btn-font(@screen) {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  & when (@screen = desktop) {
+    font-size: 14px;
+    line-height: 16px;
+  }
+
+  & when (@screen = mobile) {
+    font-size: 12px;
+    line-height: 14px;
+  }
+}
+
+.button-font() {
+  .btn-font(mobile);
+  border-radius: @ButtonRadius;
+  cursor: pointer;
+  @media @desktop {
+    .btn-font(desktop);
+  }
+}
+
+.fontBody() {
+  font-family: var(--font-body);
+}
+
+.fontHeader() {
+  font-family: var(--font-header);
+}

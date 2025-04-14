@@ -1,0 +1,192 @@
+@import "../../../styles/main.less";
+
+.headerDesktop {
+  .firstRow {
+    display: flex;
+    padding: 7px 0;
+    .middle {
+      .logo,
+      a {
+        max-width: 294px;
+        max-height: 65px;
+      }
+    }
+    .left,
+    .right {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+    .right__icons {
+      justify-content: flex-end;
+      .column-gap(16px);
+      .icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        // justify-content: center;
+      }
+      min-height: 55px;
+      &--bag,
+      &--wishlist {
+        & > div {
+          position: relative;
+          .count {
+            min-width: 16px;
+            min-height: 16px;
+            padding: 0 2px;
+            background-color: @HeaderIcon;
+            color: @HeaderBackground;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 10px;
+            .flex-center();
+            position: absolute;
+            right: 0;
+            top: 0;
+            transform: translate(50%, -50%);
+          }
+        }
+      }
+      .labelSignin {
+        color: @HeaderNav;
+        cursor: pointer;
+      }
+    }
+  }
+  .secondRow {
+    display: flex;
+    justify-content: center;
+  }
+  &.layout_1,
+  &.layout_2,
+  &.layout_3 {
+    .firstRow {
+      .left {
+        margin: 0 74px;
+        justify-content: center;
+      }
+      .middle {
+        order: -1;
+      }
+      .right {
+        flex: 0 1 auto;
+        padding: 0 8px;
+      }
+    }
+  }
+  &.layout_2 {
+    .firstRow {
+      .left {
+        justify-content: flex-start;
+      }
+    }
+  }
+  &.layout_3 {
+    .first-row {
+      .left {
+        justify-content: flex-end;
+      }
+    }
+  }
+  &.single {
+    &.layout_4 {
+      .firstRow {
+        .middle {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+    .firstRow {
+      @media @desktop {
+        padding: 15px 0;
+      }
+      .right__icons {
+        .column-gap(16px);
+
+        &--bag,
+        &--wishlist {
+          & > div .count {
+            width: 14px;
+            height: 14px;
+          }
+        }
+        &--bag {
+          & > div .count {
+            transform: translate(4px, 0px);
+          }
+        }
+        &--wishlist {
+          & > div .count {
+            transform: translate(3px, -3px);
+          }
+        }
+      }
+    }
+  }
+  &.double {
+    &.layout_2 {
+      .secondRow {
+        justify-content: flex-start;
+      }
+    }
+    &.layout_3 {
+      .secondRow {
+        justify-content: flex-end;
+      }
+    }
+  }
+}
+.headerIcon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  fill: @HeaderIcon;
+}
+.singleRowIcon g > path {
+  fill: @HeaderIcon;
+}
+
+.alwaysOnSearch {
+  width: 100%;
+  max-width: 600px;
+  padding-inline-end: 24px;
+  .customSearchClass {
+    position: relative;
+    transform: scaleY(1) !important;
+    opacity: 1 !important;
+    transition: none !important;
+    .search__wrapper {
+      width: unset !important;
+    }
+  }
+  .customSearchWrapperClass {
+    width: unset;
+  }
+}
+.hyperlocalActionBtn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: @HeaderNav;
+  &.hyperlocalSearchOn {
+    margin-left: 24px;
+  }
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .pincode {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: -0.24px;
+  }
+}

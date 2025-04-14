@@ -1,0 +1,17 @@
+@import "../../../../styles/main.less";
+
+.breadcrumbs {
+  margin: 0 0 24px;
+  .fontBody();
+
+  span {
+    color: @TextDisabled;
+    &.active {
+      color: @ButtonPrimary;
+    }
+  }
+
+  @media @tablet {
+    margin: 16px 0 0;
+  }
+}

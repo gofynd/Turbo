@@ -1,0 +1,351 @@
+@import "../main.less";
+
+.addToCartContainer {
+  @media @desktop {
+    max-width: unset !important;
+
+    .addToCartBody {
+      overflow-y: hidden;
+    }
+  }
+}
+
+.sectionWrapper {
+  min-height: 400px;
+  @media @tablet {
+    padding: 0;
+    min-height: 370px;
+  }
+  @media @mobile {
+    padding: 0;
+    min-height: 420px;
+  }
+}
+
+.titleBlock {
+  &.bannerTitleBlock {
+    display: flex;
+    flex-direction: column;
+    p {
+      margin: 0 0 22px 0;
+    }
+  }
+  padding: 16px 40px;
+  display: flex;
+  flex-direction: column;
+  @media @tablet {
+    padding: 16px;
+    padding-bottom: 8px;
+  }
+  .sectionHeading {
+    margin-bottom: 16px;
+    @media @tablet {
+      margin-bottom: 8px;
+    }
+  }
+  .description {
+    max-width: 590px;
+    margin-bottom: 16px;
+    @media @tablet {
+      margin-bottom: 16px;
+    }
+  }
+}
+
+.imageGrid {
+  display: grid;
+  .grid-gap(32px, 24px);
+  padding: 0 24px;
+  grid-template-columns: repeat(var(--per_row), 1fr);
+
+  &.singleItem {
+    display: flex;
+    justify-content: center;
+    & > * {
+      flex: 0 1 calc(100% / var(--per_row));
+      @media @mobile {
+        flex: 1;
+      }
+    }
+  }
+  @media @tablet {
+    grid-template-columns: repeat(var(--brand-item), 1fr);
+    .grid-gap(24px, 16px);
+  }
+  @media @mobile {
+    .grid-gap(12px);
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 16px;
+  }
+}
+.imageGallery {
+  border-radius: @ImageRadius;
+  -webkit-mask-image: -webkit-radial-gradient(white, black); //safari fix
+}
+
+.categories-name {
+  position: absolute;
+  border: 1px solid @DividerStokes;
+  background-color: @ThemeAccentL5;
+  border-radius: @ButtonRadius;
+  padding: 7px 15px;
+  text-align: center;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  margin: 0 auto;
+
+  //   width: calc(100% - 24px);
+  cursor: pointer;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  color: @TextBody;
+  @media @desktop {
+    padding: 14px 15px;
+  }
+  width: calc(100% - 24px);
+}
+
+.pos-relative {
+  position: relative;
+}
+.streach {
+  img {
+    object-fit: cover !important;
+    height: 100% !important;
+  }
+  picture {
+    background-color: var(--bg-color) !important;
+  }
+}
+.gap-above-button {
+  margin-top: 1rem;
+  text-align: center;
+  @media @tablet-strict {
+    margin-top: 16px;
+  }
+  @media @desktop {
+    margin-top: 32px;
+  }
+  &.visibleOnDesktop {
+    @media @tablet {
+      display: none;
+    }
+    @media @desktop {
+      margin: 0 0 61px 0;
+      button {
+        border: none !important;
+        text-decoration: underline;
+        padding: 0;
+        background-color: @PageBackground;
+        &:hover {
+          background-color: @PageBackground;
+          color: @ButtonPrimary;
+        }
+      }
+    }
+  }
+  &.visibleOnMobile {
+    @media @desktop {
+      display: none;
+    }
+  }
+}
+
+.gap-above-button-horizontal {
+  margin-top: 1rem;
+  text-align: center;
+  @media @tablet-strict {
+    margin-top: 16px;
+  }
+  @media @desktop {
+    margin-top: 64px;
+
+    &.lessGap {
+      margin-top: 24px;
+    }
+  }
+}
+
+.section-button {
+  padding: 12px 24px;
+  border-radius: @ButtonRadius;
+  cursor: pointer;
+}
+
+.sliderView {
+  position: relative;
+  --gap: 24px;
+  padding: 0 calc(var(--gap) / 2);
+  @media @tablet {
+    --gap: 16px;
+  }
+  @media @mobile {
+    --gap: 12px;
+  }
+}
+
+.slideWrap,
+.slWrap {
+  max-width: 100vw;
+  // min-height: 400px;
+  padding: 0 10px;
+  // min-height: 370px;
+  @media @mobile {
+    padding: 0;
+    // min-height: 420px;
+  }
+  :global {
+    .slick-list {
+      padding-left: 5px !important;
+      @media @mobile {
+        padding-left: 0 !important;
+      }
+    }
+    .slick-slider {
+      @media @mobile {
+        padding-left: 10px;
+      }
+    }
+    .slick-slider:not(.no-nav) {
+      @media @mobile {
+        padding-bottom: 8px;
+        margin-bottom: 0px;
+      }
+    }
+  }
+}
+
+.bannerImageSliderWrap {
+  display: flex;
+  @media @tablet {
+    display: block;
+    .titleBlock {
+      display: none;
+    }
+  }
+  align-items: center;
+  .bannerImage {
+    width: 47.5%;
+
+    @media @tablet {
+      width: 100%;
+    }
+  }
+  .customNextBtn,
+  .customPrevBtn {
+    @media @tablet {
+      display: none;
+    }
+  }
+  .slideWrapBanner {
+    width: 50%;
+    padding-left: 22px;
+
+    @media @tablet {
+      width: 100vw;
+      margin-top: 24px;
+      padding: 0;
+    }
+    @media @mobile {
+      padding: 0;
+    }
+
+    .slWrap {
+      position: relative;
+    }
+  }
+}
+
+.customNextBtn,
+.customPrevBtn {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: @PageBackground;
+  border: 1px solid @TextHeading;
+  svg > path {
+    stroke: @TextHeading;
+  }
+}
+.customNextBtn {
+  right: 4rem;
+}
+
+.customPrevBtn {
+  left: 27px;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.placeholderScroll,
+.placeholderGrid {
+  padding: 0 24px;
+  @media @mobile {
+    padding: 0 16px;
+  }
+}
+
+.placeholderGrid {
+  display: grid;
+  .grid-gap(32px, 24px);
+  grid-template-columns: repeat(var(--per_row), 1fr);
+  @media @tablet {
+    .grid-gap(24px, 16px);
+  }
+  @media @mobile {
+    .grid-gap(12px);
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.placeholderScroll {
+  display: flex;
+  & > * {
+    flex: 0 0 calc(100% / var(--per_row));
+    @media @mobile {
+      flex: 0 0 calc(100% / var(--per_row_mobile));
+    }
+  }
+}
+@media @desktop {
+  .desktopVisible {
+    display: block;
+  }
+  .desktopVisibleFlex {
+    display: flex;
+  }
+  .desktopHidden {
+    display: none;
+  }
+  .desktopHiddenFlex {
+    display: none;
+  }
+  .hideOnDesktop {
+    display: none;
+  }
+}
+@media @tablet {
+  .mobileVisible {
+    display: block;
+  }
+  .mobileHidden {
+    display: none;
+  }
+  .hideOnDesktop {
+    display: none;
+  }
+}
+@media @mobile {
+  .hideOnMobile {
+    display: none;
+  }
+  .hideOnDesktop {
+    display: block;
+  }
+}

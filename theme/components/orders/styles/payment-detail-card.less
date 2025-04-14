@@ -1,0 +1,62 @@
+@import "../../../styles/main.less";
+
+.paymentMode {
+  margin: 15px;
+  .wrapperflex {
+    display: flex;
+    align-items: center;
+  }
+  .header {
+    margin-left: 3px;
+  }
+  .boldsm {
+    font-weight: 700;
+    font-size: 16px;
+    @media @tablet {
+      font-size: 14px;
+    }
+    @media @mobile {
+      font-size: 14px;
+    }
+  }
+  .lightsm {
+    font-weight: 300;
+    font-size: 16px;
+    @media @tablet {
+      font-size: 14px;
+    }
+    @media @mobile {
+      font-size: 14px;
+    }
+  }
+  .info {
+    display: flex;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: space-between;
+    .icon {
+      display: inline-block;
+      max-width: 32px;
+      img {
+        max-width: 32px;
+      }
+    }
+    .desc {
+      padding-left: 20px;
+      .text {
+        display: block;
+        margin: 5px 0px;
+      }
+      .regularxs {
+        font-weight: 400;
+        font-size: 14px;
+        @media @mobile {
+          font-size: 13px;
+        }
+      }
+      .subText {
+        display: block;
+      }
+    }
+  }
+}

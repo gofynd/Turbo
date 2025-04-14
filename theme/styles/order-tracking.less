@@ -1,0 +1,84 @@
+@import "../styles/main.less";
+
+.content {
+  background: @White;
+}
+
+.trackOrderCntr {
+  display: flex;
+  justify-content: center;
+  background: @White;
+  min-height: 700px;
+  margin: 14px;
+  .trackOrder {
+    width: 100%;
+    text-align: center;
+  }
+  .error {
+    .flex-center();
+    color: @Required;
+    margin-bottom: 10px;
+    visibility: hidden;
+    text-transform: uppercase;
+  }
+  .visible {
+    visibility: visible;
+  }
+  .orderTitle {
+    padding: 20px;
+    font-size: 2em;
+    text-align: center;
+  }
+  .regularxxs {
+    font-weight: 400;
+    font-size: 13px;
+    @media @tablet {
+      font-size: 12px;
+    }
+    @media @mobile {
+      font-size: 12px;
+    }
+  }
+  .orderId {
+    .flex-center();
+    input {
+      text-transform: uppercase;
+      max-width: 370px;
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #dcdcdc;
+      font-weight: 300;
+      font-size: 14px;
+      color: #41434c;
+      animation: fadeIn 0.5s ease;
+    }
+  }
+
+  .trackBtn {
+    .flex-center();
+    flex: 0 0 100%;
+    .commonBtn {
+      text-align: center;
+      color: #fff;
+      background-color: var(--buttonPrimary);
+      cursor: pointer;
+      padding: 10px;
+      margin: 20px 0;
+      border-radius: 3px;
+      max-width: 350px;
+      width: 100%;
+      .user-select-none();
+    }
+  }
+  .details {
+    .flex-center();
+    color: @TextSecondary;
+    cursor: pointer;
+    .user-select-none();
+  }
+  .demoImg {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px 0 10px 0;
+  }
+}

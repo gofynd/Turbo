@@ -1,0 +1,169 @@
+@import "../../../styles/main.less";
+
+.addPayment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px 0;
+
+  &:hover {
+    color: @ButtonPrimary;
+  }
+
+  .uktLinks {
+    color: @TextHeading;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 140%;
+  }
+}
+
+.closeCross {
+  display: flex;
+  cursor: pointer;
+  justify-content: flex-end;
+}
+.modalContainer {
+  padding: 15px 25px 5px;
+  background-color: @White;
+  min-width: 350px;
+  max-width: 400px;
+  min-height: 100px;
+  overflow-wrap: break-word;
+  border-radius: 3px;
+  width: 400px;
+  max-height: 580px;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  @media @tablet {
+    min-width: 350px;
+    max-width: unset;
+    width: auto;
+  }
+  .modalHeader {
+    display: flex;
+    padding: 20px 25px !important;
+    height: 55px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #eee;
+    justify-content: space-between;
+    align-items: center;
+
+    .header {
+      font-weight: 700;
+      font-size: 16px;
+      color: @TextHeading;
+
+      .flex-center();
+    }
+  }
+
+  .body {
+    line-height: 20px;
+    padding: 4px 25px;
+    margin: 0;
+    flex: 1;
+  }
+
+  .btnContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 3px;
+    border-top: 1px solid @DividerStokes;
+
+    .yesBtn {
+      display: inline-block;
+      width: 150px;
+      height: 40px;
+      line-height: 40px;
+      font-weight: 700;
+      color: @ButtonPrimary;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      background: inherit;
+      padding-top: 5px;
+      font-size: 16px;
+    }
+  }
+}
+.btn {
+  padding: 15px;
+  border-radius: 5px;
+  width: 100%;
+  margin: 10px 0px;
+  border: none;
+  font-weight: 800;
+  text-transform: uppercase;
+  background-color: @ButtonPrimary;
+  margin-right: 10px;
+  @media @mobile {
+    margin-right: 0;
+  }
+}
+.paymentModal {
+  background-color: @White;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  @media @mobile {
+    height: 100%;
+    position: relative;
+  }
+  .bankFormFooter {
+    @media @mobile { 
+      position: static !important;
+      width: 100% !important;
+    }
+  }
+}
+.modalBtn {
+  @media @mobile {
+    position: fixed;
+    box-sizing: border-box;
+    left: 2.5%;
+    bottom: 20px;
+    width: 95%;
+  }
+}
+.errorModal {
+  .modalContainer {
+    width: 400px;
+    height: 580px;
+    padding: 0 !important;
+  }
+  .modalBody {
+    padding: 4px 25px;
+    height: calc(100% - 55px);
+    box-sizing: border-box;
+  }
+  .modalHeader {
+    padding: 20px 15px !important;
+    height: 55px;
+    box-sizing: border-box;
+    border-bottom: 1px solid @LightGray;
+    justify-content: start !important;
+    @media @mobile {
+      position: fixed;
+      width: 100%;
+      top: 0;
+    }
+    .modalTitle {
+      margin: unset !important;
+      text-align: unset !important;
+    }
+    .back {
+      margin-right: 10px;
+    }
+    .cross {
+      margin-left: auto;
+    }
+  }
+}

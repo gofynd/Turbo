@@ -1,0 +1,127 @@
+@import "../../styles/main.less";
+
+.ncc-fw-600 {
+  font-weight: 600;
+}
+.quantity-color {
+  color: @TextBody;
+}
+.free-color {
+  color: @SuccessText;
+}
+.ncc-d-flex {
+  display: flex;
+}
+.line-through {
+  text-decoration: line-through;
+}
+.free-gift-items-container {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  .free-items:nth-child(odd) {
+    margin-right: 10px;
+  }
+}
+.free-gift-scroll-items {
+  display: flex;
+}
+.free-gift-box {
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 24px;
+  border: 1px solid @DividerStokes;
+  background-color: @PageBackground;
+  .ncc-promotions-applied-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .ncc-promotions_applied {
+      font-size: 12px;
+      color: @TextHeading;
+      font-weight: 500;
+    }
+  }
+  .free-gift-items-box {
+    background-color: @PageBackground;
+  }
+
+  .no-gift-btn {
+    text-decoration: underline;
+    color: @TextHeading;
+  }
+  .choose-gift-btn {
+    text-transform: uppercase;
+    color: @TextSecondary;
+  }
+  .multiple-gifts-align {
+    width: 50%;
+    @media @tablet {
+      width: 100%;
+    }
+  }
+  .free-gift-item {
+    padding: 12px 0;
+    display: flex;
+    margin-top: 12px;
+    flex-grow: 1;
+    border-radius: 12px;
+    .ncc-free-gift-item-name {
+      display: flex;
+      flex-direction: column;
+      margin-left: 8px;
+      gap: 10px;
+      @media @mobile {
+        gap: 10px;
+      }
+      .ncc-free-gift-item-name-font {
+        color: @TextHeading;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 12px;
+      }
+      .ncc-free {
+        display: flex;
+        align-items: center;
+        font-size: 10px;
+        line-height: 12px;
+        .ncc-free-gift {
+          margin-left: 8px;
+          color: @TextBody;
+          font-weight: 400;
+        }
+      }
+    }
+
+    @media @tablet {
+      margin-left: 0 !important;
+    }
+  }
+  .free-article-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+
+    .free-gift-item:nth-child(odd) {
+      margin-right: 10px;
+    }
+
+    @media @mobile {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .free-gift-item {
+      @media @mobile {
+        display: inline-block;
+        vertical-align: top;
+        white-space: normal;
+        margin-right: 10px;
+      }
+    }
+  }
+  .free-article-container::-webkit-scrollbar {
+    display: none;
+  }
+}

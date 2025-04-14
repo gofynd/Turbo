@@ -1,0 +1,183 @@
+@import "../../styles/main.less";
+.hotspot {
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  bottom: var(--bottom);
+  right: var(--right);
+  transform: var(--transform);
+  &:hover {
+    z-index: 1;
+    .hotspot__tooltip-wrapper {
+      visibility: visible;
+    }
+  }
+
+  &--desktop {
+    @media @mobile {
+      display: none;
+    }
+  }
+
+  &--mobile {
+    @media @mobile-up {
+      display: none;
+    }
+  }
+
+  &__icon {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+  }
+
+  &__tooltip {
+    background-color: @PageBackground;
+    box-shadow: 0px 6px 12px 0px #00000014;
+    border-radius: 8px;
+    position: relative;
+
+    &::before {
+      content: "";
+      width: 15px;
+      height: 10px;
+      background-color: @PageBackground;
+      position: absolute;
+      left: 50%;
+      top: -9px;
+      transform: translateX(-50%);
+      clip-path: polygon(50% 0, 0% 100%, 100% 100%);
+    }
+  }
+
+  &__tooltip-wrapper {
+    visibility: hidden;
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    padding-top: 10px;
+    transform: translateX(-50%);
+    max-width: 272px;
+    z-index: 99;
+    width: max-content;
+
+    @media @mobile-up {
+      max-width: 329px;
+    }
+
+    &--active {
+      visibility: visible;
+    }
+
+    @media @mobile-up {
+      &.tooltip-right {
+        transform: unset;
+        left: 0;
+
+        .hotspot__tooltip {
+          &::before {
+            left: 8px;
+            transform: unset;
+          }
+        }
+      }
+
+      &.tooltip-left {
+        transform: unset;
+        right: 0;
+        left: unset;
+
+        .hotspot__tooltip {
+          &::before {
+            right: 8px;
+            left: unset;
+            transform: unset;
+          }
+        }
+      }
+    }
+
+    @media @mobile {
+      &.tooltip-mob-right {
+        transform: unset;
+        left: 0;
+
+        .hotspot__tooltip {
+          &::before {
+            left: 8px;
+            transform: unset;
+          }
+        }
+      }
+
+      &.tooltip-mob-left {
+        transform: unset;
+        right: 0;
+        left: unset;
+
+        .hotspot__tooltip {
+          &::before {
+            right: 8px;
+            left: unset;
+            transform: unset;
+          }
+        }
+      }
+    }
+  }
+}
+
+.product {
+  display: flex;
+
+  &__image {
+    width: 84px;
+    border-radius: 8px;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    padding: 0.75rem 0;
+
+    .icon-right {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      transform: rotate(-90deg);
+    }
+  }
+
+  &__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0 0.5rem;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  &__brand {
+    .h4(mobile);
+    // .text-line-clamp();
+  }
+
+  &__name {
+    // .text-line-clamp();
+    .b5(desktop);
+  }
+
+  &__price {
+    .b2(desktop);
+    // .text-line-clamp();
+    color: @TextHeading;
+    &.linkText {
+      text-decoration: underline;
+    }
+  }
+}

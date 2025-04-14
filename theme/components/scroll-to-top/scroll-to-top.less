@@ -1,0 +1,57 @@
+@import "../../styles/main.less";
+.back-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  color: @ThemeAccentD2;
+  box-shadow:
+    0px 8px 8px -4px rgba(0, 0, 0, 0.6),
+    0px 4px 6px -4px rgba(0, 0, 0, 0.12);
+  background-color: @DialogBackground;
+  border-radius: 24px;
+  transition: top 0.25s ease-in-out;
+  border: none;
+  position: fixed;
+  top: calc(var(--topPosition, var(--headerHeight)) + 69px);
+  z-index: 1;
+  right: 50%;
+  z-index: 1;
+  transform: translateX(50%);
+
+  .text {
+    color: @ThemeAccentD2;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.24px;
+
+    @media @tablet {
+      font-size: 12px;
+    }
+  }
+
+  & > .arrow-top-icon {
+    fill: currentColor;
+    width: 8px;
+    height: 11px;
+  }
+
+  @media @desktop {
+    justify-content: center;
+    top: unset;
+    right: 40px;
+    bottom: 40px;
+    width: 40px;
+    height: 40px;
+
+    & > .text {
+      display: none;
+    }
+
+    & > .arrow-top-icon {
+      width: 10px;
+      height: 14px;
+    }
+  }
+}

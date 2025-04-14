@@ -1,0 +1,124 @@
+@import "../../../styles/main.less";
+
+.profilePageContainer {
+  max-width: 1200px;
+  min-height: 75vh;
+  margin: 0 auto;
+  color: @Mako;
+
+  .mainView {
+    display: flex;
+    padding: 20px;
+    background-color: @White;
+
+    .profileContent {
+      flex: 1;
+    }
+
+    .navContainer {
+      border-left: 1px solid @DividerStokes;
+      padding: 0 16px 16px 28px;
+      width: 25%;
+
+      .userData {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 12px 0;
+
+        .defaultImage {
+          height: 50px;
+          aspect-ratio: 1;
+          border-radius: 50%;
+
+          .accountIcon {
+            height: 100%;
+            aspect-ratio: 1;
+          }
+        }
+        .nameContainer {
+          .name {
+            font-weight: 700;
+            color: @TextHeading;
+            line-height: 36px;
+          }
+
+          .editLink {
+            font-size: 14px;
+            line-height: 16px;
+            cursor: pointer;
+            color: @ButtonLink;
+          }
+        }
+      }
+
+      .accountHeader {
+        text-transform: uppercase;
+        margin: 25px 0 3px;
+        font-weight: 700;
+      }
+
+      .nav {
+        display: flex;
+        padding: 10px 10px 10px 0;
+        align-items: center;
+        border-bottom: 1px solid @DividerStokes;
+        cursor: pointer;
+
+        &:hover {
+          color: @SuccessText;
+        }
+
+        &.selected {
+          font-weight: 700;
+
+          &:hover {
+            color: unset;
+          }
+        }
+
+        .menuIcon {
+          height: 24px;
+          aspect-ratio: 1;
+          margin-right: 10px;
+        }
+      }
+
+      .versionContainer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 16px 0;
+
+        .signOut {
+          font-weight: 700;
+          cursor: pointer;
+          color: @ButtonLink;
+        }
+      }
+    }
+
+    @media @tablet {
+      padding: 0;
+
+      .navContainer {
+        width: 100%;
+        border-left: 0;
+
+        .userData {
+          .nameContainer {
+            .name {
+              line-height: 32px;
+              font-size: 14px;
+            }
+          }
+        }
+      }
+
+      .accountHeader,
+      .nav {
+        font-size: 14px;
+        line-height: 14px;
+      }
+    }
+  }
+}

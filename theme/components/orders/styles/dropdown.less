@@ -1,0 +1,26 @@
+@import "../../../styles/main.less";
+
+.selected {
+  .flex-center();
+  cursor: pointer;
+  margin-left: 10px;
+  position: relative;
+  font-weight: 300;
+  .menu {
+    box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.1);
+    background-color: @ThemeAccentL5;
+    position: absolute;
+    top: 40px;
+    white-space: nowrap;
+    z-index: @layer;
+    @media @mobile {
+      right: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      padding: 5px 15px;
+    }
+  }
+}

@@ -1,0 +1,522 @@
+{
+  "props": [
+    {
+      "type": "font",
+      "id": "font_header",
+      "category": "Typography",
+      "default": false,
+      "label": "Title Font"
+    },
+    {
+      "type": "font",
+      "id": "font_body",
+      "category": "Typography",
+      "default": false,
+      "label": "Body Font"
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_max_height",
+      "category": "Header",
+      "label": "Mobile Logo Max Height",
+      "min": 20,
+      "max": 100,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "header_layout",
+      "default": "single",
+      "category": "Header",
+      "label": "Layout",
+      "options": [
+        {
+          "text": "Single Row Navigation",
+          "value": "single"
+        },
+        {
+          "text": "Double Row Navigation",
+          "value": "double"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "always_on_search",
+      "default": false,
+      "category": "Header",
+      "label": "Always on Search",
+      "info": "It provides one click search in header, this option will only be functional with a \"Double Row Navigation\" Layout configuration"
+    },
+    {
+      "type": "checkbox",
+      "id": "header_border",
+      "default": true,
+      "category": "Header",
+      "label": "Show border on desktop",
+      "info": "It adds a border below header on desktop devices"
+    },
+    {
+      "type": "select",
+      "id": "logo_menu_alignment",
+      "default": "layout_1",
+      "category": "Header",
+      "label": "Desktop Logo & Menu Alignment",
+      "options": [
+        {
+          "text": "Logo left, Menu centre",
+          "value": "layout_1"
+        },
+        {
+          "text": "Logo left, Menu left",
+          "value": "layout_2"
+        },
+        {
+          "text": "Logo left, Menu right",
+          "value": "layout_3"
+        },
+        {
+          "text": "Logo Centre",
+          "value": "layout_4"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "header_mega_menu",
+      "default": false,
+      "category": "Header",
+      "label": "Switch to Mega Menu",
+      "info": "The mega menu will only be displayed with a \"Double Row Navigation\" Layout configuration"
+    },
+    {
+      "type": "select",
+      "id": "nav_weight",
+      "category": "Header",
+      "label": "Navigation font weight",
+      "info": "",
+      "default": "semibold",
+      "options": [
+        {
+          "value": "regular",
+          "text": "Regular"
+        },
+        {
+          "value": "semibold",
+          "text": "Semibold"
+        },
+        {
+          "value": "bold",
+          "text": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "is_hyperlocal",
+      "default": false,
+      "category": "Header",
+      "label": "Serviceability check in header"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_mandatory_pincode",
+      "category": "Header",
+      "label": "Mandatory serviceability check",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_minutes",
+      "default": false,
+      "category": "Header",
+      "label": "Minutes",
+      "info": "Show delivery promise in minutes."
+    },
+    {
+      "type": "text",
+      "id": "max_delivery_min",
+      "label": "Minutes",
+      "category": "Header",
+      "default": "60",
+      "info": "Set minute threshold for promise."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_hours",
+      "default": false,
+      "category": "Header",
+      "label": "Hours",
+      "info": "Show delivery promise in hours."
+    },
+    {
+      "type": "text",
+      "id": "max_delivery_hours",
+      "label": "Hours",
+      "category": "Header",
+      "default": "2",
+      "info": "Set hour threshold for promise."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_day",
+      "default": false,
+      "category": "Header",
+      "label": "Today / Tomorrow",
+      "info": "Show delivery promise as today/tomorrow."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_date",
+      "default": false,
+      "category": "Header",
+      "label": "Date Range",
+      "info": "Show delivery promise in date range."
+    },
+    {
+      "type": "checkbox",
+      "id": "algolia_enabled",
+      "label": "Enable Algolia",
+      "default": false,
+      "info": "Enable Algolia",
+      "category": "Algolia Configuration"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "default": "",
+      "category": "Footer",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "footer_description",
+      "label": "Description",
+      "category": "Footer"
+    },
+    {
+      "type": "image_picker",
+      "id": "payments_logo",
+      "default": "",
+      "category": "Footer",
+      "label": "Bottom Bar Image"
+    },
+    {
+      "type": "checkbox",
+      "id": "footer_image",
+      "default": false,
+      "category": "Footer",
+      "label": "Enable Footer Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "footer_image_desktop",
+      "default": "",
+      "category": "Footer",
+      "label": "Desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "footer_image_mobile",
+      "default": "",
+      "category": "Footer",
+      "label": "Mobile/Tablet"
+    },
+    {
+      "type": "checkbox",
+      "id": "footer_contact_background",
+      "default": true,
+      "category": "Footer",
+      "label": "Show Footer Contact Details Background"
+    },
+    {
+      "type": "header",
+      "category": "Cart & Button Configuration",
+      "value": " "
+    },
+    {
+      "type": "header",
+      "category": "Cart & Button Configuration",
+      "value": "Cart Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_cart",
+      "default": false,
+      "category": "Cart & Button Configuration",
+      "label": "Disable Cart",
+      "info": "Disables Cart and Checkout"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show Price",
+      "category": "Cart & Button Configuration",
+      "default": true,
+      "info": "Applies to Product Card, PDP and Featured Product Section"
+    },
+    {
+      "type": "header",
+      "category": "Cart & Button Configuration",
+      "value": "-------------------------------------"
+    },
+    {
+      "type": "header",
+      "category": "Cart & Button Configuration",
+      "value": " "
+    },
+    {
+      "type": "header",
+      "category": "Cart & Button Configuration",
+      "value": "Buy Button Configurations"
+    },
+    {
+      "type": "select",
+      "id": "button_options",
+      "label": "Button Options",
+      "category": "Cart & Button Configuration",
+      "default": "addtocart_buynow",
+      "info": "Applicable for PDP and Featured Product Section",
+      "options": [
+        {
+          "value": "addtocart_buynow",
+          "text": "Add to cart & Buy now"
+        },
+        {
+          "value": "addtocart_button",
+          "text": "Add to cart & Custom Button"
+        },
+        {
+          "value": "buynow_button",
+          "text": "Buy now & Custom Button"
+        },
+        {
+          "value": "button",
+          "text": "Custom Button"
+        },
+        {
+          "value": "addtocart",
+          "text": "Add to cart"
+        },
+        {
+          "value": "buynow",
+          "text": "Buy now"
+        },
+        {
+          "value": "addtocart_buynow_button",
+          "text": "All three"
+        },
+        {
+          "value": "none",
+          "text": "None"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "custom_button_text",
+      "label": "Custom Button text",
+      "category": "Cart & Button Configuration",
+      "default": "Enquire now",
+      "info": "Applicable for PDP and Featured Product Section"
+    },
+    {
+      "type": "url",
+      "id": "custom_button_link",
+      "label": "Custom Button link",
+      "category": "Cart & Button Configuration",
+      "default": ""
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity_control",
+      "label": "Show Quantity Control",
+      "category": "Cart & Button Configuration",
+      "default": false,
+      "info": "Displays in place of Add to Cart when enabled."
+    },
+    {
+      "type": "image_picker",
+      "id": "custom_button_icon",
+      "label": "Custom Button Icon",
+      "category": "Cart & Button Configuration",
+      "info": "Applicable for PDP and Featured Product Section",
+      "default": "",
+      "options": {
+        "aspect_ratio": "1:1",
+        "aspect_ratio_strict_check": true
+      }
+    },
+    {
+      "type": "header",
+      "category": "Product Card Configuration",
+      "value": " "
+    },
+    {
+      "type": "header",
+      "category": "Product Card Configuration",
+      "value": "Product Card Aspect Ratio"
+    },
+    {
+      "type": "text",
+      "id": "product_img_width",
+      "category": "Product Card Configuration",
+      "default": "",
+      "label": "Width (in px)",
+      "info": "Default aspect ratio is 0.8. User can update between 0.6 to 1. For more than 1 it will be set to default 0.8. Applicable for lisiting pages, product page & featured collection section"
+    },
+    {
+      "type": "text",
+      "id": "product_img_height",
+      "category": "Product Card Configuration",
+      "default": "",
+      "label": "Height (in px)",
+      "info": "Default aspect ratio is 0.8. User can update between 0.6 to 1. For more than 1 it will be set to default 0.8. Applicable for lisiting pages, product page & featured collection section"
+    },
+    {
+      "type": "header",
+      "category": "Product Card Configuration",
+      "value": "-------------------------------------"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "category": "Product Card Configuration",
+      "default": true,
+      "label": "Display Sale Badge",
+      "info": "Uncheck to hide sale badge"
+    },
+    {
+      "type": "range",
+      "category": "Product Card Configuration",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 30,
+      "unit": "px",
+      "label": "Image Border Radius",
+      "default": 24,
+      "info": "Border radius for Image"
+    },
+    {
+      "type": "header",
+      "category": "Product Card Configuration",
+      "value": "-------------------------------------"
+    },
+    {
+      "type": "checkbox",
+      "id": "img_fill",
+      "category": "Product Card Configuration",
+      "default": false,
+      "label": "Fit image to the container",
+      "info": "If the image aspect ratio is different from the container, the image will be clipped to fit the container. The aspect ratio of the image will be maintained"
+    },
+    {
+      "type": "color",
+      "id": "img_container_bg",
+      "category": "Product Card Configuration",
+      "label": "Container Background Color",
+      "info": "This color will be used as the container background color of the Product/Collection/Category/Brand images wherever applicable"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image_on_hover",
+      "category": "Product Card Configuration",
+      "label": "Show image on hover",
+      "info": "This option controls whether an additional image is displayed when hovering over the product card.",
+      "default": false
+    },
+    {
+      "type": "header",
+      "category": "Other Page Configuration",
+      "value": " "
+    },
+    {
+      "type": "header",
+      "category": "Other Page Configuration",
+      "value": "Improve Image Quality"
+    },
+    {
+      "type": "checkbox",
+      "id": "img_hd",
+      "category": "Other Page Configuration",
+      "default": false,
+      "label": "Use Original Images",
+      "info": "This may affect your page performance. Applicable for home-page."
+    },
+    {
+      "type": "header",
+      "category": "Other Page Configuration",
+      "value": "-------------------------------------"
+    },
+    {
+      "type": "header",
+      "category": "Other Page Configuration",
+      "value": " "
+    },
+    {
+      "type": "header",
+      "category": "Other Page Configuration",
+      "value": "Section Margins"
+    },
+    {
+      "type": "range",
+      "category": "Other Page Configuration",
+      "id": "section_margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Bottom Margin",
+      "default": 0,
+      "info": "Bottom margin for section"
+    },
+    {
+      "type": "header",
+      "category": "Other Page Configuration",
+      "value": "-------------------------------------"
+    },
+    {
+      "type": "header",
+      "category": "Other Page Configuration",
+      "value": " "
+    },
+    {
+      "type": "header",
+      "category": "Other Page Configuration",
+      "value": "Border Radius"
+    },
+    {
+      "type": "range",
+      "category": "Other Page Configuration",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 30,
+      "unit": "px",
+      "label": "Button Border Radius",
+      "default": 4,
+      "info": "Border radius for Button"
+    },
+    {
+      "type": "header",
+      "category": "Other Page Configuration",
+      "value": "-------------------------------------"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_google_map",
+      "category": "Google Maps",
+      "default": false,
+      "label": "Enable Google Maps",
+      "info": ""
+    },
+    {
+      "type": "text",
+      "id": "map_api_key",
+      "category": "Google Maps",
+      "default": "",
+      "label": "Google Maps API Key",
+      "info": "This API key helps connect your site to Google Maps so you can display interactive maps and location details."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+.viewer3d {
+  position: relative;
+  width: 100%;
+  #loading-poster {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /deep/ .loader {
+      top: 0;
+      left: 0;
+    }
+  }
+}
+.canvasClass {
+  width: 100%;
+  height: 100%;
+  canvas {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+:global {
+  model-viewer {
+    width: 100%;
+    height: 100%;
+  }
+}

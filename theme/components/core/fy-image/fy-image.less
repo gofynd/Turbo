@@ -1,0 +1,53 @@
+@import "../../../styles/main.less";
+
+.imageWrapper {
+  overflow: hidden;
+  position: relative;
+  & > * {
+    position: absolute;
+    .inset(0);
+  }
+  &:before {
+    content: "";
+    display: block;
+    padding-bottom: calc(100% * calc(1 / var(--aspect-ratio-mobile)));
+  }
+
+  @media @desktop {
+    &:before {
+      padding-bottom: calc(100% * calc(1 / var(--aspect-ratio-desktop)));
+    }
+  }
+  picture {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-color, transparent);
+    height: 100%;
+  }
+
+  .overlay {
+    position: absolute;
+    background-color: var(--overlay-bgcolor);
+    z-index: 1;
+    opacity: 0.4;
+    height: 100%;
+    width: 100%;
+  }
+
+  .fyImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  &.fill {
+    .fyImg {
+      object-fit: cover;
+      object-position: top;
+    }
+  }
+}
+
+.pdpImage {
+  background-image: @ContainerBGImage;
+  border-radius: @ImageRadius;
+}

@@ -1,0 +1,352 @@
+@import "./main.less";
+
+.wrapper {
+  background-color: @HighlightColor;
+  min-height: 100vh;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 40px 0;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+
+  @media @mobile {
+    padding: 0;
+    gap: 8px;
+  }
+  
+  @media @mobile-up {
+    &>*:nth-child(n + 3) {
+      margin-top: 16px;
+    }
+  }
+
+  &.beneficiaryContainer {
+    gap: 16px;
+    @media @mobile {  
+      gap: 8px;
+    }
+  }
+}
+
+.outerContainer,
+.refundHeader,
+.refundDetails,
+.refundOtp,
+.beneficiaryForm {
+  background-color: @PageBackground;
+  padding: 16px;
+
+  @media @mobile {
+    padding: 16px;
+  }
+  @media @mobile-up {
+    border-radius: 4px;
+  }
+}
+
+.ifscDiv,
+.accountNoDiv{
+  color: @TextHeading;
+  font-weight: 500;
+  font-size: 14px;
+}
+.ifscCodeValue,
+.accountNoValue{
+  color:@TextBody;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.refundHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media @mobile-up {
+    border-radius: 4px 4px 0px 0px;
+    border-bottom: 1px solid @DividerStokes; 
+  }
+}
+
+.accountHolder{
+  word-break: break-all;
+}
+.outerContainer{
+  display: flex;
+  padding:24px;
+  flex-direction: column;
+  height: 450px;
+  overflow-y: scroll;
+  gap:16px;
+  .refundHeadertext{
+    color: @TextHeading;
+    font-size: 16px;
+    font-weight: 700;
+    font-style: normal;
+  }
+  .mainContentSection{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    .contentHeader{
+      color: @TextHeading;
+      font-weight: 600;
+    }
+    .recentlyUsedSection{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .recentlyUsedHeader{
+        color: @TextHeading;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .addBankAccount{
+        cursor: pointer;
+        color: @ButtonLink;
+
+      }
+    }
+  }
+
+  .paymentContent{
+    display: flex;
+    flex-direction: column;
+    gap:16px;
+    .bankOptionItem{
+      display: flex;
+      align-items: flex-start;
+      border:1px solid @DividerStokes;
+      padding: 16px;
+      justify-content: space-between;
+      .bankDetails{
+        .bankdetailsHeader{
+          display: flex;
+          gap:2px;
+          .bankName{
+            color: @TextHeading;
+            font-weight: 600;
+            font-size: 16px;
+  
+          }
+          .svgWrapper{
+            width: 20px;
+            height: 20px;
+          }
+        }
+       .accountHolder{
+          color: @TextHeading;
+          font-weight: 500;
+          font-size: 14px;
+        }
+      }
+
+    }
+  }
+
+  .submitButtonContent{
+    .btn {
+      padding: 15px;
+      border-radius: 5px;
+      width: 100%;
+      margin: 10px 0px;
+      border: none;
+      font-weight: 800;
+      text-transform: uppercase;
+      background-color: @ButtonPrimary;
+      color: @ButtonSecondary;
+      margin-right: 10px;
+      margin-top: auto;
+      @media @mobile {
+        margin-right: 0;
+      }
+    }
+    .modalBtn {
+      @media @mobile {
+        // position: fixed;
+        box-sizing: border-box;
+        left: 2.5%;
+        bottom: 20px;
+        // width: 95%;
+      }
+    }
+  }
+
+  @media @mobile{
+    padding: 16px;
+    .refundHeadertext{
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+    }
+  }
+}
+
+.refundDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  @media @mobile-up {
+    border-radius: 0px 0px 4px 4px;
+  }
+
+  .refundDetailsItem {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 140%;
+    color: @TextHeading;
+  }
+}
+
+.refundOtp {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .refundOtpHead {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 140%;
+    color: @TextLabel;
+
+    h4 {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 140%;
+      color: @TextHeading;
+    }
+  }
+}
+
+.refundOtpForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .refundFormFieldWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 140%;
+    color: @TextLabel;
+
+    .otpInputLabel {
+      background-color: @PageBackground;
+    }
+
+    .formResendTimer {
+      width: fit-content;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      color: @TextLabel !important;
+    }
+        .resendEnabled {
+          color: @ButtonLink !important;
+          font-weight: 600;
+        }
+  }
+ 
+  .refundOtpSubmitBtn {
+    color: @ButtonSecondary;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%;
+  }
+}
+
+.beneficiaryForm {
+  .beneficiaryFormTitle {
+    color: @TextHeading;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 140%;
+  }
+}
+
+.beneficiaryHeader {
+  display: flex;
+  padding: 40px 24px;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  align-self: stretch;
+  background-color: @PageBackground;
+
+  @media @mobile {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .titleWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+    line-height: 140%;
+
+    h4 {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: @TextHeading;
+    }
+
+    .info {
+      font-size: 14px;
+      font-weight: 400;
+      color: @TextBody;
+
+      .amount {
+        color: @TextHeading;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.beneficiaryDetails {
+  display: flex;
+  padding: 16px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  align-self: stretch;
+  background-color: @PageBackground;
+
+  .detailItem {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 140%;
+
+    .itemHeader {
+      color: @TextLabel;
+    }
+
+    .itemValue {
+      color: @TextHeading;
+    }
+  }
+
+  .beneficiaryDetailsTitle {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 140%;
+    color: @TextHeading;
+  }
+}

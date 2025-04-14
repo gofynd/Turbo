@@ -1,0 +1,246 @@
+@import "../../../styles/main.less";
+
+.error {
+  background-color: @PageBackground;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  justify-content: center;
+  height: 100%;
+  min-height: 75vh;
+  .bold {
+    font-size: 32px;
+    line-height: 42px;
+    margin: 0 0 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: @TextHeading;
+  }
+  .continueShoppingBtn {
+    display: flex;
+    border: 1px solid @ButtonPrimary;
+    color: @ButtonPrimary;
+    width: 204px;
+    max-width: 484px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 16.42px;
+    cursor: pointer;
+    background-color: @DividerStokes;
+  }
+}
+
+.updateDisable {
+  opacity: 0.4;
+}
+.viewMore,
+.showLess {
+  text-align: center;
+  padding-right: 30px;
+  padding-top: 5px;
+  cursor: pointer;
+  color: @ButtonLink;
+}
+.shipmentWrapper {
+  .shipmentHeader {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+
+    @media @tablet {
+      padding: 16px 16px 0;
+      gap: 8px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+      color: @TextHeading;
+      flex: 1;
+
+      @media @mobile {
+        font-size: 14px;
+        line-height: 140%;
+      }
+    }
+
+    .status {
+      padding: 4px 12px;
+      display: inline-flex;
+      font-weight: 500;
+      font-size: 12px;
+      color: @SuccessText;
+      font-weight: 500;
+      line-height: 140%;
+      border-radius: 4px;
+      background: @SuccessBackground;
+
+      @media @mobile {
+        padding: 4px;
+        font-size: 10px;
+      }
+    }
+  }
+  .shipmentBagItem {
+    width: 100%;
+    position: relative;
+
+    > div {
+      margin-bottom: 16px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .bagItem {
+      flex: 0 1 50%;
+    }
+    @media (max-width: 861px) {
+      width: 100%;
+      margin: 20px 0;
+      flex-direction: column;
+    }
+    @media @tablet {
+      width: 100%;
+      margin: 16px 0;
+      padding: 0 16px;
+      flex-direction: column;
+    }
+  }
+  .shipment {
+    border-radius: 4px;
+    border: 1px solid @DividerStokes;
+    margin: 16px 0;
+    &.shipmentTracking {
+      @media @tablet {
+        margin: 16px;
+      }
+    }
+
+    @media @mobile {
+      margin: 8px 0;
+      border-radius: 0;
+      border: none;
+      border-top: 1px solid @DividerStokes;
+      :first-child {
+        border-top: unset;
+        border-bottom: unset;
+      }
+      border-bottom: 1px solid @DividerStokes;
+    }
+  }
+  .mediaPreview {
+    padding: 16px;
+
+    .previewTitle {
+      color: @Mako;
+      font-weight: 700;
+      font-size: 16px;
+
+      @media @tablet {
+        font-size: 14px;
+      }
+    }
+
+    .fileList {
+      margin-top: 16px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+
+      .fileItem {
+        position: relative;
+        width: fit-content;
+        display: flex;
+
+        .uploadedImage {
+          width: 120px;
+          height: 120px;
+          border-radius: 4px;
+          object-fit: cover;
+          object-position: center;
+        }
+      }
+    }
+  }
+}
+.btndiv {
+  display: flex;
+  justify-content: center;
+  .updateBtns {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    gap: 10px;
+    @media @tablet {
+      margin-top: 0;
+      gap: 12px;
+      padding: 0 16px;
+    }
+
+    button[disabled] {
+      opacity: 0.5;
+    }
+
+    .btn {
+      padding: 15px;
+      border-radius: @ButtonRadius;
+      width: 100%;
+      // margin: 10px 0px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: @ButtonSecondary;
+      background-color: @ButtonPrimary;
+      &:hover {
+        background-color: @ButtonPrimaryL1;
+        color: @ButtonSecondary;
+      }
+      // margin-right: 10px;
+      @media @mobile {
+        margin-right: 0;
+      }
+    }
+    .cancelBtn {
+      padding: 15px;
+      border-radius: @ButtonRadius;
+      width: 100%;
+      // margin: 10px 0;
+      border: none;
+      font-weight: 800;
+      text-transform: uppercase;
+      background-color: @ButtonSecondary;
+      color: @ButtonPrimary;
+      border: 1px solid @ButtonPrimary;
+      &:hover {
+        background-color: @ButtonPrimaryL1;
+        color: @ButtonSecondary;
+        border: 1px solid @ButtonPrimaryL1;
+      }
+    }
+    .commonBtn {
+      text-align: center;
+      border-radius: @ButtonRadius;
+      @media @mobile {
+        margin: 0;
+      }
+    }
+  }
+}
+.returnRequest {
+  color: @TextHeading;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 140%;
+  padding-top: 24px;
+}

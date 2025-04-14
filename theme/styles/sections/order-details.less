@@ -1,0 +1,149 @@
+@import "../main.less";
+
+.error {
+  background-color: @PageBackground;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  justify-content: center;
+  height: 100%;
+  min-height: 75vh;
+  .bold {
+    font-size: 32px;
+    line-height: 42px;
+    margin: 0 0 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: @TextHeading;
+  }
+  .continueShoppingBtn {
+    display: flex;
+    border: 1px solid @ButtonPrimary;
+    color: @ButtonPrimary;
+    width: 204px;
+    max-width: 484px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 16.42px;
+    cursor: pointer;
+    background-color: @DividerStokes;
+  }
+}
+
+.updateDisable {
+  opacity: 0.4;
+}
+.viewMore,
+.showLess {
+  text-align: center;
+  padding-right: 30px;
+  padding-top: 5px;
+  cursor: pointer;
+  color: @ButtonLink;
+}
+.shipmentWrapper {
+  .shipmentHeader {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+
+    img {
+      width: 40px;
+      height: 50px;
+    }
+    .status {
+      margin: auto;
+      text-align: center;
+      color: @White;
+      padding: 10px;
+      display: inline-flex;
+      border-radius: 3px;
+      font-size: 14px;
+      line-height: 14px;
+    }
+  }
+  .shipmentBagItem {
+    width: 100%;
+
+    position: relative;
+    .bagItem {
+      flex: 0 1 50%;
+    }
+    @media (max-width: 861px) {
+      width: 100%;
+      margin: 20px 0;
+      flex-direction: column;
+    }
+    @media @mobile {
+      width: 100%;
+      margin: 20px 0;
+      flex-direction: column;
+    }
+  }
+  .shipment {
+    border-radius: 3px;
+    border: 1px solid @DividerStokes;
+    margin: 20px 40px;
+    @media @mobile {
+      margin: 20px 0;
+    }
+  }
+}
+.btndiv {
+  display: flex;
+  justify-content: center;
+  .updateBtns {
+    width: 70%;
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+    gap: 10px;
+    @media @mobile {
+      flex-wrap: wrap;
+      gap: 0;
+    }
+
+    button[disabled] {
+      opacity: 0.5;
+    }
+
+    .btn {
+      padding: 15px;
+      border-radius: @ButtonRadius;
+      margin: 10px auto;
+      width: 100%;
+      margin: 10px 0px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #fff;
+      background-color: @TextHeading;
+      margin-right: 10px;
+      @media @mobile {
+        margin-right: 0;
+      }
+    }
+    .cancelBtn {
+      padding: 15px;
+      border-radius: @ButtonRadius;
+      margin: 10px auto;
+      width: 100%;
+      margin: 10px 0;
+      border: none;
+      font-weight: 800;
+      text-transform: uppercase;
+      background-color: @White;
+      color: @TextHeading;
+      border: 1px solid @TextHeading;
+    }
+    .commonBtn {
+      text-align: center;
+      border-radius: @ButtonRadius;
+    }
+  }
+}

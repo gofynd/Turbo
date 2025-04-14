@@ -1,0 +1,193 @@
+@import "../../styles/main.less";
+.loader {
+  position: relative;
+  width: 100%;
+  .loaderContainer {
+    position: absolute;
+    height: 75vh;
+    background: transparent;
+    .customLoader {
+      margin-left: 0;
+    }
+  }
+}
+.bold-md {
+  font-weight: 700;
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+}
+.bold-sm {
+  font-weight: 700;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+.bold-xxs {
+  font-weight: 700;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.main {
+  padding: 24px 0;
+  height: 100%;
+
+  @media @tablet {
+    padding: 0;
+  }
+
+  .emptyState {
+    max-height: 75vh;
+  }
+  .addressItemContainer {
+    padding-top: 24px;
+
+    .addressItem {
+      cursor: pointer;
+      background-color: @PageBackground;
+      border-radius: 4px;
+      &:hover {
+        background-color: @HighlightColor;
+      }
+    }
+
+    @media @tablet {
+      padding: 16px;
+    }
+  }
+
+  .addressContainer {
+    display: block;
+    padding: 0 0 24px;
+    border-bottom: 1px solid @DividerStokes;
+
+    @media @tablet {
+      padding: 16px;
+    }
+    .addressHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+
+      .title {
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 140%;
+        color: @TextHeading;
+
+        .savedAddress {
+          color: @TextLabel;
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 140%;
+        }
+      }
+
+      .addAddr {
+        color: @ButtonPrimary;
+        cursor: pointer;
+        font-weight: 600;
+        line-height: 140%;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        display: flex;
+        gap: 4px;
+        align-items: center;
+
+        .addAddressIcon {
+          width: 18px;
+          height: 18px;
+
+          path {
+            fill: @ButtonPrimary;
+          }
+        }
+      }
+      @media @mobile {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+  }
+  .addressBlock {
+    display: flex;
+    padding: 30px 15px;
+    background-color: @Alabaster2;
+    margin: 15px;
+    align-items: center;
+    cursor: pointer;
+    justify-content: space-between;
+    .nameContainer {
+      display: flex;
+      flex-direction: column;
+    }
+    @media @mobile {
+      margin: 15px;
+    }
+    //  width: calc(100% - 50px);
+    &:hover {
+      background: @LightGray;
+    }
+    .address {
+      padding-top: 10px;
+      line-height: 20px;
+    }
+    .name {
+      display: inline;
+    }
+    .rightArrow {
+      float: right;
+      margin-bottom: 2px;
+    }
+  }
+  .addressFormWrapper {
+    padding-top: 24px;
+
+    @media @tablet {
+      padding: 16px;
+    }
+  }
+}
+
+.actionBtns {
+  justify-content: space-between;
+  display: flex;
+  width: 95%;
+  .btn {
+    padding: 15px;
+    border-radius: 5px;
+    width: 49%;
+    margin-bottom: 15px;
+    border: none;
+    font-weight: bold;
+    background-color: var(--secondaryColor);
+  }
+  .cancelBtn {
+    background-color: @White;
+    color: var(--secondaryColor);
+    border: 1px solid var(--secondaryColor);
+  }
+  .commonBtn {
+    text-align: center;
+    color: @White;
+    cursor: pointer;
+    background-color: var(--primaryColor);
+  }
+}
+
+.defaultAdd {
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: @HighlightColor;
+  color: @TextHeading;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 140%;
+}

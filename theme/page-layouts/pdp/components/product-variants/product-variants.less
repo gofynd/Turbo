@@ -1,0 +1,122 @@
+@import "../../../../styles/main.less";
+
+.variantTitle {
+  color: @TextLabel;
+}
+
+.variantWrapper {
+  margin-top: 24px;
+}
+
+.variantContainer {
+  display: flex;
+  align-items: center;
+  .grid-gap(6px, 8px);
+  flex-wrap: wrap;
+  margin-top: 6px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .variantItemImage,
+  .variantItemColor .color {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+
+    @media @desktop {
+      width: 56px;
+      height: 56px;
+    }
+
+    &:not(.selected) {
+      .overlay,
+      .selectedIcon {
+        display: none;
+      }
+    }
+    &:is(.unavailable) {
+      .overlay {
+        display: block;
+        background: rgba(255, 255, 255, 0.7);
+      }
+    }
+    &:hover {
+      .overlay {
+        display: block;
+      }
+    }
+    .overlay {
+      background: rgba(255, 255, 255, 0.4);
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+    }
+    .selectedOverlay {
+      display: none;
+    }
+    .selectedIcon {
+      height: 24px;
+      width: 24px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      fill: @ButtonSecondary;
+    }
+  }
+  .variantItemImage {
+    display: inline-block;
+    cursor: pointer;
+  }
+  .variantItemColor {
+    .color {
+      width: 40px;
+      height: 40px;
+      border: 1px solid @DividerStokes;
+
+      &.unavailable .overlay > span {
+        position: absolute;
+        height: 80px;
+        width: 80px;
+        bottom: 0;
+        border-left: 1px solid @ButtonSecondary;
+        transform: rotate(45deg);
+        transform-origin: bottom left;
+      }
+    }
+  }
+  .variantItemText {
+    display: inline-block;
+    border-radius: 4px;
+    border: 1px solid @DividerStokes;
+    padding: 4px 12px;
+    color: @TextHeading;
+    cursor: pointer;
+    position: relative;
+    &:not(.unavailable):hover {
+      background-color: @ThemeAccentL2;
+    }
+    &.selected {
+      background-color: @ThemeAccent;
+    }
+    &.unavailable {
+      color: @TextDisabled;
+      span {
+        position: absolute;
+        .inset(0);
+        background-color: @DividerStokes;
+        clip-path: polygon(
+          calc(100% + 1px) 0,
+          100% 0,
+          0 100%,
+          0 calc(100% + 1px)
+        );
+      }
+    }
+  }
+}

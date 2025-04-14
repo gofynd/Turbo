@@ -1,0 +1,87 @@
+@import "../../../../styles/main.less";
+
+.storeItemWrapper {
+  padding: 24px;
+  border: 1px solid @DividerStokes;
+  background: @ThemeAccentL5;
+
+  &:first-child {
+    border-radius: 8px 8px 0 0;
+  }
+
+  &:last-child {
+    border-radius: 0px 0px 8px 8px;
+  }
+
+  &:only-child {
+    border-radius: 8px !important;
+  }
+
+  &:nth-child(n + 2) {
+    margin-top: -1px;
+  }
+
+  &__sold {
+  }
+
+  &__delivery {
+    margin-top: 8px;
+  }
+
+  .buttonWrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+    .column-gap(24px);
+
+    .button {
+      width: 50%;
+      padding: 12px;
+      line-height: normal;
+      letter-spacing: -0.28px;
+      text-transform: uppercase;
+    }
+  }
+
+  .priceWrapper {
+    margin-top: 8px;
+
+    .effective {
+    }
+
+    .marked {
+      margin-left: 12px;
+      text-decoration-line: line-through;
+      color: @TextLabel;
+      line-height: normal;
+      letter-spacing: -0.24px;
+    }
+
+    .discount {
+      margin-left: 8px;
+      color: @SaleDiscountText !important;
+      font-weight: 500;
+    }
+  }
+}
+
+.storeItemWrapperDelivery {
+  margin-top: 8px;
+}
+
+.b4 {
+  color: @TextBody;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+}
+
+.sh4 {
+  color: @TextBody;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}

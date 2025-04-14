@@ -1,0 +1,79 @@
+@import "../../styles/main.less";
+
+.cardItem {
+  position: relative;
+  border-radius: @ImageRadius;
+  -webkit-mask-image: -webkit-radial-gradient(white, black); //safari fix
+
+  overflow: hidden;
+  &:hover {
+    .cardImg {
+      transform: scale(1.1);
+    }
+  }
+  .cardImg {
+    transition: 300ms transform cubic-bezier(0, 0, 0.2, 1);
+  }
+  .cardDesc {
+    padding: 7px 12px;
+    border-radius: @ButtonRadius;
+    justify-content: center;
+    background: @ThemeAccentL5;
+    border: 1px solid @DividerStokes;
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    @media @desktop {
+      padding: 14px;
+      bottom: 24px;
+      left: 43px;
+      right: 43px;
+    }
+    &:hover {
+      background: @ThemeAccentL3;
+    }
+    .title {
+      text-transform: capitalize;
+      text-align: center;
+      .text-line-clamp();
+      color: @TextBody;
+    }
+  }
+  &.BRANDS {
+    .cardDesc {
+      justify-content: center;
+      .column-gap(16px);
+      border-radius: @ButtonRadius;
+      padding: 15px 27px 15px 15px;
+      @media @desktop {
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+      }
+      .title {
+        // color: @TextHeading;
+        text-align: left;
+        @media @tablet-strict {
+          .text-line-clamp(2);
+        }
+      }
+      .cardLogo {
+        max-width: 33px;
+        @media @mobile {
+          max-width: 50px;
+        }
+      }
+    }
+  }
+}
+
+.imgWrapper {
+  position: static;
+  &::before {
+    content: unset;
+  }
+  & > * {
+    all: revert;
+  }
+}

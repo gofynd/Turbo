@@ -1,0 +1,193 @@
+@import '../../styles/main.less';
+
+.containerWrapper {
+	width: 400px;
+	padding: 24px;
+}
+
+.editProfileTitle {
+	color: @TextHeading;
+	text-align: center;
+	font-size: 32px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 44.8px;
+	margin-bottom: 32px;
+
+	@media @tablet {
+		font-size: 24px;
+		line-height: 33.6px;
+	}
+}
+
+.inputGroup {
+	input[type='text'] {
+		height: 48px;
+		border: 1px solid @DividerStokes;
+		padding: 16px;
+		border-radius: 4px;
+		background-color: @PageBackground;
+		box-sizing: border-box;
+		color: @TextBody;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 19.6px;
+		&:focus-visible {
+			outline: none;
+		}
+	}
+}
+.inputTitle {
+	position: absolute;
+	background-color: @PageBackground;
+	padding: 0 4px;
+	margin: 0 12px;
+	z-index: 1;
+	transform: translateY(-50%);
+	color: @TextLabel;
+	font-size: 12px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 16.8px;
+}
+
+.editProfileNameInput {
+	display: flex;
+	flex-direction: column;
+}
+.errorText {
+	display: none;
+}
+.errorInput {
+	input {
+		border: 1px solid @ErrorText !important;
+	}
+	.errorText {
+		display: inline-block;
+		color: @ErrorText;
+		font-size: 12px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 16.8px;
+		margin-top: 8px;
+	}
+	label {
+		color: @ErrorText;
+	}
+}
+.editProfileAlert {
+	height: 48px;
+	padding: 0 7px;
+	margin-bottom: 8px;
+	display: flex;
+	align-items: center;
+	background-color: @ErrorBackground;
+	border: 1px dashed @ErrorText;
+	color: @ErrorText;
+
+	.alertMessage {
+		display: inline-block;
+		margin-right: 8px;
+		font-size: 13px;
+	}
+}
+.genderRadioContainer {
+	padding: 8px 0;
+
+	.radioContainer {
+		margin-bottom: 8px;
+		padding-left: 24px;
+		margin-right: 12px;
+		position: relative;
+		color: @TextBody;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 19.6px;
+
+		input {
+			position: absolute;
+			opacity: 0;
+			cursor: pointer;
+		}
+		.checkmark {
+			height: 16px;
+			width: 16px;
+			position: absolute;
+			top: 50%;
+			left: 0;
+			transform: translateY(-50%);
+			border: 1px solid #919191;
+			border-radius: 50%;
+		}
+		.checkmark:after {
+			content: '';
+			position: absolute;
+			display: none;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 9px;
+			height: 9px;
+			border-radius: 50%;
+			background: #919191;
+		}
+		input:checked ~ .checkmark:after {
+			display: block;
+		}
+	}
+}
+.editProfileNameInput,
+.editProfileMobileInput,
+.genderRadioContainer,
+.editProfileEmail {
+	margin-bottom: 20px;
+}
+.loading {
+	div {
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.continueBtn,
+.logoutBtn {
+	display: block;
+	border: none;
+	width: 100%;
+	height: 48px;
+	border-radius: 4px;
+	background: @ButtonPrimary;
+	color: @ButtonSecondary;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 22.4px;
+	text-transform: uppercase;
+}
+.logoutBtn {
+	margin-top: 20px;
+}
+.continueBtn {
+	margin-top: 32px;
+}
+
+.skipBtn {
+	display: flex;
+	margin: 32px auto 0;
+	background: none;
+	border: none;
+	color: @ButtonPrimary;
+	text-align: center;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 19.6px;
+	text-transform: uppercase;
+	border-bottom: 1px solid @ButtonPrimary;
+}
+.editProfileEmail {
+	display: flex;
+	flex-direction: column;
+}

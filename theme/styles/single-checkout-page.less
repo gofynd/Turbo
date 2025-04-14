@@ -1,0 +1,28 @@
+@import './main.less';
+
+.mainContainer {
+	display: flex;
+	padding: 20px;
+	max-width: 1200px;
+	margin: auto;
+	@media @mobile {
+		flex-direction: column;
+	}
+}
+.leftContainer {
+	width: 64%;
+	margin-right: 2%;
+	@media @mobile {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+	}
+}
+.rightContainer {
+	width: 34%;
+	@media @mobile {
+		width: 100%;
+		margin: 12px 0 0;
+		padding: 0;
+	}
+}

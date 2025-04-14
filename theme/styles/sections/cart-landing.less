@@ -1,0 +1,180 @@
+@import "../../styles/main.less";
+
+.cart {
+  min-height: 50vh;
+  padding: 0px 0px 24px;
+
+  @media @mobile-up {
+    padding: 24px 40px 24px;
+  }
+}
+
+.cartMainContainer {
+  background-color: @PageBackground;
+
+  .errContainer {
+    background-color: @ErrorBackground;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+
+    .errorIcon {
+      display: flex;
+      margin-right: 14px;
+    }
+
+    .errMsg {
+      color: @ErrorText;
+      flex-grow: 1;
+      font-weight: 600;
+      font-size: 12px;
+      margin-right: 14px;
+    }
+    @media @tablet {
+      border-radius: 0;
+    }
+  }
+
+  .cartWrapper {
+    display: flex;
+    gap: 1rem;
+    @media @tablet {
+      flex-direction: column;
+    }
+  }
+
+  .cartItemDetailsContainer {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    .cartTitleContainer {
+      border: 1px solid @DividerStokes;
+      padding: 24px;
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+
+      @media @mobile {
+        padding: 16px;
+        border-width: 1px 0;
+      }
+      .shareCartTablet {
+        display: none;
+        @media @tablet {
+          display: block;
+        }
+      }
+      .bagDetailsContainer {
+        .bagCountHeading {
+          color: @TextHeading;
+          line-height: 140%;
+          font-size: 18px;
+          font-weight: 600;
+          @media @mobile {
+            font-size: 12px;
+          }
+        }
+        .bagCount {
+          color: @TextLabel;
+          line-height: 140%;
+          margin-left: 12px;
+          font-size: 14px;
+          font-weight: 500;
+          @media @mobile {
+            font-size: 12px;
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+  }
+  .cartItemPriceSummaryDetails {
+    flex: 0 0 34%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    .priceSummaryLoginButton {
+      border-radius: @ButtonRadius;
+      background: @ButtonPrimary;
+      cursor: pointer;
+      text-transform: uppercase;
+      color: @ButtonSecondary;
+      width: 100%;
+      height: 48px;
+      border: none;
+      line-height: 140%;
+      padding: 20px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .priceSummaryGuestButton {
+      cursor: pointer;
+      background: @ButtonPrimary;
+      border-radius: @ButtonRadius;
+      text-transform: uppercase;
+      color: @ButtonSecondary;
+      width: 100%;
+      height: 48px;
+      border: none;
+      line-height: 140%;
+      padding: 20px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .priceSummaryLoginButton,
+    .priceSummaryGuestButton {
+      @media @tablet {
+        display: none;
+      }
+      &[disabled] {
+        color: #898a93;
+        cursor: default;
+      }
+    }
+    .shareCartDesktop {
+      @media @tablet {
+        display: none;
+      }
+    }
+    .checkoutContainer {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: @TextHeading;
+      padding: 24px;
+      line-height: 140%;
+      border-radius: 8px;
+      background: @PageBackground;
+      border: 1px solid @DividerStokes;
+
+      @media @tablet {
+        border-radius: 0px;
+        margin-top: 12px;
+      }
+      @media @mobile {
+        padding: 16px;
+      }
+      svg {
+        width: 24px;
+        height: 24px;
+        margin-right: 12px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .selected {
+    display: flex;
+  }
+}

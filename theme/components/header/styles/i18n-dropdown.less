@@ -1,0 +1,258 @@
+@import "../../../styles/main.less";
+
+.internationalization {
+  // position: relative;
+  // border: 1px solid @ButtonPrimary;
+  // border-radius: 4px;
+
+  @media @tablet {
+    padding: 0 !important;
+    border: unset;
+  }
+
+  &__selected {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: @HeaderNav;
+
+    @media @tablet {
+      width: 100%;
+      padding: 8px 16px;
+    }
+
+    .locationLabel {
+      .b2(desktop);
+      color: @HeaderNav;
+      @media @tablet {
+        .b2(mobile);
+        color: @HeaderNav;
+      }
+      &.locationLabelMobile {
+        @media @desktop {
+          display: none;
+        }
+      }
+    }
+    .angleDownIcon {
+      width: 24px;
+      height: 24px;
+      margin-left: auto;
+      fill: currentColor;
+      @media @desktop {
+        display: none;
+      }
+    }
+  }
+
+  &__dropdown {
+    // background-color: @DialogBackground; //Need to replace proper background color mapping here
+    // padding: 16px;
+    // z-index: 20;
+    // box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.05);
+    // border-radius: 6px;
+    // border: 1px solid @DividerStokes;
+
+    // @media @mobile {
+    //   width: 216px;
+    //   transform: translateX(80px);
+    // }
+
+    // @media @tablet-strict {
+    //   width: 256px;
+    // }
+    // background: green;
+  }
+}
+
+.section {
+  margin-top: 16px;
+
+  .dropdownList {
+    border-radius: 12px;
+  }
+
+  .fy-dropdown {
+    margin-top: 12px;
+
+    ::v-deep &__input-wrapper {
+      border-radius: 4px;
+      border: 1px solid @DividerStokes;
+      padding: 0 12px;
+      cursor: pointer;
+      background: transparent;
+      &--active {
+        border: 1px solid @ButtonPrimary;
+      }
+    }
+    ::v-deep &__input {
+      flex-grow: 1;
+      padding: 12px 0;
+      border: none;
+    }
+    ::v-deep &__dropdown-icon {
+      margin: 12px 0;
+      width: 24px;
+      height: 24px;
+      &--open {
+        transform: rotate(180deg);
+      }
+    }
+    ::v-deep &__dropdown {
+      padding: 8px;
+      margin-top: 2px;
+      background: none;
+      border-radius: 3px;
+      border: 1px solid @DividerStokes;
+      box-shadow: none;
+    }
+    ::v-deep &__list {
+      max-height: 176px;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        border: 4px solid rgba(0, 0, 0, 0);
+        background-clip: padding-box;
+        border-radius: 3px;
+        background-color: #e6e6e6;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+    }
+    ::v-deep &__list-item {
+      padding: 8px;
+      margin-top: 8px;
+      .b2(mobile);
+      @media @desktop {
+        .b2(desktop);
+      }
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:hover {
+        border-radius: 2px;
+        cursor: pointer;
+      }
+      span {
+        .text-line-clamp();
+      }
+    }
+  }
+
+  .inputLabel {
+    background: @DialogBackground;
+  }
+
+  .inputField {
+    height: 44px;
+    border-radius: @ButtonRadius;
+    input {
+      color: @TextBody;
+    }
+  }
+}
+
+.internationalIcon {
+  min-width: 24px;
+  height: 24px;
+  color: @HeaderIcon;
+}
+
+.selectedDropdown {
+  margin-left: 4px;
+
+  @media @tablet {
+    display: none;
+  }
+}
+.rotate {
+  transform: rotate(180deg);
+}
+
+.save_btn {
+  border: 1px solid @ButtonPrimary;
+  color: @ButtonSecondary;
+  background-color: @ButtonPrimary;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-size: 14px;
+  line-height: 16px;
+  width: 100%;
+  padding: 16px;
+  border-radius: @ButtonRadius;
+  margin-top: 16px;
+
+  @media @desktop {
+    &:hover {
+      border-color: @ButtonPrimaryL1;
+      background-color: @ButtonPrimaryL1;
+    }
+    &:disabled {
+      border-color: @ButtonPrimaryL3;
+      background-color: @ButtonPrimaryL3;
+    }
+  }
+}
+
+.i18ModalBody {
+  padding: 24px;
+  overflow: unset;
+  @media @mobile {
+    padding: 16px;
+  }
+}
+
+.i18ModalContainer {
+  border-radius: 16px;
+  width: 450px;
+  background: white;
+  overflow: unset;
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    span {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+  }
+
+  .description {
+    color: @TextBody;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px; /* 125% */
+    letter-spacing: -0.32px;
+    margin-top: 8px;
+    @media @mobile {
+      font-size: 12px;
+      line-height: 16px;
+    }
+  }
+}
+
+.autoCompleteLabel {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  margin: 0 12px;
+  padding: 0 4px;
+  background: @DialogBackground;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+.autoCompleteContainer {
+  input {
+    background: transparent;
+  }
+}

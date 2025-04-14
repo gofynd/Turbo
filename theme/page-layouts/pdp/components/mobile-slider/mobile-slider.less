@@ -1,0 +1,242 @@
+@import "../../../../styles/base.global.less";
+
+// .dots {
+//   text-align: center;
+//   li {
+//     display: inline;
+//     button {
+//       margin: 0 4px;
+//       width: 10px;
+//       height: 4px;
+//       border-radius: 25px;
+//       background-color: var(--textSecondary);
+//       color: var(--textSecondary);
+//       overflow: hidden;
+//     }
+//   }
+//   li.slick-active {
+//     button {
+//       width: 18px !important;
+//       background-color: var(--textSecondary);
+//       color: var(--textSecondary);
+//     }
+//   }
+// }
+
+.mobilePdpCarouselBox {
+  width: 100%;
+
+  :global {
+    .slick-dots {
+      width: 100%;
+      transform: translate(-50%, 200%);
+
+      li {
+        margin: 0 2px;
+        button {
+          width: 10px;
+        }
+        &.slick-active {
+          button {
+            background-color: @TextHeading;
+            width: 18px;
+          }
+        }
+      }
+    }
+    .slick-list {
+      padding-left: 0 !important;
+      @media @tablet {
+        min-height: 730px;
+      }
+      @media @mobile {
+        min-height: 350px;
+      }
+    }
+    .slick-slider {
+      padding-bottom: 0px;
+      margin-bottom: 0px;
+    }
+
+    .slick-slide {
+      border-right: 3px solid #fff;
+      @media @mobile {
+        border-width: 0;
+      }
+    }
+  }
+  .mediaWrapper {
+    position: relative;
+    background-image: @ContainerBGImage;
+    height: 100%;
+    aspect-ratio: @ProductImgAspectRatio;
+
+    .videoContainer {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      align-items: center;
+
+      img {
+        width: 100%;
+      }
+
+      .originalVideo {
+        cursor: pointer;
+        height: 100%;
+        width: 100%;
+      }
+    }
+
+    .type3dModel {
+      position: relative;
+      height: 100%;
+    }
+  }
+}
+
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+//   /deep/ .glide__bullet {
+//     margin: 0 2px;
+//     width: 10px !important;
+
+//     &--active {
+//       width: 18px !important;
+//     }
+//   }
+
+.wishlistIcon {
+  position: absolute;
+  top: 18px !important;
+  right: 17px !important;
+  left: unset !important;
+  bottom: unset !important;
+  cursor: pointer;
+  width: 22px;
+  height: 20px;
+  z-index: 1;
+  color: @ButtonPrimary;
+}
+.badge {
+  position: absolute;
+  border-radius: 24px;
+  bottom: 10px !important;
+  left: 10px !important;
+  top: unset !important;
+  height: fit-content;
+  width: fit-content;
+  padding: 4px var(--scale-8-px, 8px);
+}
+.b4 {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0.28px;
+  border-radius: 24px;
+  background-color: @PageBackground;
+  color: @TextBody;
+  border: 1px solid @DividerStokes;
+}
+
+/deep/ .bullet-arrow-container {
+  margin-top: 12px !important;
+}
+
+.autoRotateIcon {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  margin-right: 48px;
+  rect {
+    fill: @PageBackground;
+  }
+  path {
+    stroke: @TextBody;
+  }
+}
+.VideoShareIcon {
+  bottom: 10px !important;
+  left: unset !important;
+  right: 10px !important;
+  top: unset !important;
+  width: 40px;
+  height: 40px;
+
+  g > path {
+    fill: @TextBody;
+  }
+
+  rect {
+    fill: @PageBackground;
+  }
+}
+.shareIcon {
+  position: absolute;
+  bottom: 10px !important;
+  right: 10px !important;
+  width: 40px;
+  height: 40px;
+  top: unset !important;
+  left: unset !important;
+  g > path {
+    fill: @TextBody;
+  }
+  rect {
+    fill: @PageBackground;
+  }
+}
+
+.isActive {
+  /deep/ svg path {
+    stroke: #efe7d6;
+  }
+}
+
+.videoPlayerWrapper {
+  position: relative;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .playerIcon {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+  }
+
+  .playerMute {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  .playerExpand {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .playerReplay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}

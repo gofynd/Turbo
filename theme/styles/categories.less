@@ -1,0 +1,72 @@
+@import "../styles/main.less";
+
+.categories {
+  padding: 16px 16px 80px;
+  @media @mobile-up {
+    padding: 24px 40px 80px;
+  }
+  &__title {
+    text-align: center;
+    margin-bottom: 16px;
+    word-break: break-all;
+  }
+  &__description {
+    margin-bottom: 16px;
+    text-align: center;
+    word-break: break-all;
+    @media @desktop {
+      margin-bottom: 24px;
+    }
+  }
+  &__breadcrumbs {
+    margin-bottom: 16px;
+    @media @desktop {
+      margin-bottom: 24px;
+    }
+    span {
+      color: @TextDisabled;
+      &.active {
+        color: @ButtonPrimary;
+      }
+    }
+  }
+  .back-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    color: @ThemeAccentD2;
+    box-shadow:
+      0px 8px 8px -4px rgba(0, 0, 0, 0.6),
+      0px 4px 6px -4px rgba(0, 0, 0, 0.12);
+    background-color: @DialogBackground;
+    border-radius: 24px;
+    border: none;
+    position: fixed;
+    top: 72px;
+    right: 50%;
+    z-index: 1;
+    transform: translateX(50%);
+    z-index: 1;
+    & > .arrow-top-icon {
+      fill: currentColor;
+      width: 8px;
+      height: 11px;
+    }
+    @media @desktop {
+      justify-content: center;
+      top: unset;
+      right: 40px;
+      bottom: 40px;
+      width: 40px;
+      height: 40px;
+      & > .text {
+        display: none;
+      }
+      & > .arrow-top-icon {
+        width: 10px;
+        height: 14px;
+      }
+    }
+  }
+}

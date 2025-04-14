@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53 (72520) - https://sketchapp.com -->
+    <title>orders</title>
+    <desc>Created with Sketch.</desc>
+    <g id="orders" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-7">
+            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+            <g id="Page-1" transform="translate(5.000000, 4.000000)" stroke="#41434C" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M-7.46645652e-14,16 C0.0108045027,16 0.601286361,14.4236269 1.74054606,14.4236274 C2.87980576,14.4236279 3.49189662,16 3.49189662,16 C3.49189662,16 4.1205183,14.3518426 5.24324719,14.4236274 C6.55005414,14.3518432 6.99459775,16 6.99459775,16 C6.99459775,16 7.54528994,14.4625594 8.74594831,14.4236274 C10.0758348,14.46256 10.4972989,16 10.4972989,16 C10.4972989,16 10.9670669,14.4236279 12.2486494,14.4236274 C13.530232,14.4236269 14,15.2372453 14,16 L13.9898714,1.00087166 C13.9894981,0.448105505 13.539594,0 12.9831271,0 L1.00606844,0 C0.450432184,0 -7.46645652e-14,0.444630861 -7.46645652e-14,1.00087166 L-7.46645652e-14,16 Z" id="Stroke-1"></path>
+                <path d="M5,2.51683159 L8.28815686,2.51683159" id="Stroke-5"></path>
+                <path d="M2.50185875,5 L11.4820444,5" id="Stroke-3"></path>
+                <path d="M2.54502444,8 L11.5252101,8" id="Stroke-7"></path>
+                <path d="M2.54502444,11 L11.5252101,11" id="Stroke-7"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,50 @@
+@import "../../../styles/main.less";
+
+.loginWrapper {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  padding: 56px 0;
+
+  @media @tablet {
+    padding: 16px 0 56px;
+  }
+}
+.loginCard {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+
+  &.cardReverse {
+    flex-direction: row-reverse;
+  }
+}
+.loginBannerWrapper {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  flex: 0 0 50%;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px dashed #cecece;
+  @media @tablet {
+    display: none;
+  }
+  .bannerImg {
+    width: 100%;
+    display: inline-block;
+  }
+}
+.loginContent {
+  width: 50%;
+  flex: 0 0 50%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+
+  @media @tablet {
+    flex: 0 0 100%;
+  }
+}

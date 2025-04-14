@@ -1,0 +1,117 @@
+@import "../../styles/main.less";
+
+.heroImageContainer {
+  width: 100%;
+  padding: 0;
+  position: relative;
+  margin-bottom: calc(var(--margin_bottom) + 16px);
+  isolation: isolate;
+  @media @tablet {
+    isolation: unset;
+  }
+  overflow: hidden;
+  .box-wrapper {
+    width: var(--box_width);
+    height: var(--box_height);
+    opacity: 0;
+    position: absolute;
+    left: var(--x_position);
+    top: var(--y_position);
+    cursor: pointer;
+    transform: translate(var(--x_offset), var(--y_offset));
+  }
+
+  .box-wrapper-visible {
+    background: red;
+    opacity: 0.5;
+  }
+
+  .pointer-wrapper-visible {
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .text-wrapper {
+    flex-grow: 1;
+    width: 66%;
+    @media @tablet-strict {
+      margin-top: 20px;
+    }
+  }
+}
+.overlayItems {
+  position: absolute;
+  top: var(--top-position-desktop);
+  left: var(--left-position-desktop);
+  right: var(--right-position-desktop);
+  bottom: var(--bottom-position-desktop);
+  transform: var(--transform-desktop);
+  text-align: var(--content-alignment-desktop);
+  ::v-deep a {
+    z-index: 10;
+  }
+  @media @mobile {
+    padding: 0 1rem;
+    width: 100%;
+    top: var(--top-position-mobile);
+    left: unset;
+    right: unset;
+    bottom: var(--bottom-position-mobile);
+    transform: var(--transform-mobile);
+    text-align: var(--content-alignment-mobile);
+  }
+
+  @media @tablet-strict {
+    max-width: 384px;
+    top: var(--top-position-mobile);
+    left: var(--left-position-mobile);
+    right: var(--right-position-mobile);
+    bottom: var(--bottom-position-mobile);
+    transform: var(--transform-mobile);
+    text-align: var(--content-alignment-mobile);
+  }
+
+  @media @desktop {
+    max-width: 543px;
+  }
+
+  .header {
+    font-size: 64px;
+    line-height: 66px;
+
+    @media @tablet {
+      font-size: 36px;
+      line-height: 38px;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .description {
+    margin-top: 8px;
+    opacity: 0.8;
+  }
+
+  .cta_button {
+    margin-top: 24px;
+    padding: 12px 32px;
+    border-radius: @ButtonRadius;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    letter-spacing: -0.02em;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    @media @tablet {
+      font-size: 12px;
+      margin-top: 24px;
+      line-height: 14px;
+    }
+  }
+}

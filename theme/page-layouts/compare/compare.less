@@ -1,0 +1,123 @@
+@import "../../styles/main.less";
+
+.compare {
+  padding: 24px 16px 80px;
+  width: 100vw;
+  @media @mobile-up {
+    padding: 24px 40px 80px;
+  }
+}
+
+.bold-md {
+  font-weight: 700;
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+}
+.button {
+  width: fit-content;
+  text-transform: uppercase;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: all 0.4s;
+  border: 0.8px solid @DividerStokes;
+  border-radius: @ButtonRadius;
+
+  @media @tablet {
+    font-size: 12px;
+  }
+}
+
+.addToCompare {
+  svg path {
+    fill: @ButtonSecondary !important;
+  }
+  .compareIcon {
+    margin-right: 5px;
+  }
+}
+
+.modal {
+  @media @mobile {
+    max-width: 85vw !important;
+  }
+
+  .compareModal {
+    .crossBtn {
+      width: 100%;
+      display: flex;
+      justify-content: end;
+      padding: 16px 24px;
+      @media @mobile {
+        padding: 8px;
+      }
+      svg {
+        width: 24px;
+      }
+    }
+
+    .modalBody {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px 35px;
+      @media @mobile {
+        padding: 16px;
+      }
+
+      .modalContent {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        .image {
+          text-align: center;
+        }
+
+        .primary-text {
+          color: @TextBody;
+          text-align: center;
+          font-size: 20px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: normal;
+          letter-spacing: -0.4px;
+          line-height: 27px;
+          width: 60%;
+          padding-top: 24px;
+          @media @mobile {
+            padding: 0 20px;
+            font-size: 16px;
+            width: 100%;
+          }
+        }
+      }
+      .button-container {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        bottom: 0;
+        box-sizing: border-box;
+        margin: 24px auto;
+        width: 65%;
+        @media @tablet {
+          align-items: inherit;
+          flex-direction: column;
+          width: 100%;
+        }
+        button {
+          width: 100%;
+          white-space: nowrap;
+        }
+        & > :first-child {
+          flex: 0 0 40%;
+        }
+        & > :nth-child(2) {
+          flex: 0 0 55%;
+        }
+        .btnNoBorder {
+          border: 0.8px solid transparent;
+        }
+      }
+    }
+  }
+}
