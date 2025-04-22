@@ -15,7 +15,7 @@ function MobileSlider({
   images,
   globalConfig,
   onImageClick,
-  product,
+  isCustomOrder = false,
   followed,
   removeFromWishlist,
   addToWishList,
@@ -58,8 +58,7 @@ function MobileSlider({
   const [showReplayButton, setShowReplayButton] = useState(false);
   const [isMute, setIsMute] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentMedia, setCurrentMedia] = useState(images[0]);
+  // const [currentMedia, setCurrentMedia] = useState(images[0]);
   const videoRef = createRef();
 
   function play() {
@@ -92,7 +91,6 @@ function MobileSlider({
     const videoNodeList = document.querySelectorAll(
       `#mobile-video-player-${i}`
     );
-    // console.log(videoNodeList);
     videoNodeList.forEach((video) => {
       /* eslint no-param-reassign: "error" */
       video.muted = true;
@@ -120,7 +118,7 @@ function MobileSlider({
         {...settings}
         beforeChange={(cur, next) => {
           setCurrentImageIndex(next);
-          setCurrentMedia(next);
+          // setCurrentMedia(next);
         }}
       >
         {images?.map((media, i) => (
@@ -199,7 +197,7 @@ function MobileSlider({
                 />
               </div>
             )}
-            {product?.custom_order?.is_custom_order && (
+            {isCustomOrder && (
               <div className={`${styles.badge} ${styles.b4}`}>
                 Made to Order
               </div>

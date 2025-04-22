@@ -17,13 +17,20 @@ export function ThemeProvider({ children }) {
   const fpi = useFPI();
   const location = useLocation();
   const locationDetails = useGlobalStore(fpi.getters.LOCATION_DETAILS);
-  const domainUrl = fpi?.domain;
   const seoData = useGlobalStore(fpi.getters.CONTENT)?.seo?.seo?.details;
   const title = sanitizeHTMLTag(seoData?.title);
   const description = sanitizeHTMLTag(seoData?.description);
+  const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
+  let domainUrl = CONFIGURATION?.application?.domains?.find(d => d.is_primary)?.name || "";
+    if (domainUrl && !/^https?:\/\//i.test(domainUrl)) {
+      domainUrl = `https://${domainUrl}`;
+    }
   const image = sanitizeHTMLTag(
-    seoData?.image ? seoData?.image : seoData?.image_url
-  );
+  seoData?.image ||
+  seoData?.image_url ||
+  CONFIGURATION?.application?.logo?.secure_url ||
+  ""
+);
   const canonicalPath = sanitizeHTMLTag(seoData?.canonical_url);
   const { defaultCurrency } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
   const sellerDetails = JSON.parse(
@@ -229,7 +236,7 @@ export function ThemeProvider({ children }) {
   );
 }
 
-export const getHelmet = ({ seo, domainUrl }) => {
+export const getHelmet = ({ seo }) => {
   const title = sanitizeHTMLTag(seo?.title);
   const description = sanitizeHTMLTag(seo?.description);
   const image = sanitizeHTMLTag(seo?.image ? seo?.image : seo?.image_url);
@@ -245,7 +252,6 @@ export const getHelmet = ({ seo, domainUrl }) => {
       <meta name="image" content={image} />
       <meta name="og:image" content={image} />
       <meta name="twitter:image" content={image} />
-      <meta name="og:url" content={domainUrl} />
       <meta name="og:type" content="website" />
       {canonicalPath && <link rel="canonical" href={canonicalPath} />}
     </Helmet>

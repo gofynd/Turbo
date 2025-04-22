@@ -115,10 +115,10 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
 
   const handleAddToCart = useCallback(
     async (productSlug) => {
-      setIsOpen(true);
       setIsLoading(true);
       setSlug(productSlug);
       await fetchProductData(productSlug);
+      setIsOpen(true);
       setIsLoading(false);
     },
     [fetchProductData]

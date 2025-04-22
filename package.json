@@ -1,6 +1,6 @@
 {
   "name": "Turbo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "license": "ISC",
@@ -23,6 +23,9 @@
     "hooks": {
       "pre-commit": "npm run lint && npm run format"
     }
+  },
+  "fdk_feature": {
+    "enable_section_chunking": true
   },
   "devDependencies": {
     "@loadable/babel-plugin": "^5.16.1",

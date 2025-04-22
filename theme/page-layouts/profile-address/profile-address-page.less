@@ -159,15 +159,17 @@
 .actionBtns {
   justify-content: space-between;
   display: flex;
-  width: 95%;
+  width: 100%;
   .btn {
     padding: 15px;
-    border-radius: 5px;
+    // border-radius: 5px;
     width: 49%;
     margin-bottom: 15px;
     border: none;
     font-weight: bold;
     background-color: var(--secondaryColor);
+    border-radius: @ButtonRadius;
+    
   }
   .cancelBtn {
     background-color: @White;

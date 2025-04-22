@@ -17,13 +17,12 @@ const LightboxImage = React.lazy(
 function PdpImageGallery({
   images,
   displayThumbnail = true,
-  product,
+  isCustomOrder = false,
   iconColor = "",
   globalConfig = {},
   followed,
   removeFromWishlist,
   addToWishList,
-  isLoading,
   hiddenDots = false,
   slideTabCentreNone = false,
   hideImagePreview = false,
@@ -33,13 +32,15 @@ function PdpImageGallery({
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [enableLightBox, setEnableLightBox] = useState(false);
-  const [src, setSrc] = useState(images?.[0]?.url || "");
-  const [type, setType] = useState(images[0]?.type || "");
-  const [alt, setAlt] = useState(images[0]?.alt || "");
-  const [isFrameLoading, setIsFrameLoading] = useState(true);
   const [resumeVideo, setResumeVideo] = useState(false);
 
   const itemWrapperRef = useRef(null);
+
+  const currentMedia = {
+    src: images?.[currentImageIndex]?.url || "",
+    type: images?.[currentImageIndex]?.type || "",
+    alt: images?.[currentImageIndex]?.alt || "",
+  };
 
   useEffect(() => {
     if (typeof document !== "undefined") {
@@ -54,19 +55,12 @@ function PdpImageGallery({
   }, [enableLightBox]);
 
   useEffect(() => {
-    if (images.length) {
-      setSrc(images[0]?.url);
-      setType(images[0]?.type || "");
-      setAlt(images[0]?.alt || "");
-    }
+    setCurrentImageIndex(0);
   }, [images]);
 
   const setMainImage = (e, index) => {
     e.preventDefault();
     if (index >= 0) {
-      setSrc(images[index]?.url || "");
-      setType(images[index]?.type || "");
-      setAlt(images?.[index]?.alt || "");
       setCurrentImageIndex(index);
     }
   };
@@ -83,9 +77,6 @@ function PdpImageGallery({
       itemWrapperRef.current.scrollLeft -= 75;
     }
     setCurrentImageIndex((prevIndex) => prevIndex - 1);
-    setSrc(images[currentImageIndex - 1]?.url || "");
-    setType(images[currentImageIndex - 1]?.type || "");
-    setAlt(images?.[currentImageIndex - 1]?.alt || "");
   };
 
   const nextSlide = () => {
@@ -96,9 +87,6 @@ function PdpImageGallery({
       itemWrapperRef.current.scrollLeft += 75;
     }
     setCurrentImageIndex((prevIndex) => prevIndex + 1);
-    setSrc(images[currentImageIndex + 1]?.url || "");
-    setType(images[currentImageIndex + 1]?.type || "");
-    setAlt(images?.[currentImageIndex + 1]?.alt || "");
   };
 
   const openGallery = () => {
@@ -120,22 +108,20 @@ function PdpImageGallery({
           <div className={styles.imageBox}>
             <PicZoom
               customClass={styles.imageItem}
-              source={src}
-              type={type}
-              alt={alt}
+              source={currentMedia.src}
+              type={currentMedia.type}
+              alt={currentMedia.alt}
               currentIndex={currentImageIndex}
               sources={imgSources}
               onClickImage={() => openGallery()}
-              isFrameLoading={isFrameLoading}
               resumeVideo={resumeVideo}
               globalConfig={globalConfig}
               followed={followed}
               removeFromWishlist={removeFromWishlist}
               addToWishList={addToWishList}
-              isLoading={isLoading}
               hideImagePreview={hideImagePreview}
             />
-            {product?.custom_order?.is_custom_order && (
+            {isCustomOrder && (
               <div className={`${styles.badge} ${styles.b4}`}>
                 Made to Order
               </div>
@@ -249,7 +235,7 @@ function PdpImageGallery({
         <MobileSlider
           images={images}
           onImageClick={() => openGallery()}
-          product={product}
+          isCustomOrder={isCustomOrder}
           resumeVideo={resumeVideo}
           globalConfig={globalConfig}
           followed={followed}

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { FDKLink } from "fdk-core/components";
 import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
@@ -15,6 +15,32 @@ function Footer({ fpi }) {
   const { active: emailActive = false, email: emailArray = [] } = email ?? {};
   const { active: phoneActive = false, phone: phoneArray = [] } = phone ?? {};
   const { pallete } = useThemeConfig({ fpi });
+  const [isMobile, setIsMobile] = useState(false);
+
+  const isPDP = /^\/product\/[^/]+\/?$/.test(location.pathname); // ⬅️ PDP check
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const mq = window.matchMedia("(max-width: 767px)");
+      setIsMobile(mq.matches);
+
+      const handler = (e) => setIsMobile(e.matches);
+
+      if (mq.addEventListener) {
+        mq.addEventListener("change", handler);
+      } else if (mq.addListener) {
+        mq.addListener(handler);
+      }
+
+      return () => {
+        if (mq.removeEventListener) {
+          mq.removeEventListener("change", handler);
+        } else if (mq.removeListener) {
+          mq.removeListener(handler);
+        }
+      };
+    }
+  }, []);
 
   const getArtWork = () => {
     if (globalConfig?.footer_image) {
@@ -47,15 +73,20 @@ function Footer({ fpi }) {
     return emailArray?.length || phoneArray?.length || isSocialLinks;
   }
 
+  const footerStyle = {
+    ...getArtWork(),
+    ...(isMobile && isPDP ? { paddingBottom: "74px" } : {}),
+  };
+
   const isFooterHidden = useMemo(() => {
     const regex =
-      /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$|^\/cart\/bag\/?$/;
+      /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$|^\/cart\/bag\/?$|^\/cart\/checkout\/?$/;
     return regex.test(location?.pathname);
   }, [location?.pathname]);
 
   return (
     !isFooterHidden && (
-      <footer className={`${styles.footer} fontBody`} style={getArtWork()}>
+      <footer className={`${styles.footer} fontBody`} style={footerStyle}>
         <>
           <div className={styles.footer__top}>
             <div className={styles.footerContainer}>
@@ -138,48 +169,58 @@ function Footer({ fpi }) {
                 <div
                   className={`${styles["footer__top--contactInfo"]} ${globalConfig?.footer_contact_background ? "" : styles["footer__top--noBackground"]}`}
                 >
-                  {phoneActive && phoneArray?.[0]?.number && (
-                    <div className={styles.list}>
-                      <h5
-                        className={`${styles.title} ${styles.contacts} ${styles.fontBody}`}
-                      >
-                        Contact Us
-                      </h5>
-                      <a
-                        href={`tel:${phoneArray?.[0]?.number}`}
-                        className={`${styles.detail} b1 ${styles.fontBody}`}
-                      >
-                        {`${
-                          phoneArray?.[0]?.code
-                            ? `+${phoneArray?.[0]?.code} -`
-                            : ""
-                        } ${phoneArray?.[0]?.number}`}
-                      </a>
+                  {emailActive && emailArray?.length > 0 && (
+                    <div className={styles.listData}>
+                      {emailArray.map((item, idx) => (
+                        <div
+                          className={styles.footerSupportData}
+                          key={`email-${idx}`}
+                        >
+                          <h5
+                            className={`${styles.title} ${styles.contacts} ${styles.fontBody}`}
+                          >
+                            {item?.key}
+                          </h5>
+                          <a
+                            href={`mailto:${item?.value}`}
+                            className={`${styles.detail} b1 ${styles.fontBody}`}
+                          >
+                            {item?.value}
+                          </a>
+                        </div>
+                      ))}
                     </div>
                   )}
-                  {emailActive && emailArray?.[0]?.value && (
-                    <div className={styles.list}>
-                      <h5
-                        className={`${styles.title} ${styles.contacts} ${styles.fontBody}`}
-                      >
-                        Email ID
-                      </h5>
-                      <a
-                        href={`mailto:${emailArray?.[0]?.value}`}
-                        className={`${styles.detail} b1 ${styles.fontBody}`}
-                      >
-                        {emailArray?.[0]?.value}
-                      </a>
+                  {phoneActive && phoneArray?.length > 0 && (
+                    <div className={styles.listData}>
+                      {phoneArray.map((item, idx) => (
+                        <div
+                          className={styles.footerSupportData}
+                          key={`phone-${idx}`}
+                        >
+                          <h5
+                            className={`${styles.title} ${styles.contacts} ${styles.fontBody}`}
+                          >
+                            {item?.key}
+                          </h5>
+                          <a
+                            href={`tel:${item?.number}`}
+                            className={`${styles.detail} b1 ${styles.fontBody}`}
+                          >
+                            {`${item?.code ? `+${item.code}-` : ""}${item?.number}`}
+                          </a>
+                        </div>
+                      ))}
                     </div>
                   )}
-                  <div className={styles.list}>
+                  <div className={`${styles.list} ${styles.listSocial} `}>
                     {isSocialLinks && (
                       <>
-                        <h5
-                          className={`${styles.title} ${styles.contacts} ${styles.fontBody}`}
+                        {/* <h5
+                          className={`${styles.title} ${styles.socialTitle} ${styles.contacts} ${styles.fontBody}`}
                         >
                           Social Media
-                        </h5>
+                        </h5> */}
                         <span>
                           <SocialLinks
                             social_links={contactInfo?.social_links}

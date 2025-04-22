@@ -1,12 +1,26 @@
 import React from "react";
-import ProductListingPage from "../page-layouts/plp/product-listing-page";
 import { useFPI } from "fdk-core/utils";
+import Shimmer from "../components/shimmer/shimmer";
+import ProductListing from "@gofynd/theme-template/pages/product-listing/product-listing";
+import "@gofynd/theme-template/pages/product-listing/index.css";
+import useProductListing from "../page-layouts/plp/useProductListing";
+import { isRunningOnClient } from "../helper/utils";
 import { PLP_PRODUCTS, BRAND_META, CATEGORY_META } from "../queries/plpQuery";
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const fpi = useFPI();
 
-  return <ProductListingPage fpi={fpi} props={props} />;
+  const listingProps = useProductListing({ fpi, props });
+
+  if (isRunningOnClient() && listingProps?.isPageLoading) {
+    return <Shimmer />;
+  }
+
+  return (
+    <div className="margin0auto basePageContainer">
+      <ProductListing {...listingProps} />
+    </div>
+  );
 }
 
 export const settings = {
@@ -62,6 +76,35 @@ export const settings = {
       label: "Page Loading Options",
     },
     {
+      id: "page_size",
+      type: "select",
+      options: [
+        {
+          value: 12,
+          text: "12",
+        },
+        {
+          value: 24,
+          text: "24",
+        },
+        {
+          value: 36,
+          text: "36",
+        },
+        {
+          value: 48,
+          text: "48",
+        },
+        {
+          value: 60,
+          text: "60",
+        },
+      ],
+      default: 12,
+      info: "",
+      label: "Products per Page",
+    },
+    {
       type: "checkbox",
       id: "back_top",
       label: "Show back to Top button",
@@ -72,7 +115,7 @@ export const settings = {
       type: "checkbox",
       id: "in_new_tab",
       label: "Open Product in New Tab",
-      default: true,
+      default: false,
       info: "Open Product in New Tab for Desktop",
     },
     {
@@ -255,11 +298,15 @@ export const settings = {
   ],
 };
 
-Component.serverFetch = async ({ fpi, router }) => {
+Component.serverFetch = async ({ fpi, router, props }) => {
   let filterQuery = "";
   let sortQuery = "";
   let search = "";
   let pageNo = null;
+  const pageSize =
+    props?.loading_options?.value === "infinite"
+      ? 12
+      : (props?.page_size?.value ?? 12);
   const fpiState = fpi.store.getState();
 
   const globalConfig =
@@ -335,7 +382,7 @@ Component.serverFetch = async ({ fpi, router }) => {
     sortOn: sortQuery,
     search,
     enableFilter: true,
-    first: 12,
+    first: pageSize,
     pageType: "number",
   };
   if (pageNo) payload.pageNo = pageNo;

@@ -1,7 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useFPI } from "fdk-core/utils";
-
-import CollectionListingPage from "../page-layouts/collection-listing/collection-listing-page";
+import { useParams } from "react-router-dom";
+import Shimmer from "../components/shimmer/shimmer";
+import ProductListing from "@gofynd/theme-template/pages/product-listing/product-listing";
+import "@gofynd/theme-template/pages/product-listing/index.css";
+import useCollectionListing from "../page-layouts/collection-listing/useCollectionListing";
+import { getHelmet } from "../providers/global-provider";
+import { isRunningOnClient } from "../helper/utils";
 import {
   COLLECTION_DETAILS,
   COLLECTION_WITH_ITEMS,
@@ -9,7 +14,24 @@ import {
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const fpi = useFPI();
-  return <CollectionListingPage fpi={fpi} props={props} />;
+  const params = useParams();
+  const slug = params?.slug || props?.collection?.value;
+  const listingProps = useCollectionListing({ fpi, slug, props });
+
+  const { seo } = listingProps;
+
+  if (listingProps?.isPageLoading && isRunningOnClient()) {
+    return <Shimmer />;
+  }
+
+  return (
+    <>
+      {getHelmet({ seo })}
+      <div className="margin0auto basePageContainer">
+        <ProductListing {...listingProps} />
+      </div>
+    </>
+  );
 }
 
 export const settings = {
@@ -71,6 +93,35 @@ export const settings = {
       label: "Loading Options",
     },
     {
+      id: "page_size",
+      type: "select",
+      options: [
+        {
+          value: 12,
+          text: "12",
+        },
+        {
+          value: 24,
+          text: "24",
+        },
+        {
+          value: 36,
+          text: "36",
+        },
+        {
+          value: 48,
+          text: "48",
+        },
+        {
+          value: 60,
+          text: "60",
+        },
+      ],
+      default: 12,
+      info: "",
+      label: "Products per Page",
+    },
+    {
       type: "checkbox",
       id: "back_top",
       label: "Show back to top button",
@@ -80,7 +131,7 @@ export const settings = {
       type: "checkbox",
       id: "in_new_tab",
       label: "Open product in new tab",
-      default: true,
+      default: false,
       info: "Open product in new tab for desktop",
     },
     {
@@ -253,11 +304,14 @@ export const settings = {
   ],
 };
 
-Component.serverFetch = async ({ fpi, router }) => {
+Component.serverFetch = async ({ fpi, router, props }) => {
   let filterQuery = "";
   let sortQuery = "";
   let pageNo = null;
-
+  const pageSize =
+    props?.loading_options?.value === "infinite"
+      ? 12
+      : (props?.page_size?.value ?? 12);
   const fpiState = fpi.store.getState();
   const globalConfig =
     fpiState?.theme?.theme?.config?.list?.[0]?.global_config?.custom?.props ||
@@ -309,7 +363,7 @@ Component.serverFetch = async ({ fpi, router }) => {
     slug: router?.params?.slug,
     search: filterQuery || undefined,
     sortOn: sortQuery || undefined,
-    first: 12,
+    first: pageSize,
     pageType: "number",
   };
 

@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
 
 export const HTMLContent = React.forwardRef(({ content }, ref) => {
-  const [safeContent, setSafeContent] = useState(content);
+  const [safeContent, setSafeContent] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setSafeContent(DOMPurify.sanitize(content));
+      const formattedContent =
+        typeof content === "string" ? content.replace(/\n/g, "<br />") : content;
+
+      const sanitized = DOMPurify.sanitize(formattedContent);
+      setSafeContent(sanitized);
     }
   }, [content]);
 

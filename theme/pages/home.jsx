@@ -4,10 +4,13 @@ import { useGlobalStore } from "fdk-core/utils";
 import { useThemeConfig } from "../helper/hooks";
 import Loader from "../components/loader/loader";
 import InfiniteLoader from "../components/infinite-loader/infinite-loader";
+import { sanitizeHTMLTag } from "../helper/utils";
 
 function Home({ numberOfSections, fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const { globalConfig } = useThemeConfig({ fpi });
+  const seoData = useGlobalStore(fpi.getters.CONTENT)?.seo?.seo?.details;
+  const title = sanitizeHTMLTag(seoData?.title);
   const { sections = [], error, isLoading } = page || {};
   const [step, setStep] = useState(0);
   const renderSections = useMemo(
@@ -25,6 +28,7 @@ function Home({ numberOfSections, fpi }) {
   }
   return (
     <div>
+      <h1 className="visually-hidden">{title}</h1>
       {page?.value === "home" && (
         <InfiniteLoader
           infiniteLoaderEnabled={true}

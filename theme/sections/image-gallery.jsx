@@ -21,35 +21,31 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     card_radius: { value: cardRadius } = {},
   } = props;
 
-  const itemCount = Number(item_count?.value ?? 0);
-  const itemCountMobile = Number(item_count_mobile?.value ?? 0);
+  const itemCount = Number(item_count?.value ?? 5);
+  const itemCountMobile = Number(item_count_mobile?.value ?? 2);
 
   const galleryItems = blocks?.length ? blocks : preset?.blocks || [];
 
-  const isStackView = useMemo(() => {
-    return desktopLayout === "grid" || mobileLayout === "grid";
-  }, [desktopLayout, mobileLayout]);
-
-  const isHorizontalView = useMemo(() => {
-    return desktopLayout === "horizontal" || mobileLayout === "horizontal";
-  }, [desktopLayout, mobileLayout]);
+  const isStackView = desktopLayout === "grid" || mobileLayout === "grid";
+  const isHorizontalView =
+    desktopLayout === "horizontal" || mobileLayout === "horizontal";
 
   const getImgSrcSet = useMemo(() => {
     if (globalConfig?.img_hd) {
       return [];
     }
     return [
-      { breakpoint: { min: 1728 }, width: 3564 / itemCount },
-      { breakpoint: { min: 1512 }, width: 3132 / itemCount },
-      { breakpoint: { min: 1296 }, width: 2700 / itemCount },
-      { breakpoint: { min: 1080 }, width: 2250 / itemCount },
-      { breakpoint: { min: 900 }, width: 1890 / itemCount },
-      { breakpoint: { min: 720 }, width: 1530 / itemCount },
-      { breakpoint: { min: 540 }, width: 1170 / itemCountMobile },
-      { breakpoint: { min: 360 }, width: 810 / itemCountMobile },
-      { breakpoint: { min: 180 }, width: 450 / itemCountMobile },
+      { breakpoint: { min: 1728 }, width: Math.round(3564 / itemCount) },
+      { breakpoint: { min: 1512 }, width: Math.round(3132 / itemCount) },
+      { breakpoint: { min: 1296 }, width: Math.round(2700 / itemCount) },
+      { breakpoint: { min: 1080 }, width: Math.round(2250 / itemCount) },
+      { breakpoint: { min: 900 }, width: Math.round(1890 / itemCount) },
+      { breakpoint: { min: 720 }, width: Math.round(1530 / itemCount) },
+      { breakpoint: { min: 540 }, width: Math.round(1170 / itemCountMobile) },
+      { breakpoint: { min: 360 }, width: Math.round(810 / itemCountMobile) },
+      { breakpoint: { min: 180 }, width: Math.round(450 / itemCountMobile) },
     ];
-  }, [globalConfig?.img_hd]);
+  }, [globalConfig?.img_hd, itemCount, itemCountMobile]);
 
   return (
     <div

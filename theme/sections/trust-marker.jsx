@@ -2,117 +2,73 @@ import React, { useMemo } from "react";
 import { FDKLink } from "fdk-core/components";
 import Slider from "react-slick";
 import styles from "../styles/trust-marker.less";
-import IntersectionObserverComponent from "../components/intersection-observer/intersection-observer";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import { useWindowWidth } from "../helper/hooks";
-import { isRunningOnClient } from "../helper/utils";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 
 export function Component({ props, globalConfig, blocks, preset }) {
   const {
-    title,
-    description,
-    desktop_layout: desktopLayout,
-    mobile_layout: mobileLayout,
-    per_row_desktop: perRowDesktop,
-    per_row_mobile: perRowMobile,
-    card_background,
+    title: { value: title },
+    description: { value: description },
+    desktop_layout: { value: desktopLayout },
+    mobile_layout: { value: mobileLayout },
+    per_row_desktop: { value: perRowDesktop },
+    per_row_mobile: { value: perRowMobile },
+    card_background: { value: cardBackground },
   } = props;
-
-  const windowWidth = useWindowWidth();
 
   const getTrustMarker = useMemo(
     () => (blocks.length === 0 ? preset?.blocks || [] : blocks),
     [blocks, preset]
   );
 
-  const isStackView = useMemo(() => {
-    // if (!isRunningOnClient()) {
-    //   return false;
-    // }
-    if (windowWidth > 480) {
-      return desktopLayout?.value === "grid";
-    }
-    return mobileLayout?.value === "grid";
-  }, [desktopLayout, mobileLayout, windowWidth]);
-
-  const isHorizontalView = useMemo(() => {
-    if (!isRunningOnClient()) {
-      return false;
-    }
-    if (windowWidth > 480) {
-      return desktopLayout?.value === "horizontal";
-    }
-    return mobileLayout?.value === "horizontal";
-  }, [desktopLayout, mobileLayout, windowWidth]);
+  const isStackView = desktopLayout === "grid" || mobileLayout === "grid";
+  const isHorizontalView =
+    desktopLayout === "horizontal" || mobileLayout === "horizontal";
 
   const dynamicStyles = {
-    paddingTop: "16px",
-    paddingBottom: `16px`,
-    maxWidth: "100vw",
-    "--img-background-color": card_background?.value
-      ? card_background?.value
-      : globalConfig?.img_container_bg,
+    "--img-background-color": cardBackground || globalConfig?.img_container_bg,
   };
 
   return (
-    <div style={dynamicStyles} className={styles.trustMarker}>
-      <div className={styles["Trust-marker-heading"]}>
-        {title?.value && (
-          <h2 className={`${styles["section-title"]} fontHeader`}>
-            {title?.value}
-          </h2>
+    <section className={styles.sectionContainer} style={dynamicStyles}>
+      <div className={styles.headingContainer}>
+        {!!title && (
+          <h2 className={`${styles.sectionTitle} fontHeader`}>{title}</h2>
         )}
-        {description?.value && (
-          <div className={`${styles["section-description"]} bSmall fontBody`}>
-            {description?.value}
-          </div>
+        {!!description && (
+          <p className={`${styles.sectionDescription} bSmall`}>{description}</p>
         )}
       </div>
-      <div
-        className={`${
-          desktopLayout?.value === "grid"
-            ? styles.desktopVisible
-            : styles.desktopHidden
-        } ${
-          mobileLayout?.value === "grid"
-            ? styles.mobileVisible
-            : styles.mobileHidden
-        }`}
-      >
+      {isStackView && (
         <StackLayout
+          className={`${
+            desktopLayout === "horizontal" ? styles.desktopHidden : ""
+          } ${mobileLayout === "horizontal" ? styles.mobileHidden : ""}`}
           trustMarker={getTrustMarker}
           globalConfig={globalConfig}
-          colCount={Number(perRowDesktop?.value)}
-          colCountMobile={Number(perRowMobile?.value)}
+          colCount={Number(perRowDesktop)}
+          colCountMobile={Number(perRowMobile)}
         />
-      </div>
-      <div
-        className={`${
-          desktopLayout?.value === "horizontal"
-            ? styles.desktopVisible
-            : styles.desktopHidden
-        } ${
-          mobileLayout?.value === "horizontal"
-            ? styles.mobileVisible
-            : styles.mobileHidden
-        }`}
-      >
+      )}
+      {isHorizontalView && (
         <HorizontalLayout
+          className={`${desktopLayout === "grid" ? styles.desktopHidden : ""} ${
+            mobileLayout === "grid" ? styles.mobileHidden : ""
+          }`}
           trustMarker={getTrustMarker}
           globalConfig={globalConfig}
-          colCount={Number(perRowDesktop?.value)}
-          colCountMobile={Number(perRowMobile?.value)}
-          windowWidth={windowWidth}
+          colCount={Number(perRowDesktop)}
+          colCountMobile={Number(perRowMobile)}
         />
-      </div>
-    </div>
+      )}
+    </section>
   );
 }
 
 const StackLayout = ({
+  className,
   trustMarker,
   globalConfig,
   colCount,
@@ -123,61 +79,27 @@ const StackLayout = ({
     "--item-count-mobile": `${colCountMobile}`,
   };
   return (
-    <div className="section Trust-marker" style={dynamicStyles}>
-      <div
-        className={`${styles["Trust-marker-image-container"]} ${trustMarker?.length < 6 && styles["stack-view"]}`}
-      >
-        {trustMarker.map((block, i) => (
-          <FDKLink
-            key={i}
-            to={block?.props?.marker_link?.value}
-            className={`${
-              styles["marker-link"]
-            } animation-fade-up ${"animate"}`}
-            style={{
-              "--delay": `${150 * (i + 1)}ms `,
-            }}
-          >
-            {block?.props?.marker_logo?.value && (
-              <div className={styles.trust_marker_image}>
-                <FyImage
-                  className={styles.trust_marker_image}
-                  sources={
-                    globalConfig?.ing_hd
-                      ? []
-                      : [{ breakpoint: { min: 100 }, width: 200 }]
-                  }
-                  backgroundColor={globalConfig?.img_container_bg}
-                  src={block?.props?.marker_logo?.value}
-                  isFixedAspectRatio={false}
-                />
-              </div>
-            )}
-            <div className={styles["trust-marker-data"]}>
-              <span
-                className={`${styles["marker-heading"]} captionSemiBold fontHeader`}
-              >
-                {block?.props?.marker_heading?.value}
-              </span>
-              <span
-                className={`${styles["marker-description"]} bSmall  fontBody`}
-              >
-                {block?.props?.marker_description?.value}
-              </span>
-            </div>
-          </FDKLink>
-        ))}
-      </div>
+    <div className={`${styles.stackLayout} ${className}`} style={dynamicStyles}>
+      {trustMarker.map(({ props }, i) => (
+        <Trustmark
+          key={i}
+          markerTitle={props?.marker_heading?.value}
+          markerDescription={props?.marker_description?.value}
+          markerLogo={props?.marker_logo?.value}
+          markerLink={props?.marker_link?.value}
+          globalConfig={globalConfig}
+        />
+      ))}
     </div>
   );
 };
 
 const HorizontalLayout = ({
+  className,
   trustMarker,
   globalConfig,
   colCount,
   colCountMobile,
-  windowWidth,
 }) => {
   const slickSetting = useMemo(() => {
     return {
@@ -189,7 +111,6 @@ const HorizontalLayout = ({
       slidesToShow: Number(colCount),
       slidesToScroll: Number(colCount),
       autoplay: false,
-      // autoplaySpeed: slide_interval?.value * 1000,
       centerMode: false,
       centerPadding: trustMarker?.length === 1 ? "0" : "152px",
       nextArrow: <SliderRightIcon />,
@@ -250,100 +171,82 @@ const HorizontalLayout = ({
 
   return (
     <div
-      className={styles.sliderView}
+      className={`${styles.horizontalLayout} ${className}`}
       style={{
-        "--slick-dots": `${Math.ceil(trustMarker?.length / 5) * 22 + 10}px`,
+        "--slick-dots": `${Math.ceil(trustMarker?.length / colCount) * 22 + 10}px`,
       }}
     >
       <Slider
         className={`${trustMarker?.length - 1 >= colCount ? "" : "no-nav"} ${trustMarker?.length - 1 >= colCountMobile ? "" : "no-nav-mobile"} ${styles.hideOnMobile}`}
         {...slickSetting}
       >
-        {trustMarker?.map((block, i) => (
-          <FDKLink
+        {trustMarker?.map(({ props }, i) => (
+          <Trustmark
             key={i}
-            to={block?.props?.marker_link?.value}
-            className={`${
-              styles["marker-link"]
-            } animation-fade-up ${"animate"}`}
-            style={{ "--delay": `${150 * (i + 1)}ms` }}
-          >
-            {block?.props?.marker_logo?.value && (
-              <div className={styles.trust_marker_image}>
-                <FyImage
-                  className={styles.trust_marker_image}
-                  sources={
-                    globalConfig?.ing_hd
-                      ? []
-                      : [{ breakpoint: { min: 100 }, width: 200 }]
-                  }
-                  backgroundColor={globalConfig?.img_container_bg}
-                  src={block?.props?.marker_logo?.value}
-                  isFixedAspectRatio={false}
-                />
-              </div>
-            )}
-            <div className={styles["trust-marker-data"]}>
-              <span
-                className={`${styles["marker-heading"]} captionSemiBold fontHeader`}
-              >
-                {block?.props?.marker_heading?.value}
-              </span>
-              <span
-                className={`${styles["marker-description"]} bSmall fontBody`}
-              >
-                {block?.props?.marker_description?.value}
-              </span>
-            </div>
-          </FDKLink>
+            markerTitle={props?.marker_heading?.value}
+            markerDescription={props?.marker_description?.value}
+            markerLogo={props?.marker_logo?.value}
+            markerLink={props?.marker_link?.value}
+            globalConfig={globalConfig}
+          />
         ))}
       </Slider>
       <Slider
         className={`${trustMarker?.length - 1 >= colCount ? "" : "no-nav"} ${trustMarker?.length - 1 >= colCountMobile ? "" : "no-nav-mobile"} ${styles.hideOnDesktop}`}
         {...slickSettingMobile}
       >
-        {trustMarker?.map((block, i) => (
-          <FDKLink
+        {trustMarker?.map(({ props }, i) => (
+          <Trustmark
             key={i}
-            to={block?.props?.marker_link?.value}
-            className={`${
-              styles["marker-link"]
-            } animation-fade-up ${"animate"}`}
-            style={{ "--delay": `${150 * (i + 1)}ms` }}
-          >
-            {block?.props?.marker_logo?.value && (
-              <div className={styles.trust_marker_image}>
-                <FyImage
-                  className={styles.trust_marker_image}
-                  sources={
-                    globalConfig?.ing_hd
-                      ? []
-                      : [{ breakpoint: { min: 100 }, width: 200 }]
-                  }
-                  backgroundColor={globalConfig?.img_container_bg}
-                  src={block?.props?.marker_logo?.value}
-                  isFixedAspectRatio={false}
-                />
-              </div>
-            )}
-            <div className={styles["trust-marker-data"]}>
-              <span
-                className={`${styles["marker-heading"]} captionSemiBold fontHeader`}
-              >
-                {block?.props?.marker_heading?.value}
-              </span>
-              <span
-                className={`${styles["marker-description"]} bSmall fontBody`}
-              >
-                {block?.props?.marker_description?.value}
-              </span>
-            </div>
-          </FDKLink>
+            markerTitle={props?.marker_heading?.value}
+            markerDescription={props?.marker_description?.value}
+            markerLogo={props?.marker_logo?.value}
+            markerLink={props?.marker_link?.value}
+            globalConfig={globalConfig}
+          />
         ))}
       </Slider>
     </div>
   );
 };
+
+const Trustmark = ({
+  className = "",
+  markerLink,
+  markerLogo,
+  markerTitle,
+  markerDescription,
+  globalConfig,
+}) => {
+  return (
+    <FDKLink to={markerLink} className={`${styles.trustmark} ${className}`}>
+      {markerLogo && (
+        <FyImage
+          customClass={styles.trustmarkImage}
+          sources={globalConfig?.img_hd ? [] : [{ width: 200 }]}
+          backgroundColor={globalConfig?.img_container_bg}
+          src={markerLogo}
+          isFixedAspectRatio={false}
+        />
+      )}
+      <div className={styles.trustmarkData}>
+        {!!markerTitle && (
+          <span
+            className={`${styles.trustmarkHeading} captionSemiBold fontHeader`}
+          >
+            {markerTitle}
+          </span>
+        )}
+        {!!markerDescription && (
+          <span className={`${styles.trustmarkDescription} bSmall`}>
+            {markerDescription}
+          </span>
+        )}
+      </div>
+    </FDKLink>
+  );
+};
+
 
 export const settings = {
   label: "Trust Marker",

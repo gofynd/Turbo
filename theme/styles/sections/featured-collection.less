@@ -196,6 +196,18 @@
     // min-height: 420px;
   }
   :global {
+    .slick-track {
+      display: flex !important;
+      justify-content: center;
+      align-items: stretch !important;
+    }
+    .slick-slide {
+      height: auto !important;
+      &>*,
+      &>*>* {
+        height: 100%;
+      }
+    }
     .slick-list {
       padding-left: 5px !important;
       @media @mobile {

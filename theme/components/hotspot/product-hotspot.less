@@ -13,18 +13,6 @@
     }
   }
 
-  &--desktop {
-    @media @mobile {
-      display: none;
-    }
-  }
-
-  &--mobile {
-    @media @mobile-up {
-      display: none;
-    }
-  }
-
   &__icon {
     width: 32px;
     height: 32px;
@@ -34,7 +22,7 @@
   &__tooltip {
     background-color: @PageBackground;
     box-shadow: 0px 6px 12px 0px #00000014;
-    border-radius: 8px;
+    border-radius: @ButtonRadius;
     position: relative;
 
     &::before {
@@ -132,7 +120,7 @@
 
   &__image {
     width: 84px;
-    border-radius: 8px;
+    border-radius: @ButtonRadius;
   }
 
   &__meta {

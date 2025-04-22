@@ -22,7 +22,7 @@ import AddToCart from "@gofynd/theme-template/page-layouts/plp/Components/add-to
 import "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
 import SizeGuide from "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide";
 import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide.css";
-import { isRunningOnClient } from "../helper/utils";
+import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
 import useAddToCartModal from "../page-layouts/plp/useAddToCartModal";
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
@@ -36,6 +36,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     img_fill,
     show_wishlist_icon,
     show_add_to_cart,
+    enable_sales_badge,
     mandatory_pincode,
     hide_single_size,
     preselect_size,
@@ -294,7 +295,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                       <ProductCard
                         product={product}
                         listingPrice={listingPrice}
-                        isSaleBadgeDisplayed={false}
+                        isSaleBadge={enable_sales_badge?.value}
                         isWishlistDisplayed={false}
                         isWishlistIcon={show_wishlist_icon?.value}
                         columnCount={columnCount}
@@ -331,7 +332,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                       <ProductCard
                         product={product}
                         listingPrice={listingPrice}
-                        isSaleBadgeDisplayed={false}
+                        isSaleBadge={enable_sales_badge?.value}
                         isWishlistDisplayed={false}
                         isWishlistIcon={show_wishlist_icon?.value}
                         columnCount={columnCount}
@@ -539,6 +540,12 @@ export const settings = {
       id: "show_add_to_cart",
       label: "Show Add to Cart",
       info: "Not Applicable for International Websites",
+      default: true,
+    },
+     {
+      type: "checkbox",
+      id: "enable_sales_badge",
+      label: "Enable Badge",
       default: true,
     },
     {

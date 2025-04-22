@@ -261,8 +261,8 @@ function Header({ fpi }) {
           </header>
         </div>
       )}
-      <Suspense fallback={<></>}>
-        {isLocationModalOpen && (
+      {isLocationModalOpen && (
+        <Suspense>
           <LocationModal
             isOpen={isLocationModalOpen}
             pincode={pincode}
@@ -272,8 +272,8 @@ function Header({ fpi }) {
             onSubmit={handlePincodeSubmit}
             onCurrentLocationClick={handleCurrentLocClick}
           />
-        )}
-      </Suspense>
+        </Suspense>
+      )}
     </>
   );
 }

@@ -1,0 +1,95 @@
+@import "../../styles/main.less";
+
+.collectionCard {
+  @lg-min: 840px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  .collectionImage {
+    border-radius: @ImageRadius;
+    -webkit-mask-image: -webkit-radial-gradient(white, black); //safari fix
+  }
+  .collectionTitleWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+
+    .collectionTitle {
+      text-transform: capitalize;
+      color: @TextHeading;
+      .text-line-clamp(2);
+    }
+
+    .collectionButton {
+      .button-font();
+      .text-line-clamp();
+      padding: 12px 16px;
+      color: @ButtonSecondary;
+      background-color: @ButtonPrimary;
+      border: none;
+      min-width: auto;
+      align-self: center;
+
+      @media @tablet {
+        display: inline-block;
+      }
+
+      @media @desktop {
+        padding: 12px 32px;
+        background-color: @ButtonSecondary;
+        color: @ButtonPrimary;
+        border: 1px solid @ButtonPrimary;
+        width: 100%;
+        max-width: 216px;
+      }
+    }
+  }
+
+  &:not(.inside) {
+    .collectionTitleWrapper {
+      .collectionButton {
+        background: @ButtonSecondary;
+        @media @desktop {
+          &:hover {
+            background-color: @ButtonPrimary;
+            color: @ButtonSecondary;
+          }
+        }
+      }
+    }
+  }
+
+  &.inside {
+    position: relative;
+    .collectionTitleWrapper { 
+      @media @desktop {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        isolation: isolate;
+        padding: 16px;
+        border-radius: @ButtonRadius;
+        overflow: hidden;
+        &::before {
+          content:'';
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: @Overlay;
+          opacity: 0.6;
+          z-index: -1;
+        }
+      }
+    
+      .collectionTitle {
+        @media @desktop {
+          color: @ThemeAccentL5;
+        }
+      }
+    }
+  }
+}

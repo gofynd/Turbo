@@ -258,6 +258,7 @@ export const useAccounts = ({ fpi }) => {
       lastName,
       gender,
       email,
+      consent,
       phone: { countryCode, mobile },
       password,
     } = data;
@@ -266,6 +267,7 @@ export const useAccounts = ({ fpi }) => {
       first_name: firstName,
       last_name: lastName,
       password,
+      consent,
       register_token: registerToken,
     };
 

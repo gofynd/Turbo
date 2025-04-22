@@ -16,7 +16,7 @@ import useAddToCartModal from "../plp/useAddToCartModal";
 import { useWishlist, useAccounts, useThemeConfig } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
 
-const PAGE_SIZE = 12;
+const INFINITE_PAGE_SIZE = 12;
 const PAGES_TO_SHOW = 5;
 const PAGE_OFFSET = 2;
 
@@ -34,6 +34,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
   const {
     product_number = true,
     loading_options = "pagination",
+    page_size = 12,
     back_top = true,
     in_new_tab = true,
     hide_brand = false,
@@ -46,9 +47,13 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     button_link,
     img_resize = 300,
     img_resize_mobile = 500,
-  } = Object.fromEntries(
-    Object.entries(props).map(([key, obj]) => [key, obj.value])
-  );
+  } = Object.entries(props).reduce((acc, [key, { value }]) => {
+    acc[key] = value;
+    return acc;
+  }, {});
+
+  const pageSize =
+    loading_options === "infinite" ? INFINITE_PAGE_SIZE : page_size;
 
   const addToCartConfigs = {
     mandatory_pincode: props.mandatory_pincode?.value,
@@ -137,7 +142,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       const payload = {
         slug,
         pageType: "number",
-        first: PAGE_SIZE,
+        first: pageSize,
         search: appendDelimiter(searchParams?.toString()) || undefined,
         sortOn: searchParams?.get("sort_on") || undefined,
       };
@@ -195,7 +200,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
         "page_id",
         payload?.pageNo === 1 || !payload?.pageNo ? "*" : payload?.pageNo - 1
       );
-      url.searchParams.append("page_size", "12");
+      url.searchParams.append("page_size", payload?.first);
 
       const filterQuery = convertQueryParamsForAlgolia();
 
@@ -280,7 +285,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       slug,
       pageNo: currentPage + 1,
       pageType: "number",
-      first: PAGE_SIZE,
+      first: pageSize,
       search: appendDelimiter(searchParams?.toString()) || undefined,
       sortOn: searchParams?.get("sort_on") || undefined,
     };
@@ -386,7 +391,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       has_previous: hasPrevious,
       item_total,
     } = pageInfo || {};
-    const totalPageCount = Math.ceil(item_total / PAGE_SIZE);
+    const totalPageCount = Math.ceil(item_total / pageSize);
     const startingPage = getStartPage({ current, totalPageCount });
 
     const displayPageCount = Math.min(totalPageCount, PAGES_TO_SHOW);

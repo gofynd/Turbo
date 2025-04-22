@@ -13,7 +13,7 @@ import useAddToCartModal from "./useAddToCartModal";
 import { useAccounts, useWishlist, useThemeConfig } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
 
-const PAGE_SIZE = 12;
+const INFINITE_PAGE_SIZE = 12;
 const PAGES_TO_SHOW = 5;
 const PAGE_OFFSET = 2;
 
@@ -35,6 +35,7 @@ const useProductListing = ({ fpi, props }) => {
     banner_link = "",
     product_number = true,
     loading_options = "pagination",
+    page_size = 12,
     back_top = true,
     in_new_tab = true,
     hide_brand = false,
@@ -43,17 +44,18 @@ const useProductListing = ({ fpi, props }) => {
     grid_mob = 1,
     description = "",
     show_add_to_cart = true,
-    show_size_guide = true,
-    tax_label = "Price inclusive of all tax",
     mandatory_pincode = true,
     hide_single_size = false,
     preselect_size = true,
-    size_selection_style = "dropdown",
     img_resize = 300,
     img_resize_mobile = 500,
-  } = Object.fromEntries(
-    Object.entries(props).map(([key, obj]) => [key, obj.value])
-  );
+  } = Object.entries(props).reduce((acc, [key, { value }]) => {
+    acc[key] = value;
+    return acc;
+  }, {});
+
+  const pageSize =
+    loading_options === "infinite" ? INFINITE_PAGE_SIZE : page_size;
 
   const addToCartConfigs = {
     mandatory_pincode,
@@ -122,7 +124,7 @@ const useProductListing = ({ fpi, props }) => {
       const pageNo = Number(searchParams?.get("page_no"));
       const payload = {
         pageType: "number",
-        first: PAGE_SIZE,
+        first: pageSize,
         filterQuery: appendDelimiter(searchParams?.toString()) || undefined,
         sortOn: searchParams?.get("sort_on") || undefined,
         search: searchParams?.get("q") || undefined,
@@ -262,7 +264,7 @@ const useProductListing = ({ fpi, props }) => {
     const payload = {
       pageNo: currentPage + 1,
       pageType: "number",
-      first: PAGE_SIZE,
+      first: pageSize,
       filterQuery: appendDelimiter(searchParams?.toString()) || undefined,
       sortOn: searchParams?.get("sort_on") || undefined,
       search: searchParams?.get("q") || undefined,
@@ -369,7 +371,7 @@ const useProductListing = ({ fpi, props }) => {
       has_previous: hasPrevious,
       item_total,
     } = productsListData?.page || {};
-    const totalPageCount = Math.ceil(item_total / PAGE_SIZE);
+    const totalPageCount = Math.ceil(item_total / pageSize);
     const startingPage = getStartPage({ current, totalPageCount });
 
     const displayPageCount = Math.min(totalPageCount, PAGES_TO_SHOW);

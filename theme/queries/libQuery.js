@@ -57,6 +57,7 @@ export const THEME_DATA = `query Theme($themeId: String!, $pageValue: String!){
         label
         name
         id
+        custom_css
         source {
           type
           id

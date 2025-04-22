@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import PropTypes from "prop-types";
 import Viewer3D from "../viewer-3d/viewer-3d";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
@@ -10,6 +10,7 @@ import MuteIcon from "../../../../assets/images/mute.svg";
 import UnmuteIcon from "../../../../assets/images/unmute.svg";
 import AutoRotateIcon from "../../../../assets/images/auto-rotate.svg";
 import WishlistIcon from "../../../../assets/images/wishlist";
+// const Viewer3D = React.lazy(() => import("../viewer-3d/viewer-3d"));
 
 function PicZoom({
   source,
@@ -23,21 +24,13 @@ function PicZoom({
   followed,
   removeFromWishlist,
   addToWishList,
-  isLoading,
   hideImagePreview = false,
   sources = [],
 }) {
-  const [imageFullyLoaded, setImageFullyLoaded] = useState(true);
-  const [imageLoading, setImageLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isFrameLoading, setIsFrameLoading] = useState(true);
   const [isMute, setIsMute] = useState(true);
   const [showReplayButton, setShowReplayButton] = useState(false);
-
-  useEffect(() => {
-    setImageFullyLoaded(true);
-    setImageLoading(false);
-  }, [source]);
 
   useEffect(() => {
     if (resumeVideo && !showReplayButton) {
@@ -48,13 +41,13 @@ function PicZoom({
     }
   }, [resumeVideo, showReplayButton]);
 
-  const onPlayerExpand = () => {
-    if (!showReplayButton) {
-      const videoPlayer = document.getElementById("html-video-player");
-      if (videoPlayer) videoPlayer.pause();
-    }
-    onClickImage(currentIndex);
-  };
+  // const onPlayerExpand = () => {
+  //   if (!showReplayButton) {
+  //     const videoPlayer = document.getElementById("html-video-player");
+  //     if (videoPlayer) videoPlayer.pause();
+  //   }
+  //   onClickImage(currentIndex);
+  // };
 
   const toggleMute = () => {
     setIsMute(!isMute);
@@ -90,12 +83,6 @@ function PicZoom({
     setIsFrameLoading(false);
   };
 
-  const imageLoaded = () => {
-    setImageFullyLoaded(true);
-  };
-
-  const getOriginalImage = () => source || "";
-
   useEffect(() => {
     setIsMounted(true);
     setIsFrameLoading(true);
@@ -113,28 +100,25 @@ function PicZoom({
             }
           }}
         >
-          {!isLoading && (
-            <FyImage
-              customClass={styles.pdpImage}
-              src={source}
-              alt={alt}
-              aspectRatio={getProductImgAspectRatio(globalConfig)}
-              globalConfig={globalConfig}
-              onLoad={imageLoaded}
-              sources={sources}
-              defer={false}
-            />
-          )}
+          <FyImage
+            customClass={styles.pdpImage}
+            src={source}
+            alt={alt}
+            aspectRatio={getProductImgAspectRatio(globalConfig)}
+            globalConfig={globalConfig}
+            sources={sources}
+            defer={false}
+          />
         </div>
       )}
       {type === "video" && (
         <div className={styles.videoContainer}>
-          {!getOriginalImage().includes("youtube") ? (
+          {!source?.includes("youtube") ? (
             <div className={styles.videoPlayerWrapper}>
               <video
                 id="html-video-player"
                 className={`${styles.originalVideo} ${styles.videoPlayer}`}
-                src={getOriginalImage()}
+                src={source}
                 data-loaded="false"
                 controls={false}
                 autoPlay
@@ -170,7 +154,7 @@ function PicZoom({
           ) : (
             <iframe
               className={styles.originalVideo}
-              src={getOriginalImage()}
+              src={source}
               allowFullScreen
               onLoad={iframeload}
               title="Youtube"
@@ -179,9 +163,10 @@ function PicZoom({
           {isFrameLoading && <div id="loader" />}
         </div>
       )}
+      {/* <Suspense> */}
       {type === "3d_model" && isMounted && (
         <div className={styles.type3dModel}>
-          <Viewer3D src={getOriginalImage()} />
+          <Viewer3D src={source} />
           <button
             type="button"
             className={styles.expandBtn}
@@ -192,6 +177,7 @@ function PicZoom({
           </button>
         </div>
       )}
+      {/* </Suspense> */}
       <button
         type="button"
         aria-label="Wishlist"

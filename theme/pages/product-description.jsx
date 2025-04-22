@@ -8,10 +8,8 @@ import styles from "../styles/sections/product-description.less";
 function ProductDescription({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const { globalConfig } = useThemeConfig({ fpi });
-  const { sections = [], error, isLoading } = page || {};
+  const { sections = [] } = page || {};
   const PRODUCT = useGlobalStore(fpi.getters.PRODUCT);
-  const domainUrl = fpi?.domain;
-
   const seo = PRODUCT?.product_details?.seo || {};
   const productDescription = PRODUCT?.product_meta?.short_description;
 
@@ -22,7 +20,7 @@ function ProductDescription({ fpi }) {
 
   return (
     <>
-      {getHelmet({ seo: mergedSeo, domainUrl })}
+      {getHelmet({ seo: mergedSeo })}
       <div
         className={`${styles.productDescWrapper} basePageContainer margin0auto`}
       >

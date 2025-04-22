@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { FDKLink } from "fdk-core/components";
-import FyImage from "../core/fy-image/fy-image";
+import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
+import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import { currencyFormat, isRunningOnClient } from "../../helper/utils";
 import styles from "./product-hotspot.less";
 import HotspotIcon from "../../assets/images/hotspot.svg";
@@ -60,11 +61,7 @@ const Hotspot = ({
   }, []);
 
   const getHotspotStyle = useMemo(() => {
-    let transform = "";
-    let top;
-    let right;
-    let bottom;
-    let left = "auto";
+    let top, right, bottom, left, transform;
     const xpos = hotspot?.props?.x_position?.value;
     const ypos = hotspot?.props?.y_position?.value;
 
@@ -72,9 +69,8 @@ const Hotspot = ({
       left = `${xpos}%`;
     } else if (xpos === 50) {
       left = `${xpos}%`;
-      transform += " translateX(-50%)";
+      transform = `${transform ?? ""} translateX(-50%)`;
     } else {
-      left = "auto";
       right = `${100 - xpos}%`;
     }
 
@@ -82,9 +78,8 @@ const Hotspot = ({
       top = `${ypos}%`;
     } else if (ypos === 50) {
       top = `${ypos}%`;
-      transform += " translateY(-50%)";
+      transform = `${transform ?? ""} translateY(-50%)`;
     } else {
-      top = "auto";
       bottom = `${100 - ypos}%`;
     }
 
@@ -103,7 +98,7 @@ const Hotspot = ({
 
   const redirectValue = product?.slug
     ? `/product/${product?.slug}`
-    : redirect_link;
+    : (redirect_link ?? "");
 
   return (
     <div
@@ -132,9 +127,8 @@ const Hotspot = ({
             <FyImage
               customClass={`${styles.product__image} ${styles.fill}`}
               src={getProductImage}
-              sources={[{ width: 84 }]}
+              sources={[{ width: 100 }]}
               aspectRatio={aspectRatio}
-              mobileAspectRatio={aspectRatio}
             />
             <div className={styles.product__meta}>
               <div className={styles.product__info}>
@@ -155,16 +149,14 @@ const Hotspot = ({
                   </p>
                 )}
                 {hotspot_link_text && (
-                  <FDKLink
+                  <span
                     className={`${styles.product__price} ${styles.linkText}`}
-                    to={redirect_link}
-                    target="_self"
                   >
                     {hotspot_link_text}
-                  </FDKLink>
+                  </span>
                 )}
               </div>
-              {hotspot_link_text && redirect_link && (
+              {!!redirectValue && (
                 <ArrowDownIcon className={styles["icon-right"]} />
               )}
             </div>

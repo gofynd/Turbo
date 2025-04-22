@@ -26,7 +26,7 @@ import {
   isRunningOnClient,
   currencyFormat,
 } from "../helper/utils";
-import { useSnackbar } from "../helper/hooks";
+import { useSnackbar, useViewport } from "../helper/hooks";
 import styles from "../styles/sections/product-description.less";
 import { GET_PRODUCT_DETAILS } from "../queries/pdpQuery";
 import QuantityController from "@gofynd/theme-template/components/quantity-control/quantity-control";
@@ -190,7 +190,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const [sidebarActiveTab, setSidebarActiveTab] = useState("coupons");
   const [errMessage, setErrorMessage] = useState("");
   const [showSocialLinks, setShowSocialLinks] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useViewport(0, 768);
   const {
     media,
     grouped_attributes,
@@ -202,9 +202,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   } = productDetails;
 
   const { isProductNotFound } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
-
   const isMto = productDetails?.custom_order?.is_custom_order || false;
-
   const { show_price, disable_cart, show_quantity_control } = globalConfig;
 
   const priceDataBySize = productPriceBySlug?.price;
@@ -213,34 +211,14 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const isSingleSize = sizes?.sizes?.length === 1;
   const isSizeCollapsed = blockProps?.hide_single_size && isSingleSize;
 
-  useEffect(() => {
-    const detectMobileWidth = () =>
-      document?.getElementsByTagName("body")?.[0]?.getBoundingClientRect()
-        ?.width <= 768;
-    const handleResize = () => {
-      setIsMobile(detectMobileWidth());
-    };
-    if (isRunningOnClient()) {
-      window.addEventListener("resize", handleResize);
-      handleResize();
-    }
-    return () => {
-      if (isRunningOnClient()) {
-        window.removeEventListener("resize", handleResize);
-      }
-    };
-  }, []);
-
   function getManufacturingTime() {
     const custom_order = productDetails?.custom_order;
-
     if (
       custom_order?.manufacturing_time >= 0 &&
       custom_order?.manufacturing_time_unit
     ) {
       return custom_order;
     }
-
     return false;
   }
 
@@ -330,10 +308,6 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     return [sellerName, storeName].filter(Boolean).join(", ") || "";
   }, [productPriceBySlug]);
 
-  if (isRunningOnClient() && isPageLoading) {
-    return <Shimmer />;
-  }
-
   const handleShare = async () => {
     if (navigator.share && isMobile) {
       try {
@@ -417,13 +391,17 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     }
   };
 
+  if (isRunningOnClient() && isPageLoading) {
+    return <Shimmer />;
+  }
+
   if (isProductNotFound) {
     return <EmptyState title="No product found" />;
   }
 
   return (
     <>
-      <div className={`${styles.mainContainer} fontBody`}>
+      <div className={`${styles.mainContainer}`}>
         <BreadCrumb
           productData={productDetails}
           config={props}
@@ -436,14 +414,13 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                 <PdpImageGallery
                   key={slug}
                   images={media}
-                  product={productDetails}
                   iconColor={icon_color?.value || ""}
                   globalConfig={globalConfig}
                   followed={followed}
                   imgSources={imgSources}
                   removeFromWishlist={removeFromWishlist}
                   addToWishList={addToWishList}
-                  isLoading={isLoading}
+                  isCustomOrder={isMto}
                   handleShare={() => handleShare()}
                 />
               </div>
@@ -1103,7 +1080,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                   )}
                               </>
                             )}
-                            {productDetails?.custom_order?.is_custom_order &&
+                            {isMto &&
                               getManufacturingTime() &&
                               selectedSize && (
                                 <li className={styles.b2}>
@@ -1194,7 +1171,6 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
             addToCartBtnRef={addToCartBtnRef}
             productMeta={productMeta}
             selectedSize={selectedSize}
-            setSelectedSize={setSelectedSize}
             blockProps={blockProps}
             sizes={sizes}
             getProductPrice={getProductPrice}
@@ -1616,7 +1592,7 @@ export const settings = {
   },
 };
 
-Component.serverFetch = async ({ fpi, router }) => {
+Component.serverFetch = async ({ fpi, router, props }) => {
   const isPDP = /^\/product\/[^/]+\/?$/.test(router.pathname);
   const slug = isPDP ? router?.params?.slug : props?.product?.value;
 

@@ -62,7 +62,7 @@ body {
   background-color: @PageBackground;
 }
 
-.fdk-theme-outlet .fdk-theme-wrapper {
+.fdk-theme-outlet >*>.fdk-theme-wrapper {
   padding-bottom: var(--section-bottom-padding, 0);
 }
 
@@ -571,6 +571,18 @@ img::selection {
   @media @mobile {
     width: 345px !important;
   }
+}
+
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .policyPageContainer {
