@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Slider from "react-slick";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/testimonials.less";
 import { isRunningOnClient } from "../helper/utils";
+import { useGlobalTranslation } from "fdk-core/utils";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 
 export function Component({ props, globalConfig, blocks, preset }) {
+  const { t } = useGlobalTranslation("translation");
   const { title, autoplay, slide_interval, testimonials } = props;
   const [windowWidth, setWindowWidth] = useState(
     isRunningOnClient() ? window?.innerWidth : 400
@@ -175,7 +177,9 @@ export function Component({ props, globalConfig, blocks, preset }) {
                         className={`${styles.testimonial__block__info__text} fontBody`}
                         title={block.props?.author_testimonial?.value}
                       >
-                        {`"${block.props?.author_testimonial?.value || "Add customer reviews and testimonials to showcase your store's happy customers."}"`}
+                        {`"${block.props?.author_testimonial?.value || t(
+                          "resource.section.testimonials.add_customer_review_text"
+                        )}"`}
                       </div>
                       <div className={styles.testimonial__block__info__author}>
                         <h5
@@ -237,7 +241,9 @@ export function Component({ props, globalConfig, blocks, preset }) {
                         className={`${styles.testimonial__block__info__text} fontBody`}
                         title={block.props?.author_testimonial?.value}
                       >
-                        {`"${block.props?.author_testimonial?.value || "Add customer reviews and testimonials to showcase your store's happy customers."}"`}
+                        {`"${block.props?.author_testimonial?.value || t(
+                          "resource.section.testimonials.add_customer_review_text"
+                        )}"`}
                       </div>
                       <div className={styles.testimonial__block__info__author}>
                         <h5
@@ -266,20 +272,20 @@ export function Component({ props, globalConfig, blocks, preset }) {
 }
 
 export const settings = {
-  label: "Testimonial",
+  label: "t:resource.sections.testimonial.testimonial",
   name: "testimonials",
   props: [
     {
       type: "text",
       id: "title",
-      default: "What People Are Saying About Us ",
-      label: "Heading",
+      default: "t:resource.default_values.testimonial_title",
+      label: "t:resource.common.heading",
     },
     {
       type: "checkbox",
       id: "autoplay",
       default: false,
-      label: "AutoPlay Slides",
+      label: "t:resource.common.autoplay_slides",
     },
     {
       type: "range",
@@ -288,20 +294,20 @@ export const settings = {
       max: 10,
       step: 1,
       unit: "sec",
-      label: "Change slides every",
+      label: "t:resource.common.change_slides_every",
       default: 2,
     },
   ],
   blocks: [
     {
       type: "testimonial",
-      name: "Testimonial",
+      name: "t:resource.sections.testimonial.testimonial",
       props: [
         {
           type: "image_picker",
           id: "author_image",
           default: "",
-          label: "Image",
+          label: "t:resource.common.image",
           options: {
             aspect_ratio: "1:1",
           },
@@ -309,23 +315,22 @@ export const settings = {
         {
           type: "textarea",
           id: "author_testimonial",
-          label: "Testimonial",
-          default:
-            "Add customer reviews and testimonials to showcase your store's happy customers.",
-          info: "Text for testimonial",
-          placeholder: "Text",
+          label: "t:resource.sections.testimonial.testimonial",
+          default: "t:resource.default_values.testimonial_textarea",
+          info: "t:resource.sections.testimonial.text_for_testimonial",
+          placeholder: "t:resource.sections.testimonial.text",
         },
         {
           type: "text",
           id: "author_name",
-          default: "Author Name",
-          label: "Author Name",
+          default: "t:resource.sections.testimonial.testimonial_author_name",
+          label: "t:resource.sections.testimonial.author_name",
         },
         {
           type: "text",
           id: "author_description",
-          default: "Author Description",
-          label: "Author Description",
+          default: "t:resource.sections.testimonial.author_description",
+          label: "t:resource.sections.testimonial.author_description",
         },
       ],
     },
@@ -333,7 +338,7 @@ export const settings = {
   preset: {
     blocks: [
       {
-        name: "Testimonial",
+        name: "t:resource.sections.testimonial.testimonial",
         props: {
           author_image: {
             type: "image_picker",
@@ -355,7 +360,7 @@ export const settings = {
         },
       },
       {
-        name: "Testimonial",
+        name: "t:resource.sections.testimonial.testimonial",
         props: {
           author_image: {
             type: "image_picker",
@@ -377,7 +382,7 @@ export const settings = {
         },
       },
       {
-        name: "Testimonial",
+        name: "t:resource.sections.testimonial.testimonial",
         props: {
           author_image: {
             type: "image_picker",

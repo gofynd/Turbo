@@ -1,6 +1,6 @@
 import React from "react";
-import OrderTrack from "@gofynd/theme-template/pages/order/order-tracking";
-import "@gofynd/theme-template/pages/order/order-tracking.css";
+import OrderTrack from "fdk-react-templates/pages/order/order-tracking";
+import "fdk-react-templates/pages/order/order-tracking.css";
 import instMob from "../assets/images/inst_mob.png";
 
 function OrderTracking() {

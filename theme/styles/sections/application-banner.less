@@ -7,19 +7,21 @@
   }
 }
 
-.application-banner-container {
+.applicationBannerContainer {
   position: relative;
-  padding-bottom: 16px;
 
   .box-wrapper {
     width: var(--box_width);
     height: var(--box_height);
     opacity: 0;
     position: absolute;
-    left: var(--x_position);
+    inset-inline-start: var(--x_position);
     top: var(--y_position);
     cursor: pointer;
     transform: translate(var(--x_offset), var(--y_offset));
+    [dir="rtl"] & {
+      transform: translate(calc(var(--x_offset) * -1), var(--y_offset));
+    }
   }
 
   .box-wrapper-visible {

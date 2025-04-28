@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CART_META_UPDATE } from "../../queries/cartQuery";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 const GST_NUMBER_LENGTH = 15;
 const EMPTY_GST = "Enter GST no to claim input credits";
@@ -8,6 +9,7 @@ const GST_APPLIED = "You can claim 250 GST input credit";
 const INVALID_GST = "Invalid GST number";
 
 const useCartGst = ({ fpi, cartData }) => {
+  const { t } = useGlobalTranslation("translation");
   const [gstNumber, setGstNumber] = useState(cartData?.gstin || "");
   const [isApplied, setIsApplied] = useState(!!cartData?.gstin);
   const [error, setError] = useState({});
@@ -64,7 +66,7 @@ const useCartGst = ({ fpi, cartData }) => {
           setIsApplied(!!res?.is_valid);
         })
         .catch((err) => {
-          setError({ message: err?.message || "Something went wrong" });
+          setError({ message: err?.message || t("resource.common.error_message") });
         });
     } else if (
       gst?.length > GST_NUMBER_LENGTH ||
@@ -72,7 +74,7 @@ const useCartGst = ({ fpi, cartData }) => {
       gst?.length === 0
     ) {
       setIsApplied(false);
-      setError({ message: "Invalid gstin number" });
+      setError({ message: t("resource.common.invalid_gstin") });
     }
   };
 

@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { useGlobalStore } from "fdk-core/utils";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import useSortModal from "./useSortModal";
 import useFilterModal from "./useFilterModal";
 import {
@@ -15,12 +14,18 @@ import productPlaceholder from "../../assets/images/placeholder3x4.png";
 import useAddToCartModal from "../plp/useAddToCartModal";
 import { useWishlist, useAccounts, useThemeConfig } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
+import {
+  useNavigate,
+  useGlobalTranslation,
+  useGlobalStore,
+} from "fdk-core/utils";
 
 const INFINITE_PAGE_SIZE = 12;
 const PAGES_TO_SHOW = 5;
 const PAGE_OFFSET = 2;
 
 const useCollectionListing = ({ fpi, slug, props }) => {
+  const { t } = useGlobalTranslation("translation");
   const location = useLocation();
   const navigate = useNavigate();
   const { toggleWishlist, followedIdList } = useWishlist({ fpi });
@@ -108,8 +113,8 @@ const useCollectionListing = ({ fpi, slug, props }) => {
 
   const breadcrumb = useMemo(
     () => [
-      { label: "Home", link: "/" },
-      { label: "Collections", link: "/collections" },
+      { label: t("resource.common.breadcrumb.home"), link: "/" },
+      { label: t("resource.common.breadcrumb.collections"), link: "/collections" },
       { label: collectionName },
     ],
     [collectionName]
@@ -324,10 +329,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       searchParams?.delete(name, value);
     }
     searchParams?.delete("page_no");
-    navigate?.({
-      pathname: location?.pathname,
-      search: searchParams?.toString(),
-    });
+    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
   };
 
   const handleSortUpdate = (value) => {
@@ -340,10 +342,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       searchParams?.delete("sort_on");
     }
     searchParams?.delete("page_no");
-    navigate?.({
-      pathname: location?.pathname,
-      search: searchParams?.toString(),
-    });
+    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
   };
 
   function resetFilters() {
@@ -354,10 +353,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       searchParams?.delete(filter.key.name);
     });
     searchParams?.delete("page_no");
-    navigate?.({
-      pathname: location?.pathname,
-      search: searchParams?.toString(),
-    });
+    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
   }
 
   const getPageUrl = (pageNo) => {
@@ -374,11 +370,11 @@ const useCollectionListing = ({ fpi, slug, props }) => {
 
     if (index <= 1) {
       return 1;
-    }
-    if (index > lastIndex) {
+    } else if (index > lastIndex) {
       return lastIndex;
+    } else {
+      return index;
     }
-    return index;
   };
 
   const paginationProps = useMemo(() => {

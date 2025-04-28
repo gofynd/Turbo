@@ -1,22 +1,27 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import OrderStatusPage from "@gofynd/theme-template/pages/order-status/order-status";
+import { useSearchParams } from "react-router-dom";
+import OrderStatusPage from "fdk-react-templates/pages/order-status/order-status";
 import { useLoggedInUser } from "../helper/hooks";
 import empty from "../assets/images/empty_state.png";
 import { ORDER_BY_ID } from "../queries/checkoutQuery";
-import "@gofynd/theme-template/pages/order-status/order-status.css";
+import "fdk-react-templates/pages/order-status/order-status.css";
 import Loader from "../components/loader/loader";
+import cartClock from "../assets/images/cart-clock.png";
+import FyImage from "../components/core/fy-image/fy-image";
+import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
+import { FDKLink } from "fdk-core/components";
 import EmptyState from "../components/empty-state/empty-state";
 import OrderPendingIcon from "../assets/images/order-pending.svg";
 
 function OrderPolling({ isLoggedIn }) {
+  const { t } = useGlobalTranslation("translation");
   return (
     <EmptyState
-      description="Your order is pending. Please allow us a few minutes to confirm the status. We will update you via SMS or email shortly."
+      description={t("resource.order.polling.description")}
       Icon={<OrderPendingIcon />}
-      title="Order Pending"
+      title={t("resource.order.polling.pending")}
       btnLink="/"
-      btnTitle="CONTINUE SHOPPING"
+      btnTitle={t("resource.common.continue_shopping")}
     />
   );
 }

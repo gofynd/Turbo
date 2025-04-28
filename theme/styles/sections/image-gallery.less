@@ -61,7 +61,7 @@
   }
   @media @mobile {
     --gap: 12px;
-    padding-left: 16px;
+    padding-inline-start: 16px;
     padding: 0 calc(var(--gap) / 2);
   }
 }
@@ -72,11 +72,11 @@
     padding: 0 10px;
   }
   @media @mobile {
-    padding-left: 0;
+    padding-inline-start: 0;
   }
   :global {
     .slick-list {
-      padding-left: 5px !important;
+      padding-inline-start: 5px !important;
     }
     .slick-slider:not(.no-nav) {
       padding-bottom: unset;
@@ -84,9 +84,15 @@
     }
     .slick-next {
       transform: translate(100%, 0);
+      [dir="rtl"] & {
+        transform: translate(-100%, 0);
+      }
     }
     .slick-prev {
       transform: translate(-100%, 0%);
+      [dir="rtl"] & {
+        transform: translate(100%, 0%);
+      }
     }
     .slick-dots {
       position: static;
@@ -99,7 +105,7 @@
 
       @media @mobile {
         width: auto;
-        margin-right: -10px;
+        margin-inline-end: -10px;
       }
     }
   }

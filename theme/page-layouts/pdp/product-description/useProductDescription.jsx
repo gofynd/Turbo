@@ -1,6 +1,4 @@
 import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
 import useInternational from "../../../components/header/useInternational";
 import {
   ADD_TO_CART,
@@ -21,8 +19,14 @@ import { useSnackbar, usePincodeInput } from "../../../helper/hooks";
 import { LOCALITY } from "../../../queries/logisticsQuery";
 import { isEmptyOrNull } from "../../../helper/utils";
 import { fetchCartDetails } from "../../cart/useCart";
+import {
+  useGlobalStore,
+  useNavigate,
+  useGlobalTranslation,
+} from "fdk-core/utils";
 
 const useProductDescription = ({ fpi, slug, props }) => {
+  const { t } = useGlobalTranslation("translation");
   const { mandatory_pincode } = props;
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const PRODUCT = useGlobalStore(fpi.getters.PRODUCT);
@@ -125,7 +129,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
       if (isEmptyOrNull(res.data.productPrice) && isValidDeliveryLocation) {
         setPincodeErrorMessage(
           res?.errors?.[0]?.message ||
-            "Product is not serviceable at given locality"
+          t("resource.product.product_not_serviceable")
         );
       } else {
         setSelectPincodeError(false);
@@ -154,7 +158,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
       event.stopPropagation();
     }
     if (!LoggedIn) {
-      showSnackbar("Please Login first.");
+      showSnackbar(t("resource.auth.login.please_login_first"));
       navigate("/auth/login");
       return;
     }
@@ -165,7 +169,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
     fpi.executeGQL(ADD_WISHLIST, values).then((OutRes) => {
       if (OutRes?.data?.followById?.message) {
         fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, null).then((res) => {
-          showSnackbar("Product Added to Wishlist", "success");
+          showSnackbar(t("resource.common.wishlist_add_success"), "success");
         });
       }
     });
@@ -182,7 +186,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
     fpi.executeGQL(REMOVE_WISHLIST, values).then((OutRes) => {
       if (OutRes?.data?.unfollowById?.message) {
         fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, null).then((res) => {
-          showSnackbar("Product Removed from Wishlist", "success");
+          showSnackbar(t("resource.common.wishlist_add_success"), "success");
         });
       }
     });
@@ -197,7 +201,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
       .then(({ data, errors }) => {
         if (errors) {
           setPincodeErrorMessage(
-            errors?.[0]?.message || "Pincode verification failed"
+            errors?.[0]?.message || t("resource.common.address.pincode_verification_failure")
           );
         }
         if (data?.locality && postCode === locationPincode) {
@@ -253,17 +257,16 @@ const useProductDescription = ({ fpi, slug, props }) => {
         setSelectPincodeError(true);
         setPincodeErrorMessage("");
         showSnackbar(
-          `Please enter valid ${pincodeInput.displayName} before Add to cart/ Buy now`,
-          "error"
+          t("resource.product.before_cart_validate_pincode", { displayName: pincodeInput.displayName }), "error"
         );
       } else {
-        showSnackbar("Please select a valid delivery location.", "error");
+        showSnackbar(t("resource.product.select_valid_delivery_location"), "error");
         fpi.custom.setValue("isI18ModalOpen", true);
       }
       return;
     }
     if (!size) {
-      showSnackbar("Please select the size first.", "error");
+      showSnackbar(t("resource.product.select_size_first"), "error");
       return;
     }
     if (itemDetails !== null) {
@@ -294,7 +297,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
             fetchCartDetails(fpi);
           }
           showSnackbar(
-            outRes?.data?.addItemsToCart?.message || "Added to Cart",
+            outRes?.data?.addItemsToCart?.message || t("resource.common.add_to_cart_success"),
             "success"
           );
           if (buyNow) {
@@ -305,7 +308,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
           // });
         } else {
           showSnackbar(
-            outRes?.data?.addItemsToCart?.message || "Failed to add to cart",
+            outRes?.data?.addItemsToCart?.message || t("resource.common.add_cart_failure"),
             "error"
           );
         }

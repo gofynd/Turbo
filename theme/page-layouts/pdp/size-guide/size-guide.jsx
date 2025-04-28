@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { FDKLink } from "fdk-core/components";
 import PropTypes from "prop-types";
-import Modal from "@gofynd/theme-template/components/core/modal/modal";
 import styles from "./size-guide.less";
 import FyImage from "../../../components/core/fy-image/fy-image";
 import FyHTMLRenderer from "../../../components/core/fy-html-renderer/fy-html-renderer";
-import "@gofynd/theme-template/components/core/modal/modal.css";
+import Modal from "fdk-react-templates/components/core/modal/modal";
+import "fdk-react-templates/components/core/modal/modal.css";
+import { FDKLink } from "fdk-core/components";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
+  const { t } = useGlobalTranslation("translation");
   const [previewSelectedMetric, setPreviewSelectedMetric] = useState("cm");
   const [selectedMetric, setSelectedMetric] = useState("cm");
   const [activeTab, setActiveTab] = useState("size_guide");
@@ -109,7 +111,7 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
             }`}
             onClick={() => setActiveTab("size_guide")}
           >
-            Size guide
+            {t("resource.common.size_guide_lower")}
           </button>
         )}
 
@@ -122,7 +124,7 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
             }`}
             onClick={() => setActiveTab("measure")}
           >
-            How to measure
+            {t("product.how_to_measure")}
           </button>
         )}
       </div>
@@ -214,14 +216,14 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
           {!isSizeChartAvailable() && (
             <div className={styles.notAvailable}>
               <h3 className={styles.fontHeader}>
-                Not available, contact us for more information
+                {t("resource.common.not_available_contact_for_info")}
               </h3>
               <FDKLink to="/contact-us" target="_blank">
                 <button
                   type="button"
                   className={`${styles.contactUs} btnPrimary ${styles.fontBody}`}
                 >
-                  CONTACT US
+                  {t("resource.common.contact_us_caps")}
                 </button>
               </FDKLink>
             </div>
@@ -254,14 +256,14 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
             (!productMeta.size_chart.image && (
               <div className={styles.notAvailable}>
                 <h3 className={styles.fontHeader}>
-                  Not available, contact us for more information
+                  {t("resource.common.not_available_contact_for_info")}
                 </h3>
                 <FDKLink to="/contact-us" target="_blank">
                   <button
                     type="button"
                     className={`${styles.contactUs} btnPrimary ${styles.fontBody}`}
                   >
-                    CONTACT US
+                    {t("resource.common.contact_us_caps")}
                   </button>
                 </FDKLink>
               </div>

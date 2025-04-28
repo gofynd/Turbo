@@ -4,15 +4,16 @@ import { CREATE_TICKET } from "../queries/supportQuery";
 import { useSnackbar } from "../helper/hooks";
 import Base64 from "crypto-js/enc-base64";
 import Utf8 from "crypto-js/enc-utf8";
-import { useFPI } from "fdk-core/utils";
-import ContactPage from "@gofynd/theme-template/pages/contact-us/contact-us";
+import { useFPI, useGlobalTranslation } from "fdk-core/utils";
+import ContactPage from "fdk-react-templates/pages/contact-us/contact-us";
 import SocailMedia from "../components/socail-media/socail-media";
-import "@gofynd/theme-template/pages/contact-us/contact-us.css";
+import "fdk-react-templates/pages/contact-us/contact-us.css";
 import { getConfigFromProps } from "../helper/utils";
 
 function Component({ props = {} }) {
   const fpi = useFPI();
   const { contactInfo, supportInfo } = useHeader(fpi);
+  const { t } = useGlobalTranslation("translation");
 
   const pageConfig = getConfigFromProps(props);
 
@@ -22,16 +23,16 @@ function Component({ props = {} }) {
     try {
       let finalText = "";
       if (data?.name) {
-        finalText += `<b>Name: </b>${data?.name}<br>`;
+        finalText += `<b>${t("resource.header.shop_logo_alt_text")}: </b>${data?.name}<br>`;
       }
       if (data?.phone) {
-        finalText += `<b>Contact: </b>${data?.phone}<br>`;
+        finalText += `<b>${t("resource.header.contact")}: </b>${data?.phone}<br>`;
       }
       if (data?.email) {
-        finalText += `<b>Email: </b>${data?.email}<br>`;
+        finalText += `<b>${t("resource.common.email")}: </b>${data?.email}<br>`;
       }
       if (data?.comment) {
-        finalText += `<b>Comment: </b>${data?.comment}<br>`;
+        finalText += `<b>${t("resource.header.comment")}: </b>${data?.comment}<br>`;
       }
       finalText = `<div>${finalText}</div>`;
       const wordArray = Utf8.parse(finalText);
@@ -49,7 +50,7 @@ function Component({ props = {} }) {
           content: {
             attachments: [],
             description: finalText,
-            title: "Contact Request",
+            title: t("resource.contact.contact_request"),
           },
           priority: "low",
         },
@@ -58,12 +59,12 @@ function Component({ props = {} }) {
       fpi
         .executeGQL(CREATE_TICKET, values)
         .then(() => {
-          showSnackbar("Ticket created successfully", "success");
+          showSnackbar(t("resource.common.ticket_success"), "success");
         })
-        .catch(() => showSnackbar("Something went wrong", "error"));
+        .catch(() => showSnackbar(t("resource.common.error_message"), "error"));
     } catch (error) {
       console.error("Error submitting form:", error);
-      showSnackbar("An error occurred while submitting the form", "error");
+      showSnackbar(t("resource.common.error_occurred_submitting_form"), "error");
     }
   };
 
@@ -79,7 +80,7 @@ function Component({ props = {} }) {
 }
 
 export const settings = {
-  label: "Contact Us",
+  label: "t:resource.sections.contact_us.contact_us",
   props: [
     {
       id: "align_image",
@@ -87,23 +88,23 @@ export const settings = {
       options: [
         {
           value: "left",
-          text: "Left",
+          text: "t:resource.common.left",
         },
         {
           value: "right",
-          text: "Right",
+          text: "t:resource.common.right",
         },
       ],
       default: "right",
-      label: "Banner alignment",
-      info: "Select the alignment for the banner",
+      label: "t:resource.sections.contact_us.banner_alignment",
+      info: "t:resource.sections.contact_us.banner_alignment_info",
     },
     {
       type: "image_picker",
       id: "image_desktop",
-      label: "Upload banner",
+      label: "t:resource.sections.contact_us.upload_banner",
       default: "",
-      info: " Upload banner image (Only for desktop)",
+      info: "t:resource.sections.contact_us.upload_banner_info",
       options: {
         aspect_ratio: "3:4",
         aspect_ratio_strict_check: true,
@@ -116,43 +117,43 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "%",
-      label: "Overlay Banner opacity",
+      label: "t:resource.sections.contact_us.overlay_banner_opacity",
       default: 20,
     },
     {
       type: "checkbox",
       id: "show_address",
       default: true,
-      label: "Address",
-      info: "Show Address",
+      label: "t:resource.sections.contact_us.address",
+      info: "t:resource.sections.contact_us.show_address",
     },
     {
       type: "checkbox",
       id: "show_phone",
       default: true,
-      label: "Phone",
-      info: "Show phone number",
+      label: "t:resource.sections.contact_us.phone",
+      info: "t:resource.sections.contact_us.show_phone",
     },
     {
       type: "checkbox",
       id: "show_email",
       default: true,
-      label: "Email",
-      info: "Show Email",
+      label: "t:resource.sections.contact_us.email",
+      info: "t:resource.sections.contact_us.show_email",
     },
     {
       type: "checkbox",
       id: "show_icons",
       default: true,
-      label: "Show social media icons",
-      info: "Show Icons",
+      label: "t:resource.sections.contact_us.social_media_icons",
+      info: "t:resource.sections.contact_us.show_icons",
     },
     {
       type: "checkbox",
       id: "show_working_hours",
       default: true,
-      label: "Working Hours",
-      info: "Show Working Hours",
+      label: "t:resource.sections.contact_us.working_hours",
+      info: "t:resource.sections.contact_us.show_working_hours",
     },
   ],
 };

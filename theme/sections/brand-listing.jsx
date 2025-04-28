@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import Slider from "react-slick";
-import { FDKLink } from "fdk-core/components";
 import { isRunningOnClient } from "../helper/utils";
 import styles from "../styles/sections/brand-listing.less";
+import Slider from "react-slick";
+import { FDKLink } from "fdk-core/components";
 import { BRAND_DETAILS } from "../queries/brandsQuery";
 import placeholderImage from "../assets/images/placeholder/brand-listing.png";
-import { useGlobalStore, useFPI } from "fdk-core/utils";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
+import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 
 export function Component({ props, globalConfig, blocks, id: sectionId }) {
+  const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
   const {
     heading,
@@ -524,24 +525,24 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
 }
 
 export const settings = {
-  label: "Brands Listing",
+  label: "t:resource.sections.brand_listing.brands_listing",
   props: [
     {
       type: "range",
       id: "per_row",
-      label: "Display brands per row (desktop)",
+      label: "t:resource.sections.brand_listing.brands_per_row_desktop",
       min: "3",
       max: "5",
       step: "1",
-      info: "It'll not work for mobile layout",
+      info: "t:resource.common.not_applicable_for_mobile",
       default: "4",
     },
     {
       type: "checkbox",
       id: "logoOnly",
       default: false,
-      label: "Logo Only",
-      info: "Show Logo of brands",
+      label: "t:resource.sections.brand_listing.logo_only",
+      info: "t:resource.common.show_logo_of_brands",
     },
     {
       id: "layout_mobile",
@@ -549,16 +550,16 @@ export const settings = {
       options: [
         {
           value: "stacked",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal",
+          text: "t:resource.common.horizontal",
         },
       ],
       default: "stacked",
-      label: "Mobile Layout",
-      info: "Alignment of content",
+      label: "t:resource.common.mobile_layout",
+      info: "t:resource.common.alignment_of_content",
     },
     {
       id: "layout_desktop",
@@ -566,16 +567,16 @@ export const settings = {
       options: [
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal",
+          text: "t:resource.common.horizontal",
         },
       ],
       default: "grid",
-      label: "Desktop Layout",
-      info: "Alignment of content",
+      label: "t:resource.sections.brand_listing.desktop_layout",
+      info: "t:resource.common.alignment_of_content",
     },
     {
       id: "alignment",
@@ -583,67 +584,67 @@ export const settings = {
       options: [
         {
           value: "left",
-          text: "Left",
+          text: "t:resource.common.left",
         },
         {
           value: "right",
-          text: "Right",
+          text: "t:resource.common.right",
         },
         {
           value: "center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
       ],
       default: "center",
-      label: "Align brands",
-      info: "Align brand cards to the left, right or centre of the page in desktop",
+      label: "t:resource.sections.brand_listing.align_brands",
+      info: "t:resource.sections.brand_listing.brand_alignment",
     },
     {
       type: "color",
       id: "img_container_bg",
-      category: "Image Container",
+      category: "t:resource.common.image_container",
       default: "#00000000",
-      label: "Container Background Color",
-      info: "This color will be used as the container background color of the Product/Collection/Category/Brand images wherever applicable",
+      label: "t:resource.common.container_background_color",
+      info: "t:resource.common.image_container_bg_color",
     },
     {
       type: "checkbox",
       id: "img_fill",
-      category: "Image Container",
+      category: "t:resource.common.image_container",
       default: true,
-      label: "Fit image to the container",
-      info: "If the image aspect ratio is different from the container, the image will be clipped to fit the container. The aspect ratio of the image will be maintained",
+      label: "t:resource.common.fit_image_to_container",
+      info: "t:resource.common.clip_image_to_fit_container",
     },
     {
       type: "text",
       id: "heading",
-      default: "Our Top Brands",
-      label: "Heading",
-      info: "Heading text of the section",
+      default: "t:resource.sections.brand_listing.our_top_brands",
+      label: "t:resource.common.heading",
+      info: "t:resource.common.section_heading_text",
     },
     {
       type: "textarea",
       id: "description",
-      default: "All is unique no matter how you put it",
-      label: "Description",
-      info: "Description text of the section",
+      default: "t:resource.sections.brand_listing.all_is_unique",
+      label: "t:resource.common.description",
+      info: "t:resource.common.section_description_text",
     },
     {
       type: "text",
       id: "button_text",
-      default: "VIEW ALL",
-      label: "Button Text",
+      default: "t:resource.default_values.view_all_caps",
+      label: "t:resource.common.button_text",
     },
   ],
   blocks: [
     {
       type: "category",
-      name: "Brand Item",
+      name: "t:resource.sections.brand_listing.brand_item",
       props: [
         {
           type: "brand",
           id: "brand",
-          label: "Select Brand",
+          label: "t:resource.sections.brand_listing.select_brand",
         },
       ],
     },
@@ -651,16 +652,16 @@ export const settings = {
   preset: {
     blocks: [
       {
-        name: "Brand Item",
+        name: "t:resource.sections.brand_listing.brand_item",
       },
       {
-        name: "Brand Item",
+        name: "t:resource.sections.brand_listing.brand_item",
       },
       {
-        name: "Brand Item",
+        name: "t:resource.sections.brand_listing.brand_item",
       },
       {
-        name: "Brand Item",
+        name: "t:resource.sections.brand_listing.brand_item",
       },
     ],
   },

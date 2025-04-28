@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { useNavigate, useLocation } from "react-router-dom";
-import OrdersHeader from "@gofynd/theme-template/components/order-header/order-header";
-import "@gofynd/theme-template/components/order-header/order-header.css";
-import ShipmentUpdateItem from "@gofynd/theme-template/components/shipments-update-item/shipments-update-item";
-import "@gofynd/theme-template/components/shipments-update-item/shipments-update-item.css";
-import BeneficiaryList from "@gofynd/theme-template/components/beneficiary-list/beneficiary-list";
-import "@gofynd/theme-template/components/beneficiary-list/beneficiary-list.css";
-import BeneficiaryItem from "@gofynd/theme-template/components/beneficiary-list/beneficiary-list-item/beneficiary-list-item";
-import "@gofynd/theme-template/components/beneficiary-list/beneficiary-list-item/beneficiary-list-item.css";
-import ReasonsList from "@gofynd/theme-template/components/reasons-list/reasons-list";
-import "@gofynd/theme-template/components/reasons-list/reasons-list.css";
-import ReasonItem from "@gofynd/theme-template/components/reasons-list/reason-item/reason-item";
-import "@gofynd/theme-template/components/reasons-list/reason-item/reason-item.css";
+import { useLocation } from "react-router-dom";
+import OrdersHeader from "fdk-react-templates/components/order-header/order-header";
+import "fdk-react-templates/components/order-header/order-header.css";
+import ShipmentUpdateItem from "fdk-react-templates/components/shipments-update-item/shipments-update-item";
+import "fdk-react-templates/components/shipments-update-item/shipments-update-item.css";
+import BeneficiaryList from "fdk-react-templates/components/beneficiary-list/beneficiary-list";
+import "fdk-react-templates/components/beneficiary-list/beneficiary-list.css";
+import BeneficiaryItem from "fdk-react-templates/components/beneficiary-list/beneficiary-list-item/beneficiary-list-item";
+import "fdk-react-templates/components/beneficiary-list/beneficiary-list-item/beneficiary-list-item.css";
+import ReasonsList from "fdk-react-templates/components/reasons-list/reasons-list";
+import "fdk-react-templates/components/reasons-list/reasons-list.css";
+import ReasonItem from "fdk-react-templates/components/reasons-list/reason-item/reason-item";
+import "fdk-react-templates/components/reasons-list/reason-item/reason-item.css";
 import styles from "./styles/profile-shipment-update-page.less";
 import useShipmentDetails from "../orders/useShipmentDetails";
 import useRefundDetails from "../orders/useRefundDetails";
@@ -21,6 +21,7 @@ import EmptyState from "../../components/empty-state/empty-state";
 import Loader from "../../components/loader/loader";
 import ProfileRoot from "../../components/profile/profile-root";
 import AddPayment from "../../components/orders/add-payment";
+import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 import {
   COMPLETE_MEDIA_UPLOAD,
   START_MEDIA_UPLOAD,
@@ -29,9 +30,10 @@ import ArrowDropdownIcon from "../../assets/images/arrow-dropdown-black.svg";
 import CrossContainedIcon from "../../assets/images/cross-contained-black.svg";
 
 function ProfileShipmentUpdatePage({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const location = useLocation();
-  const DEFAULT_ERROR_TEXT = "Something went wrong";
+  const DEFAULT_ERROR_TEXT = t("resource.common.error_message");
   const [updatedQty, setUpdatedQty] = useState("");
   const [selectedBagId, setSelectedBagId] = useState("");
   const [extraComment, setExtraComment] = useState("");
@@ -49,7 +51,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
   const [inProgress, setInProgress] = useState(false);
   const [updateError, setUpdateError] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [errorText, setErrorText] = useState("Something went wrong");
+  const [errorText, setErrorText] = useState(t("resource.common.error_message"));
   const [reasonOtherText, setReasonOtherText] = useState("");
   const { showSnackbar } = useSnackbar();
   const {
@@ -89,14 +91,14 @@ function ProfileShipmentUpdatePage({ fpi }) {
       });
       getRefundDetails(shipmentDetails?.order_id);
     }
-    return () => {};
+    return () => { };
   }, [shipmentDetails?.order_id]);
 
   useEffect(() => {
     setAccordianlv1({
       0: reasonsList.reasons,
     });
-    return () => {};
+    return () => { };
   }, [reasonsList]);
   useEffect(() => {
     if (shipmentDetails) {
@@ -212,8 +214,8 @@ function ProfileShipmentUpdatePage({ fpi }) {
   };
   const beneficiaryError = () => {
     return refundDetails?.user_beneficiaries_detail?.beneficiaries?.length > 0
-      ? "Please select any one refund option"
-      : "Please add a payment method";
+      ? t("resource.profile.select_one_refund_option")
+      : t("resource.profile.add_payment_method");
   };
   const showSuccess = (type) => {
     if (type === "payment") {
@@ -243,10 +245,10 @@ function ProfileShipmentUpdatePage({ fpi }) {
     return shipmentDetails?.can_cancel
       ? !(selectLast() && !selectedReason[selectLast()].reasons?.length > 0)
       : !(
-          selectLast() &&
-          !selectedReason[selectLast()].reasons?.length > 0 &&
-          (showimg() ? imageList.length > 0 : true)
-        );
+        selectLast() &&
+        !selectedReason[selectLast()].reasons?.length > 0 &&
+        (showimg() ? imageList.length > 0 : true)
+      );
   }, [shipmentDetails, selectedReason, imageList]);
   const getUpdatedBagsList = () => {
     const arrBags = [];
@@ -360,47 +362,6 @@ function ProfileShipmentUpdatePage({ fpi }) {
         products: getProducts,
       };
     }
-    return {
-      shipmentId: shipmentDetails?.shipment_id,
-      updateShipmentStatusRequestInput: {
-        force_transition: true,
-
-        statuses: [
-          {
-            shipments: [
-              {
-                identifier: shipmentDetails?.shipment_id,
-                products: getProducts,
-                reasons: {
-                  products: [
-                    {
-                      data: {
-                        reason_id: reason[selectLast()]?.id,
-                        reason_text:
-                          reason[selectLast()]?.reason_other_text ||
-                          reasonOtherText,
-                      },
-                      filters: getProducts,
-                    },
-                  ],
-                },
-              },
-            ],
-            status: "return_initiated",
-          },
-        ],
-      },
-      shimpment_id: shipmentDetails?.shipment_id,
-      order_id: shipmentDetails?.order_id,
-      selected_reason: { ...reason[selectLast()] },
-      other_reason_text: extraComment,
-      beneficiary_id: refundDetails?.user_beneficiaries_detail
-        ?.show_beneficiary_details
-        ? selectedBeneficary?.beneficiary_id
-        : "",
-      qc_image_urls: cdn_urls,
-      products: getProducts,
-    };
   };
 
   const setUpdatedOrders = (obj) => {
@@ -437,23 +398,23 @@ function ProfileShipmentUpdatePage({ fpi }) {
         ["video/quicktime", "video/mp4"].includes(item.type)
       );
       if (images.length > 4)
-        return showUpdateErrorText("Maximum 4 images are allowed to upload");
+        return showUpdateErrorText(t("resource.profile.max_4_images_allowed_upload"));
       if (videos.length > 1)
-        return showUpdateErrorText("Maximum 1 video is allowed to upload");
+        return showUpdateErrorText(t("resource.profile.max_1_video_allowed_upload"));
       if (images.length < 2)
-        return showUpdateErrorText("Minimum 2 images are required to upload");
+        return showUpdateErrorText(t("resource.profile.min_2_images_required_upload"));
 
       const filesizecheck = images.every((item) => item.size / 1000 < 5000);
 
       if (!filesizecheck)
-        return showUpdateErrorText("Image size should not be more than 5MB");
+        return showUpdateErrorText(t("resource.profile.image_size_max_5mb"));
       if (videos?.length) {
         const filesizecheckvideo = videos.every(
           (item) => item.size / 1000 < 25000
         );
 
         if (!filesizecheckvideo)
-          return showUpdateErrorText("video size should not be more than 25MB");
+          return showUpdateErrorText(t("resource.profile.video_size_max_25mb"));
       }
 
       const filetype = imageList.every((item) =>
@@ -466,9 +427,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
         ].includes(item.type)
       );
       if (!filetype)
-        return showUpdateErrorText(
-          "Only JPG,PNG images and MOV,MP4 videos are supported. Please upload a valid file."
-        );
+        return showUpdateErrorText(t("resource.profile.valid_file_formats_required"));
     }
 
     // if (!confirmReturn) {
@@ -538,13 +497,11 @@ function ProfileShipmentUpdatePage({ fpi }) {
     // } else
     if (reason[0]?.display_name === "Others" && reasonOtherText.length <= 0) {
       return showUpdateErrorText(
-        "Please write a reason for cancellation, as it will help us serve you better"
+        t("resource.profile.write_reason_for_cancellation")
       );
-    }
-    if (!reason) {
-      return showUpdateErrorText("Please select any one of the below reason");
-    }
-    if (
+    } else if (!reason) {
+      return showUpdateErrorText(t("resource.profile.select_one_reason_below"));
+    } else if (
       !selectedBeneficary &&
       shipmentDetails?.can_return &&
       shipmentDetails?.beneficiary_details &&
@@ -703,7 +660,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                   ?.show_beneficiary_details && (
                   <div>
                     <div className={styles.refundOption}>
-                      Select refund option
+                      {t("resource.profile.select_refund_option")}
                     </div>
                     {/* <ukt-accordion> */}
                     <div>
@@ -732,17 +689,18 @@ function ProfileShipmentUpdatePage({ fpi }) {
                     ></BeneficiaryItem>
                   )} */}
                   </div>
-                )}
+                )
+              }
               {showimg() && <div className={`${styles.divider}`}></div>}
               {showimg() && (
                 <div className={`${styles.cancelimg}`}>
                   <div className={`${styles.header} ${styles.boldmd}`}>
-                    Add product images
+                    {t("resource.profile.add_product_images")}
                   </div>
                   <div className={`${styles.addPhoto} ${styles.boldmd}`}>
                     {/* <SvgWrapper svgSrc="add-photo" /> */}
                     <label className={`${styles.addImg}`} htmlFor="my-file">
-                      Upload Images / Videos
+                    {t("resource.profile.add_images_videos")}
                       <input
                         type="file"
                         accept="video/*, image/*"
@@ -779,15 +737,13 @@ function ProfileShipmentUpdatePage({ fpi }) {
                     </ul>
                   </div>
                   <div className={`${styles.makesure}`}>
-                    Make sure the product tag is visible in the picture.
+                  {t("resource.profile.ensure_product_tag_visible")}
                   </div>
                   <div className={`${styles.accept}`}>
-                    Accepted image formats jpg & png , File size should be less
-                    than 5mb
+                  {t("resource.profile.accepted_image_formats_and_size")}
                   </div>
                   <div className={`${styles.accept}`}>
-                    Accepted Video formats MP4, MOV , File size should be less
-                    than 25mb
+                  {t("resource.profile.accepted_video_formats_and_size")}
                   </div>
                   {previewList.length > 0 && (
                     <div className={`${styles.previewImg}`}>
@@ -821,10 +777,10 @@ function ProfileShipmentUpdatePage({ fpi }) {
               {/* <div className={`${styles.divider}`}></div> */}
               <div className={`${styles.textarea}`}>
                 <div>
-                  Comments <span>(Optional)</span>
+                  {t("resource.common.comments")} <span>({t("resource.common.optional")})</span>
                 </div>
                 <textarea
-                  placeholder="Enter reason"
+                  placeholder={t("resource.common.enter_reason")}
                   value={extraComment}
                   onChange={(e) =>
                     setExtraComment(e.target.value.slice(0, 1000))
@@ -838,7 +794,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                   className={`${styles.commonBtn} ${styles.btn} ${styles.cancelBtn}`}
                   onClick={onDontUpdate}
                 >
-                  Don&apos;t {updateType("cancelBtn")}
+                  {t("resource.common.dont")} {updateType("cancelBtn")}
                 </button>
                 <button
                   type="button"
@@ -846,7 +802,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                   disabled={buttondisable}
                   onClick={() => onUpdate()}
                 >
-                  Continue
+                  {t("resource.common.continue")}
                 </button>
               </div>
             </div>

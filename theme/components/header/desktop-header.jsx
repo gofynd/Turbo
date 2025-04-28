@@ -1,5 +1,9 @@
-import React from "react";
-import { FDKLink } from "fdk-core/components";
+import React, { useEffect, useState } from "react";
+import {
+  useGlobalStore,
+  useGlobalTranslation,
+  useLocale,
+} from "fdk-core/utils";
 import Navigation from "./navigation";
 import I18Dropdown from "./i18n-dropdown";
 import Search from "./search";
@@ -8,6 +12,7 @@ import AngleDownIcon from "../../assets/images/header-angle-down.svg";
 import WishlistIcon from "../../assets/images/single-row-wishlist.svg";
 import UserIcon from "../../assets/images/single-row-user.svg";
 import CartIcon from "../../assets/images/single-row-cart.svg";
+import { FDKLink } from "fdk-core/components";
 
 function HeaderDesktop({
   checkLogin,
@@ -24,8 +29,11 @@ function HeaderDesktop({
   pincode = "",
   deliveryMessage = "",
   onDeliveryClick = () => {},
+  languageIscCode,
 }) {
+  const { t } = useGlobalTranslation("translation");
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
+
   const getMenuMaxLength = () => {
     if (isDoubleRowHeader) {
       return 10;
@@ -46,17 +54,15 @@ function HeaderDesktop({
 
   return (
     <div
-      className={`${styles.headerDesktop}  ${
-        styles[globalConfig.header_layout]
-      } ${styles[globalConfig.logo_menu_alignment]}`}
+      className={`${styles.headerDesktop}  ${styles[globalConfig.header_layout]
+        } ${styles[globalConfig.logo_menu_alignment]}`}
     >
       <div className={styles.firstRow}>
         <div className={styles.left}>
           {!isDoubleRowHeader && (
             <Navigation
-              customClass={`${styles.firstRowNav} ${
-                styles[globalConfig?.header_layout]
-              }`}
+              customClass={`${styles.firstRowNav} ${styles[globalConfig?.header_layout]
+                }`}
               maxMenuLength={getMenuMaxLength()}
               fallbackLogo={fallbackLogo}
               navigationList={navigation}
@@ -64,6 +70,7 @@ function HeaderDesktop({
               globalConfig={globalConfig}
               reset
               checkLogin={checkLogin}
+              languageIscCode={languageIscCode}
             />
           )}
           {isDoubleRowHeader && globalConfig?.always_on_search && (
@@ -81,8 +88,12 @@ function HeaderDesktop({
           )}
         </div>
         <div className={`${styles.middle} ${styles.flexCenter}`}>
-          <FDKLink link="/">
-            <img className={styles.logo} src={getShopLogo()} alt="Name" />
+          <FDKLink to="/">
+            <img
+              className={styles.logo}
+              src={getShopLogo()}
+              alt={t("resource.header.shop_logo_alt_text")}
+            />
           </FDKLink>
           {isHyperlocal &&
             globalConfig?.always_on_search &&
@@ -94,11 +105,13 @@ function HeaderDesktop({
                 onClick={onDeliveryClick}
               >
                 {isPromiseLoading ? (
-                  "Fetching..."
+                  t("resource.header.fetching")
                 ) : (
                   <>
                     <div className={styles.label}>
-                      {pincode ? deliveryMessage : "Enter a pincode"}
+                      {pincode
+                        ? deliveryMessage
+                        : t("resource.header.pin_code")}
                     </div>
                     {pincode && (
                       <div className={styles.pincode}>
@@ -112,7 +125,7 @@ function HeaderDesktop({
             )}
         </div>
         <div className={`${styles.right} ${styles.right__icons}`}>
-          <I18Dropdown fpi={fpi}></I18Dropdown>
+          <I18Dropdown fpi={fpi} languageIscCode={languageIscCode}></I18Dropdown>
           {isHyperlocal &&
             (!globalConfig?.always_on_search ||
               globalConfig?.logo_menu_alignment === "layout_4") && (
@@ -121,11 +134,13 @@ function HeaderDesktop({
                 onClick={onDeliveryClick}
               >
                 {isPromiseLoading ? (
-                  "Fetching..."
+                  t("resource.header.fetching")
                 ) : (
                   <>
                     <div className={styles.label}>
-                      {pincode ? deliveryMessage : "Enter a pincode"}
+                      {pincode
+                        ? deliveryMessage
+                        : t("resource.header.pin_code")}
                     </div>
                     {pincode && (
                       <div className={styles.pincode}>
@@ -150,7 +165,7 @@ function HeaderDesktop({
           <button
             type="button"
             className={`${styles.icon} ${styles["right__icons--profile"]}`}
-            aria-label="Profile"
+            aria-label={t("resource.profile.profile")}
             onClick={() => checkLogin("profile")}
           >
             <UserIcon
@@ -202,6 +217,7 @@ function HeaderDesktop({
           appInfo={appInfo}
           LoggedIn={LoggedIn}
           checkLogin={checkLogin}
+          languageIscCode={languageIscCode}
         />
       )}
     </div>

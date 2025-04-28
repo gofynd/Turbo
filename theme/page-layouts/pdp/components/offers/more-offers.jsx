@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import Modal from "@gofynd/theme-template/components/core/modal/modal";
 import styles from "./more-offers.less";
 import { HTMLContent } from "../../../marketing/HTMLContent";
-import "@gofynd/theme-template/components/core/modal/modal.css";
+import Modal from "fdk-react-templates/components/core/modal/modal";
+import "fdk-react-templates/components/core/modal/modal.css";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function MoreOffers({
   isOpen,
@@ -12,9 +13,10 @@ function MoreOffers({
   sidebarActiveTab,
   onCloseDialog,
 }) {
+  const { t } = useGlobalTranslation("translation");
   const [activeTab, setActiveTab] = useState("coupons");
 
- useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       if (sidebarActiveTab === "coupons" && couponsList.length > 0) {
         setActiveTab("coupons");
@@ -52,7 +54,7 @@ function MoreOffers({
     <Modal
       modalType="right-modal"
       isOpen={isOpen}
-      title="Best Offers"
+      title={t("resource.product.best_offers")}
       closeDialog={() => closeDialog(false)}
       headerClassName={styles.sidebarHeader}
       bodyClassName={styles.moreOffersContainer}
@@ -64,7 +66,7 @@ function MoreOffers({
             className={`b2 ${styles.tab} ${activeTab === "coupons" ? styles.active : ""}`}
             onClick={() => setActiveTab("coupons")}
           >
-            Coupons
+            {t("resource.product.coupons")}
           </button>
         )}
         {promotionsList.length > 0 && (
@@ -73,10 +75,10 @@ function MoreOffers({
             className={`b2 ${styles.tab} ${activeTab === "promotions" ? styles.active : ""}`}
             onClick={() => setActiveTab("promotions")}
           >
-            Promotions
+            {t("resource.product.promotions")}
           </button>
         )}
-      </div>
+      </div >
 
       <div className={styles.sidebarBody}>
         <div
@@ -106,11 +108,11 @@ function MoreOffers({
               </div>
             ))
           ) : (
-            <h3 className={styles.fontHeader}>No {activeTab} available</h3>
+            <h3 className={styles.fontHeader}>{t("resource.product.no_items_available", { activeTab: "products" })}</h3>
           )}
         </div>
       </div>
-    </Modal>
+    </Modal >
   );
 }
 

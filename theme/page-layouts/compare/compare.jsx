@@ -1,8 +1,8 @@
 import React from "react";
 import useCompare from "./useCompare";
 import styles from "./compare.less";
-import Compare from "@gofynd/theme-template/page-layouts/compare/compare";
-import "@gofynd/theme-template/page-layouts/compare/compare.css";
+import Compare from "fdk-react-templates/page-layouts/compare/compare";
+import "fdk-react-templates/page-layouts/compare/compare.css";
 import { PRODUCT_COMPARISON } from "../../queries/compareQuery";
 
 function CompareProducts({ fpi }) {

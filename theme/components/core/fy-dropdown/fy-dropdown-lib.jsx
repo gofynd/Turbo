@@ -28,6 +28,7 @@ import React, {
 import styles from "./fy-dropdown-lib.less";
 import ArrowDownIcon from "../../../assets/images/arrow-down.svg";
 import { createPortal } from "react-dom";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 const FyDropdown = ({
   options = [],
@@ -41,10 +42,11 @@ const FyDropdown = ({
   value,
   disabled = false,
   // optionLabel = "display",
-  onChange = (value) => {},
+  onChange = (value) => { },
   dataKey = "key",
   getOptionLabel = (option) => option.display ?? option,
 }) => {
+  const { t } = useGlobalTranslation("translation");
   const [selectedValue, setSelectedValue] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const dropdown = useRef(null);
@@ -252,7 +254,7 @@ const FyDropdown = ({
                 ))
               ) : (
                 <li className={`${styles.dropdownOption} ${styles.noOption}`}>
-                  No options
+                  {t("resource.common.no_options")}
                 </li>
               )}
             </div>

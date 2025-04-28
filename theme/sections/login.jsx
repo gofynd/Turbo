@@ -1,7 +1,7 @@
 import React from "react";
-import Login from "@gofynd/theme-template/pages/login/login";
+import Login from "fdk-react-templates/pages/login/login";
 import { useFPI } from "fdk-core/utils";
-import "@gofynd/theme-template/pages/login/login.css";
+import "fdk-react-templates/pages/login/login.css";
 import useLogin from "../page-layouts/login/useLogin";
 import AuthContainer from "../page-layouts/auth/auth-container/auth-container";
 import { getConfigFromProps } from "../helper/utils";
@@ -26,7 +26,7 @@ function Component({ props }) {
 export default Component;
 
 export const settings = {
-  label: "Login",
+  label: "t:resource.common.login",
   props: [
     {
       id: "image_layout",
@@ -34,25 +34,25 @@ export const settings = {
       options: [
         {
           value: "no_banner",
-          text: "No Banner",
+          text: "t:resource.common.no_banner",
         },
         {
           value: "right_banner",
-          text: "Right Banner",
+          text: "t:resource.common.right_banner",
         },
         {
           value: "left_banner",
-          text: "Left Banner",
+          text: "t:resource.common.left_banner",
         },
       ],
       default: "no_banner",
-      label: "Image Layout",
+      label: "t:resource.common.image_layout",
     },
     {
       type: "image_picker",
       id: "image_banner",
       default: "",
-      label: "Image Banner",
+      label: "t:resource.common.image_banner",
     },
   ],
 };

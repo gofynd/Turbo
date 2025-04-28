@@ -1,6 +1,6 @@
 import React from "react";
-import Login from "@gofynd/theme-template/pages/login/login";
-import "@gofynd/theme-template/pages/login/login.css";
+import Login from "fdk-react-templates/pages/login/login";
+import "fdk-react-templates/pages/login/login.css";
 import useLogin from "./useLogin";
 import AuthContainer from "../auth/auth-container/auth-container";
 

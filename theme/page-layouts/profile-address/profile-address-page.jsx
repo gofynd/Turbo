@@ -1,28 +1,34 @@
 import React, { useState, useEffect, useMemo, useLayoutEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
-import AddressForm from "@gofynd/theme-template/components/address-form/address-form";
-import AddressItem from "@gofynd/theme-template/components/address-item/address-item";
+import { useLocation } from "react-router-dom";
 import { LOCALITY } from "../../queries/logisticsQuery";
 import useAddress from "../address/useAddress";
-import Loader from "@gofynd/theme-template/components/loader/loader";
-import "@gofynd/theme-template/components/loader/loader.css";
+import Loader from "fdk-react-templates/components/loader/loader";
+import "fdk-react-templates/components/loader/loader.css";
 import { useSnackbar, useAddressFormSchema } from "../../helper/hooks";
 import { capitalize, resetScrollPosition } from "../../helper/utils";
 import styles from "./profile-address-page.less";
-import "@gofynd/theme-template/components/address-form/address-form.css";
-import "@gofynd/theme-template/components/address-item/address-item.css";
+import AddressForm from "fdk-react-templates/components/address-form/address-form";
+import AddressItem from "fdk-react-templates/components/address-item/address-item";
+import "fdk-react-templates/components/address-form/address-form.css";
+import "fdk-react-templates/components/address-item/address-item.css";
 import useInternational from "../../components/header/useInternational";
-import ProfileEmptyState from "@gofynd/theme-template/pages/profile/components/empty-state/empty-state";
-import "@gofynd/theme-template/pages/profile/components/empty-state/empty-state.css";
+import {
+  useNavigate,
+  useGlobalTranslation,
+  useGlobalStore,
+} from "fdk-core/utils";
+import ProfileEmptyState from "fdk-react-templates/pages/profile/components/empty-state/empty-state";
+import "fdk-react-templates/pages/profile/components/empty-state/empty-state.css";
 import PlusAddressIcon from "../../assets/images/plus-address.svg";
 import AddAddressIcon from "../../assets/images/add-address.svg";
 
 const DefaultAddress = () => {
-  return <span className={styles.defaultAdd}>Default</span>;
+  const { t } = useGlobalTranslation("translation");
+  return <span className={styles.defaultAdd}>{t("resource.common.default")}</span>;
 };
 
 const ProfileAddressPage = ({ fpi }) => {
+  const { t } = useGlobalTranslation("translation");
   const location = useLocation();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location?.search);
@@ -162,14 +168,14 @@ const ProfileAddressPage = ({ fpi }) => {
     setAddressLoader(true);
     addAddress(obj).then(async (res) => {
       if (res?.data?.addAddress?.success) {
-        showSnackbar("Address added successfully", "success");
+        showSnackbar(t("resource.common.address.address_addition_success"), "success");
         await fetchAddresses().then(() => {
           resetPage();
           setAddressLoader(false);
         });
       } else {
         showSnackbar(
-          res?.errors?.[0]?.message ?? "Failed to create new address",
+          res?.errors?.[0]?.message ?? t("resource.common.address.new_address_creation_failure"),
           "error"
         );
       }
@@ -185,14 +191,14 @@ const ProfileAddressPage = ({ fpi }) => {
     setAddressLoader(true);
     updateAddress(obj, memoizedSelectedAdd?.id).then(async (res) => {
       if (res?.data?.updateAddress?.success) {
-        showSnackbar("Address updated successfully", "success");
+        showSnackbar(t("resource.common.address.address_update_success"), "success");
         await fetchAddresses().then(() => {
           resetPage();
           setAddressLoader(false);
         });
       } else {
         showSnackbar(
-          res?.errors?.[0]?.message ?? "Failed to update an address",
+          res?.errors?.[0]?.message ?? t("resource.common.address.address_update_failure"),
           "error"
         );
       }
@@ -206,13 +212,13 @@ const ProfileAddressPage = ({ fpi }) => {
     setAddressLoader(true);
     removeAddress(id).then(async (res) => {
       if (res?.data?.removeAddress?.is_deleted) {
-        showSnackbar("Address deleted successfully", "success");
+        showSnackbar(t("resource.common.address.address_deletion_success"), "success");
         await fetchAddresses().then(() => {
           resetPage();
           setAddressLoader(false);
         });
       } else {
-        showSnackbar("Failed to delete an address", "error");
+        showSnackbar(t("resource.common.address.address_deletion_failure"), "error");
       }
       window.scrollTo({
         top: 0,
@@ -254,21 +260,14 @@ const ProfileAddressPage = ({ fpi }) => {
           return data;
         } else {
           showSnackbar(
-            res?.errors?.[0]?.message || "Pincode verification failed",
+            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure"),
             "error"
           );
           data.showError = true;
           data.errorMsg =
-            res?.errors?.[0]?.message || "Pincode verification failed";
+            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure");
           return data;
         }
-        showSnackbar(
-          res?.errors?.[0]?.message || "Pincode verification failed"
-        );
-        data.showError = true;
-        data.errorMsg =
-          res?.errors?.[0]?.message || "Pincode verification failed";
-        return data;
       });
   };
 
@@ -280,7 +279,7 @@ const ProfileAddressPage = ({ fpi }) => {
           className={`${styles.commonBtn} ${styles.btn}`}
           type="submit"
         >
-          SAVE
+          {t("resource.facets.save_caps")}
         </button>
       ) : (
         <button
@@ -288,7 +287,7 @@ const ProfileAddressPage = ({ fpi }) => {
           className={`${styles.commonBtn} ${styles.btn}`}
           type="submit"
         >
-          UPDATE ADDRESS
+          {t("resource.common.address.update_address_caps")}
         </button>
       )}
       {!isEditMode ? (
@@ -297,7 +296,7 @@ const ProfileAddressPage = ({ fpi }) => {
           className={`${styles.commonBtn} ${styles.btn} ${styles.cancelBtn}`}
           onClick={onCancelClick}
         >
-          CANCEL
+          {t("resource.facets.cancel_caps")}
         </button>
       ) : (
         <button
@@ -306,7 +305,7 @@ const ProfileAddressPage = ({ fpi }) => {
           className={`${styles.commonBtn} ${styles.btn} ${styles.cancelBtn}`}
           onClick={() => removeAddressHandler(memoizedSelectedAdd?.id)}
         >
-          REMOVE
+          {t("resource.facets.remove_caps")}
         </button>
       )}
     </div>
@@ -340,7 +339,7 @@ const ProfileAddressPage = ({ fpi }) => {
           currency: countryInfo.currency.code,
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleCountrySearch = (event) => {
@@ -371,13 +370,11 @@ const ProfileAddressPage = ({ fpi }) => {
           <div className={styles.addressContainer}>
             <div className={styles.addressHeader}>
               <div className={`${styles.title} ${styles["bold-md"]}`}>
-                My Addresses
+                  {t("resource.common.address.my_address")}
                 <span
                   className={`${styles.savedAddress} ${styles["bold-xxs"]}`}
                 >
-                  {allAddresses?.length
-                    ? `(${allAddresses?.length} Saved)`
-                    : ""}{" "}
+                  {allAddresses?.length ? `${allAddresses?.length} ${t("resource.profile.saved")}` : ""}{" "}
                 </span>
               </div>
               {allAddresses && allAddresses.length > 0 && (
@@ -388,7 +385,7 @@ const ProfileAddressPage = ({ fpi }) => {
                   <div className={styles.flexAlignCenter}>
                     <PlusAddressIcon className={styles.addAddressIcon} />
                   </div>
-                  ADD NEW ADDRESS
+                  {t("resource.common.address.add_new_address_caps")}
                 </div>
               )}
             </div>
@@ -412,8 +409,8 @@ const ProfileAddressPage = ({ fpi }) => {
 
           {allAddresses && allAddresses.length === 0 && !addressLoader && (
             <ProfileEmptyState
-              title="No Address Added"
-              btnTitle="Add new address"
+              title={t("resource.common.address.no_address_added")}
+              btnTitle={t("resource.common.address.add_new_address")}
               onBtnClick={onCreateClick}
               icon={<AddAddressIcon />}
             />
@@ -425,15 +422,15 @@ const ProfileAddressPage = ({ fpi }) => {
             <div className={styles.addressContainer}>
               <div className={styles.addressHeader}>
                 <div className={`${styles.title} ${styles["bold-md"]}`}>
-                  {isEditMode ? "Update Address" : "Add New Address"}
+                  {isEditMode ? t("resource.common.address.update_address") : t("resource.common.address.add_new_address")}
                 </div>
               </div>
             </div>
           )}
           {isEditMode && !memoizedSelectedAdd && !addressLoader ? (
             <ProfileEmptyState
-              title="Address not found!"
-              btnTitle="RETURN TO MY ADDRESS"
+              title={t("resource.common.address.address_not_found")}
+              btnTitle={t("resource.common.address.return_to_my_address")}
               onBtnClick={() => navigate(location?.pathname)}
               style={{ height: "100%", paddingTop: "0", paddingBottom: "0" }}
             />
@@ -467,7 +464,7 @@ const ProfileAddressPage = ({ fpi }) => {
           )}
         </>
       )}
-    </div>
+    </div >
   );
 };
 

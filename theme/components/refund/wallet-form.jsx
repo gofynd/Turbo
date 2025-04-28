@@ -4,8 +4,10 @@ import styles from "./styles/bank-form.less";
 import { useSnackbar } from "../../helper/hooks";
 import useRefundDetails from "../../page-layouts/orders/useRefundDetails";
 import ButtonSpinnerIcon from "../../assets/images/button-spinner.svg";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
+  const { t } = useGlobalTranslation("translation");
   const [inProgress, setInProgress] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [requestId, setRequestId] = useState(null);
@@ -32,8 +34,7 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
   const validPhone = (value) => {
     if (value.length === 0) {
       return false;
-    }
-    if (value.length !== 10) {
+    } else if (value.length !== 10) {
       return false;
     }
     setMobile(value);
@@ -53,13 +54,18 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
     setInProgress(true);
     verifyOtpForWallet(data)
       .then((data) => {
-        showSnackbar("OTP sent successfully", "success");
+        showSnackbar(
+          t("resource.order.otp_sent_success"),
+          "success"
+        );
         setRequestId(data.request_id);
         setOtpSent(true);
         setInProgress(false);
       })
       .catch((err) => {
-        const errMsg = err.response || "Something went wrong";
+        const errMsg =
+          err.response ||
+          t("resource.common.error_message");
         showSnackbar(errMsg, "error");
         setInProgress(false);
       })
@@ -80,7 +86,8 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
           className={`${styles.formItem} ${errors.phone ? styles.error : ""}`}
         >
           <div className={styles.formTitle} htmlFor={phoneId}>
-            Mobile Number <span className={`${styles.formReq}`}>*</span>
+            {t("resource.common.mobile_number")}{" "}
+            <span className={`${styles.formReq}`}>*</span>
           </div>
           <div className={`${styles.formInput}`}>
             <input
@@ -89,7 +96,10 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
               type="number"
               {...register("phone", {
                 validate: (value) =>
-                  validPhone(value) || "Please Enter Valid Mobile Number",
+                  validPhone(value) ||
+                  t(
+                    "resource.common.enter_valid_mobile_number"
+                  ),
               })}
             />
           </div>
@@ -99,7 +109,8 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
         </div>
         <div className={`${styles.formItem} ${errors.otp ? styles.error : ""}`}>
           <div className={styles.formTitle} htmlFor={otpId}>
-            Enter OTP <span className={`${styles.formReq}`}>*</span>
+            {t("resource.common.enter_otp")}{" "}
+            <span className={`${styles.formReq}`}>*</span>
           </div>
           <div className={`${styles.formInput}`}>
             <input
@@ -108,7 +119,8 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
               type="number"
               {...register("otp", {
                 validate: (value) =>
-                  validOtp(value) || "Please Enter Valid Enter OTP",
+                  validOtp(value) ||
+                  t("resource.common.enter_valid_otp"),
               })}
             />
           </div>
@@ -120,7 +132,9 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
         >
           {loadSpinner && <ButtonSpinnerIcon className={`${styles.spinner}`} />}
 
-          {!loadSpinner && <span>Add</span>}
+          {!loadSpinner && (
+            <span>{t("resource.facets.add")}</span>
+          )}
         </button>
         {/* {item.name === "otp" && otpSent && resend !== 2 && (
           <div

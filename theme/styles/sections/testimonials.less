@@ -12,15 +12,15 @@
     }
   }
   @media @mobile {
-    padding-left: 16px;
-    padding-right: 10px;
-    margin-right: 16px;
+    padding-inline-start: 16px;
+    padding-inline-end: 10px;
+    margin-inline-end: 16px;
   }
 
   @media @tablet-strict {
-    padding-left: 24px;
-    padding-right: 12px;
-    margin-right: 24px;
+    padding-inline-start: 24px;
+    padding-inline-end: 12px;
+    margin-inline-end: 24px;
   }
   &__title {
     margin-bottom: 24px;
@@ -44,14 +44,14 @@
     @media @tablet {
       --gap: 12px;
     }
-    // padding-left: 16px;
-    // padding-right: var(--p-right-mob);
+    // padding-inline-start: 16px;
+    // padding-inline-end: var(--p-right-mob);
     // // @media @tablet {
-    // //   padding-left: 24px;
+    // //   padding-inline-start: 24px;
     // // }
     // @media @mobile-up {
-    //   padding-left: 24px;
-    //   padding-right: var(--p-right-tablet);
+    //   padding-inline-start: 24px;
+    //   padding-inline-end: var(--p-right-tablet);
     // }
     // @media @desktop {
     --gap: 24px;
@@ -61,7 +61,7 @@
     :global {
       .slick-list {
         margin: 0 calc(var(--gap) / 2 * -1);
-        padding-left: 0 !important;
+        padding-inline-start: 0 !important;
         @media @tablet {
           margin: 0;
         }

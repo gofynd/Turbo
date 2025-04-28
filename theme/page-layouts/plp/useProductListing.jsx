@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useGlobalStore } from "fdk-core/utils";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  useGlobalStore,
+  useGlobalTranslation,
+  useNavigate,
+} from "fdk-core/utils";
+import { useLocation, useSearchParams } from "react-router-dom";
 import useSortModal from "./useSortModal";
 import useFilterModal from "./useFilterModal";
 import { PLP_PRODUCTS } from "../../queries/plpQuery";
@@ -18,13 +22,14 @@ const PAGES_TO_SHOW = 5;
 const PAGE_OFFSET = 2;
 
 const useProductListing = ({ fpi, props }) => {
+  const { t } = useGlobalTranslation("translation");
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isInternational, i18nDetails, defaultCurrency } = useInternational({
     fpi,
   });
-
+  
   const { globalConfig, listingPrice } = useThemeConfig({
     fpi,
     page: "product-listing",
@@ -49,6 +54,9 @@ const useProductListing = ({ fpi, props }) => {
     preselect_size = true,
     img_resize = 300,
     img_resize_mobile = 500,
+    size_selection_style = "dropdown",
+    tax_label =""
+    
   } = Object.entries(props).reduce((acc, [key, { value }]) => {
     acc[key] = value;
     return acc;
@@ -61,8 +69,9 @@ const useProductListing = ({ fpi, props }) => {
     mandatory_pincode,
     hide_single_size,
     preselect_size,
+    size_selection_style,
+    tax_label
   };
-
   const {
     headerHeight = 0,
     isPlpSsrFetched,
@@ -89,7 +98,7 @@ const useProductListing = ({ fpi, props }) => {
   const isAlgoliaEnabled = globalConfig?.algolia_enabled;
 
   const breadcrumb = useMemo(
-    () => [{ label: "Home", link: "/" }, { label: "Products" }],
+    () => [{ label: t("resource.common.breadcrumb.home"), link: "/" }, { label: t("resource.common.breadcrumb.products") }],
     []
   );
 
@@ -304,10 +313,7 @@ const useProductListing = ({ fpi, props }) => {
       searchParams?.delete(name, value);
     }
     searchParams?.delete("page_no");
-    navigate?.({
-      pathname: location?.pathname,
-      search: searchParams?.toString(),
-    });
+    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
   };
 
   const handleSortUpdate = (value) => {
@@ -320,10 +326,7 @@ const useProductListing = ({ fpi, props }) => {
       searchParams?.delete("sort_on");
     }
     searchParams?.delete("page_no");
-    navigate?.({
-      pathname: location?.pathname,
-      search: searchParams?.toString(),
-    });
+    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
   };
 
   function resetFilters() {
@@ -334,10 +337,7 @@ const useProductListing = ({ fpi, props }) => {
       searchParams?.delete(filter.key.name);
     });
     searchParams?.delete("page_no");
-    navigate?.({
-      pathname: location?.pathname,
-      search: searchParams?.toString(),
-    });
+    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
   }
 
   const getPageUrl = (pageNo) => {
@@ -354,11 +354,11 @@ const useProductListing = ({ fpi, props }) => {
 
     if (index <= 1) {
       return 1;
-    }
-    if (index > lastIndex) {
+    } else if (index > lastIndex) {
       return lastIndex;
+    } else {
+      return index;
     }
-    return index;
   };
 
   const paginationProps = useMemo(() => {
@@ -476,7 +476,7 @@ const useProductListing = ({ fpi, props }) => {
     productCount: page?.item_total,
     isScrollTop: back_top,
     title: searchParams.get("q")
-      ? `Results for "${searchParams.get("q")}"`
+      ? `${t("resource.common.results_for")} "${searchParams.get("q")}"`
       : "",
     description: description,
     filterList,

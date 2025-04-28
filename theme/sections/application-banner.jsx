@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
+import React from "react";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import placeholderDesktop from "../assets/images/placeholder/application-banner-desktop.png";
 import placeholderMobile from "../assets/images/placeholder/application-banner-mobile.png";
 import { FDKLink } from "fdk-core/components";
@@ -10,7 +10,13 @@ import { useViewport } from "../helper/hooks";
 
 export function Component({ props, blocks, globalConfig }) {
   const isMobile = useViewport(0, 540);
-  const { image_desktop, image_mobile, banner_link } = props;
+  const {
+    image_desktop,
+    image_mobile,
+    banner_link,
+    padding_top,
+    padding_bottom,
+  } = props;
 
   const dynamicBoxStyle = (block) => {
     return {
@@ -30,7 +36,7 @@ export function Component({ props, blocks, globalConfig }) {
     if (globalConfig?.img_hd) {
       return [
         { breakpoint: { min: 481 } },
-        { breakpoint: { max: 480 }, url: mobileImage },
+        { breakpoint: { max: 540 }, url: mobileImage },
       ];
     }
     return [
@@ -53,8 +59,16 @@ export function Component({ props, blocks, globalConfig }) {
     };
   };
 
+  const dynamicStyles = {
+    paddingTop: `${padding_top?.value ?? 0}px`,
+    paddingBottom: `${padding_bottom?.value ?? 16}px`,
+  };
+
   return (
-    <div className={styles["application-banner-container"]}>
+    <section
+      className={styles.applicationBannerContainer}
+      style={dynamicStyles}
+    >
       {banner_link?.value?.length > 0 ? (
         <FDKLink to={banner_link?.value}>
           <FyImage
@@ -135,17 +149,17 @@ export function Component({ props, blocks, globalConfig }) {
             </FDKLink>
           );
         })}
-    </div>
+    </section>
   );
 }
 
 export const settings = {
-  label: "Application Banner",
+  label: "t:resource.sections.application_banner.application_banner",
   props: [
     {
       type: "image_picker",
       id: "image_desktop",
-      label: "Desktop Image",
+      label: "t:resource.common.desktop_image",
       default: "",
       options: {
         aspect_ratio: "19:6",
@@ -154,7 +168,7 @@ export const settings = {
     {
       type: "image_picker",
       id: "image_mobile",
-      label: "Mobile Image",
+      label: "t:resource.common.mobile_image",
       default: "",
       options: {
         aspect_ratio: "4:5",
@@ -164,26 +178,48 @@ export const settings = {
       type: "url",
       id: "banner_link",
       default: "",
-      label: "Redirect Link",
+      label: "t:resource.common.redirect_link",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Top padding",
+      default: 0,
+      info: "Top padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Bottom padding",
+      default: 16,
+      info: "Bottom padding for section",
     },
   ],
   blocks: [
     {
       type: "hotspot_desktop",
-      name: "Hotspot Desktop",
+      name: "t:resource.common.hotspot_desktop",
       props: [
         {
           type: "select",
           id: "pointer_type",
-          label: "Pointer Type",
+          label: "t:resource.common.pointer_type",
           options: [
             {
               value: "box",
-              text: "Box",
+              text: "t:resource.common.box",
             },
             {
               value: "pointer",
-              text: "Pointer",
+              text: "t:resource.common.pointer",
             },
           ],
           default: "box",
@@ -192,7 +228,7 @@ export const settings = {
           type: "checkbox",
           id: "edit_visible",
           default: true,
-          label: "Show Clickable Area",
+          label: "t:resource.common.show_clickable_area",
         },
         {
           type: "range",
@@ -201,7 +237,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Horizontal Position",
+          label: "t:resource.common.horizontal_position",
           default: 50,
         },
         {
@@ -211,7 +247,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Vertical Position",
+          label: "t:resource.common.vertical_position",
           default: 50,
         },
         {
@@ -221,9 +257,9 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Width",
+          label: "t:resource.common.width",
           default: 15,
-          info: "Only applicable for box pointer type",
+          info: "t:resource.sections.application_banner.box_pointer_only",
         },
         {
           type: "range",
@@ -232,66 +268,66 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Height",
+          label: "t:resource.common.height",
           default: 15,
-          info: "Only applicable for box pointer type",
+          info: "t:resource.sections.application_banner.box_pointer_only",
         },
         {
           type: "image_picker",
           id: "hotspot_image",
-          label: "Hotspot Hover Image",
+          label: "t:resource.common.hotspot_hover_image",
           options: {
             aspect_ratio: "1:1",
             aspect_ratio_strict_check: true,
           },
-          info: "Only applicable for circular pointer type",
+          info: "t:resource.sections.application_banner.circular_pointer_only",
         },
         {
           type: "text",
           id: "hotspot_header",
-          label: "Header",
-          placeholder: "Header",
+          label: "t:resource.common.header",
+          placeholder: "t:resource.common.header",
           value: "",
-          info: "Only applicable for circular pointer type",
+          info: "t:resource.sections.application_banner.circular_pointer_only",
         },
         {
           type: "textarea",
           id: "hotspot_description",
-          label: "Description",
+          label: "t:resource.common.description",
           default: "",
-          info: "Only applicable for circular pointer type",
+          info: "t:resource.sections.application_banner.circular_pointer_only",
         },
         {
           type: "text",
           id: "hotspot_link_text",
-          label: "Hover Link Text",
-          placeholder: "Link text",
+          label: "t:resource.common.hover_link_text",
+          placeholder: "t:resource.common.link_text",
           value: "",
-          info: "Only applicable for circular pointer type",
+          info: "t:resource.sections.application_banner.circular_pointer_only",
         },
         {
           type: "url",
           id: "redirect_link",
-          label: "Redirect Link",
+          label: "t:resource.common.redirect_link",
         },
       ],
     },
     {
       type: "hotspot_mobile",
-      name: "Hotspot Mobile",
+      name: "t:resource.common.hotspot_mobile",
       props: [
         {
           type: "select",
           id: "pointer_type",
-          label: "Pointer Type",
+          label: "t:resource.common.pointer_type",
           options: [
             {
               value: "box",
-              text: "Box",
+              text: "t:resource.common.box",
             },
             {
               value: "pointer",
-              text: "Pointer",
+              text: "t:resource.common.pointer",
             },
           ],
           default: "box",
@@ -300,7 +336,7 @@ export const settings = {
           type: "checkbox",
           id: "edit_visible",
           default: true,
-          label: "Show Clickable Area",
+          label: "t:resource.common.show_clickable_area",
         },
         {
           type: "range",
@@ -309,7 +345,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Horizontal Position",
+          label: "t:resource.common.horizontal_position",
           default: 50,
         },
         {
@@ -319,7 +355,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Vertical Position",
+          label: "t:resource.common.vertical_position",
           default: 50,
         },
         {
@@ -329,9 +365,9 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Width",
+          label: "t:resource.common.width",
           default: 15,
-          info: "Only applicable for box pointer type",
+          info: "t:resource.sections.application_banner.box_pointer_only",
         },
         {
           type: "range",
@@ -340,47 +376,47 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Height",
+          label: "t:resource.common.height",
           default: 15,
-          info: "Only applicable for box pointer type",
+          info: "t:resource.sections.application_banner.box_pointer_only",
         },
         {
           type: "image_picker",
           id: "hotspot_image",
-          label: "Hotspot Hover Image",
+          label: "t:resource.common.hotspot_hover_image",
           options: {
             aspect_ratio: "1:1",
             aspect_ratio_strict_check: true,
           },
-          info: "Only applicable for circular pointer type",
+          info: "t:resource.sections.application_banner.circular_pointer_only",
         },
         {
           type: "text",
           id: "hotspot_header",
-          label: "Header",
-          placeholder: "Header",
+          label: "t:resource.common.header",
+          placeholder: "t:resource.common.header",
           value: "",
-          info: "Only applicable for circular pointer type",
+          info: "t:resource.sections.application_banner.circular_pointer_only",
         },
         {
           type: "textarea",
           id: "hotspot_description",
-          label: "Description",
+          label: "t:resource.common.description",
           default: "",
-          info: "Only applicable for circular pointer type",
+          info: "t:resource.sections.application_banner.circular_pointer_only",
         },
         {
           type: "text",
           id: "hotspot_link_text",
-          label: "Hover Link Text",
-          placeholder: "Link text",
+          label: "t:resource.common.hover_link_text",
+          placeholder: "t:resource.common.link_text",
           value: "",
-          info: "Only applicable for circular pointer type",
+          info: "t:resource.sections.application_banner.circular_pointer_only",
         },
         {
           type: "url",
           id: "redirect_link",
-          label: "Redirect Link",
+          label: "t:resource.common.redirect_link",
         },
       ],
     },

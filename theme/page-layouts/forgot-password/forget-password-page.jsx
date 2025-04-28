@@ -1,6 +1,6 @@
 import React, { useId, useState } from "react";
-import ForgetPassword from "@gofynd/theme-template/pages/forgot-password/forget-password";
-import "@gofynd/theme-template/pages/forgot-password/forget-password.css";
+import ForgetPassword from "fdk-react-templates/pages/forgot-password/forget-password";
+import "fdk-react-templates/pages/forgot-password/forget-password.css";
 import styles from "./forget-password-page.less";
 import AuthContainer from "../auth/auth-container/auth-container";
 import useForgetPassword from "./useForgetPassword";

@@ -1,6 +1,6 @@
 import React, { useId } from "react";
-import Register from "@gofynd/theme-template/pages/register/register";
-import "@gofynd/theme-template/pages/register/register.css";
+import Register from "fdk-react-templates/pages/register/register";
+import "fdk-react-templates/pages/register/register.css";
 import useRegister from "./useRegister";
 import AuthContainer from "../auth/auth-container/auth-container";
 

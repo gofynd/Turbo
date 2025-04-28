@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import {
   ADDRESS_LIST,
   ADD_ADDRESS,
@@ -12,6 +12,7 @@ import { capitalize } from "../utils";
 import { useGoogleMapConfig } from "./useGoogleMapConfig";
 
 export const useAddress = ({ fpi, pageName }) => {
+  const { t } = useGlobalTranslation("translation");
   const { showSnackbar } = useSnackbar();
   const { isGoogleMap, mapApiKey } = useGoogleMapConfig({ fpi });
   const addressData = useGlobalStore(fpi.getters.ADDRESS);
@@ -53,14 +54,15 @@ export const useAddress = ({ fpi, pageName }) => {
           });
 
           return data;
+        } else {
+          showSnackbar(
+            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure")
+          );
+          data.showError = true;
+          data.errorMsg =
+            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure");
+          return data;
         }
-        showSnackbar(
-          res?.errors?.[0]?.message || "Pincode verification failed"
-        );
-        data.showError = true;
-        data.errorMsg =
-          res?.errors?.[0]?.message || "Pincode verification failed";
-        return data;
       });
   };
 

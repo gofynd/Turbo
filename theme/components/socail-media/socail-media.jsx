@@ -1,5 +1,4 @@
 import React from "react";
-import { FDKLink } from "fdk-core/components";
 import styles from "./socail-media.less";
 import SocailTwitter from "../../assets/images/socail-twitter.svg";
 import SocailFacebook from "../../assets/images/socail-facebook.svg";
@@ -10,6 +9,7 @@ import SocailInstagram from "../../assets/images/socail-instagram.svg";
 import SocailLinkedin from "../../assets/images/socail-linkedin.svg";
 import SocailYoutube from "../../assets/images/socail-youtube.svg";
 import SocailPinterest from "../../assets/images/socail-pinterest.svg";
+import { FDKLink } from "fdk-core/components";
 
 const iconMap = {
   social_twitter: SocailTwitter,

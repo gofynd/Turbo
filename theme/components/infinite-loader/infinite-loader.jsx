@@ -35,7 +35,7 @@ const InfiniteLoader = ({
   return (
     <>
       {children}
-      {infiniteLoaderEnabled && isRunningOnClient() && (
+      {infiniteLoaderEnabled && (
         <div ref={lastElementRef}>{hasNext && (loader || <Spinner />)}</div>
       )}
     </>

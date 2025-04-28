@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FDKLink } from "fdk-core/components";
 import styles from "./styles/blog-tabs.less";
 import useBlog from "../../page-layouts/blog/useBlog";
 import FyImage from "../core/fy-image/fy-image";
+import { useGlobalTranslation } from "fdk-core/utils";
+import { FDKLink } from "fdk-core/components";
 
 function BlogTabs({
   fpi,
@@ -13,6 +14,7 @@ function BlogTabs({
   show_top_blog,
   fallback_image = "",
 }) {
+  const { t } = useGlobalTranslation("translation");
   const { fetchBlogs } = useBlog({ fpi });
   const [sideTab, setSideTab] = useState(show_top_blog ? "tab1" : "");
   const [topViewedBlogs, setTopViewedBlogs] = useState([]);
@@ -29,10 +31,12 @@ function BlogTabs({
         setTopViewedBlogs(data.items);
       })
       .catch((err) => {
-        const errMsg = err.response || "Something went wrong";
+        const errMsg =
+          err.response ||
+          t("resource.common.error_message");
       });
 
-    return () => {};
+    return () => { };
   }, []);
 
   useEffect(() => {
@@ -45,10 +49,12 @@ function BlogTabs({
         setRecentBlogs(data.items);
       })
       .catch((err) => {
-        const errMsg = err.response || "Something went wrong";
+        const errMsg =
+          err.response ||
+          t("resource.common.error_message");
       });
 
-    return () => {};
+    return () => { };
   }, []);
 
   if (
@@ -71,7 +77,7 @@ function BlogTabs({
             role="tab"
             onClick={() => setSideTab("tab1")}
           >
-            <div>Top viewed</div>
+            <div>{t("resource.blog.top_viewed")}</div>
           </button>
         )}
         {show_recent_blog && (
@@ -81,7 +87,9 @@ function BlogTabs({
             role="tab"
             onClick={() => setSideTab("tab2")}
           >
-            <div>Recently Published</div>
+            <div>
+              {t("resource.blog.recently_published")}
+            </div>
           </button>
         )}
       </div>

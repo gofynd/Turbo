@@ -1,6 +1,6 @@
 import React from "react";
-import FormBuilder from "@gofynd/theme-template/components/form-builder/form-builder";
-import "@gofynd/theme-template/components/form-builder/form-builder.css";
+import FormBuilder from "fdk-react-templates/components/form-builder/form-builder";
+import "fdk-react-templates/components/form-builder/form-builder.css";
 import { useFormItem } from "./useFormItem";
 
 const FormItem = ({ fpi }) => {

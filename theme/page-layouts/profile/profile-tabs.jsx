@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { isLoggedIn } from "../../helper/auth-guard";
 import ProfileRoot from "../../components/profile/profile-root";
+import { useNavigate } from "fdk-core/utils";
 
 function ProfileTabs({ fpi }) {
   const { pathname } = useLocation();

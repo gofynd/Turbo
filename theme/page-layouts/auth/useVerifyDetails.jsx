@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useAccounts } from "../../helper/hooks";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 const useVerifyDetails = ({ fpi, verifyBothData }) => {
+  const { t } = useGlobalTranslation("translation");
   const [mobileFormError, setMobileFormError] = useState(null);
   const [isValidMobileOtp, setIsValidMobileOtp] = useState(false);
   const [mobileOtpResendTime, setMobileOtpResendTime] = useState(30);
@@ -98,7 +100,7 @@ const useVerifyDetails = ({ fpi, verifyBothData }) => {
       .catch((err) => {
         setIsValidMobileOtp(false);
         setMobileFormError({
-          message: err?.message || "Something went wrong",
+          message: err?.message || t("resource.common.error_message"),
         });
       });
   };
@@ -118,7 +120,7 @@ const useVerifyDetails = ({ fpi, verifyBothData }) => {
       .catch((err) => {
         setIsValidMobileOtp(false);
         setMobileFormError({
-          message: err?.message || "Something went wrong",
+          message: err?.message || t("resource.common.error_message"),
         });
       });
   };
@@ -141,7 +143,7 @@ const useVerifyDetails = ({ fpi, verifyBothData }) => {
       .catch((err) => {
         setIsValidEmailOtp(false);
         setEmailFormError({
-          message: err?.message || "Something went wrong",
+          message: err?.message || t("resource.common.error_message"),
         });
       });
   };
@@ -160,7 +162,7 @@ const useVerifyDetails = ({ fpi, verifyBothData }) => {
       .catch((err) => {
         setIsValidEmailOtp(false);
         setEmailFormError({
-          message: err?.message || "Something went wrong",
+          message: err?.message || t("resource.common.error_message"),
         });
       });
   };

@@ -2,9 +2,7 @@
 
 .heroImageContainer {
   width: 100%;
-  padding: 0;
   position: relative;
-  margin-bottom: calc(var(--margin_bottom) + 16px);
   isolation: isolate;
   @media @tablet {
     isolation: unset;
@@ -15,10 +13,13 @@
     height: var(--box_height);
     opacity: 0;
     position: absolute;
-    left: var(--x_position);
+    inset-inline-start: var(--x_position);
     top: var(--y_position);
     cursor: pointer;
     transform: translate(var(--x_offset), var(--y_offset));
+    [dir="rtl"] & {
+      transform: translate(calc(var(--x_offset) * -1), var(--y_offset));
+    }
   }
 
   .box-wrapper-visible {
@@ -45,8 +46,8 @@
 .overlayItems {
   position: absolute;
   top: var(--top-position-desktop);
-  left: var(--left-position-desktop);
-  right: var(--right-position-desktop);
+  inset-inline-start: var(--left-position-desktop);
+  inset-inline-end: var(--right-position-desktop);
   bottom: var(--bottom-position-desktop);
   transform: var(--transform-desktop);
   text-align: var(--content-alignment-desktop);
@@ -57,8 +58,8 @@
     padding: 0 1rem;
     width: 100%;
     top: var(--top-position-mobile);
-    left: unset;
-    right: unset;
+    inset-inline-start: unset;
+    inset-inline-end: unset;
     bottom: var(--bottom-position-mobile);
     transform: var(--transform-mobile);
     text-align: var(--content-alignment-mobile);
@@ -67,8 +68,8 @@
   @media @tablet-strict {
     max-width: 384px;
     top: var(--top-position-mobile);
-    left: var(--left-position-mobile);
-    right: var(--right-position-mobile);
+    inset-inline-start: var(--left-position-mobile);
+    inset-inline-end: var(--right-position-mobile);
     bottom: var(--bottom-position-mobile);
     transform: var(--transform-mobile);
     text-align: var(--content-alignment-mobile);

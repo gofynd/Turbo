@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { convertUTCDateToLocalDate } from "../../../../helper/utils";
+import {
+  convertUTCDateToLocalDate,
+  formatLocale,
+} from "../../../../helper/utils";
 import { useHyperlocalTat, useSyncedState } from "../../../../helper/hooks";
 import styles from "./delivery-info.less"; // Import the module CSS
 import DeliveryIcon from "../../../../assets/images/delivery.svg";
 import LocationIcon from "../../../../assets/images/location-on.svg";
 import FyndLogoIcon from "../../../../assets/images/fynd-logo.svg";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 
 function DeliveryInfo({
   className,
@@ -21,7 +25,10 @@ function DeliveryInfo({
   fpi,
   showLogo = false,
 }) {
-  const [postCode, setPostCode] = useSyncedState(pincode || "");
+  const { t } = useGlobalTranslation("translation");
+  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
+  const locale = language?.locale;
+  const [postCode, setPostCode] = useState(pincode || "");
   const [tatMessage, setTatMessage] = useState("");
   const { isHyperlocal, convertUTCToHyperlocalTat } = useHyperlocalTat({ fpi });
   const { displayName, maxLength, validatePincode } = pincodeInput;
@@ -68,14 +75,24 @@ function DeliveryInfo({
       return;
     }
 
-    const minDate = convertUTCDateToLocalDate(min, options);
-    const maxDate = convertUTCDateToLocalDate(max, options);
+    const minDate = convertUTCDateToLocalDate(
+      min,
+      options,
+      formatLocale(locale, countryCode)
+    );
+    const maxDate = convertUTCDateToLocalDate(
+      max,
+      options,
+      formatLocale(locale, countryCode)
+    );
+
+    const deliveryMessage =
+      min === max
+        ? t("resource.product.delivery_on", { date: minDate })
+        : t("resource.product.delivery_between", { minDate, maxDate });
+
     setTimeout(() => {
-      setTatMessage(
-        `Delivery ${
-          min === max ? `on ${minDate}` : `between ${minDate} - ${maxDate}`
-        }`
-      );
+      setTatMessage(deliveryMessage);
     }, 1000);
   };
 
@@ -91,13 +108,13 @@ function DeliveryInfo({
             className={`${styles.deliveryLabel} b2 ${styles.cursor}`}
             onClick={openInternationalDropdown}
           >
-            Select delivery location
+            {t("resource.common.address.select_delivery_location")}
           </h4>
         ) : (
           <span className={`${styles.flexAlignCenter}`}>
             <span className={styles.deliveryLocation}>
               <span className={styles.deliveryLocation__bold}>
-                Delivery at{" "}
+                {t("resource.product.delivery_at")}{" "}
               </span>
               <span
                 onClick={openInternationalDropdown}
@@ -116,13 +133,13 @@ function DeliveryInfo({
     return (
       <>
         <h4 className={`${styles.deliveryLabel} b2`}>
-          Select delivery location
+          {t("resource.common.address.select_delivery_location")}
         </h4>
         <div className={styles.delivery}>
           <input
             autoComplete="off"
             value={postCode}
-            placeholder="Check delivery time"
+            placeholder={t("resource.product.check_delivery_time")}
             className={`b2 ${styles.pincodeInput} ${styles.fontBody}`}
             type="text"
             maxLength={maxLength}
@@ -135,14 +152,14 @@ function DeliveryInfo({
             disabled={!postCode.length}
           >
             <span className={`${styles.flexAlignCenter}`}>
-              CHECK
+              {t("resource.facets.check")}
               <DeliveryIcon pincode className={`${styles.deliveryIcon}`} />
             </span>
           </button>
         </div>
         {selectPincodeError && !pincodeErrorMessage.length && (
           <div className={`captionNormal ${styles.emptyPincode}`}>
-            {`Please enter valid ${displayName} before Add to cart/ Buy now`}
+            {t("resource.product.enter_valid_pincode")}
           </div>
         )}
       </>
@@ -172,7 +189,7 @@ function DeliveryInfo({
                     {tatMessage}
                     {showLogo && (
                       <div className={styles.fyndLogo}>
-                        <span>with</span>
+                        <span>{t("resource.common.with")}</span>
                         <FyndLogoIcon style={{ marginLeft: "2px" }} />
                         <span className={styles.fyndText}>Fynd</span>
                       </div>

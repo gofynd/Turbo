@@ -11,7 +11,7 @@
     background: transparent;
 
     .customLoader {
-      margin-left: 0;
+      margin-inline-start: 0;
     }
   }
 }
@@ -46,7 +46,7 @@
   background-color: @ButtonSecondary;
   color: @ButtonPrimary;
   border-radius: @ButtonRadius;
-  margin-right: 6px;
+  margin-inline-end: 6px;
   padding: 9px 16px;
   text-transform: capitalize;
   box-shadow: 1px 3px 9px 1px @ThemeAccentL4;
@@ -62,8 +62,8 @@
   font-size: 14px;
   line-height: 20px;
   max-width: @page-width;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline-start: auto;
+  margin-inline-end: auto;
   padding: 40px 16px 0;
   @media @mobile-up {
     padding: 55px 24px 0;
@@ -141,7 +141,7 @@
     user-select: auto;
     display: flex;
     --gap: 24px;
-    margin-right: 0 calc(var(--gap) / 2);
+    margin-inline-end: 0 calc(var(--gap) / 2);
     @media @tablet {
       --gap: 16px;
     }
@@ -156,7 +156,7 @@
     @media @mobile {
       align-items: stretch;
       --gap: 12px;
-      margin-right: var(--p-right-mob, 12px);
+      margin-inline-end: var(--p-right-mob, 12px);
     }
     &__info {
       padding: 0 1rem 1rem;
@@ -172,8 +172,8 @@
         justify-content: space-between;
       }
       .divider {
-        padding-left: 4px;
-        padding-right: 4px;
+        padding-inline-start: 4px;
+        padding-inline-end: 4px;
         @media @mobile {
           display: none;
         }
@@ -321,8 +321,11 @@
     border-radius: @ButtonRadius;
     background-color: @ButtonPrimary;
     color: @ButtonSecondary;
-    margin-right: 8px;
-    padding: 8px 40px 8px 16px;
+    margin-inline-end: 8px;
+    padding-top: 8px;
+    padding-inline-end: 40px;
+    padding-bottom: 8px;
+    padding-inline-start: 16px;
     position: relative;
     text-transform: capitalize;
     &__icon {
@@ -331,7 +334,7 @@
       padding: 0.25rem;
       position: absolute;
       top: 50%;
-      right: 8px;
+      inset-inline-end: 8px;
       transform: translateY(-50%);
       fill: @ButtonSecondary;
     }

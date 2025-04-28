@@ -1,8 +1,8 @@
 import React from "react";
 import { useGlobalStore } from "fdk-core/utils";
-import ProfileNavigation from "@gofynd/theme-template/components/profile-navigation/profile-navigation";
 import { useAccounts } from "../../helper/hooks";
-import "@gofynd/theme-template/components/profile-navigation/profile-navigation.css";
+import ProfileNavigation from "fdk-react-templates/components/profile-navigation/profile-navigation";
+import "fdk-react-templates/components/profile-navigation/profile-navigation.css";
 
 function ProfileRoot({ children, fpi }) {
   const { first_name, last_name, profile_pic_url, user } = useGlobalStore(

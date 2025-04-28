@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAccounts } from "../../helper/hooks";
 import { isRunningOnClient } from "../../helper/utils";
+import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 
 const useLoginPassword = ({ fpi }) => {
+  const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,15 +28,12 @@ const useLoginPassword = ({ fpi }) => {
       isRedirection: true,
     };
     signIn(payload)
-      .then(() => {})
+      .then(() => { })
       .catch((err) => {
         if (isRunningOnClient() && err?.details?.meta?.is_deleted) {
-          navigate({
-            pathname: "/auth/account-locked",
-            search: location.search,
-          });
+          navigate("/auth/account-locked" + (location.search ? location.search : ""));
         }
-        setPasswordError({ message: err?.message || "Something went wrong" });
+        setPasswordError({ message: err?.message || t("resource.common.error_message") });
       });
   };
   return {

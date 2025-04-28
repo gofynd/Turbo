@@ -2,8 +2,8 @@ import React from "react";
 import useWishlist from "../page-layouts/wishlist/useWishlist";
 import styles from "../styles/wishlist.less";
 import { isLoggedIn } from "../helper/auth-guard";
-import Wishlist from "@gofynd/theme-template/pages/wishlist/wishlist";
-import "@gofynd/theme-template/pages/wishlist/wishlist.css";
+import Wishlist from "fdk-react-templates/pages/wishlist/wishlist";
+import "fdk-react-templates/pages/wishlist/wishlist.css";
 import Shimmer from "../components/shimmer/shimmer";
 
 function WishlistPage({ fpi }) {
@@ -29,29 +29,29 @@ export const settings = JSON.stringify({
     {
       type: "checkbox",
       id: "show_add_to_cart",
-      label: "Show Add to Cart button",
-      info: "Not Applicable for International Websites",
+      label: "t:resource.pages.wishlist.show_add_to_cart",
+      info: "t:resource.common.not_applicable_international_websites",
       default: true,
     },
     {
       type: "checkbox",
       id: "mandatory_pincode",
-      label: "Mandatory Delivery check",
-      info: "Mandatory delivery check in Add to Cart popup. Not applicable for international websites",
+      label: "t:resource.common.mandatory_delivery_check",
+      info: "t:resource.pages.wishlist.mandatory_delivery_check_info",
       default: false,
     },
     {
       type: "checkbox",
       id: "hide_single_size",
-      label: "Hide single size",
-      info: "Hide single size in Add to Cart popup. Not applicable for international websites",
+      label: "t:resource.common.hide_single_size",
+      info: "t:resource.pages.wishlist.hide_single_size_info",
       default: false,
     },
     {
       type: "checkbox",
       id: "preselect_size",
-      label: "Preselect size",
-      info: "Preselect size in Add to Cart popup. Applicable only for multi-sized products. Not applicable for international websites",
+      label: "t:resource.common.preselect_size",
+      info: "t:resource.pages.wishlist.preselect_size_info",
       default: false,
     },
   ],

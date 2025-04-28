@@ -5,9 +5,11 @@ import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Uti
 import styles from "./footer.less";
 import useHeader from "../header/useHeader";
 import SocialLinks from "../socail-media/socail-media";
+import { useGlobalTranslation } from "fdk-core/utils";
 import { useThemeConfig } from "../../helper/hooks";
 
 function Footer({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const location = useLocation();
   const { globalConfig, FooterNavigation, contactInfo, supportInfo } =
     useHeader(fpi);
@@ -45,14 +47,12 @@ function Footer({ fpi }) {
   const getArtWork = () => {
     if (globalConfig?.footer_image) {
       return {
-        "--background-desktop": `url(${
-          globalConfig?.footer_image_desktop ||
+        "--background-desktop": `url(${globalConfig?.footer_image_desktop ||
           "../../assets/images/placeholder19x6.png"
-        })`,
-        "--background-mobile": `url(${
-          globalConfig?.footer_image_mobile ||
+          })`,
+        "--background-mobile": `url(${globalConfig?.footer_image_mobile ||
           "../../assets/images/placeholder4x5.png"
-        })`,
+          })`,
         "--footer-opacity": 0.25,
         "--footer-opacity-background": `${pallete?.footer?.footer_bottom_background}40`, // The last two digits represents the opacity (0.25 is converted to hex)
         backgroundRepeat: "no-repeat",
@@ -97,7 +97,7 @@ function Footer({ fpi }) {
                       <img
                         src={getLogo}
                         loading="lazy"
-                        alt="Footer Logo"
+                        alt={t("resource.footer.footer_logo_alt_text")}
                         fetchpriority="low"
                       />
                     </div>
@@ -119,7 +119,7 @@ function Footer({ fpi }) {
                             {item.display}
                           </a>
                         ) : convertActionToUrl(item?.action)?.length > 0 ? (
-                          <FDKLink to={convertActionToUrl(item?.action)}>
+                          <FDKLink action={item?.action}>
                             {item.display}
                           </FDKLink>
                         ) : (
@@ -144,7 +144,7 @@ function Footer({ fpi }) {
                               ) : convertActionToUrl(subItem?.action)?.length >
                                 0 ? (
                                 <FDKLink
-                                  to={convertActionToUrl(subItem?.action)}
+                                  action={subItem?.action}
                                 >
                                   {subItem.display}
                                 </FDKLink>
@@ -233,6 +233,7 @@ function Footer({ fpi }) {
               )}
             </div>
           </div>
+         {contactInfo?.copyright_text && (
           <div className={styles.footer__bottom}>
             <div className={styles.footerContainer}>
               <div className={`${styles.copyright} b1 ${styles.fontBody}`}>
@@ -242,7 +243,7 @@ function Footer({ fpi }) {
                 <div className={styles.paymentLogo}>
                   <img
                     src={globalConfig?.payments_logo}
-                    alt="Payment Logo"
+                    alt={t("resource.footer.payment_logo_alt_text")}
                     loading="lazy"
                     fetchpriority="low"
                   />
@@ -250,6 +251,7 @@ function Footer({ fpi }) {
               )}
             </div>
           </div>
+          )}
         </>
       </footer>
     )

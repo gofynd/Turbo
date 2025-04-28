@@ -1,9 +1,12 @@
 import React from "react";
 import { FDKLink } from "fdk-core/components";
-import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
 import styles from "./breadcrumb.less";
+import { useParams } from "react-router-dom";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function BreadCrumb({ productData, config, customClass }) {
+  const { t } = useGlobalTranslation("translation");
+  const { locale } = useParams();
   const getBrand = () => productData?.brand || {};
 
   const getCategory = () => {
@@ -19,22 +22,29 @@ function BreadCrumb({ productData, config, customClass }) {
   return (
     <div className={`${styles.breadcrumbs} captionNormal ${customClass}`}>
       <span>
-        <FDKLink to="/">Home</FDKLink>&nbsp;/&nbsp;
+        <FDKLink to={"/"}>{t("resource.common.breadcrumb.home")}</FDKLink>&nbsp;/&nbsp;
       </span>
       {config?.show_products_breadcrumb?.value && (
         <span>
-          <FDKLink to="/products">Products</FDKLink>&nbsp;/&nbsp;
+          <FDKLink to={"/products"}>
+            {t("resource.common.breadcrumb.products")}
+          </FDKLink>
+          &nbsp;/&nbsp;
         </span>
       )}
       {config?.show_category_breadcrumb?.value && getCategory().name && (
         <span>
-          <FDKLink to={getCategory().url}>{getCategory().name}</FDKLink>
+          <FDKLink
+            to={getCategory().url}
+          >
+            {getCategory().name}
+          </FDKLink>
           &nbsp;/&nbsp;
         </span>
       )}
       {config?.show_brand_breadcrumb?.value && getBrand().name && (
         <span>
-          <FDKLink to={convertActionToUrl(getBrand().action)}>
+          <FDKLink action={getBrand().action}>
             {getBrand().name}
           </FDKLink>
           &nbsp;/&nbsp;

@@ -184,5 +184,9 @@ module.exports = (configOptions) => {
     optimization: {
       minimizer: [`...`, new CssMinimizerPlugin()],
     },
+    externals: {
+      "react-i18next": "i18nReact",
+      i18next: "i18next",
+    },
   };
 };

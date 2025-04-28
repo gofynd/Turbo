@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./offers.less";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function Offers({
   couponsList,
@@ -7,6 +8,7 @@ function Offers({
   setShowMoreOffers,
   setSidebarActiveTab,
 }) {
+  const { t } = useGlobalTranslation("translation");
   //   useEffect(() => {
   //     const fetchCoupons = async () => {
   //       try {
@@ -43,7 +45,7 @@ function Offers({
         <div className={styles.offersWrapper}>
           <div>
             <div className={styles.offersHeading}>
-              <h5>BEST OFFERS</h5>
+              <h5>{t("resource.product.best_offers_caps")}</h5>
             </div>
             <div className={styles.offersDetails}>
               {couponsList.length > 0 && (
@@ -67,7 +69,7 @@ function Offers({
                     className={`${styles.b5} ${styles.offersDetailsBlockViewAll}`}
                     onClick={() => openMoreOffersSidebar("coupons")}
                   >
-                    VIEW ALL
+                    {t("resource.facets.view_all")}
                   </button>
                 </div>
               )}
@@ -93,7 +95,7 @@ function Offers({
                     className={`${styles.b5} ${styles.offersDetailsBlockViewAll}`}
                     onClick={() => openMoreOffersSidebar("promotions")}
                   >
-                    VIEW ALL
+                    {t("resource.facets.view_all")}
                   </button>
                 </div>
               )}

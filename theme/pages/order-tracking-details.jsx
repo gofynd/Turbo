@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import OrderTrack from "@gofynd/theme-template/pages/order/order-tracking-details/order-tracking-details";
 import { GET_SHIPMENT_DETAILS } from "../queries/shipmentQuery";
 import useShipmentDetails from "../page-layouts/orders/useShipmentDetails";
 import useOrdersListing from "../page-layouts/orders/useOrdersListing";
-import "@gofynd/theme-template/pages/order/order-tracking-details/order-tracking-details.css";
+import OrderTrack from "fdk-react-templates/pages/order/order-tracking-details/order-tracking-details";
+import "fdk-react-templates/pages/order/order-tracking-details/order-tracking-details.css";
 
 function OrderTrackingDetails({ fpi }) {
   const { isLoading, orderShipments } = useOrdersListing(fpi);

@@ -10,6 +10,9 @@ import UserIcon from "../../assets/images/user.svg";
 import WishlistIcon from "../../assets/images/single-row-wishlist.svg";
 import { isRunningOnClient } from "../../helper/utils";
 import MegaMenu from "./mega-menu";
+import { useGlobalTranslation } from "fdk-core/utils";
+import { useParams } from "react-router-dom";
+import I18Dropdown from "./i18n-dropdown";
 
 function Navigation({
   reset,
@@ -20,7 +23,10 @@ function Navigation({
   globalConfig,
   appInfo,
   checkLogin,
+  languageIscCode
 }) {
+  const { locale } = useParams();
+  const { t } = useGlobalTranslation("translation");
   const [showSidebar, setShowSidebar] = useState(false);
   const [showSidebarNav, setShowSidebarNav] = useState(true);
   const [sidebarl2Nav, setSidebarl2Nav] = useState({});
@@ -191,7 +197,7 @@ function Navigation({
                       </span>
                     </a>
                   ) : (
-                    <FDKLink to={convertActionToUrl(l1nav?.action)}>
+                    <FDKLink action={l1nav?.action}>
                       <span
                         className={`${styles.menuTitle} ${styles.flexAlignCenter}`}
                       >
@@ -228,7 +234,7 @@ function Navigation({
                                 }
                               >
                                 <FDKLink
-                                  to={convertActionToUrl(l2nav?.action)}
+                                  action={l2nav?.action}
                                   className={
                                     styles["l2NavigationList__item--wrapper"]
                                   }
@@ -270,9 +276,7 @@ function Navigation({
                                             className={`${styles.l3NavigationList__item} b1 ${styles.fontBody}`}
                                           >
                                             <FDKLink
-                                              to={convertActionToUrl(
-                                                l3nav?.action
-                                              )}
+                                              action={l3nav?.action}
                                               className={`${styles["l3NavigationList__item--wrapper"]}`}
                                             >
                                               <span
@@ -345,14 +349,14 @@ function Navigation({
                 className={styles.logo}
                 src={getShopLogoMobile()}
                 loading="lazy"
-                alt="logo"
+                alt={t("resource.header.shop_logo_mobile_alt_text")}
               />
             </FDKLink>
             <button
               type="button"
               className={styles.closeIcon}
               onClick={closeSidebarNav}
-              aria-label="close"
+              aria-label={t("resource.facets.close_alt")}
             >
               <CloseIcon
                 className={`${styles.menuIcon} ${styles.crossIcon} ${styles.sidebarIcon}`}
@@ -385,7 +389,7 @@ function Navigation({
                   ) : convertActionToUrl(nav?.action) ? (
                     <FDKLink
                       className={styles.navLink}
-                      to={convertActionToUrl(nav?.action)}
+                      action={nav?.action}
                       onClick={() => {
                         setShowSidebar(false);
                         closeSidebarNav();
@@ -424,11 +428,9 @@ function Navigation({
               <ul key="l2_Nav">
                 <li
                   onClick={() => goBack("l1")}
-                  className={`${styles["sidebar__navigation--item"]} ${
-                    styles.title
-                  } ${styles.flexAlignCenter} ${styles.justifyStart} ${
-                    styles.fontBody
-                  } b1`}
+                  className={`${styles["sidebar__navigation--item"]} ${styles.title
+                    } ${styles.flexAlignCenter} ${styles.justifyStart} ${styles.fontBody
+                    } b1`}
                   style={{ display: sidebarl2Nav.title ? "flex" : "none" }}
                 >
                   <ArrowDownIcon
@@ -439,14 +441,13 @@ function Navigation({
                 {sidebarl2Nav.navigation.map((nav, index) => (
                   <li
                     key={index}
-                    className={`${styles["sidebar__navigation--item"]} ${
-                      styles.flexAlignCenter
-                    } ${styles.justifyBetween} ${styles.fontBody} h5`}
+                    className={`${styles["sidebar__navigation--item"]} ${styles.flexAlignCenter
+                      } ${styles.justifyBetween} ${styles.fontBody} h5`}
                   >
                     {convertActionToUrl(nav?.action) ? (
                       <FDKLink
                         className={styles["nav-link"]}
-                        to={convertActionToUrl(nav?.action)}
+                        action={nav?.action}
                         onClick={() => {
                           goBack("l1");
                           closeSidebarNav();
@@ -486,11 +487,9 @@ function Navigation({
               <ul key="l3_Nav">
                 <li
                   onClick={() => goBack("l2")}
-                  className={`${styles["sidebar__navigation--item"]} ${
-                    styles.title
-                  } ${styles.flexAlignCenter} ${styles.justifyStart} ${
-                    styles.fontBody
-                  } b1`}
+                  className={`${styles["sidebar__navigation--item"]} ${styles.title
+                    } ${styles.flexAlignCenter} ${styles.justifyStart} ${styles.fontBody
+                    } b1`}
                   style={{ display: sidebarl3Nav.title ? "flex" : "none" }}
                 >
                   <ArrowDownIcon
@@ -505,13 +504,12 @@ function Navigation({
                 {sidebarl3Nav.navigation.map((nav, index) => (
                   <li
                     key={index}
-                    className={`${styles["sidebar__navigation--item"]} ${
-                      styles.flexAlignCenter
-                    } ${styles.justifyBetween} ${styles.fontBody} h5`}
+                    className={`${styles["sidebar__navigation--item"]} ${styles.flexAlignCenter
+                      } ${styles.justifyBetween} ${styles.fontBody} h5`}
                   >
                     {convertActionToUrl(nav?.action) ? (
                       <FDKLink
-                        to={convertActionToUrl(nav?.action)}
+                        action={nav?.action}
                         className={styles.navLink}
                         onClick={() => {
                           goBack("l2");
@@ -550,13 +548,12 @@ function Navigation({
               <UserIcon
                 className={`${styles.user} ${styles["sidebar-icon"]} ${styles.menuIcon}`}
               />
-              <span>Account</span>
+              <span>{t("resource.header.account_text")}</span>
             </button>
             <button
               type="button"
-              className={`${styles["sidebar__footer--item"]} ${
-                styles.wishlist
-              } ${styles.flexAlignCenter} ${styles.fontBody} h5`}
+              className={`${styles["sidebar__footer--item"]} ${styles.wishlist
+                } ${styles.flexAlignCenter} ${styles.fontBody} h5`}
               onClick={() => {
                 checkLogin("wishlist");
                 setShowSidebar(false);
@@ -565,8 +562,11 @@ function Navigation({
               <WishlistIcon
                 className={`${styles.menuIcon}  ${styles.sidebarIcon}${styles.wishlist}`}
               />
-              <span>Wishlist</span>
+              <span>{t("resource.common.breadcrumb.wishlist")}</span>
             </button>
+            <div className={`${styles.mobile} ${styles.i18Wrapper} ${styles.languageWrapper}`} >
+              <I18Dropdown fpi={fpi} languageIscCode={languageIscCode}></I18Dropdown>
+            </div>
           </div>
         </motion.div>
       </div>

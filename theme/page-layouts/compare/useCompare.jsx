@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
+import { useLocation } from "react-router-dom";
 import Loader from "../../components/loader/loader";
 import { PRODUCT_COMPARISON, SEARCH_PRODUCT } from "../../queries/compareQuery";
 import { useSnackbar } from "../../helper/hooks";
 import { debounce } from "../../helper/utils";
 import placeholder from "../../assets/images/placeholder3x4.png";
-import { isRunningOnClient } from "../../helper/utils";
+import {
+  useNavigate,
+  useGlobalTranslation,
+  useGlobalStore,
+} from "fdk-core/utils";
 
 const useCompare = (fpi) => {
+  const { t } = useGlobalTranslation("translation");
   const THEME = useGlobalStore(fpi.getters.THEME);
   const mode = THEME?.config?.list.find(
     (f) => f.name === THEME?.config?.current
@@ -93,7 +97,7 @@ const useCompare = (fpi) => {
           // setAttributes(res?.data?.productComparison?.attributes_metadata);
         } else {
           showSnackbar(
-            res?.errors?.[0]?.message ?? "Something went wrong!",
+            res?.errors?.[0]?.message ?? t("resource.common.error_message"),
             "error"
           );
         }
@@ -122,7 +126,7 @@ const useCompare = (fpi) => {
         });
     } catch (error) {
       showSnackbar(
-        "Something went wrong, unable to fetch suggestions!",
+        t("resource.compare.fetch_suggestion_failure"),
         "error"
       );
     }
@@ -165,8 +169,7 @@ const useCompare = (fpi) => {
     let value = cProduct?.attributes?.[attribute?.key];
     if (!value) {
       return "---";
-    }
-    if (Array.isArray(value)) {
+    } else if (Array.isArray(value)) {
       value = value.join(", ");
     }
     return value;

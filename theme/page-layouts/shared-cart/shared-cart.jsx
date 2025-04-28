@@ -1,13 +1,15 @@
 import React from "react";
-import SharedCartLib from "@gofynd/theme-template/pages/shared-cart/shared-cart";
 import styles from "./shared-cart.less";
-import "@gofynd/theme-template/pages/shared-cart/shared-cart.css";
+import SharedCartLib from "fdk-react-templates/pages/shared-cart/shared-cart";
+import "fdk-react-templates/pages/shared-cart/shared-cart.css";
 import useSharedCart from "./useSharedCart";
 import Loader from "../../components/loader/loader";
 import EmptyState from "../../components/empty-state/empty-state";
 import EmptyCartIcon from "../../assets/images/empty-cart.svg";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function SharedCart({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const sharedCartProps = useSharedCart(fpi);
 
   const { isLoading, bagItems } = sharedCartProps;
@@ -22,7 +24,7 @@ function SharedCart({ fpi }) {
             <EmptyCartIcon />
           </div>
         }
-        title="There are no items in cart"
+        title={t("resource.cart.no_items")}
       />
     );
   }

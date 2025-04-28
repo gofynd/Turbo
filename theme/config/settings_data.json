@@ -35,7 +35,7 @@
                   "button_link": "#552531"
                 },
                 "sale_discount": {
-                  "sale_badge_background": "#fa7272",
+                  "sale_badge_background": "#f1faee",
                   "sale_badge_text": "#f7f7f7",
                   "sale_discount_text": "#1867b0",
                   "sale_timer": "#231f20"
@@ -374,7 +374,108 @@
       {
         "sections": [
           {
-            "blocks": [],
+            "blocks": [
+              {
+                "type": "hotspot_desktop",
+                "name": "Hotspot Desktop",
+                "props": {
+                  "pointer_type": {
+                    "type": "select",
+                    "value": "pointer"
+                  },
+                  "edit_visible": {
+                    "type": "checkbox",
+                    "value": true
+                  },
+                  "x_position": {
+                    "type": "range",
+                    "value": 50
+                  },
+                  "y_position": {
+                    "type": "range",
+                    "value": 50
+                  },
+                  "box_width": {
+                    "type": "range",
+                    "value": 15
+                  },
+                  "box_height": {
+                    "type": "range",
+                    "value": 15
+                  },
+                  "hotspot_image": {
+                    "type": "image_picker",
+                    "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/company/5178/applications/668765e1c984016d78222a21/theme/pictures/free/original/theme-image-1725613920549.png"
+                  },
+                  "hotspot_header": {
+                    "type": "text",
+                    "value": "Header"
+                  },
+                  "hotspot_description": {
+                    "type": "textarea",
+                    "value": "Description"
+                  },
+                  "hotspot_link_text": {
+                    "type": "text",
+                    "value": "Link"
+                  },
+                  "redirect_link": {
+                    "type": "url",
+                    "value": "https://glam.fynd.io/products"
+                  }
+                }
+              },
+              {
+                "type": "hotspot_mobile",
+                "name": "Hotspot Mobile",
+                "props": {
+                  "pointer_type": {
+                    "type": "select",
+                    "value": "pointer"
+                  },
+                  "edit_visible": {
+                    "type": "checkbox",
+                    "value": true
+                  },
+                  "x_position": {
+                    "type": "range",
+                    "value": 50
+                  },
+                  "y_position": {
+                    "type": "range",
+                    "value": 50
+                  },
+                  "box_width": {
+                    "type": "range",
+                    "value": 15
+                  },
+                  "box_height": {
+                    "type": "range",
+                    "value": 15
+                  },
+                  "hotspot_image": {
+                    "type": "image_picker",
+                    "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/company/5178/applications/668765e1c984016d78222a21/theme/pictures/free/original/theme-image-1727341922988.png"
+                  },
+                  "hotspot_header": {
+                    "type": "text",
+                    "value": "Header"
+                  },
+                  "hotspot_description": {
+                    "type": "textarea",
+                    "value": "Description"
+                  },
+                  "hotspot_link_text": {
+                    "type": "text",
+                    "value": "Link"
+                  },
+                  "redirect_link": {
+                    "type": "url",
+                    "value": "https://glam.fynd.io/products"
+                  }
+                }
+              }
+            ],
             "label": "Hero Image",
             "name": "hero-image",
             "predicate": {
@@ -393,6 +494,7 @@
                 "authenticated": true
               }
             },
+            "preset": {},
             "props": {
               "heading": {
                 "type": "text",
@@ -420,7 +522,7 @@
               },
               "desktop_banner": {
                 "type": "image_picker",
-                "value": ""
+                "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/company/5178/applications/64a5852e8c9c824f3f71bfd6/theme/pictures/free/original/theme-image-1706877310472.jpeg"
               },
               "text_placement_desktop": {
                 "type": "select",
@@ -432,7 +534,7 @@
               },
               "mobile_banner": {
                 "type": "image_picker",
-                "value": ""
+                "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/company/5178/applications/64a5852e8c9c824f3f71bfd6/theme/pictures/free/original/theme-image-1706877310472.jpeg"
               },
               "text_placement_mobile": {
                 "value": "top_left",
@@ -452,7 +554,7 @@
                 "props": {
                   "image": {
                     "type": "image_picker",
-                    "value": ""
+                    "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/2031/TLsyapymK2-image-(4).png"
                   },
                   "link": {
                     "type": "url",
@@ -466,7 +568,7 @@
                 "props": {
                   "image": {
                     "type": "image_picker",
-                    "value": ""
+                    "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/2023/AsY7QHVFCM-image-(4).png"
                   },
                   "link": {
                     "type": "url",
@@ -480,7 +582,7 @@
                 "props": {
                   "image": {
                     "type": "image_picker",
-                    "value": ""
+                    "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/2034/4hK785hTJC-image-(4).png"
                   },
                   "link": {
                     "type": "url",
@@ -494,7 +596,7 @@
                 "props": {
                   "image": {
                     "type": "image_picker",
-                    "value": ""
+                    "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/original/2032/p2s72qBwka-image-(4).png"
                   },
                   "link": {
                     "type": "url",
@@ -521,14 +623,15 @@
                 "authenticated": true
               }
             },
+            "preset": {},
             "props": {
               "heading": {
                 "type": "text",
-                "value": "Customize Your Style"
+                "value": "New Arrivals"
               },
               "description": {
                 "type": "text",
-                "value": "This flexible gallery lets you highlight key products and promotions, guiding customers to the right places."
+                "value": "Showcase your top collections here! Whether it's new arrivals, trending items, or special promotions, use this space to draw attention to what's most important in your store."
               },
               "button_text": {
                 "type": "text",
@@ -573,78 +676,55 @@
               },
               "desktop_layout": {
                 "type": "select",
-                "value": "grid"
+                "value": "banner_horizontal_scroll"
               },
               "mobile_layout": {
                 "type": "select",
-                "value": "grid"
+                "value": "horizontal"
               }
             }
           },
           {
-            "blocks": [
-              {
-                "type": "gallery",
-                "name": "Image card",
-                "props": {
-                  "image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "mobile_image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "redirect_link": {
-                    "type": "url",
-                    "value": ""
-                  }
-                }
-              },
-              {
-                "type": "gallery",
-                "name": "Image card",
-                "props": {
-                  "image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "mobile_image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "redirect_link": {
-                    "type": "url",
-                    "value": ""
-                  }
-                }
-              }
-            ],
+            "blocks": [],
+            "label": "Categories Listing",
+            "name": "categories-listing",
             "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
               "screen": {
-                "mobile": true,
                 "desktop": true,
+                "mobile": true,
                 "tablet": true
               },
               "user": {
-                "authenticated": true,
-                "anonymous": true
-              },
-              "route": {
-                "selected": "none",
-                "exact_url": ""
+                "anonymous": true,
+                "authenticated": true
               }
             },
-            "label": "Image Slideshow",
-            "name": "image-slideshow",
+            "preset": {},
             "props": {
-              "autoplay": {
-                "value": true,
-                "type": "checkbox"
+              "title": {
+                "type": "text",
+                "value": "A True Style"
               },
-              "slide_interval": {
-                "value": 2,
-                "type": "range"
+              "cta_text": {
+                "type": "text",
+                "value": "Be exclusive, Be Divine, Be yourself"
+              },
+              "img_fill": {
+                "type": "checkbox",
+                "value": true
+              },
+              "desktop_layout": {
+                "type": "select",
+                "value": "horizontal"
+              },
+              "mobile_layout": {
+                "type": "select",
+                "value": "grid"
               }
             }
           },
@@ -815,6 +895,113 @@
               "slide_interval": {
                 "value": 2,
                 "type": "range"
+              }
+            }
+          },
+          {
+            "blocks": [],
+            "label": "Featured Products",
+            "name": "featured-products",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "product": {
+                "type": "product"
+              },
+              "Heading": {
+                "type": "text",
+                "value": "Our Featured Product"
+              },
+              "description": {
+                "value": "",
+                "type": "text"
+              },
+              "show_seller": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "show_size_guide": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "size_selection_style": {
+                "type": "radio",
+                "value": "dropdown"
+              },
+              "hide_single_size": {
+                "value": false,
+                "type": "checkbox"
+              },
+              "tax_label": {
+                "value": "Price inclusive of all tax",
+                "type": "text"
+              }
+            }
+          },
+          {
+            "blocks": [],
+            "label": "Media with Text",
+            "name": "media-with-text",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "image_desktop": {
+                "type": "image_picker",
+                "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/company/5178/applications/64a3fad6b5bf42ceeae77e6a/theme/pictures/free/original/theme-image-1702633093067.png"
+              },
+              "image_mobile": {
+                "type": "image_picker",
+                "value": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/company/5178/applications/64a3fad6b5bf42ceeae77e6a/theme/pictures/free/original/theme-image-1702633093067.png"
+              },
+              "banner_link": {
+                "type": "url",
+                "value": "https://glam.fynd.io/products"
+              },
+              "title": {
+                "type": "text",
+                "value": "Shop your style"
+              },
+              "description": {
+                "type": "textarea",
+                "value": "Shop the latest collections now."
+              },
+              "button_text": {
+                "type": "text",
+                "value": "View Products"
+              },
+              "align_text_desktop": {
+                "value": false,
+                "type": "checkbox"
               }
             }
           }

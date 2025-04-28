@@ -1,18 +1,16 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useFPI } from "fdk-core/utils";
+import { useFPI, useGlobalTranslation, useNavigate } from "fdk-core/utils";
 import { BlockRenderer } from "fdk-core/components";
-import PriceBreakup from "@gofynd/theme-template/components/price-breakup/price-breakup";
-import DeliveryLocation from "@gofynd/theme-template/page-layouts/cart/Components/delivery-location/delivery-location";
-import Coupon from "@gofynd/theme-template/page-layouts/cart/Components/coupon/coupon";
-import Comment from "@gofynd/theme-template/page-layouts/cart/Components/comment/comment";
-import GstCard from "@gofynd/theme-template/page-layouts/cart/Components/gst-card/gst-card";
-import ChipItem from "@gofynd/theme-template/page-layouts/cart/Components/chip-item/chip-item";
-import ShareCart from "@gofynd/theme-template/page-layouts/cart/Components/share-cart/share-cart";
-import StickyFooter from "@gofynd/theme-template/page-layouts/cart/Components/sticky-footer/sticky-footer";
-import RemoveCartItem from "@gofynd/theme-template/page-layouts/cart/Components/remove-cart-item/remove-cart-item";
-import "@gofynd/theme-template/pages/cart/cart.css";
-
+import PriceBreakup from "fdk-react-templates/components/price-breakup/price-breakup";
+import DeliveryLocation from "fdk-react-templates/page-layouts/cart/Components/delivery-location/delivery-location";
+import Coupon from "fdk-react-templates/page-layouts/cart/Components/coupon/coupon";
+import Comment from "fdk-react-templates/page-layouts/cart/Components/comment/comment";
+import GstCard from "fdk-react-templates/page-layouts/cart/Components/gst-card/gst-card";
+import ChipItem from "fdk-react-templates/page-layouts/cart/Components/chip-item/chip-item";
+import ShareCart from "fdk-react-templates/page-layouts/cart/Components/share-cart/share-cart";
+import StickyFooter from "fdk-react-templates/page-layouts/cart/Components/sticky-footer/sticky-footer";
+import RemoveCartItem from "fdk-react-templates/page-layouts/cart/Components/remove-cart-item/remove-cart-item";
+import "fdk-react-templates/pages/cart/cart.css";
 import styles from "../styles/sections/cart-landing.less";
 import EmptyState from "../components/empty-state/empty-state";
 import useCart from "../page-layouts/cart/useCart";
@@ -27,6 +25,7 @@ import RadioIcon from "../assets/images/radio";
 import Shimmer from "../components/shimmer/shimmer";
 
 export function Component({ blocks }) {
+  const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
   const {
     isLoading,
@@ -50,15 +49,15 @@ export function Component({ blocks }) {
     customerCheckoutMode,
     checkoutMode,
     buybox = {},
-    onGotoCheckout = () => {},
-    onRemoveIconClick = () => {},
-    onRemoveButtonClick = () => {},
-    onWishlistButtonClick = () => {},
-    onCloseRemoveModalClick = () => {},
-    onPriceDetailsClick = () => {},
-    updateCartCheckoutMode = () => {},
-    onOpenPromoModal = () => {},
-    onClosePromoModal = () => {},
+    onGotoCheckout = () => { },
+    onRemoveIconClick = () => { },
+    onRemoveButtonClick = () => { },
+    onWishlistButtonClick = () => { },
+    onCloseRemoveModalClick = () => { },
+    onPriceDetailsClick = () => { },
+    updateCartCheckoutMode = () => { },
+    onOpenPromoModal = () => { },
+    onClosePromoModal = () => { },
   } = useCart(fpi);
   const { globalConfig } = useThemeConfig({ fpi });
   const { isInternational } = useThemeFeature({ fpi });
@@ -66,7 +65,10 @@ export function Component({ blocks }) {
   const cartShare = useCartShare({ fpi, cartData });
   const cartComment = useCartComment({ fpi, cartData });
   const cartGst = useCartGst({ fpi, cartData });
-  const cartCoupon = useCartCoupon({ fpi, cartData });
+  const { availableCouponList, ...restCartCoupon } = useCartCoupon({
+    fpi,
+    cartData,
+  });
 
   const [sizeModal, setSizeModal] = useState(null);
   const [currentSizeModalSize, setCurrentSizeModalSize] = useState(null);
@@ -113,7 +115,7 @@ export function Component({ blocks }) {
             <EmptyCartIcon />
           </div>
         }
-        title="There are no items in your cart"
+        title={t("resource.section.order.empty_state_title")}
       />
     );
   }
@@ -129,10 +131,10 @@ export function Component({ blocks }) {
             />
             <div className={styles.cartTitleContainer}>
               <div className={styles.bagDetailsContainer}>
-                <span className={styles.bagCountHeading}>Your Bag</span>
+                <span className={styles.bagCountHeading}>{t("resource.section.cart.your_bag")}</span>
                 <span className={styles.bagCount}>
                   ({cartItemsArray?.length || 0}
-                  {cartItemsArray?.length > 1 ? " items" : " item"})
+                  {cartItemsArray?.length > 1 ? ` ${t("resource.common.items")}` : ` ${t("resource.common.item")}`})
                 </span>
               </div>
               {isShareCart && (
@@ -188,13 +190,15 @@ export function Component({ blocks }) {
                 switch (block.type) {
                   case "coupon":
                     return (
-                      <Coupon
-                        key={key}
-                        {...cartCoupon}
-                        currencySymbol={currencySymbol}
-                      />
+                      !!availableCouponList?.length && (
+                        <Coupon
+                          key={key}
+                          availableCouponList={availableCouponList}
+                          {...restCartCoupon}
+                          currencySymbol={currencySymbol}
+                        />
+                      )
                     );
-
                   case "comment":
                     return <Comment key={key} {...cartComment} />;
 
@@ -232,7 +236,7 @@ export function Component({ blocks }) {
                             <RadioIcon
                               checked={customerCheckoutMode === "other"}
                             />
-                            <span> Placing order on behalf of Customer</span>
+                            <span> {t("resource.section.cart.order_on_behalf")}</span>
                           </div>
                         )}
                       </React.Fragment>
@@ -246,7 +250,7 @@ export function Component({ blocks }) {
                               className={styles.priceSummaryLoginButton}
                               onClick={redirectToLogin}
                             >
-                              LOGIN
+                              {t("resource.section.cart.checkout_button")}
                             </button>
                             {isAnonymous && (
                               <button
@@ -256,7 +260,7 @@ export function Component({ blocks }) {
                                 }
                                 onClick={onGotoCheckout}
                               >
-                                CONTINUE AS GUEST
+                                {t("resource.section.cart.continue_as_guest_caps")}
                               </button>
                             )}
                           </>
@@ -268,7 +272,7 @@ export function Component({ blocks }) {
                             }
                             onClick={onGotoCheckout}
                           >
-                            checkout
+                            {t("resource.section.cart.checkout_button_caps")}
                           </button>
                         )}
                       </React.Fragment>
@@ -316,32 +320,32 @@ export function Component({ blocks }) {
 }
 
 export const settings = {
-  label: "Cart Landing",
+  label: "t:resource.sections.cart_landing.cart_landing",
   props: [],
   blocks: [
     {
       type: "coupon",
-      name: "Coupon",
+      name: "t:resource.sections.cart_landing.coupon",
       props: [],
     },
     {
       type: "comment",
-      name: "Comment",
+      name: "t:resource.sections.cart_landing.comment",
       props: [],
     },
     {
       type: "gst_card",
-      name: "GST Card",
+      name: "t:resource.sections.cart_landing.gst_card",
       props: [
         {
           type: "header",
-          value: "Applicable only for orders in India",
+          value: "t:resource.sections.cart_landing.orders_india_only",
         },
       ],
     },
     {
       type: "price_breakup",
-      name: "Price Breakup",
+      name: "t:resource.sections.cart_landing.price_breakup",
       props: [],
     },
     // {
@@ -351,37 +355,37 @@ export const settings = {
     // },
     {
       type: "checkout_buttons",
-      name: "Log-In/Checkout Buttons",
+      name: "t:resource.sections.cart_landing.login_checkout_buttons",
       props: [],
     },
     {
       type: "share_cart",
-      name: "Share Cart",
+      name: "t:resource.sections.cart_landing.share_cart",
       props: [],
     },
   ],
   preset: {
     blocks: [
       {
-        name: "Coupon",
+        name: "t:resource.sections.cart_landing.coupon",
       },
       {
-        name: "Comment",
+        name: "t:resource.sections.cart_landing.comment",
       },
       {
-        name: "GST Card",
+        name: "t:resource.sections.cart_landing.gst_card",
       },
       // {
       //   name: "Behalf of customer",
       // },
       {
-        name: "Price Breakup",
+        name: "t:resource.sections.cart_landing.price_breakup",
       },
       {
-        name: "Log-In/Checkout Buttons",
+        name: "t:resource.sections.cart_landing.login_checkout_buttons",
       },
       {
-        name: "Share Cart",
+        name: "t:resource.sections.cart_landing.share_cart",
       },
     ],
   },

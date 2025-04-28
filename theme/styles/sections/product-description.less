@@ -38,7 +38,10 @@
 
 /deep/.productDetails {
   margin-top: 20px;
-  padding: 0 20px 20px 20px;
+  padding-top: 0px;
+  padding-inline-end: 20px;
+  padding-bottom: 20px;
+  padding-inline-start: 20px;
   h2 {
     text-align: center;
     padding: 20px 0;
@@ -106,7 +109,7 @@
     }
     .left {
       width: 58.18%;
-      margin-right: 40px;
+      margin-inline-end: 40px;
 
       @media @tablet {
         width: 100%;
@@ -212,7 +215,7 @@
             .ratingIcon {
               width: 14px;
               height: 14px;
-              margin-left: 4px;
+              margin-inline-start: 4px;
 
               svg > path {
                 fill: @ThemeAccentD2;
@@ -221,7 +224,7 @@
           }
 
           .separator {
-            border-left: 1px solid @DividerStokes;
+            border-inline-start: 1px solid @DividerStokes;
             height: 100%;
             margin: 0 6px;
             width: 1px;
@@ -292,7 +295,7 @@
             display: inline-block;
 
             @media @tablet {
-              margin-left: 0.5rem;
+              margin-inline-start: 0.5rem;
             }
           }
           .mrpLabel {
@@ -302,7 +305,7 @@
             line-height: 14px;
             letter-spacing: -0.02em;
             &--effective {
-              margin-right: 4px;
+              margin-inline-end: 4px;
             }
             &--marked {
               margin-right: 0.25rem;
@@ -321,7 +324,7 @@
             background-color: transparent;
 
             span {
-              margin-right: 2px;
+              margin-inline-end: 2px;
             }
 
             .scaleIcon {
@@ -347,10 +350,10 @@
     }
 
     &--ml-12 {
-      margin-left: 12px;
+      margin-inline-start: 12px;
 
       @media @tablet {
-        margin-left: 8px;
+        margin-inline-start: 8px;
       }
     }
   }
@@ -368,11 +371,11 @@
     &.sizeWrapper--collapse {
       overflow: hidden;
       flex-basis: 0;
-      margin-right: 0;
+      margin-inline-end: 0;
     }
 
     @media @tablet {
-      margin-right: 8px;
+      margin-inline-end: 8px;
     }
 
     .sizeButton {
@@ -399,7 +402,7 @@
       }
 
       .selectedSize {
-        text-align: left;
+        text-align: start;
         color: @TextHeading;
         border-radius: unset;
         .text-line-clamp();
@@ -549,7 +552,23 @@
   .customIcon {
     width: 16px;
     height: 16px;
-    margin-right: 4px;
+    margin-inline-end: 4px;
+  }
+}
+
+.customBtn {
+  margin: 24px 0;
+
+  .buyNow {
+    display: flex;
+  }
+}
+
+.customBtn {
+  margin: 24px 0;
+
+  .buyNow {
+    display: flex;
   }
 }
 
@@ -614,7 +633,7 @@
 
 .productDetail {
   list-style: outside;
-  padding-left: 1rem;
+  padding-inline-start: 1rem;
   margin-top: 24px;
   font-size: 14px;
   line-height: 18px;
@@ -657,7 +676,7 @@
     .nameWrapper {
       display: flex;
       align-items: center;
-      margin-left: 5px;
+      margin-inline-start: 5px;
       overflow: hidden;
 
       .storeSellerName {
@@ -674,7 +693,7 @@
       .dropdownArrow {
         height: 12px;
         width: 12px;
-        margin-left: 2px;
+        margin-inline-start: 2px;
 
         /deep/ svg {
           width: 12px;
@@ -759,7 +778,7 @@
       width: 100%;
       height: 100%;
       top: 0;
-      left: 0;
+      inset-inline-start: 0;
 
       line {
         stroke: @DividerStokes;

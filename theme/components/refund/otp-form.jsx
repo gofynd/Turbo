@@ -2,8 +2,10 @@ import React, { useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import styles from "./styles/bank-form.less";
 import ButtonSpinnerIcon from "../../assets/images/button-spinner.svg";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function OtpForm({ loadSpinner, verifyPayment }) {
+  const { t } = useGlobalTranslation("translation");
   const otpId = useId();
   const {
     register,
@@ -30,7 +32,8 @@ function OtpForm({ loadSpinner, verifyPayment }) {
       >
         <div className={`${styles.formItem} ${errors.otp ? styles.error : ""}`}>
           <div className={styles.formTitle} htmlFor={otpId}>
-            Enter OTP <span className={`${styles.formReq}`}>*</span>
+            {t("resource.common.enter_otp")}{" "}
+            <span className={`${styles.formReq}`}>*</span>
           </div>
           <div className={`${styles.formInput}`}>
             <input
@@ -39,7 +42,8 @@ function OtpForm({ loadSpinner, verifyPayment }) {
               type="text"
               {...register("otp", {
                 validate: (value) =>
-                  validateOTP(value) || "Please Enter Valid OTP",
+                  validateOTP(value) ||
+                  t("resource.common.enter_valid_otp"),
               })}
             />
           </div>
@@ -52,7 +56,9 @@ function OtpForm({ loadSpinner, verifyPayment }) {
         >
           {loadSpinner && <ButtonSpinnerIcon className={`${styles.spinner}`} />}
 
-          {!loadSpinner && <span>Verify</span>}
+          {!loadSpinner && (
+            <span>{t("resource.facets.verify")}</span>
+          )}
         </button>
       </form>
     </div>

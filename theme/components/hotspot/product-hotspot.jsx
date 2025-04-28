@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { FDKLink } from "fdk-core/components";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import { currencyFormat, isRunningOnClient } from "../../helper/utils";
+import FyImage from "../core/fy-image/fy-image";
+import { currencyFormat, isRunningOnClient, formatLocale } from "../../helper/utils";
 import styles from "./product-hotspot.less";
 import HotspotIcon from "../../assets/images/hotspot.svg";
 import ArrowDownIcon from "../../assets/images/arrow-down.svg";
+import { useGlobalStore, useFPI } from "fdk-core/utils";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 
 const Hotspot = ({
   product,
@@ -15,6 +16,9 @@ const Hotspot = ({
   redirect_link = "",
   aspectRatio = 1,
 }) => {
+  const fpi = useFPI();
+  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
+  const locale = language?.locale
   const [isActive, setIsActive] = useState(false);
   const [tooltipClassDesktop, setTooltipClassDesktop] = useState("");
   const [tooltipClassMobile, setTooltipClassMobile] = useState("");
@@ -144,7 +148,8 @@ const Hotspot = ({
                   <p className={styles.product__price}>
                     {currencyFormat(
                       product?.sizes?.price?.effective?.min,
-                      product?.sizes?.price?.effective?.currency_symbol
+                      product?.sizes?.price?.effective?.currency_symbol,
+                      formatLocale(locale, countryCode, true)
                     )}
                   </p>
                 )}

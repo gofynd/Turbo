@@ -4,10 +4,12 @@ import { isLoggedIn } from "../../helper/auth-guard";
 import ProfileRoot from "../../components/profile/profile-root";
 import { useSnackbar } from "../../helper/hooks";
 import { useEmail } from "./useEmail";
-import EmailPage from "@gofynd/theme-template/pages/profile/email/email"
-import "@gofynd/theme-template/pages/profile/email/email.css";
+import EmailPage from "fdk-react-templates/pages/profile/email";
+import "fdk-react-templates/pages/profile/email/email.css";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function Email({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const { showSnackbar } = useSnackbar();
   const {
     sendVerificationLinkToEmail,
@@ -22,7 +24,7 @@ function Email({ fpi }) {
   const handleVerification = useCallback(async (email) => {
     try {
       await sendVerificationLinkToEmail(email);
-      showSnackbar(`Verification link sent to ${email}`, "success");
+      showSnackbar(`${t("resource.profile.verification_link_sent_to")} ${email}`, "success");
     } catch (error) {
       showSnackbar(error?.message, "error");
       throw error;
@@ -32,7 +34,7 @@ function Email({ fpi }) {
   const handleSetPrimary = useCallback(async (email) => {
     try {
       await setEmailAsPrimary(email);
-      showSnackbar(`${email} set as primary`, "success");
+      showSnackbar(`${email} ${t("resource.profile.set_as_primary")}`, "success");
     } catch (error) {
       showSnackbar(error?.message, "error");
       throw error;
@@ -42,7 +44,7 @@ function Email({ fpi }) {
   const handleDelete = useCallback(async (emailDetails) => {
     try {
       await deleteEmail(emailDetails);
-      showSnackbar(`${emailDetails?.email} removed successfully`, "success");
+      showSnackbar(`${emailDetails?.email} ${t("resource.common.removed_success")}`, "success");
     } catch (error) {
       showSnackbar(error?.message, "error");
       throw error;
@@ -52,7 +54,7 @@ function Email({ fpi }) {
   const handleAddEmail = useCallback(async (email) => {
     try {
       await addEmail(email);
-      showSnackbar(`Verification link sent to ${email}`, "success");
+      showSnackbar(`${t("resource.profile.set_as_primary")} ${email}`, "success");
     } catch (error) {
       showSnackbar(error?.message, "error");
       throw error;

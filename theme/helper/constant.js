@@ -66,23 +66,57 @@ export const GENDER_OPTIONS = [
 
 export const DATE_FILTERS = [
   {
-    display: "Last 30 days",
+    display: "resource.common.date_filter_options.last_30_days",
     value: 30,
     is_selected: false,
   },
   {
-    display: "Last 6 months",
+    display: "resource.common.date_filter_options.last_6_months",
     value: 180,
     is_selected: false,
   },
   {
-    display: "Last 12 months",
+    display: "resource.common.date_filter_options.last_12_months",
     value: 365,
     is_selected: false,
   },
   {
-    display: "Last 24 months",
+    display: "resource.common.date_filter_options.last_24_months",
     value: 730,
     is_selected: true,
   },
 ];
+
+export const LANGUAGE_ISO_CODE = [
+  {
+    label: "Arabic",
+    "iso-code": "ar",
+  },
+  {
+    label: "English",
+    "iso-code": "en",
+  },
+  {
+    label: "Hindi",
+    "iso-code": "hi_IN",
+  },
+];
+
+export const DEFAULT_UTC_LOCALE = "en-US";
+export const DEFAULT_CURRENCY_LOCALE = "en-IN";
+
+export const DIRECTION_ADAPTIVE_CSS_PROPERTIES = {
+  TEXT_ALIGNMENT: "text-align",
+  FLOAT: "float",
+};
+
+export const TEXT_ALIGNMENT_MAP = {
+  left: "start",
+  right: "end",
+  center: "center",
+};
+
+export const FLOAT_MAP = {
+  left: "start",
+  right: "end",
+};

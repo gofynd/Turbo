@@ -2,31 +2,30 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FDKLink } from "fdk-core/components";
 import { useGlobalStore, useFPI } from "fdk-core/utils";
 import Slider from "react-slick";
-import ProductCard from "@gofynd/theme-template/components/product-card/product-card";
+import ProductCard from "fdk-react-templates/components/product-card/product-card";
 import styles from "../styles/sections/featured-collection.less";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import ArrowRightIcon from "../assets/images/arrow-right.svg";
-import { isRunningOnClient, throttle } from "../helper/utils";
+import { isRunningOnClient, throttle, getProductImgAspectRatio } from "../helper/utils";
 import { FEATURED_COLLECTION } from "../queries/collectionsQuery";
-import "@gofynd/theme-template/components/product-card/product-card.css";
+import "fdk-react-templates/components/product-card/product-card.css";
 import placeholderBanner from "../assets/images/placeholder/featured-collection-banner.png";
 import placeholderProduct from "../assets/images/placeholder/featured-collection-product.png";
 import useAddToCartModal from "../page-layouts/plp/useAddToCartModal";
-import Modal from "@gofynd/theme-template/components/core/modal/modal";
-import AddToCart from "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart";
-import "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
-import SizeGuide from "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide";
-import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide.css";
+import Modal from "fdk-react-templates/components/core/modal/modal";
+import AddToCart from "fdk-react-templates/page-layouts/plp/Components/add-to-cart/add-to-cart";
+import "fdk-react-templates/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
+import SizeGuide from "fdk-react-templates/page-layouts/plp/Components/size-guide/size-guide";
+import "fdk-react-templates/page-layouts/plp/Components/size-guide/size-guide.css";
 import {
   useViewport,
   useAccounts,
   useWishlist,
   useThemeFeature,
 } from "../helper/hooks";
-import { getProductImgAspectRatio } from "../helper/utils";
 
 export function Component({ props, globalConfig }) {
   const fpi = useFPI();
@@ -821,9 +820,8 @@ export function Component({ props, globalConfig }) {
           !showBannerScrollView() &&
           getGallery?.length > 0 && (
             <div
-              className={`${styles["flex-justify-center"]} ${
-                imagesForScrollView()?.length <= 3 ? styles.lessGap : ""
-              } ${showScrollView() && isClient ? styles["gap-above-button-horizontal"] : styles["gap-above-button"]}`}
+              className={`${styles["flex-justify-center"]} ${imagesForScrollView()?.length <= 3 ? styles.lessGap : ""
+                } ${showScrollView() && isClient ? styles["gap-above-button-horizontal"] : styles["gap-above-button"]}`}
             >
               <FDKLink to={`/collection/${slug}`}>
                 <button
@@ -834,8 +832,9 @@ export function Component({ props, globalConfig }) {
                 </button>
               </FDKLink>
             </div>
-          )}
-      </div>
+          )
+        }
+      </div >
       {showAddToCart && (
         <>
           <Modal
@@ -857,18 +856,18 @@ export function Component({ props, globalConfig }) {
           />
         </>
       )}
-    </div>
+    </div >
   );
 }
 
 export const settings = {
-  label: "Featured Collection",
+  label: "t:resource.sections.featured_collection.featured_collection",
   props: [
     {
       type: "collection",
       id: "collection",
-      label: "Collection",
-      info: "Select a collection to display its products",
+      label: "t:resource.sections.featured_collection.collection",
+      info: "t:resource.sections.featured_collection.select_collection_for_products",
     },
     {
       id: "desktop_layout",
@@ -876,20 +875,20 @@ export const settings = {
       options: [
         {
           value: "horizontal",
-          text: "Horizontal scroll",
+          text: "t:resource.common.horizontal_scroll",
         },
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "banner_horizontal_scroll",
-          text: "Banner with horizontal carousel",
+          text: "t:resource.sections.featured_collection.banner_horizontal_carousel",
         },
       ],
       default: "banner_horizontal_scroll",
-      label: "Layout (Desktop)",
-      info: "Alignment of content in desktop",
+      label: "t:resource.sections.featured_collection.layout_desktop",
+      info: "t:resource.sections.featured_collection.desktop_content_alignment",
     },
     {
       id: "mobile_layout",
@@ -897,24 +896,80 @@ export const settings = {
       options: [
         {
           value: "horizontal",
-          text: "Horizontal scroll",
+          text: "t:resource.common.horizontal_scroll",
         },
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "banner_horizontal_scroll",
-          text: "Banner with horizontal scroll",
+          text: "t:resource.sections.featured_collection.banner_horizontal_scroll",
         },
         {
           value: "banner_stacked",
-          text: "Banner with Stack",
+          text: "t:resource.sections.featured_collection.banner_with_stack",
         },
       ],
       default: "horizontal",
-      label: "Layout (Mobile)",
-      info: "Alignment of content in mobile",
+      label: "t:resource.sections.featured_collection.layout_mobile",
+      info: "t:resource.sections.featured_collection.content_alignment_mobile",
+    },
+    {
+      id: "img_resize",
+      label: "Image size for Tablet/Desktop",
+      type: "select",
+      options: [
+        {
+          value: "300",
+          text: "300px",
+        },
+        {
+          value: "500",
+          text: "500px",
+        },
+        {
+          value: "700",
+          text: "700px",
+        },
+        {
+          value: "900",
+          text: "900px",
+        },
+        {
+          value: "1100",
+          text: "1100px",
+        },
+        {
+          value: "1300",
+          text: "1300px",
+        },
+      ],
+      default: "300",
+    },
+    {
+      id: "img_resize_mobile",
+      label: "Image size for Mobile",
+      type: "select",
+      options: [
+        {
+          value: "300",
+          text: "300px",
+        },
+        {
+          value: "500",
+          text: "500px",
+        },
+        {
+          value: "700",
+          text: "700px",
+        },
+        {
+          value: "900",
+          text: "900px",
+        },
+      ],
+      default: "500",
     },
     {
       id: "img_resize",
@@ -975,33 +1030,32 @@ export const settings = {
     {
       type: "color",
       id: "img_container_bg",
-      category: "Image Container",
+      category: "t:resource.common.image_container",
       default: "#00000000",
-      label: "Container Background Color",
-      info: "This color will be used as the container background color of the Product/Collection/Category/Brand images wherever applicable",
+      label: "t:resource.common.container_background_color",
+      info: "t:resource.common.image_container_bg_color",
     },
     {
       type: "checkbox",
       id: "img_fill",
-      category: "Image Container",
+      category: "t:resource.common.image_container",
       default: true,
-      label: "Fit image to the container",
-      info: "If the image aspect ratio is different from the container, the image will be clipped to fit the container. The aspect ratio of the image will be maintained",
+      label: "t:resource.common.fit_image_to_container",
+      info: "t:resource.common.clip_image_to_fit_container",
     },
     {
       type: "text",
       id: "heading",
-      default: "New Arrivals",
-      label: "Heading",
-      info: "Heading text of the section",
+      default: "t:resource.default_values.featured_collection_heading",
+      label: "t:resource.common.heading",
+      info: "t:resource.common.section_heading_text",
     },
     {
       type: "text",
       id: "description",
-      default:
-        "Showcase your top collections here! Whether it's new arrivals, trending items, or special promotions, use this space to draw attention to what's most important in your store.",
-      label: "Description",
-      info: "Description text of the section",
+      default: "t:resource.default_values.featured_collection_description",
+      label: "t:resource.common.description",
+      info: "t:resource.common.section_description_text",
     },
     {
       id: "text_alignment",
@@ -1009,20 +1063,20 @@ export const settings = {
       options: [
         {
           value: "left",
-          text: "Left",
+          text: "t:resource.common.start",
         },
         {
           value: "right",
-          text: "Right",
+          text: "t:resource.common.end",
         },
         {
           value: "center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
       ],
       default: "center",
-      label: "Text Alignment",
-      info: "Alignment of text content",
+      label: "t:resource.sections.featured_collection.text_alignment",
+      info: "t:resource.sections.featured_collection.alignment_of_text_content",
     },
     // {
     //   id: "title_size",
@@ -1030,26 +1084,26 @@ export const settings = {
     //   options: [
     //     {
     //       value: "small",
-    //       text: "Small",
+    //       text: "t:resource.sections.featured_collection.small",
     //     },
     //     {
     //       value: "medium",
-    //       text: "Medium",
+    //       text: "t:resource.sections.featured_collection.medium",
     //     },
     //     {
     //       value: "large",
-    //       text: "Large",
+    //       text: "t:resource.sections.featured_collection.large",
     //     },
     //   ],
     //   default: "medium",
-    //   label: "Title size",
-    //   info: "Select title size",
+    //   label: "t:resource.sections.featured_collection.title_size",
+    //   info: "t:resource.sections.featured_collection.select_title_size",
     // },
     {
       type: "text",
       id: "button_text",
-      default: "View all",
-      label: "Button text",
+      default: "t:resource.default_values.view_all",
+      label: "t:resource.common.button_text",
     },
     {
       type: "range",
@@ -1058,9 +1112,9 @@ export const settings = {
       max: 6,
       step: 1,
       unit: "",
-      label: "Products per row (Desktop)",
+      label: "t:resource.sections.featured_collection.products_per_row_desktop",
       default: 4,
-      info: "Maximum items allowed per row in horizontal scroll",
+      info: "t:resource.sections.featured_collection.max_items_per_row_horizontal_scroll",
     },
     {
       type: "range",
@@ -1069,9 +1123,9 @@ export const settings = {
       max: 2,
       step: 1,
       unit: "",
-      label: "Products per row (Mobile)",
+      label: "t:resource.sections.featured_collection.products_per_row_mobile",
       default: 1,
-      info: "Maximum items allowed per row in horizontal scroll",
+      info: "t:resource.sections.featured_collection.max_items_per_row_horizontal_scroll",
     },
     {
       type: "range",
@@ -1080,54 +1134,54 @@ export const settings = {
       max: 25,
       step: 1,
       unit: "",
-      label: "Maximum products to show",
+      label: "t:resource.sections.featured_collection.maximum_products_to_show",
       default: 10,
-      info: "Maximu products to show in horizontal scroll",
+      info: "t:resource.sections.featured_collection.max_products_horizontal_scroll",
     },
     {
       type: "checkbox",
       id: "show_add_to_cart",
-      label: "Show Add to Cart",
-      info: "Not Applicable for International Websites",
+      label: "t:resource.common.show_add_to_cart",
+      info: "t:resource.common.not_applicable_international_websites",
       default: true,
     },
     {
       type: "checkbox",
       id: "show_wishlist_icon",
-      label: "Show Wish List Icon",
+      label: "t:resource.common.show_wish_list_icon",
       default: true,
     },
     {
       type: "checkbox",
       id: "show_badge",
-      label: "Show Badge",
+      label: "t:resource.sections.featured_collection.show_badge",
       default: true,
     },
     {
       type: "checkbox",
       id: "show_view_all",
-      label: "Show View All Button",
+      label: "t:resource.sections.featured_collection.show_view_all_button",
       default: true,
     },
     {
       type: "checkbox",
       id: "mandatory_pincode",
-      label: "Mandatory Delivery check",
-      info: "Mandatory delivery check in Add to Cart popup. Not applicable for international websites",
+      label: "t:resource.common.mandatory_delivery_check",
+      info: "t:resource.pages.wishlist.mandatory_delivery_check_info",
       default: false,
     },
     {
       type: "checkbox",
       id: "hide_single_size",
-      label: "Hide single size",
-      info: "Hide single size in Add to Cart popup. Not applicable for international websites",
+      label: "t:resource.common.hide_single_size_info",
+      info: "t:resource.pages.wishlist.hide_single_size_info",
       default: false,
     },
     {
       type: "checkbox",
       id: "preselect_size",
-      label: "Preselect size",
-      info: "Preselect size in Add to Cart popup. Applicable only for multi-sized products. Not applicable for international websites",
+      label: "t:resource.common.preselect_size",
+      info: "t:resource.pages.wishlist.preselect_size_info",
       default: false,
     },
   ],

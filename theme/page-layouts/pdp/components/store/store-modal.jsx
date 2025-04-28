@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import StoreItem from "./store-item";
 import styles from "./store-modal.less"; // Import the module CSS file
+import { useGlobalTranslation } from "fdk-core/utils";
 import Loader from "../../../../components/loader/loader";
 import CloseIcon from "../../../../assets/images/close.svg";
 import ArrowDownIcon from "../../../../assets/images/arrow-down.svg";
@@ -16,15 +17,18 @@ function StoreModal({
   getProductSellers,
   isSellerLoading,
 }) {
+  const { t } = useGlobalTranslation("translation");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [isViewMore, setIsViewMore] = useState(true);
   const pageSize = 4;
 
   const isDataLoading = !Object.keys(allStoresInfo || {}).length;
   const isSellerListing = buybox?.is_seller_buybox_enabled;
-  const availableCounts = `Available in ${allStoresInfo?.items?.length} ${
-    isSellerListing ? "Seller" : "Store"
-  }${allStoresInfo?.items?.length > 1 ? "s" : ""}`;
+  const availableCounts = `${t("resource.common.available")} ${t("resource.common.in")} ${allStoresInfo?.items?.length} ${
+    isSellerListing 
+      ? t("resource.common.seller") 
+      : t("resource.common.store")
+    }${allStoresInfo?.items?.length > 1 ? "s" : ""}`;
 
   const listingItems = allStoresInfo?.items || [];
   const getListingItems = isViewMore
@@ -61,7 +65,7 @@ function StoreModal({
         <div className={`${styles.sidebarContainer} ${styles.fontBody}`}>
           <div className={styles.sidebarHeader}>
             <h3 className={`${styles.sellerLabel} ${styles.fontHeader}`}>
-              {isSellerListing ? "Sellers" : "Stores"}
+              {isSellerListing ? t("resource.common.seller") : t("resource.common.store")}
             </h3>
             <span onClick={closeDialog}>
               <CloseIcon className={styles.closeIcon} />
@@ -98,9 +102,8 @@ function StoreModal({
                     {allStoresInfo?.sort_on?.map((opt, index) => (
                       <li
                         key={index}
-                        className={`b1 ${
-                          opt.is_selected ? styles.selectedOption : ""
-                        }`}
+                        className={`b1 ${opt.is_selected ? styles.selectedOption : ""
+                          }`}
                         onClick={() => selectionChange(opt.value)}
                       >
                         {opt.name}
@@ -136,7 +139,7 @@ function StoreModal({
                           onClick={onViewMore}
                           className={styles.viewMoreBtn}
                         >
-                          View More
+                          {t("resource.facets.view_more")}
                         </button>
                       </div>
                     )}
@@ -144,17 +147,19 @@ function StoreModal({
                 )}
               </>
             )}
-          </div>
-        </div>
+          </div >
+        </div >
       )}
       {/* eslint-disable jsx-a11y/no-static-element-interactions */}
-      {isOpen && (
-        <div
-          className={`${styles.overlay} ${styles.show}`}
-          onClick={closeDialog}
-        />
-      )}
-    </div>
+      {
+        isOpen && (
+          <div
+            className={`${styles.overlay} ${styles.show}`}
+            onClick={closeDialog}
+          />
+        )
+      }
+    </div >
   );
 }
 

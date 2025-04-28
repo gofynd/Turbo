@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { FDKLink } from "fdk-core/components";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/media-with-text.less";
 import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
 import Hotspot from "../components/hotspot/product-hotspot";
 import { FEATURE_PRODUCT_DETAILS } from "../queries/featureProductQuery";
+import { FDKLink } from "fdk-core/components";
 
 export function Component({ props, globalConfig, blocks, fpi }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -134,69 +134,69 @@ export function Component({ props, globalConfig, blocks, fpi }) {
 
   const mapAlignment = !isMobile
     ? {
-        top_left: {
-          justifyContent: "unset",
-          alignItems: "flex-start",
-          textAlign: "left",
-        },
-        top_center: {
-          justifyContent: "unset",
-          alignItems: "center",
-          textAlign: "center",
-        },
-        top_right: {
-          justifyContent: "unset",
-          alignItems: "flex-end",
-          textAlign: "right",
-        },
-        center_center: {
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-        },
-        center_left: {
-          justifyContent: "center",
-          alignItems: "flex-start",
-          textAlign: "left",
-        },
-        center_right: {
-          justifyContent: "center",
-          alignItems: "flex-end",
-          textAlign: "right",
-        },
-        bottom_left: {
-          justifyContent: "flex-end",
-          alignItems: "flex-start",
-          textAlign: "left",
-        },
-        bottom_right: {
-          justifyContent: "flex-end",
-          alignItems: "flex-end",
-          textAlign: "right",
-        },
-        bottom_center: {
-          justifyContent: "flex-end",
-          alignItems: "center",
-          textAlign: "center",
-        },
-      }
+      top_start: {
+        justifyContent: "unset",
+        alignItems: "flex-start",
+        textAlign: "start",
+      },
+      top_center: {
+        justifyContent: "unset",
+        alignItems: "center",
+        textAlign: "center",
+      },
+      top_end: {
+        justifyContent: "unset",
+        alignItems: "flex-end",
+        textAlign: "end",
+      },
+      center_center: {
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+      },
+      center_start: {
+        justifyContent: "center",
+        alignItems: "flex-start",
+        textAlign: "start",
+      },
+      center_end: {
+        justifyContent: "center",
+        alignItems: "flex-end",
+        textAlign: "end",
+      },
+      bottom_start: {
+        justifyContent: "flex-end",
+        alignItems: "flex-start",
+        textAlign: "start",
+      },
+      bottom_end: {
+        justifyContent: "flex-end",
+        alignItems: "flex-end",
+        textAlign: "end",
+      },
+      bottom_center: {
+        justifyContent: "flex-end",
+        alignItems: "center",
+        textAlign: "center",
+      },
+    }
     : {
-        center: {
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-        },
-        left: {
-          justifyContent: "center",
-          alignItems: "flex-start",
-          textAlign: "left",
-        },
-        right: {
-          justifyContent: "center",
-          alignItems: "flex-end",
-          textAlign: "right",
-        },
-      };
+      center: {
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+      },
+      left: {
+        justifyContent: "center",
+        alignItems: "flex-start",
+        textAlign: "start",
+      },
+      right: {
+        justifyContent: "center",
+        alignItems: "flex-end",
+        textAlign: "end",
+      },
+    };
 
   const dynamicStyles = {
     paddingTop: `16px`,
@@ -271,12 +271,12 @@ export function Component({ props, globalConfig, blocks, fpi }) {
   );
 }
 export const settings = {
-  label: "Media with Text",
+  label: "t:resource.sections.media_with_text.media_with_text",
   props: [
     {
       type: "image_picker",
       id: "image_desktop",
-      label: "Desktop Image",
+      label: "t:resource.common.desktop_image",
       default: "",
       options: {
         aspect_ratio: "314:229",
@@ -285,7 +285,7 @@ export const settings = {
     {
       type: "image_picker",
       id: "image_mobile",
-      label: "mobile Image",
+      label: "t:resource.sections.media_with_text.mobile_image",
       default: "",
       options: {
         aspect_ratio: "320:467",
@@ -296,45 +296,45 @@ export const settings = {
       type: "select",
       options: [
         {
-          value: "top_left",
-          text: "Top Left",
+          value: "top_start",
+          text: "t:resource.sections.media_with_text.top_start",
         },
         {
           value: "top_center",
-          text: "Top Center",
+          text: "t:resource.sections.media_with_text.top_center",
         },
         {
-          value: "top_right",
-          text: "Top Right",
+          value: "top_end",
+          text: "t:resource.sections.media_with_text.top_end",
         },
         {
           value: "center_center",
-          text: "Center Center",
+          text: "t:resource.sections.media_with_text.center_center",
         },
         {
-          value: "center_left",
-          text: "Center Left",
+          value: "center_start",
+          text: "t:resource.sections.media_with_text.center_start",
         },
         {
-          value: "center_right",
-          text: "Center Right",
+          value: "center_end",
+          text: "t:resource.sections.media_with_text.center_end",
         },
         {
-          value: "bottom_left",
-          text: "Bottom Left",
+          value: "bottom_start",
+          text: "t:resource.sections.media_with_text.bottom_start",
         },
         {
-          value: "bottom_right",
-          text: "Bottom Right",
+          value: "bottom_end",
+          text: "t:resource.sections.media_with_text.bottom_end",
         },
         {
           value: "bottom_center",
-          text: "Bottom Center",
+          text: "t:resource.sections.media_with_text.bottom_center",
         },
       ],
-      default: "center_left",
-      label: "Text Alignment (Desktop)",
-      info: "Set text alignment for desktop",
+      default: "center_start",
+      label: "t:resource.common.text_alignment_desktop",
+      info: "t:resource.sections.media_with_text.text_align_desktop",
     },
     {
       id: "text_alignment_mobile",
@@ -342,58 +342,57 @@ export const settings = {
       options: [
         {
           value: "center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
         {
           value: "left",
-          text: "Left",
+          text: "t:resource.common.start",
         },
         {
           value: "right",
-          text: "Right",
+          text: "t:resource.common.end",
         },
       ],
       default: "left",
-      label: "Text Alignment (Mobile)",
-      info: "Set text alignment for mobile devices",
+      label: "t:resource.common.text_alignment_mobile",
+      info: "t:resource.sections.media_with_text.text_align_mobile",
     },
-
     {
       type: "url",
       id: "banner_link",
       default: "",
-      label: "Redirect Link",
+      label: "t:resource.common.redirect_link",
     },
     {
       type: "text",
       id: "title",
       default: "",
-      label: "Heading",
+      label: "t:resource.common.heading",
     },
     {
       type: "textarea",
       id: "description",
       default: "",
-      label: "Description",
+      label: "t:resource.common.description",
     },
     {
       type: "text",
       id: "button_text",
       default: "",
-      label: "Button Text",
+      label: "t:resource.common.button_text",
     },
     {
       type: "checkbox",
       id: "align_text_desktop",
       default: false,
-      label: "Invert Section",
-      info: "Reverse the section on desktop",
+      label: "t:resource.sections.media_with_text.invert_section",
+      info: "t:resource.sections.media_with_text.reverse_section_desktop",
     },
   ],
   blocks: [
     {
       type: "hotspot_desktop",
-      name: "Hotspot Desktop",
+      name: "t:resource.common.hotspot_desktop",
       props: [
         {
           type: "range",
@@ -402,7 +401,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Vertical Position",
+          label: "t:resource.common.vertical_position",
           default: 50,
         },
         {
@@ -412,21 +411,21 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Horizontal Position",
+          label: "t:resource.common.horizontal_position",
           default: 50,
         },
         {
           type: "product",
-          name: "Product",
+          name: "t:resource.common.product",
           id: "product",
-          label: "Select a Product",
-          info: "Product Item to be displayed",
+          label: "t:resource.common.select_a_product",
+          info: "t:resource.common.product_item_display",
         },
       ],
     },
     {
       type: "hotspot_mobile",
-      name: "Hotspot Mobile",
+      name: "t:resource.common.hotspot_mobile",
       props: [
         {
           type: "range",
@@ -435,7 +434,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Vertical Position",
+          label: "t:resource.common.vertical_position",
           default: 50,
         },
         {
@@ -445,15 +444,15 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Horizontal Position",
+          label: "t:resource.common.horizontal_position",
           default: 50,
         },
         {
           type: "product",
-          name: "Product",
+          name: "t:resource.common.product",
           id: "product",
-          label: "Select a Product",
-          info: "Product Item to be displayed",
+          label: "t:resource.common.select_a_product",
+          info: "t:resource.common.product_item_display",
         },
       ],
     },

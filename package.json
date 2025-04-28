@@ -1,11 +1,12 @@
 {
-  "name": "Turbo",
-  "version": "1.0.1",
+  "name": "Turbo-Multilang",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "license": "ISC",
   "scripts": {
     "build": "npm run clean && webpack --mode production",
+    "dev": "npx concurrently \" npm run build:dev \" \" npm run serve \" ",
     "build:dev": "npm run clean && npm run build:local -- --watch",
     "build:local": "npm run clean && webpack --env local",
     "clean": "rm -rf dist && rm -rf dist_sections",
@@ -17,6 +18,7 @@
     "lint": "eslint . --ext .js,.jsx",
     "lint:fix": "eslint . --ext .js,.jsx --fix",
     "format": "prettier --write \"theme/**/*.{js,jsx,json,css,md}\"",
+    "refresh": "npm uninstall fdk-store && npm install gitlab:fynd/regrowth/fynd-platform/themes/shadowfire.git#develop",
     "husky": "npm install husky --save-dev && husky install && npx husky add .husky/pre-commit 'npm run lint && npm run format'"
   },
   "husky": {
@@ -55,9 +57,8 @@
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.18.6",
     "@emotion/is-prop-valid": "^1.3.1",
-    "@gofynd/fdk-client-javascript": "^1.4.5",
-    "@gofynd/fdk-store-gql": "^3.0.47",
-    "@gofynd/theme-template": "^1.0.0",
+    "@gofynd/fdk-client-javascript": "git+ssh://git@ssh.dev.azure.com:v3/GoFynd/CommonLibraries/fdk-private-client-javascript#v2.2.0-unreleased",
+    "@gofynd/fdk-store-gql": "^3.0.42",
     "@google/model-viewer": "^3.5.0",
     "@pixelbin/core": "^6.1.0",
     "@react-google-maps/api": "^2.19.3",
@@ -69,6 +70,8 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.12",
     "dompurify": "^3.1.6",
+    "fdk-react-templates": "github:gofynd/fdk-react-templates#V.0.0.4-multilang",
+    "fdk-store": "github:gofynd/fdk-store-gql#v3.0.48-beta.0",
     "framer-motion": "^11.3.28",
     "google-libphonenumber": "^3.2.38",
     "html-react-parser": "^5.1.8",

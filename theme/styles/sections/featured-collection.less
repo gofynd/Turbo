@@ -91,8 +91,8 @@
   padding: 7px 15px;
   text-align: center;
   bottom: 12px;
-  left: 12px;
-  right: 12px;
+  inset-inline-start: 12px;
+  inset-inline-end: 12px;
   margin: 0 auto;
 
   //   width: calc(100% - 24px);
@@ -209,9 +209,19 @@
       }
     }
     .slick-list {
-      padding-left: 5px !important;
+      padding-inline-start: 5px !important;
       @media @mobile {
-        padding-left: 0 !important;
+        padding-inline-start: 0 !important;
+      }
+    }
+    .slick-slider {
+      @media @mobile {
+        padding-left: 10px;
+      }
+    }
+    .slick-slider {
+      @media @mobile {
+        padding-left: 10px;
       }
     }
     .slick-slider {
@@ -252,7 +262,7 @@
   }
   .slideWrapBanner {
     width: 50%;
-    padding-left: 22px;
+    padding-inline-start: 22px;
 
     @media @tablet {
       width: 100vw;
@@ -275,6 +285,7 @@
   height: 48px;
   position: absolute;
   top: 45%;
+  inset-inline-end: 4rem;
   transform: translateY(-50%);
   cursor: pointer;
   display: flex;
@@ -287,11 +298,11 @@
   }
 }
 .customNextBtn {
-  right: 4rem;
+  inset-inline-end: 4rem;
 }
 
 .customPrevBtn {
-  left: 27px;
+  inset-inline-start: 27px;
   transform: translateY(-50%) rotate(180deg);
 }
 

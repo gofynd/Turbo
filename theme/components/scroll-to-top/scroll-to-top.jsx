@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styles from "./scroll-to-top.less";
 import { isRunningOnClient } from "../../helper/utils";
+import { useGlobalTranslation } from "fdk-core/utils";
 import ScrollTopIcon from "../../assets/images/back-top.svg";
 
 const ScrollToTop = () => {
+  const { t } = useGlobalTranslation("translation");
   const [isToTopActive, setIsToTopActive] = useState(false);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const ScrollToTop = () => {
       >
         <ScrollTopIcon className={styles["arrow-top-icon"]} />
         <span className={`${styles.text} ${styles["caption-normal"]} fontBody`}>
-          Back to top
+          {t("resource.common.back_to_top")}
         </span>
       </button>
     )

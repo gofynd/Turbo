@@ -1,7 +1,7 @@
 import React from "react";
 import { FDKLink } from "fdk-core/components";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import styles from "./card.less";
 import placeholder1X1 from "../../assets/images/placeholder1X1.png";
 import placeholder3X4 from "../../assets/images/placeholder3x4.png";
@@ -39,9 +39,8 @@ function Card({ card, cardType, isImageFill, globalConfig }) {
       return `/products/?brand=${card?.slug}`;
     }
     if (cardType === "CATEGORIES") {
-      return `/products?category=${card?.slug}&department=${
-        card?.action?.page?.query?.department?.[0]
-      }`;
+      return `/products?category=${card?.slug}&department=${card?.action?.page?.query?.department?.[0]
+        }`;
     }
     return `/products/?${card?.slug}`;
   }
@@ -50,9 +49,8 @@ function Card({ card, cardType, isImageFill, globalConfig }) {
     <div>
       {card && (
         <div
-          className={`${styles.cardItem} ${styles.groupItemBox} ${
-            styles[`${cardType}`]
-          }`}
+          className={`${styles.cardItem} ${styles.groupItemBox} ${styles[`${cardType}`]
+            }`}
         >
           <FDKLink className={styles.displayBlock} to={getUrl()}>
             <FyImage
@@ -69,10 +67,9 @@ function Card({ card, cardType, isImageFill, globalConfig }) {
               globalConfig={globalConfig}
             />
             <div
-              className={`${styles.cardDesc} ${styles.flexAlignCenter} ${
-                (cardType === "COLLECTIONS" || cardType === "CATEGORIES") &&
+              className={`${styles.cardDesc} ${styles.flexAlignCenter} ${(cardType === "COLLECTIONS" || cardType === "CATEGORIES") &&
                 styles.emergeCenter
-              } ${cardType === "BRANDS" && styles.BRANDS}`}
+                } ${cardType === "BRANDS" && styles.BRANDS}`}
             >
               {cardType === "BRANDS" && (
                 <div className={styles.cardLogo}>

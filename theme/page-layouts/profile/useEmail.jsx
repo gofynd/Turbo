@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useGlobalStore } from "fdk-core/utils";
 import {
   ADD_EMAIL,
   DELETE_EMAIL,
@@ -7,6 +6,7 @@ import {
   SET_EMAIL_AS_PRIMARY,
   VERIFY_EMAIL,
 } from "../../queries/emailQuery";
+import { useGlobalStore } from "fdk-core/utils";
 
 export const useEmail = ({ fpi }) => {
   const { emails, user = {} } = useGlobalStore(fpi.getters.USER_DATA);

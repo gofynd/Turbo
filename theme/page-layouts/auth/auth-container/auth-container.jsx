@@ -1,11 +1,13 @@
 import React, { useMemo } from "react";
 import styles from "./auth-container.less";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function AuthContainer({
   bannerAlignment = "no_banner",
   bannerImage = "",
   children,
 }) {
+  const { t } = useGlobalTranslation("translation");
   const isBanner = useMemo(
     () => bannerAlignment !== "no_banner" && !!bannerImage,
     [bannerAlignment, bannerImage]
@@ -20,7 +22,7 @@ function AuthContainer({
           <div className={styles.loginBannerWrapper}>
             <img
               src={bannerImage}
-              alt="brand banner"
+              alt={t("resource.auth.alt_brand_banner")}
               className={styles.bannerImg}
             />
           </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { useSearchParams } from "react-router-dom";
 
 import {
@@ -19,6 +19,7 @@ import { CART_DETAILS, VALIDATE_COUPON } from "../../../queries/cartQuery";
 import { useSnackbar } from "../../../helper/hooks";
 
 const usePayment = (fpi) => {
+  const { t } = useGlobalTranslation("translation");
   const paymentOption = useGlobalStore(fpi?.getters?.PAYMENT_OPTIONS);
   const paymentConfig = useGlobalStore(fpi?.getters?.AGGREGATORS_CONFIG);
   const bagData = useGlobalStore(fpi?.getters?.CART_ITEMS);
@@ -227,7 +228,7 @@ const usePayment = (fpi) => {
       selectedCardData,
     ].some((method) => method && Object.keys(method).length > 0);
     if (!hasValidPayment && mode !== "QR" && mode !== "COD") {
-      showSnackbar("Select a payment option to place order", "error");
+      showSnackbar(t("resource.common.select_payment_option"), "error");
       return;
     }
 
@@ -243,7 +244,7 @@ const usePayment = (fpi) => {
       setIsLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
-        aggregator_name: selectedNewCardData.aggregator_name,
+        aggregator_name: selectedNewCardData?.aggregator_name,
         payment_mode: "CARD",
       });
       const payload = {
@@ -289,7 +290,7 @@ const usePayment = (fpi) => {
       // const confirmedPayment = fpi.payment.confirmPayment(payload);
       addParamsToLocation({
         ...getQueryParams(),
-        aggregator_name: selectedCard.aggregator_name,
+        aggregator_name: selectedCard?.aggregator_name,
         payment_mode: mode,
         payment_identifier: selectedCard.card_id,
         card_reference: selectedCard.card_reference,
@@ -326,7 +327,7 @@ const usePayment = (fpi) => {
       setIsLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
-        aggregator_name: selectedWallet.aggregator_name,
+        aggregator_name: selectedWallet?.aggregator_name,
         payment_mode: mode,
         payment_identifier: selectedWallet.code,
         merchant_code: selectedWallet.merchant_code,
@@ -335,7 +336,7 @@ const usePayment = (fpi) => {
       fpi.payment
         .checkoutPayment({
           ...options,
-          aggregator_name: selectedWallet.aggregator_name,
+          aggregator_name: selectedWallet?.aggregator_name,
           payment_identifier: selectedWallet.code,
           merchant_code: selectedWallet.merchant_code,
           payment: selectedWallet,
@@ -354,7 +355,7 @@ const usePayment = (fpi) => {
         });
     } else if (mode === "UPI") {
       const payload = {
-        aggregator_name: selectedUPIData.aggregator_name,
+        aggregator_name: selectedUPIData?.aggregator_name,
         payment_mode: mode,
         payment_identifier: selectedUPIData.code,
         merchant_code: selectedUPIData.merchant_code,
@@ -370,7 +371,7 @@ const usePayment = (fpi) => {
           const res = await fpi.executeGQL(VALID_UPI, {
             validateVPARequestInput: {
               upi_vpa: vpa,
-              aggregator: selectedUPIData.aggregator_name,
+              aggregator: selectedUPIData?.aggregator_name,
             },
           });
           if (
@@ -384,7 +385,7 @@ const usePayment = (fpi) => {
         }
         addParamsToLocation({
           ...getQueryParams(),
-          aggregator_name: selectedUPIData.aggregator_name,
+          aggregator_name: selectedUPIData?.aggregator_name,
           payment_mode: mode,
           payment_identifier: vpa,
           merchant_code: selectedUPIData.merchant_code,
@@ -417,7 +418,7 @@ const usePayment = (fpi) => {
         setIsLoading(false);
         return {
           ...finalres,
-          aggregator_name: selectedUPIData.aggregator_name,
+          aggregator_name: selectedUPIData?.aggregator_name,
         };
       } catch (error) {
         console.error("Error during UPI payment process:", error);
@@ -432,7 +433,7 @@ const usePayment = (fpi) => {
       try {
         addParamsToLocation({
           ...getQueryParams(),
-          aggregator_name: selectedQrData.aggregator_name,
+          aggregator_name: selectedQrData?.aggregator_name,
           payment_mode: mode,
           payment_identifier: selectedQrData.code,
           merchant_code: selectedQrData.merchant_code,
@@ -470,7 +471,7 @@ const usePayment = (fpi) => {
       setIsLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
-        aggregator_name: selectedNB.aggregator_name,
+        aggregator_name: selectedNB?.aggregator_name,
         payment_mode: mode,
         payment_identifier: selectedNB.code,
         merchant_code: selectedNB.merchant_code,
@@ -479,7 +480,7 @@ const usePayment = (fpi) => {
       fpi.payment
         .checkoutPayment({
           ...options,
-          aggregator_name: selectedNB.aggregator_name,
+          aggregator_name: selectedNB?.aggregator_name,
           payment_identifier: selectedNB.code,
           merchant_code: selectedNB.merchant_code,
           queryParams: getQueryParams(),
@@ -506,7 +507,7 @@ const usePayment = (fpi) => {
       setIsLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
-        aggregator_name: selectedTabData.aggregator_name,
+        aggregator_name: selectedTabData?.aggregator_name,
         payment_mode: mode,
         payment_identifier: `${selectedTabData?.payment_mode_id}`,
       });
@@ -514,7 +515,7 @@ const usePayment = (fpi) => {
       fpi.payment
         .checkoutPayment({
           ...options,
-          aggregator_name: selectedTabData.aggregator_name,
+          aggregator_name: selectedTabData?.aggregator_name,
           queryParams: getQueryParams(),
           payment: selectedTabData,
           address_id,
@@ -539,7 +540,7 @@ const usePayment = (fpi) => {
       setIsLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
-        aggregator_name: selectedPayLater.aggregator_name,
+        aggregator_name: selectedPayLater?.aggregator_name,
         payment_mode: mode,
         payment_identifier: selectedPayLater.code,
         merchant_code: selectedPayLater.merchant_code,
@@ -548,7 +549,7 @@ const usePayment = (fpi) => {
       fpi.payment
         .checkoutPayment({
           ...options,
-          aggregator_name: selectedPayLater.aggregator_name,
+          aggregator_name: selectedPayLater?.aggregator_name,
           payment_identifier: selectedPayLater.code,
           merchant_code: selectedPayLater.merchant_code,
           queryParams: getQueryParams(),
@@ -574,7 +575,7 @@ const usePayment = (fpi) => {
       };
       addParamsToLocation({
         ...getQueryParams(),
-        aggregator_name: selectedCardless.aggregator_name,
+        aggregator_name: selectedCardless?.aggregator_name,
         payment_mode: mode,
         payment_identifier: selectedCardless.code,
         merchant_code: selectedCardless.merchant_code,
@@ -584,7 +585,7 @@ const usePayment = (fpi) => {
         .checkoutPayment({
           queryParams: getQueryParams(),
           ...options,
-          aggregator_name: selectedCardless.aggregator_name,
+          aggregator_name: selectedCardless?.aggregator_name,
           payment_identifier: selectedCardless.code,
           merchant_code: selectedCardless.merchant_code,
           payment: selectedCardless,
@@ -612,7 +613,7 @@ const usePayment = (fpi) => {
       };
       addParamsToLocation({
         ...getQueryParams(),
-        aggregator_name: selectedOtherPayment.aggregator_name,
+        aggregator_name: selectedOtherPayment?.aggregator_name,
         payment_mode: selectedOtherPayment.code,
         payment_identifier: selectedOtherPayment.code,
         merchant_code: selectedOtherPayment.merchant_code,
@@ -622,7 +623,7 @@ const usePayment = (fpi) => {
       fpi.payment
         .checkoutPayment({
           ...options,
-          aggregator_name: selectedOtherPayment.aggregator_name,
+          aggregator_name: selectedOtherPayment?.aggregator_name,
           payment_identifier: selectedOtherPayment.code,
           merchant_code: selectedOtherPayment.code,
           payment: selectedOtherPayment,

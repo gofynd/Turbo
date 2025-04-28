@@ -2,14 +2,16 @@ import React, { useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { isLoggedIn } from "../../helper/auth-guard";
 import ProfileRoot from "../../components/profile/profile-root";
-import PhonePage from "@gofynd/theme-template/pages/profile/phone/phone"
-import "@gofynd/theme-template/page-layouts/auth/mobile-number/mobile-number.css";
+import "fdk-react-templates/page-layouts/auth/mobile-number/mobile-number.css";
 import { usePhone } from "./usePhone";
 import useInternational from "../../components/header/useInternational";
 import { useSnackbar, useAccounts } from "../../helper/hooks";
-import "@gofynd/theme-template/pages/profile/phone/phone.css";
+import PhonePage from "fdk-react-templates/pages/profile/phone";
+import "fdk-react-templates/pages/profile/phone/phone.css";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function Phone({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const { setMobileNumberAsPrimary, deleteMobileNumber, phoneNumbers } =
     usePhone({ fpi });
   const { sendOtpMobile, verifyMobileOtp, resendOtp } = useAccounts({ fpi });
@@ -19,7 +21,7 @@ function Phone({ fpi }) {
   const handleSetPrimary = useCallback(async (phoneDetails) => {
     try {
       await setMobileNumberAsPrimary(phoneDetails);
-      showSnackbar(`${phoneDetails?.phone} set as primary`, "success");
+      showSnackbar(`${phoneDetails?.phone} ${t("resource.profile.set_as_primary")}`, "success");
     } catch (error) {
       showSnackbar(error?.message, "error");
       throw error;
@@ -29,7 +31,7 @@ function Phone({ fpi }) {
   const handleSendOtp = useCallback(async (phoneDetails) => {
     try {
       const data = await sendOtpMobile(phoneDetails);
-      showSnackbar(`OTP sent on mobile ${phoneDetails?.mobile}`, "success");
+      showSnackbar(`${t("resource.profile.otp_sent_mobile")} ${phoneDetails?.mobile}`, "success");
       return data;
     } catch (error) {
       showSnackbar(error?.message, "error");
@@ -40,7 +42,7 @@ function Phone({ fpi }) {
   const handleVerifyOtp = useCallback(async (otpDetails) => {
     try {
       await verifyMobileOtp(otpDetails);
-      showSnackbar(`Phone Number verified`, "success");
+      showSnackbar(t("resource.profile.phone_number_verified"), "success");
     } catch (error) {
       showSnackbar(error?.message, "error");
       throw error;
@@ -50,7 +52,7 @@ function Phone({ fpi }) {
   const handleResendOtp = useCallback(async (phoneDetails) => {
     try {
       const data = await resendOtp(phoneDetails);
-      showSnackbar(`OTP sent on mobile ${phoneDetails?.mobile}`, "success");
+      showSnackbar(`${t("resource.profile.otp_sent_mobile")} ${phoneDetails?.mobile}`, "success");
       return data;
     } catch (error) {
       showSnackbar(error?.message, "error");
@@ -61,7 +63,7 @@ function Phone({ fpi }) {
   const handleDelete = useCallback(async (phoneDetails) => {
     try {
       await deleteMobileNumber(phoneDetails);
-      showSnackbar(`${phoneDetails?.phone} removed successfully`, "success");
+      showSnackbar(`${phoneDetails?.phone} ${t("resource.common.removed_success")}`, "success");
     } catch (error) {
       showSnackbar(error?.message, "error");
       throw error;

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { throttle } from "../utils";
-import { isRunningOnClient } from "../utils";
+import { isRunningOnClient, throttle } from "../utils";
 
 export const useWindowWidth = () => {
   const [windowWidth, setWindowWidth] = useState(0);

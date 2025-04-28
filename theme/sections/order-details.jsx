@@ -1,26 +1,25 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { BlockRenderer } from "fdk-core/components";
-import OrdersHeader from "@gofynd/theme-template/components/order-header/order-header";
-import "@gofynd/theme-template/components/order-header/order-header.css";
-import ShipmentItem from "@gofynd/theme-template/components/shipment-item/shipment-item";
-import "@gofynd/theme-template/components/shipment-item/shipment-item.css";
-import ShipmentTracking from "@gofynd/theme-template/components/shipment-tracking/shipment-tracking";
-import "@gofynd/theme-template/components/shipment-tracking/shipment-tracking.css";
-import ShipmentBreakup from "@gofynd/theme-template/components/shipment-breakup/shipment-breakup";
-import "@gofynd/theme-template/components/shipment-breakup/shipment-breakup.css";
-import ShipmentAddress from "@gofynd/theme-template/components/shipment-address/shipment-address";
-import "@gofynd/theme-template/components/shipment-address/shipment-address.css";
-import PaymentDetailCard from "@gofynd/theme-template/components/payment-detail-card/payment-detail-card";
-import "@gofynd/theme-template/components/payment-detail-card/payment-detail-card.css";
-
+import ShipmentItem from "fdk-react-templates/components/shipment-item/shipment-item";
+import "fdk-react-templates/components/shipment-item/shipment-item.css";
+import ShipmentTracking from "fdk-react-templates/components/shipment-tracking/shipment-tracking";
+import "fdk-react-templates/components/shipment-tracking/shipment-tracking.css";
+import ShipmentBreakup from "fdk-react-templates/components/shipment-breakup/shipment-breakup";
+import "fdk-react-templates/components/shipment-breakup/shipment-breakup.css";
+import ShipmentAddress from "fdk-react-templates/components/shipment-address/shipment-address";
+import "fdk-react-templates/components/shipment-address/shipment-address.css";
+import PaymentDetailCard from "fdk-react-templates/components/payment-detail-card/payment-detail-card";
+import "fdk-react-templates/components/payment-detail-card/payment-detail-card.css";
 import styles from "../page-layouts/profile/styles/profile-my-order-shipment-page.less";
 import useShipmentDetails from "../page-layouts/orders/useShipmentDetails";
 import EmptyState from "../components/empty-state/empty-state";
 import Loader from "../components/loader/loader";
+import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
 import OrderDeliveryIcon from "../assets/images/order-delivery.svg";
 
 export function Component({ blocks, fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoading, shipmentDetails, invoiceDetails, getInvoice } =
@@ -61,10 +60,7 @@ export function Component({ blocks, fpi }) {
     if (shipmentDetails?.can_cancel || shipmentDetails?.can_return) {
       const querParams = new URLSearchParams(location.search);
       querParams.set("selectedBagId", selectId);
-      navigate({
-        pathname: goToLink,
-        search: querParams.toString(),
-      });
+      navigate(goToLink + (querParams?.toString() ? `?${querParams.toString()}` : ""));
     }
   };
 
@@ -95,10 +91,12 @@ export function Component({ blocks, fpi }) {
           {!shipmentDetails && (
             <div className={`${styles.error}`}>
               <EmptyState
-                title="Shipment details not found."
-                description="Shipment details are not available. This section might be misplaced and ideally should be on the shipment details page where a shipment ID is provided, or the data might not be found."
+                title={t("resource.section.order.empty_state_title")}
+                description={t(
+                  "resource.section.order.empty_state_desc"
+                )}
                 btnLink="/profile/orders"
-                btnTitle="RETURN TO ORDER PAGE"
+                btnTitle={t("resource.section.order.emptybtn_title")}
               ></EmptyState>
             </div>
           )}
@@ -165,7 +163,7 @@ export function Component({ blocks, fpi }) {
                                     className={`${styles.viewMore} `}
                                     onClick={showMore}
                                   >
-                                    {`+ ${getBag().length - 2} view more`}
+                                    {`+ ${getBag().length - 2}${" "}${t("resource.facets.view_more")}`}
                                   </div>
                                 )}
                                 {show && (
@@ -173,7 +171,9 @@ export function Component({ blocks, fpi }) {
                                     className={`${styles.showLess} `}
                                     onClick={showLess}
                                   >
-                                    view less
+                                    {t(
+                                      "resource.facets.view_less"
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -188,7 +188,7 @@ export function Component({ blocks, fpi }) {
                               <div className={styles.shipment}>
                                 <div className={styles.mediaPreview}>
                                   <div className={styles.previewTitle}>
-                                    Uploaded Photos/Videos
+                                    {t("resource.order.uploaded_media")}
                                   </div>
                                   <ul className={styles.fileList}>
                                     {shipmentDetails.return_meta.images.map(
@@ -283,12 +283,16 @@ export function Component({ blocks, fpi }) {
                         return <BlockRenderer block={block} />;
 
                       default:
-                        return <h1>Invalid block</h1>;
+                        return (
+                          <h1>
+                            {t("resource.common.invalid_block")}
+                          </h1>
+                        );
                     }
                   })}
-              </div>
+              </div >
             )}
-          </div>
+          </div >
 
           {!initial && (
             <div className={`${styles.btndiv}`}>
@@ -298,7 +302,7 @@ export function Component({ blocks, fpi }) {
                   className={`${styles.commonBtn} ${styles.cancelBtn}`}
                   onClick={() => setInitial(!initial)}
                 >
-                  Cancel
+                  {t("resource.facets.cancel")}
                 </button>
                 <button
                   type="button"
@@ -306,29 +310,39 @@ export function Component({ blocks, fpi }) {
                   disabled={!btndisable}
                   onClick={goToReasons}
                 >
-                  Continue
+                  {t("resource.common.continue")}
                 </button>
               </div>
             </div>
           )}
-        </div>
+        </div >
       )}
     </>
   );
 }
 
 export const settings = {
-  label: "Order Details",
+  label: "t:resource.sections.order_details.order_details",
   props: [],
   blocks: [
     {
       type: "order_header",
-      name: "Order Header",
+      name: "t:resource.sections.order_details.order_header",
       props: [],
     },
     {
       type: "shipment_items",
-      name: "Shipment Items",
+      name: "t:resource.sections.order_details.shipment_items",
+      props: [],
+    },
+    {
+      type: "shipment_medias",
+      name: "Shipment Medias",
+      props: [],
+    },
+    {
+      type: "shipment_medias",
+      name: "Shipment Medias",
       props: [],
     },
     {
@@ -338,47 +352,47 @@ export const settings = {
     },
     {
       type: "shipment_tracking",
-      name: "Shipment Tracking",
+      name: "t:resource.sections.order_details.shipment_tracking",
       props: [],
     },
     {
       type: "shipment_address",
-      name: "Shipment Address",
+      name: "t:resource.sections.order_details.shipment_address",
       props: [],
     },
     {
       type: "payment_details_card",
-      name: "Payment Details Card",
+      name: "t:resource.sections.order_details.payment_details_card",
       props: [],
     },
     {
       type: "shipment_breakup",
-      name: "Shipment Breakup",
+      name: "t:resource.sections.order_details.shipment_breakup",
       props: [],
     },
   ],
   preset: {
     blocks: [
       {
-        name: "Order Header",
+        name: "t:resource.sections.order_details.order_header",
       },
       {
-        name: "Shipment Items",
+        name: "t:resource.sections.order_details.shipment_items",
       },
       {
-        name: "Shipment Medias",
+        name: "t:resource.sections.order_details.shipment_medias",
       },
       {
-        name: "Shipment Tracking",
+        name: "t:resource.sections.order_details.shipment_tracking",
       },
       {
-        name: "Shipment Address",
+        name: "t:resource.sections.order_details.shipment_address",
       },
       {
-        name: "Payment Details Card",
+        name: "t:resource.sections.order_details.payment_details_card",
       },
       {
-        name: "Shipment Breakup",
+        name: "t:resource.sections.order_details.shipment_breakup",
       },
     ],
   },

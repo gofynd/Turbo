@@ -3,13 +3,12 @@ import Slider from "react-slick";
 import styles from "../styles/sections/collections-listing.less";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
-import { isRunningOnClient, throttle } from "../helper/utils";
+import { isRunningOnClient } from "../helper/utils";
 import { COLLECTION } from "../queries/collectionsQuery";
 import { useGlobalStore, useFPI } from "fdk-core/utils";
 import placeholderImage from "../assets/images/placeholder/collections-listing.png";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import CollectionCard from "../components/collection-card/collection-card";
+import { useWindowWidth } from "../helper/hooks";
 
 export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const fpi = useFPI();
@@ -18,14 +17,15 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
     description,
     layout_mobile,
     layout_desktop,
-    button_text,
     per_row,
     img_container_bg,
-    img_fill,
-    name_placement,
+    padding_top,
+    padding_bottom,
   } = props;
 
-  const [windowWidth, setWindowWidth] = useState(0);
+  const itemsPerRow = Number(per_row?.value ?? 3);
+
+  const windowWidth = useWindowWidth();
   const [isLoading, setIsLoading] = useState(false);
   const collectionCustomValue =
     useGlobalStore(fpi?.getters?.CUSTOM_VALUE) ?? {};
@@ -45,9 +45,6 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
     collectionCustomValue[`collectionData-${customSectionId}`];
 
   useEffect(() => {
-    if (isRunningOnClient()) {
-      setWindowWidth(window?.innerWidth);
-    }
     const fetchCollections = async () => {
       if (!collections?.length && collectionIds?.length) {
         try {
@@ -84,40 +81,20 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
     return collections?.length === 0;
   };
 
-  useEffect(() => {
-    const handleResize = throttle(() => {
-      setWindowWidth(isRunningOnClient() ? window.innerWidth : 0);
-    }, 500);
-
-    if (isRunningOnClient()) {
-      window.addEventListener("resize", handleResize);
-      handleResize();
-    }
-
-    return () => {
-      if (isRunningOnClient()) {
-        window.removeEventListener("resize", handleResize);
-      }
-    };
-  }, []);
-
   const getImgSrcSet = () => {
     if (globalConfig?.img_hd) {
       return [];
     }
     return [
-      {
-        breakpoint: { min: 1023 },
-        width: 500,
-      },
-      {
-        breakpoint: { min: 481 },
-        width: 416,
-      },
-      {
-        breakpoint: { max: 480 },
-        width: 480,
-      },
+      { breakpoint: { min: 1728 }, width: Math.round(3564 / itemsPerRow) },
+      { breakpoint: { min: 1512 }, width: Math.round(3132 / itemsPerRow) },
+      { breakpoint: { min: 1296 }, width: Math.round(2700 / itemsPerRow) },
+      { breakpoint: { min: 1080 }, width: Math.round(2250 / itemsPerRow) },
+      { breakpoint: { min: 900 }, width: Math.round(1890 / itemsPerRow) },
+      { breakpoint: { min: 720 }, width: Math.round(1530 / 3) },
+      { breakpoint: { min: 540 }, width: Math.round(1170 / 3) },
+      { breakpoint: { min: 360 }, width: Math.round(810) },
+      { breakpoint: { min: 180 }, width: Math.round(450) },
     ];
   };
 
@@ -227,162 +204,131 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
   }, [collectionsForScrollView]);
 
   const dynamicStyles = {
-    paddingTop: "16px",
-    paddingBottom: `16px`,
+    paddingTop: `${padding_top?.value ?? 16}px`,
+    paddingBottom: `${padding_bottom?.value ?? 16}px`,
     "--bg-color": `${img_container_bg?.value || "#00000000"}`,
     maxWidth: "100vw",
   };
 
   return (
-    <div style={dynamicStyles} className={styles.collections__template}>
-      <div className={styles["section-title-block"]}>
-        <h2 className={`${styles["section-title"]} fontHeader`}>
+    <section className={styles.collections__template} style={dynamicStyles}>
+      <div className={`fx-title-block ${styles["section-title-block"]}`}>
+        <h2 className={`fx-title ${styles["section-title"]} fontHeader`}>
           {heading?.value}
         </h2>
-        <p className={`${styles["section-description"]} fontBody`}>
+        <p className={`fx-description ${styles["section-description"]}`}>
           {description.value}
         </p>
       </div>
       {!isLoading && showStackedView() && (
-        <div className={styles["collection-grid"]} style={getColumns()}>
+        <div className={styles.collectionGrid} style={getColumns()}>
           {collectionsForStackedView?.map((card, index) => (
-            <CollectionCard
+            <CollectionItem
               key={`${card?.data?.collection?.name}_${index}`}
-              collectionName={card?.data?.collection?.name}
-              collectionImage={
-                card?.data?.collection?.banners?.portrait?.url ||
-                placeholderImage
-              }
-              collectionAction={card?.data?.collection?.action}
-              buttonText={button_text?.value}
-              isNameOverImage={name_placement?.value === "inside"}
-              imageProps={{
-                backgroundColor: img_container_bg?.value,
-                isImageFill: img_fill?.value,
-                aspectRatio: 0.8,
-                sources: getImgSrcSet(),
-                defer: index >= per_row?.value,
-              }}
+              collection={card?.data?.collection}
+              props={props}
+              srcset={getImgSrcSet()}
+              defer={index >= per_row?.value}
             />
           ))}
         </div>
       )}
       {!isLoading && showScrollView() && collectionsForScrollView?.length && (
-        <>
-          <div
-            className={`${styles["collection-horizontal"]} ${collectionsForScrollView?.length === 1 && styles["single-card"]}`}
-          >
-            <div
-              style={{
-                "--slick-dots": `${Math.ceil(collectionsForScrollView?.length / per_row?.value) * 22 + 10}px`,
-              }}
-            >
-              <Slider
-                {...config}
-                className={`${styles["custom-slick-list"]} ${collectionsForScrollView?.length <= per_row?.value ? "no-nav" : ""} ${styles.hideOnMobile}`}
-              >
-                {collectionsForScrollView?.map((card, index) => (
-                  <div
-                    key={`${card?.data?.collection?.name}_${index}`}
-                    className={styles.customSlickSlide}
-                  >
-                    <CollectionCard
-                      collectionName={card?.data?.collection?.name}
-                      collectionImage={
-                        card?.data?.collection?.banners?.portrait?.url ||
-                        placeholderImage
-                      }
-                      collectionAction={card?.data?.collection?.action}
-                      buttonText={button_text?.value}
-                      isNameOverImage={name_placement?.value === "inside"}
-                      imageProps={{
-                        backgroundColor: img_container_bg?.value,
-                        isImageFill: img_fill?.value,
-                        aspectRatio: 0.8,
-                        sources: getImgSrcSet(),
-                        defer: index >= per_row?.value,
-                      }}
-                    />
-                  </div>
-                ))}
-              </Slider>
-              <Slider
-                {...configMobile}
-                className={`${styles["custom-slick-list"]} ${collectionsForScrollView?.length <= per_row?.value ? "no-nav" : ""}   ${styles.hideOnDesktop}`}
-              >
-                {collectionsForScrollView?.map((card, index) => (
-                  <div
-                    key={`${card?.data?.collection?.name}_${index}`}
-                    className={styles.customSlickSlide}
-                  >
-                    <CollectionCard
-                      key={`${card?.data?.collection?.name}_${index}`}
-                      collectionName={card?.data?.collection?.name}
-                      collectionImage={
-                        card?.data?.collection?.banners?.portrait?.url ||
-                        placeholderImage
-                      }
-                      collectionAction={card?.data?.collection?.action}
-                      buttonText={button_text?.value}
-                      isNameOverImage={name_placement?.value === "inside"}
-                      imageProps={{
-                        backgroundColor: img_container_bg?.value,
-                        isImageFill: img_fill?.value,
-                        aspectRatio: 0.8,
-                        sources: getImgSrcSet(),
-                        defer: index >= per_row?.value,
-                      }}
-                    />
-                  </div>
-                ))}
-              </Slider>
-            </div>
-          </div>
-        </>
+        <div
+          className={`${styles.collectionSlider} ${collectionsForScrollView?.length === 1 && styles.singleItem}`}
+          style={{
+            "--slick-dots": `${Math.ceil(collectionsForScrollView?.length / per_row?.value) * 22 + 10}px`,
+          }}
+        >
+          <Slider {...config} className={`${styles.hideOnMobile}`}>
+            {collectionsForScrollView?.map((card, index) => (
+              <CollectionItem
+                className={styles.sliderItem}
+                key={`${card?.data?.collection?.name}_${index}`}
+                collection={card?.data?.collection}
+                props={props}
+                srcset={getImgSrcSet()}
+                defer={index >= per_row?.value}
+              />
+            ))}
+          </Slider>
+          <Slider {...configMobile} className={`${styles.hideOnDesktop}`}>
+            {collectionsForScrollView?.map((card, index) => (
+              <CollectionItem
+                className={styles.sliderItem}
+                key={`${card?.data?.collection?.name}_${index}`}
+                collection={card?.data?.collection}
+                props={props}
+                srcset={getImgSrcSet()}
+                defer={index >= 1}
+              />
+            ))}
+          </Slider>
+        </div>
       )}
       {!isLoading && isDemoBlock() && (
-        <div className={styles.defaultGrid}>
+        <div className={`${styles.collectionGrid} ${styles.defaultGrid}`}>
           {["Featured Products", "New Arrivals", "Best Sellers"].map(
-            (index) => (
-              <CollectionCard
+            (item, index) => (
+              <CollectionItem
                 key={`default_${index}`}
-                collectionName={index}
-                collectionImage={placeholderImage}
-                buttonText={button_text?.value}
-                isNameOverImage={name_placement?.value === "inside"}
-                imageProps={{
-                  backgroundColor: img_container_bg?.value,
-                  isImageFill: img_fill?.value,
-                  aspectRatio: 0.8,
-                  sources: getImgSrcSet(),
-                  defer: index >= per_row?.value,
-                }}
+                collection={{ name: item }}
+                props={props}
+                srcset={getImgSrcSet()}
+                defer={false}
               />
             )
           )}
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
+const CollectionItem = ({
+  className = "",
+  props,
+  collection,
+  srcset,
+  defer = false,
+}) => {
+  const { img_fill, img_container_bg, button_text, name_placement } = props;
+  return (
+    <div className={`fx-collection-card ${className}`}>
+      <CollectionCard
+        collectionName={collection?.name}
+        collectionImage={collection?.banners?.portrait?.url || placeholderImage}
+        collectionAction={collection?.action}
+        buttonText={button_text?.value}
+        isNameOverImage={name_placement?.value === "inside"}
+        imageProps={{
+          backgroundColor: img_container_bg?.value,
+          isImageFill: img_fill?.value,
+          aspectRatio: 0.8,
+          sources: srcset,
+          defer,
+        }}
+      />
+    </div>
+  );
+};
+
 export const settings = {
-  label: "Collections Highlights",
+  label: "t:resource.sections.collections_listing.collections_listing",
   props: [
     {
       type: "text",
       id: "heading",
-      default: "Explore Our Collections",
-      label: "Heading",
-      info: "Heading text of the section",
+      default: "t:resource.default_values.collects_listing_heading",
+      label: "t:resource.common.heading",
+      info: "t:resource.common.section_heading_text",
     },
     {
       type: "textarea",
       id: "description",
-      default:
-        "Organize your products into these collections to help customers easily find what they're looking for. Each category can showcase a different aspect of your store's offerings.",
-      label: "Description",
-      info: "Description text of the section",
+      default: "t:resource.default_values.collects_listing_description",
+      label: "t:resource.common.description",
+      info: "t:resource.common.section_description_text",
     },
     {
       id: "layout_mobile",
@@ -390,16 +336,16 @@ export const settings = {
       options: [
         {
           value: "stacked",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal",
+          text: "t:resource.common.horizontal",
         },
       ],
       default: "horizontal",
-      label: "Layout(Mobile)",
-      info: "Alignment of content",
+      label: "t:resource.sections.collections_listing.layout_mobile",
+      info: "t:resource.common.alignment_of_content",
     },
     {
       id: "layout_desktop",
@@ -407,16 +353,33 @@ export const settings = {
       options: [
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal",
+          text: "t:resource.common.horizontal",
         },
       ],
       default: "horizontal",
-      label: "Layout(Desktop)",
-      info: "Alignment of content",
+      label: "t:resource.sections.collections_listing.layout_desktop",
+      info: "t:resource.common.alignment_of_content",
+    },
+    {
+      type: "select",
+      id: "name_placement",
+      label: "Collection Title & Button Placement",
+      default: "inside",
+      info: "Place collection title and button inside or outside the image",
+      options: [
+        {
+          value: "inside",
+          text: "Inside the image",
+        },
+        {
+          value: "outside",
+          text: "Outside the image",
+        },
+      ],
     },
     {
       type: "select",
@@ -438,45 +401,67 @@ export const settings = {
     {
       type: "text",
       id: "button_text",
-      default: "Shop Now",
-      label: "Button Text",
+      default: "t:resource.default_values.shop_now",
+      label: "t:resource.common.button_text",
     },
     {
       type: "range",
       id: "per_row",
-      label: "Display collections per row (desktop)",
+      label: "t:resource.sections.collections_listing.collections_per_row_desktop",
       min: "3",
       max: "4",
       step: "1",
-      info: "It'll not work for mobile layout",
+      info: "t:resource.common.not_applicable_for_mobile",
       default: "3",
     },
     {
       type: "color",
       id: "img_container_bg",
-      category: "Image Container",
+      category: "t:resource.common.image_container",
       default: "#00000000",
-      label: "Container Background Color",
-      info: "This color will be used as the container background color of the Product/Collection/Category/Brand images wherever applicable",
+      label: "t:resource.common.container_background_color",
+      info: "t:resource.common.image_container_bg_color",
     },
     {
       type: "checkbox",
       id: "img_fill",
-      category: "Image Container",
+      category: "t:resource.common.image_container",
       default: true,
-      label: "Fit image to the container",
-      info: "If the image aspect ratio is different from the container, the image will be clipped to fit the container. The aspect ratio of the image will be maintained",
+      label: "t:resource.common.fit_image_to_container",
+      info: "t:resource.common.clip_image_to_fit_container",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Top padding",
+      default: 16,
+      info: "Top padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Bottom padding",
+      default: 16,
+      info: "Bottom padding for section",
     },
   ],
   blocks: [
     {
       type: "collection-item",
-      name: "Collection Item",
+      name: "t:resource.sections.collections_listing.collection_item",
       props: [
         {
           type: "collection",
           id: "collection",
-          label: "Select Collection",
+          label: "t:resource.sections.collections_listing.select_collection",
         },
       ],
     },
@@ -484,13 +469,13 @@ export const settings = {
   preset: {
     blocks: [
       {
-        name: "Collection 1",
+        name: "t:resource.sections.collections_listing.collection_1",
       },
       {
-        name: "Collection 2",
+        name: "t:resource.sections.collections_listing.collection_2",
       },
       {
-        name: "Collection 3",
+        name: "t:resource.sections.collections_listing.collection_3",
       },
     ],
   },

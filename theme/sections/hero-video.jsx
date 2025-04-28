@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { isRunningOnClient } from "../helper/utils";
 import styles from "../styles/sections/hero-video.less";
 import placeholderImage from "../assets/images/placeholder/hero-video.png";
+import { useGlobalTranslation } from "fdk-core/utils";
 import PlayIcon from "../assets/images/play.svg";
 import PauseIcon from "../assets/images/pause.svg";
 
@@ -15,8 +16,10 @@ export function Component({ props, globalConfig }) {
     is_pause_button,
     title,
     coverUrl,
+    padding_top,
+    padding_bottom,
   } = props;
-
+  const { t } = useGlobalTranslation("translation");
   const [isMobile, setIsMobile] = useState(false);
   const [showOverlay, setShowOverlay] = useState(!autoplay?.value);
   const [ytOverlay, setYtOverlay] = useState(false);
@@ -24,31 +27,6 @@ export function Component({ props, globalConfig }) {
   const [isValidUrl, setIsValidUrl] = useState(true);
   const videoRef = useRef(null);
   const ytVideoRef = useRef(null);
-  const [windowWidth, setWindowWidth] = useState(
-    isRunningOnClient() ? window?.innerWidth : 400
-  );
-
-  useEffect(() => {
-    if (isRunningOnClient()) {
-      const localDetectMobileWidth = () => {
-        return (
-          document?.getElementsByTagName("body")?.[0]?.getBoundingClientRect()
-            ?.width <= 768
-        );
-      };
-
-      const handleResize = () => {
-        setWindowWidth(window?.innerWidth);
-        setIsMobile(localDetectMobileWidth());
-      };
-
-      window?.addEventListener("resize", handleResize);
-
-      return () => {
-        window.removeEventListener("resize", handleResize);
-      };
-    }
-  }, []);
 
   function isValidURL(url) {
     try {
@@ -196,14 +174,15 @@ export function Component({ props, globalConfig }) {
       return [];
     }
     return [
-      { breakpoint: { min: 1400 }, width: 2500 },
-      { breakpoint: { min: 1023 }, width: 1400 },
-      { breakpoint: { min: 800 }, width: 1023 },
-      { breakpoint: { min: 768 }, width: 800 },
-      {
-        breakpoint: { max: 480 },
-        width: 480,
-      },
+      { breakpoint: { min: 1728 }, width: 3564 },
+      { breakpoint: { min: 1512 }, width: 3132 },
+      { breakpoint: { min: 1296 }, width: 2700 },
+      { breakpoint: { min: 1080 }, width: 2250 },
+      { breakpoint: { min: 900 }, width: 1890 },
+      { breakpoint: { min: 720 }, width: 1530 },
+      { breakpoint: { min: 540 }, width: 1170 },
+      { breakpoint: { min: 360 }, width: 810 },
+      { breakpoint: { min: 180 }, width: 450 },
     ];
   };
 
@@ -352,12 +331,16 @@ export function Component({ props, globalConfig }) {
   };
 
   const dynamicStyles = {
-    paddingBottom: `16px`,
+    paddingTop: `${padding_top?.value ?? 0}px`,
+    paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
+
   return (
-    <div style={dynamicStyles}>
+    <section style={dynamicStyles}>
       {title?.value && (
-        <h2 className={`${styles.video_heading} fontHeader`}>{title?.value}</h2>
+        <h2 className={`fx-title ${styles.video_heading} fontHeader`}>
+          {title?.value}
+        </h2>
       )}
 
       <div className={`${styles.video_container} `}>
@@ -430,45 +413,45 @@ export function Component({ props, globalConfig }) {
         {!videoFile?.value && !videoUrl?.value && (
           <img
             src={coverUrl?.value || placeholderImage}
-            alt="placeholder"
+            alt={t("resource.common.placeholder")}
             style={{ width: "100%" }}
             srcSet={getImgSrcSet()}
           />
         )}
       </div>
-    </div>
+    </section>
   );
 }
 
 export const settings = {
-  label: "Hero Video",
+  label: "t:resource.sections.hero_video.hero_video",
   props: [
     {
       type: "video",
       id: "videoFile",
       default: false,
-      label: "Primary Video",
+      label: "t:resource.sections.hero_video.primary_video",
     },
     {
       id: "videoUrl",
       type: "text",
-      label: "Video URL",
+      label: "t:resource.sections.hero_video.video_url",
       default: "",
-      info: "Supports MP4 Video & Youtube Video URL",
+      info: "t:resource.sections.hero_video.video_support_mp4_youtube",
     },
     {
       type: "checkbox",
       id: "autoplay",
       default: true,
-      label: "Autoplay",
-      info: "Check to enable autoplay (Video will be muted if autoplay is active)",
+      label: "t:resource.sections.hero_video.autoplay",
+      info: "t:resource.sections.hero_video.enable_autoplay_muted",
     },
     {
       type: "checkbox",
       id: "hidecontrols",
       default: true,
-      label: "Hide Video Controls",
-      info: "check to disable video controls",
+      label: "t:resource.sections.hero_video.hide_video_controls",
+      info: "t:resource.sections.hero_video.disable_video_controls",
     },
     {
       type: "checkbox",
@@ -481,23 +464,45 @@ export const settings = {
       type: "checkbox",
       id: "is_pause_button",
       default: true,
-      label: "Display pause on hover",
-      info: "Show pause button on video hover on desktop",
+      label: "t:resource.sections.hero_video.display_pause_on_hover",
+      info: "t:resource.sections.hero_video.display_pause_on_hover_info",
     },
     {
       type: "text",
       id: "title",
       default: "",
-      label: "Heading",
+      label: "t:resource.common.heading",
     },
     {
       id: "coverUrl",
       type: "image_picker",
-      label: "Thumbnail Image",
+      label: "t:resource.sections.hero_video.thumbnail_image",
       default: "",
       options: {
         aspect_ratio: "16:9",
       },
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Top padding",
+      default: 0,
+      info: "Top padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Bottom padding",
+      default: 16,
+      info: "Bottom padding for section",
     },
   ],
 };

@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import { FDKLink } from "fdk-core/components";
 import Slider from "react-slick";
 import styles from "../styles/trust-marker.less";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
+import { FDKLink } from "fdk-core/components";
 
 export function Component({ props, globalConfig, blocks, preset }) {
   const {
@@ -249,25 +249,25 @@ const Trustmark = ({
 
 
 export const settings = {
-  label: "Trust Marker",
+  label: "t:resource.sections.trust_marker.trust_marker",
   props: [
     {
       type: "text",
       id: "title",
-      default: "Title ",
-      label: "Heading",
+      default: "t:resource.default_values.trust_maker_title",
+      label: "t:resource.common.heading",
     },
     {
       type: "text",
       id: "description",
-      default: "Add description",
-      label: "Description",
+      default: "t:resource.default_values.add_description",
+      label: "t:resource.common.description",
     },
     {
       type: "color",
       id: "card_background",
-      label: "Card Background Color",
-      info: "This color will be used as card background",
+      label: "t:resource.sections.trust_marker.card_background_color",
+      info: "t:resource.sections.trust_marker.card_background_color_info",
       default: "",
     },
     {
@@ -276,25 +276,25 @@ export const settings = {
       options: [
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal scroll",
+          text: "t:resource.common.horizontal_scroll",
         },
       ],
       default: "horizontal",
-      label: "Desktop/Tablet Layout",
-      info: "Alignment of content",
+      label: "t:resource.sections.trust_marker.desktop_tablet_layout",
+      info: "t:resource.common.alignment_of_content",
     },
     {
       type: "range",
       id: "per_row_desktop",
-      label: "Display column per row (desktop/Tablet)",
+      label: "t:resource.sections.trust_marker.columns_per_row_desktop_tablet",
       min: "3",
       max: "10",
       step: "1",
-      info: "It'll not work for mobile layout",
+      info: "t:resource.common.not_applicable_for_mobile",
       default: "5",
     },
     {
@@ -303,38 +303,38 @@ export const settings = {
       options: [
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal scroll",
+          text: "t:resource.common.horizontal_scroll",
         },
       ],
       default: "horizontal",
-      label: "Mobile Layout",
-      info: "Alignment of content",
+      label: "t:resource.common.mobile_layout",
+      info: "t:resource.common.alignment_of_content",
     },
     {
       type: "range",
       id: "per_row_mobile",
-      label: "Display column per row (Mobile)",
+      label: "t:resource.sections.trust_marker.columns_per_row_mobile",
       min: "1",
       max: "5",
       step: "1",
-      info: "It'll not work for desktop layout",
+      info: "t:resource.sections.trust_marker.not_applicable_desktop",
       default: "2",
     },
   ],
   blocks: [
     {
       type: "trustmarker",
-      name: "Trust Marker",
+      name: "t:resource.sections.trust_marker.trust_marker",
       props: [
         {
           type: "image_picker",
           id: "marker_logo",
           default: "",
-          label: "Icon",
+          label: "t:resource.common.icon",
           options: {
             aspect_ratio: "1:1",
           },
@@ -342,20 +342,20 @@ export const settings = {
         {
           type: "text",
           id: "marker_heading",
-          default: "Free Delivery",
-          label: "Heading",
+          default: "t:resource.default_values.free_delivery",
+          label: "t:resource.common.heading",
         },
         {
           type: "text",
           id: "marker_description",
-          default: "Don`t love it? Don`t worry. Return delivery is free.",
-          label: "Description",
+          default: "t:resource.default_values.marker_description",
+          label: "t:resource.common.description",
         },
         {
           type: "url",
           id: "marker_link",
           default: "",
-          label: "Redirect link",
+          label: "t:resource.common.redirect_link",
         },
       ],
     },
@@ -363,7 +363,7 @@ export const settings = {
   preset: {
     blocks: [
       {
-        name: "Trust Marker",
+        name: "t:resource.sections.trust_marker.trust_marker",
         props: {
           marker_heading: {
             type: "text",
@@ -376,7 +376,7 @@ export const settings = {
         },
       },
       {
-        name: "Trust Marker",
+        name: "t:resource.sections.trust_marker.trust_marker",
         props: {
           marker_heading: {
             type: "text",
@@ -389,7 +389,7 @@ export const settings = {
         },
       },
       {
-        name: "Trust Marker",
+        name: "t:resource.sections.trust_marker.trust_marker",
         props: {
           marker_heading: {
             type: "text",
@@ -402,7 +402,7 @@ export const settings = {
         },
       },
       {
-        name: "Trust Marker",
+        name: "t:resource.sections.trust_marker.trust_marker",
         props: {
           marker_heading: {
             type: "text",
@@ -415,7 +415,7 @@ export const settings = {
         },
       },
       {
-        name: "Trust Marker",
+        name: "t:resource.sections.trust_marker.trust_marker",
         props: {
           marker_heading: {
             type: "text",

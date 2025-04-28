@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef } from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import {
   ADD_WISHLIST,
   REMOVE_WISHLIST,
@@ -8,6 +8,7 @@ import {
 import { useSnackbar } from "./hooks";
 
 export const useWishlist = ({ fpi }) => {
+  const { t } = useGlobalTranslation("translation");
   const [isLoading, setIsLoading] = useState(false);
   const pageSizeRef = useRef(500);
   const followedList = useGlobalStore(fpi.getters.FOLLOWED_LIST);
@@ -33,7 +34,7 @@ export const useWishlist = ({ fpi }) => {
       .executeGQL(ADD_WISHLIST, payload)
       .then((res) => {
         if (res?.data?.followById?.message) {
-          showSnackbar("Product Added to wishlist", "success");
+          showSnackbar(t("resource.common.wishlist_add_success"), "success");
           return fetchFollowedProductsId().then(() => res?.data?.followById);
         }
       })
@@ -51,14 +52,14 @@ export const useWishlist = ({ fpi }) => {
     if (fromWishlist) {
       return fpi.executeGQL(REMOVE_WISHLIST, payload).finally(() => {
         setIsLoading(false);
-        showSnackbar("Product Removed From Wishlist", "success");
+        showSnackbar(t("resource.wishlist.product_removed"), "success");
       });
     } else {
       return fpi
         .executeGQL(REMOVE_WISHLIST, payload)
         .then((res) => {
           if (res?.data?.unfollowById?.message) {
-            showSnackbar("Product Removed From Wishlist", "success");
+            showSnackbar(t("resource.wishlist.product_removed"), "success");
             return fetchFollowedProductsId().then(
               () => res?.data?.unfollowById
             );
@@ -68,21 +69,6 @@ export const useWishlist = ({ fpi }) => {
           setIsLoading(false);
         });
     }
-    return fpi
-      .executeGQL(REMOVE_WISHLIST, payload)
-      .then((res) => {
-        if (res?.data?.unfollowById?.message) {
-          showSnackbar(
-            res?.data?.unfollowById?.message ||
-              "Products Removed From Wishlist",
-            "success"
-          );
-          return fetchFollowedProductsId().then(() => res?.data?.unfollowById);
-        }
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
   }
 
   function toggleWishlist({ product, isFollowed }) {

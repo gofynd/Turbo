@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import PicZoom from "../pic-zoom/pic-zoom";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import { getProductImgAspectRatio } from "../../../../helper/utils";
 import styles from "./image-gallery.less";
 import MobileSlider from "../mobile-slider/mobile-slider";
@@ -10,6 +10,8 @@ import ThreeDIcon from "../../../../assets/images/3D.svg";
 import CarouselNavArrowIcon from "../../../../assets/images/carousel-nav-arrow.svg";
 import ArrowLeftIcon from "../../../../assets/images/arrow-left.svg";
 import ArrowRightIcon from "../../../../assets/images/arrow-right.svg";
+import { useGlobalTranslation } from "fdk-core/utils";
+
 const LightboxImage = React.lazy(
   () => import("../lightbox-image/lightbox-image")
 );
@@ -33,7 +35,7 @@ function PdpImageGallery({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [enableLightBox, setEnableLightBox] = useState(false);
   const [resumeVideo, setResumeVideo] = useState(false);
-
+  const { t } = useGlobalTranslation("translation");
   const itemWrapperRef = useRef(null);
 
   const currentMedia = {
@@ -123,7 +125,7 @@ function PdpImageGallery({
             />
             {isCustomOrder && (
               <div className={`${styles.badge} ${styles.b4}`}>
-                Made to Order
+                {t("resource.product.made_to_order")}
               </div>
             )}
           </div>
@@ -152,7 +154,7 @@ function PdpImageGallery({
                 type="button"
                 className={`${styles.prevBtn} ${styles.btnNavGallery}`}
                 onClick={prevSlide}
-                aria-label="Prev"
+                aria-label={t("resource.facets.prev")}
               >
                 <ArrowLeftIcon
                   className={`${
@@ -162,7 +164,7 @@ function PdpImageGallery({
               </button>
               <ul
                 ref={itemWrapperRef}
-                className={`${styles.imageGallery__list} ${
+                className={`${styles.thumbnailList} ${
                   styles.scrollbarHidden
                 } ${images && images?.length < 5 ? styles.fitContent : ""}`}
               >
@@ -171,14 +173,14 @@ function PdpImageGallery({
                   <li
                     key={index}
                     onClick={(e) => setMainImage(e, index)}
-                    className={`${styles.gap} ${
+                    className={`${styles.thumbnail} ${
                       item.type === "video" ? styles.flexAlign : ""
                     } ${currentImageIndex === index ? styles.active : ""}`}
                     style={{ "--icon-color": iconColor }}
                   >
                     {item.type === "image" && (
                       <FyImage
-                        customClass={`${styles["imageGallery__list--item"]} ${styles.dotsImage}`}
+                        customClass={`${styles["thumbnailList--item"]}`}
                         src={item?.url}
                         alt={item?.alt}
                         aspectRatio={getProductImgAspectRatio(globalConfig)}
@@ -187,28 +189,24 @@ function PdpImageGallery({
                       />
                     )}
                     {item.type === "video" && (
-                      <div className={styles.videoThumbnailContainer}>
+                      <>
                         {item.url.includes("youtube") ? (
                           <img
-                            className={`${styles["imageGallery__list--item"]} ${styles.videoThumbnail}`}
+                            className={`${styles["thumbnailList--item"]} ${styles.videoThumbnail}`}
                             src={getImageURL(item.url)}
                             alt={item.alt}
                           />
                         ) : (
                           <video
-                            className={`${styles["imageGallery__list--item"]} ${styles.videoThumbnail}`}
+                            className={`${styles["thumbnailList--item"]} ${styles.videoThumbnail}`}
                             src={item?.url}
                           />
                         )}
                         <VideoPlayIcon className={styles.videoPlayIcon} />
-                      </div>
+                      </>
                     )}
                     {item.type === "3d_model" && (
-                      <div
-                        className={`${styles["imageGallery__list--item"]} ${styles.type3dModel}`}
-                      >
                         <ThreeDIcon className={styles.modelIcon} />
-                      </div>
                     )}
                   </li>
                 ))}
@@ -217,7 +215,7 @@ function PdpImageGallery({
                 type="button"
                 className={`${styles.nextBtn} ${styles.btnNavGallery}`}
                 onClick={nextSlide}
-                aria-label="Next"
+                aria-label={t("resource.facets.next")}
               >
                 <ArrowRightIcon
                   className={`${
@@ -249,7 +247,7 @@ function PdpImageGallery({
         />
       </div>
       {enableLightBox && (
-        <Suspense>
+        <Suspense fallback={<div />}>
           <LightboxImage
             images={images}
             showCaption={false}

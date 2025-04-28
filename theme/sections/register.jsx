@@ -1,7 +1,7 @@
 import React from "react";
 import { useFPI } from "fdk-core/utils";
-import Register from "@gofynd/theme-template/pages/register/register";
-import "@gofynd/theme-template/pages/register/register.css";
+import Register from "fdk-react-templates/pages/register/register";
+import "fdk-react-templates/pages/register/register.css";
 import AuthContainer from "../page-layouts/auth/auth-container/auth-container";
 import useRegister from "../page-layouts/register/useRegister";
 import { getConfigFromProps } from "../helper/utils";
@@ -23,7 +23,7 @@ function Component({ props }) {
 }
 
 export const settings = {
-  label: "Register",
+  label: "t:resource.common.register",
   props: [
     {
       id: "image_layout",
@@ -31,25 +31,25 @@ export const settings = {
       options: [
         {
           value: "no_banner",
-          text: "No Banner",
+          text: "t:resource.common.no_banner",
         },
         {
           value: "right_banner",
-          text: "Right Banner",
+          text: "t:resource.common.right_banner",
         },
         {
           value: "left_banner",
-          text: "Left Banner",
+          text: "t:resource.common.left_banner",
         },
       ],
       default: "no_banner",
-      label: "Image Layout",
+      label: "t:resource.common.image_layout",
     },
     {
       type: "image_picker",
       id: "image_banner",
       default: "",
-      label: "Image Banner",
+      label: "t:resource.common.image_banner",
     },
   ],
 };

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { FDKLink } from "fdk-core/components";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import { isRunningOnClient } from "../helper/utils";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
+import { getDirectionAdaptiveValue } from "../helper/utils";
 import styles from "../styles/sections/hero-image.less";
 import placeholderDesktop from "../assets/images/placeholder/hero-image-desktop.png";
 import placeholderMobile from "../assets/images/placeholder/hero-image-mobile.png";
 import Hotspot from "../components/hotspot/product-hotspot";
-import { useViewport } from "../helper/hooks";
+import { DIRECTION_ADAPTIVE_CSS_PROPERTIES } from "../helper/constant";
+import { useWindowWidth } from "../helper/hooks";
 
 export function Component({ props, globalConfig, blocks }) {
   const {
@@ -23,25 +24,13 @@ export function Component({ props, globalConfig, blocks }) {
     text_alignment_mobile,
     text_placement_desktop,
     text_placement_mobile,
+    padding_top,
+    padding_bottom,
   } = props;
-  const [windowWidth, setWindowWidth] = useState(
-    isRunningOnClient() ? window?.innerWidth : 400
-  );
-  const isMobile = useViewport(0, 540);
+  const windowWidth = useWindowWidth();
+  const isMobile = windowWidth <= 540;
   const [tooltipHeight, setTooltipHeight] = useState(0);
   const [tooltipWidth, setTooltipWidth] = useState(0);
-
-  useEffect(() => {
-    if (isRunningOnClient()) {
-      const handleResize = () => {
-        setWindowWidth(window?.innerWidth);
-      };
-      window?.addEventListener("resize", handleResize);
-      return () => {
-        window?.removeEventListener("resize", handleResize);
-      };
-    }
-  }, []);
 
   useEffect(() => {
     const updateTooltipDimensions = () => {
@@ -63,59 +52,26 @@ export function Component({ props, globalConfig, blocks }) {
     updateTooltipDimensions();
   }, [tooltipHeight, tooltipWidth]);
 
-  const getMobileUrl = () => mobile_banner?.value || placeholderMobile;
-  const getDesktopUrl = () => desktop_banner?.value || placeholderDesktop;
+  const getMobileUrl = mobile_banner?.value || placeholderMobile;
+  const getDesktopUrl = desktop_banner?.value || placeholderDesktop;
 
   const getImgSrcSet = () => {
     if (globalConfig?.img_hd) {
       return [
         { breakpoint: { min: 481 } },
-        {
-          breakpoint: { max: 480 },
-          url: getMobileUrl(),
-        },
+        { breakpoint: { max: 480 }, url: getMobileUrl },
       ];
     }
     return [
-      {
-        breakpoint: { min: 1728 },
-        width: 3564,
-      },
-      {
-        breakpoint: { min: 1512 },
-        width: 3132,
-      },
-      {
-        breakpoint: { min: 1296 },
-        width: 2700,
-      },
-      {
-        breakpoint: { min: 1080 },
-        width: 2250,
-      },
-      {
-        breakpoint: { min: 900 },
-        width: 1890,
-      },
-      {
-        breakpoint: { min: 720 },
-        width: 1530,
-      },
-      {
-        breakpoint: { max: 180 },
-        width: 450,
-        url: getMobileUrl(),
-      },
-      {
-        breakpoint: { max: 360 },
-        width: 810,
-        url: getMobileUrl(),
-      },
-      {
-        breakpoint: { max: 540 },
-        width: 1170,
-        url: getMobileUrl(),
-      },
+      { breakpoint: { min: 1728 }, width: 3564 },
+      { breakpoint: { min: 1512 }, width: 3132 },
+      { breakpoint: { min: 1296 }, width: 2700 },
+      { breakpoint: { min: 1080 }, width: 2250 },
+      { breakpoint: { min: 900 }, width: 1890 },
+      { breakpoint: { min: 720 }, width: 1530 },
+      { breakpoint: { max: 180 }, width: 450, url: getMobileUrl },
+      { breakpoint: { max: 360 }, width: 810, url: getMobileUrl },
+      { breakpoint: { max: 540 }, width: 1170, url: getMobileUrl },
     ];
   };
 
@@ -143,11 +99,14 @@ export function Component({ props, globalConfig, blocks }) {
       const VERTICAL_SPACING_DESKTOP = "4rem";
 
       if (contentAlignment) {
-        positions[`--content-alignment-${view}`] = contentAlignment;
+        positions[`--content-alignment-${view}`] = getDirectionAdaptiveValue(
+          DIRECTION_ADAPTIVE_CSS_PROPERTIES.TEXT_ALIGNMENT,
+          contentAlignment
+        );
       }
 
       switch (overlayPosition) {
-        case "top_left":
+        case "top_start":
           if (view === "mobile" && isMobileDevice) {
             positions[`--top-position-${view}`] = VERTICAL_SPACING_MOBILE;
           } else {
@@ -177,7 +136,7 @@ export function Component({ props, globalConfig, blocks }) {
 
           break;
 
-        case "top_right":
+        case "top_end":
           if (view === "mobile" && isMobileDevice) {
             positions[`--top-position-${view}`] = VERTICAL_SPACING_MOBILE;
           } else {
@@ -193,7 +152,7 @@ export function Component({ props, globalConfig, blocks }) {
 
           break;
 
-        case "center_left":
+        case "center_start":
           positions[`--top-position-${view}`] = "50%";
           positions[`--transform-${view}`] = "translateY(-50%)";
           positions[`--left-position-${view}`] =
@@ -215,7 +174,7 @@ export function Component({ props, globalConfig, blocks }) {
 
           break;
 
-        case "center_right":
+        case "center_end":
           positions[`--top-position-${view}`] = "50%";
           positions[`--transform-${view}`] = "translateY(-50%)";
           positions[`--right-position-${view}`] =
@@ -225,7 +184,7 @@ export function Component({ props, globalConfig, blocks }) {
 
           break;
 
-        case "bottom_left":
+        case "bottom_start":
           if (view === "mobile" && isMobileDevice) {
             positions[`--bottom-position-${view}`] = VERTICAL_SPACING_MOBILE;
           } else {
@@ -255,7 +214,7 @@ export function Component({ props, globalConfig, blocks }) {
 
           break;
 
-        case "bottom_right":
+        case "bottom_end":
           if (view === "mobile" && isMobileDevice) {
             positions[`--bottom-position-${view}`] = VERTICAL_SPACING_MOBILE;
           } else {
@@ -292,11 +251,11 @@ export function Component({ props, globalConfig, blocks }) {
     };
   };
 
-  const displayOverlay = () =>
-    !!(overlay_option?.value && overlay_option?.value !== "no_overlay");
+  const displayOverlay =
+    !!overlay_option?.value && overlay_option.value !== "no_overlay";
 
-  const getOverlayColor = () =>
-    overlay_option?.value === "black_overlay" ? "#000000" : "#ffffff";
+  const getOverlayColor =
+    overlay_option?.value === "black_overlay" ? "#000" : "#fff";
 
   const getHotspots = () => {
     return {
@@ -305,32 +264,30 @@ export function Component({ props, globalConfig, blocks }) {
     };
   };
 
+  const dynamicStyles = {
+    paddingTop: `${padding_top?.value ?? 0}px`,
+    paddingBottom: `${padding_bottom?.value ?? 16}px`,
+  };
+
   return (
-    <div
-      className={styles.heroImageContainer}
-      style={{
-        paddingBottom: `16px`,
-      }}
-    >
-      {/* To Do: fix intersection observer flicker issue */}
-      {/* <IntersectionObserverComponent> */}
-      {(getDesktopUrl() || getMobileUrl()) && (
-        <FyImage
-          src={getDesktopUrl()}
-          sources={getImgSrcSet()}
-          showOverlay={displayOverlay()}
-          overlayColor={getOverlayColor()}
-          defer={false}
-          isFixedAspectRatio={false}
-        />
-      )}
+    <section className={styles.heroImageContainer} style={dynamicStyles}>
+      <FyImage
+        src={getDesktopUrl}
+        sources={getImgSrcSet()}
+        showOverlay={displayOverlay}
+        overlayColor={getOverlayColor}
+        defer={false}
+        isFixedAspectRatio={false}
+      />
       <div className={styles.overlayItems} style={getOverlayPositionStyles()}>
         {heading?.value && (
-          <h1 className={`${styles.header} fontHeader`}>{heading?.value}</h1>
+          <h1 className={`fx-title ${styles.header} fontHeader`}>
+            {heading?.value}
+          </h1>
         )}
 
         {description?.value && (
-          <p className={`${styles.description} b2 fontBody `}>
+          <p className={`fx-description ${styles.description} b2`}>
             {description?.value}
           </p>
         )}
@@ -339,7 +296,7 @@ export function Component({ props, globalConfig, blocks }) {
           <FDKLink to={button_link?.value}>
             <button
               type="button"
-              className={`${styles.cta_button} fontBody} ${
+              className={`fx-button ${styles.cta_button} ${
                 invert_button_color?.value ? "btnSecondary" : "btnPrimary"
               }`}
               disabled={!(button_link?.value?.length > 1)}
@@ -407,27 +364,26 @@ export function Component({ props, globalConfig, blocks }) {
             </FDKLink>
           );
         })}
-    </div>
+    </section>
   );
 }
 
 export const settings = {
-  label: "Hero Image",
+  label: "t:resource.sections.hero_image.hero_image",
   props: [
     {
       type: "text",
       id: "heading",
-      default: "Welcome to Your New Store",
-      label: "Heading",
-      info: "Heading text of the section",
+      default: "t:resource.default_values.hero_image_heading",
+      label: "t:resource.common.heading",
+      info: "t:resource.common.section_heading_text",
     },
     {
       type: "text",
       id: "description",
-      default:
-        "Begin your journey by adding unique images and banners. This is your chance to create a captivating first impression. Customize it to reflect your brand's personality and style!",
-      label: "Description",
-      info: "Description text of the section",
+      default: "t:resource.default_values.hero_image_description",
+      label: "t:resource.common.description",
+      info: "t:resource.common.section_description_text",
     },
     {
       id: "overlay_option",
@@ -435,44 +391,44 @@ export const settings = {
       options: [
         {
           value: "no_overlay",
-          text: "No Overlay",
+          text: "t:resource.sections.hero_image.no_overlay",
         },
         {
           value: "white_overlay",
-          text: "White Overlay",
+          text: "t:resource.sections.hero_image.white_overlay",
         },
         {
           value: "black_overlay",
-          text: "Black Overlay",
+          text: "t:resource.sections.hero_image.black_overlay",
         },
       ],
       default: "no_overlay",
-      label: "Overlay Option",
-      info: "Use this option to add a black or white semi-transparent overlay on top of the image. This will help you to stand out your text content",
+      label: "t:resource.sections.hero_image.overlay_option",
+      info: "t:resource.sections.hero_image.image_overlay_opacity",
     },
     {
       type: "text",
       id: "button_text",
-      default: "Shop Now",
-      label: "Button Text",
+      default: "t:resource.default_values.shop_now",
+      label: "t:resource.common.button_text",
     },
     {
       type: "url",
       id: "button_link",
       default: "",
-      label: "Redirect Link",
+      label: "t:resource.common.redirect_link",
     },
     {
       type: "checkbox",
       id: "invert_button_color",
       default: false,
-      label: "Invert Button Color (Toggle)",
-      info: "Inverted color of the primary button",
+      label: "t:resource.sections.hero_image.invert_button_color",
+      info: "t:resource.sections.hero_image.primary_button_inverted_color",
     },
     {
       id: "desktop_banner",
       type: "image_picker",
-      label: "Desktop Banner",
+      label: "t:resource.sections.hero_image.desktop_banner",
       default: "",
       options: {
         aspect_ratio: "16:9",
@@ -483,44 +439,44 @@ export const settings = {
       type: "select",
       options: [
         {
-          value: "top_left",
-          text: "Top-Left",
+          value: "top_start",
+          text: "t:resource.sections.hero_image.top_start",
         },
         {
           value: "top_center",
-          text: "Top-Center",
+          text: "t:resource.sections.hero_image.top_center",
         },
         {
-          value: "top_right",
-          text: "Top-Right",
+          value: "top_end",
+          text: "t:resource.sections.hero_image.top_end",
         },
         {
-          value: "center_left",
-          text: "Center-Left",
+          value: "center_start",
+          text: "t:resource.sections.hero_image.center_start",
         },
         {
           value: "center_center",
-          text: "Center-Center",
+          text: "t:resource.sections.hero_image.center_center",
         },
         {
-          value: "center_right",
-          text: "Center-Right",
+          value: "center_end",
+          text: "t:resource.sections.hero_image.center_end",
         },
         {
-          value: "bottom_left",
-          text: "Bottom-Left",
+          value: "bottom_start",
+          text: "t:resource.sections.hero_image.bottom_start",
         },
         {
           value: "bottom_center",
-          text: "Bottom-Center",
+          text: "t:resource.sections.hero_image.bottom_center",
         },
         {
-          value: "bottom_right",
-          text: "Bottom-Right",
+          value: "bottom_end",
+          text: "t:resource.sections.hero_image.bottom_end",
         },
       ],
-      default: "center_left",
-      label: "Text Placement (Desktop)",
+      default: "center_start",
+      label: "t:resource.sections.hero_image.text_placement_desktop",
     },
     {
       id: "text_alignment_desktop",
@@ -528,24 +484,24 @@ export const settings = {
       options: [
         {
           value: "left",
-          text: "Left",
+          text: "t:resource.common.start",
         },
         {
           value: "center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
         {
           value: "right",
-          text: "Right",
+          text: "t:resource.common.end",
         },
       ],
       default: "left",
-      label: "Text Alignment (Desktop)",
+      label: "t:resource.common.text_alignment_desktop",
     },
     {
       id: "mobile_banner",
       type: "image_picker",
-      label: "Mobile/Tablet Banner",
+      label: "t:resource.sections.hero_image.mobile_tablet_banner",
       default: "",
       options: {
         aspect_ratio: "9:16",
@@ -556,44 +512,44 @@ export const settings = {
       type: "select",
       options: [
         {
-          value: "top_left",
-          text: "Top-Left",
+          value: "top_start",
+          text: "t:resource.sections.hero_image.top_start",
         },
         {
           value: "top_center",
-          text: "Top-Center",
+          text: "t:resource.sections.hero_image.top_center",
         },
         {
-          value: "top_right",
-          text: "Top-Right",
+          value: "top_end",
+          text: "t:resource.sections.hero_image.top_end",
         },
         {
-          value: "center_left",
-          text: "Center-Left",
+          value: "center_start",
+          text: "t:resource.sections.hero_image.center_start",
         },
         {
           value: "center_center",
-          text: "Center-Center",
+          text: "t:resource.sections.hero_image.center_center",
         },
         {
-          value: "center_right",
-          text: "Center-Right",
+          value: "center_end",
+          text: "t:resource.sections.hero_image.center_end",
         },
         {
-          value: "bottom_left",
-          text: "Bottom-Left",
+          value: "bottom_start",
+          text: "t:resource.sections.hero_image.bottom_start",
         },
         {
           value: "bottom_center",
-          text: "Bottom-Center",
+          text: "t:resource.sections.hero_image.bottom_center",
         },
         {
-          value: "bottom_right",
-          text: "Bottom-Right",
+          value: "bottom_end",
+          text: "t:resource.sections.hero_image.bottom_end",
         },
       ],
-      default: "top_left",
-      label: "Text Placement (Mobile)",
+      default: "top_start",
+      label: "t:resource.sections.hero_image.text_placement_mobile",
     },
     {
       id: "text_alignment_mobile",
@@ -601,38 +557,60 @@ export const settings = {
       options: [
         {
           value: "left",
-          text: "Left",
+          text: "t:resource.common.start",
         },
         {
           value: "center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
         {
           value: "right",
-          text: "Right",
+          text: "t:resource.common.end",
         },
       ],
       default: "left",
-      label: "Text Alignment (Mobile)",
+      label: "t:resource.common.text_alignment_mobile",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Top padding",
+      default: 0,
+      info: "Top padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Bottom padding",
+      default: 16,
+      info: "Bottom padding for section",
     },
   ],
   blocks: [
     {
       type: "hotspot_desktop",
-      name: "Hotspot Desktop",
+      name: "t:resource.common.hotspot_desktop",
       props: [
         {
           type: "select",
           id: "pointer_type",
-          label: "Pointer Type",
+          label: "t:resource.common.pointer_type",
           options: [
             {
               value: "box",
-              text: "Box",
+              text: "t:resource.common.box",
             },
             {
               value: "pointer",
-              text: "Pointer",
+              text: "t:resource.common.pointer",
             },
           ],
           default: "box",
@@ -642,7 +620,7 @@ export const settings = {
           type: "checkbox",
           id: "edit_visible",
           default: true,
-          label: "Show Clickable Area",
+          label: "t:resource.common.show_clickable_area",
         },
         {
           type: "range",
@@ -651,7 +629,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Horizontal Position",
+          label: "t:resource.common.horizontal_position",
           default: 50,
         },
         {
@@ -661,7 +639,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Vertical Position",
+          label: "t:resource.common.vertical_position",
           default: 50,
         },
         {
@@ -671,7 +649,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Width",
+          label: "t:resource.common.width",
           default: 15,
         },
         {
@@ -681,13 +659,13 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Height",
+          label: "t:resource.common.height",
           default: 15,
         },
         {
           type: "image_picker",
           id: "hotspot_image",
-          label: "Hotspot Hover Image",
+          label: "t:resource.common.hotspot_hover_image",
           options: {
             aspect_ratio: "1:1",
             aspect_ratio_strict_check: true,
@@ -696,47 +674,47 @@ export const settings = {
         {
           type: "text",
           id: "hotspot_header",
-          label: "Header",
-          placeholder: "Header",
+          label: "t:resource.common.header",
+          placeholder: "t:resource.common.header",
           value: "",
         },
         {
           type: "textarea",
           id: "hotspot_description",
-          label: "Description",
-          placeholder: "Description",
+          label: "t:resource.common.description",
+          placeholder: "t:resource.common.description",
           value: "",
         },
         {
           type: "text",
           id: "hotspot_link_text",
-          label: "Hover Link Text",
-          placeholder: "Link text",
+          label: "t:resource.common.hover_link_text",
+          placeholder: "t:resource.common.link_text",
           value: "",
         },
         {
           type: "url",
           id: "redirect_link",
-          label: "Redirect Link",
+          label: "t:resource.common.redirect_link",
         },
       ],
     },
     {
       type: "hotspot_mobile",
-      name: "Hotspot Mobile",
+      name: "t:resource.common.hotspot_mobile",
       props: [
         {
           type: "select",
           id: "pointer_type",
-          label: "Pointer Type",
+          label: "t:resource.common.pointer_type",
           options: [
             {
               value: "box",
-              text: "Box",
+              text: "t:resource.common.box",
             },
             {
               value: "pointer",
-              text: "Pointer",
+              text: "t:resource.common.pointer",
             },
           ],
           default: "box",
@@ -745,7 +723,7 @@ export const settings = {
           type: "checkbox",
           id: "edit_visible",
           default: true,
-          label: "Show Clickable Area",
+          label: "t:resource.common.show_clickable_area",
         },
         {
           type: "range",
@@ -754,7 +732,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Horizontal Position",
+          label: "t:resource.common.horizontal_position",
           default: 50,
         },
         {
@@ -764,7 +742,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Vertical Position",
+          label: "t:resource.common.vertical_position",
           default: 50,
         },
         {
@@ -774,7 +752,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Width",
+          label: "t:resource.common.width",
           default: 15,
         },
         {
@@ -784,13 +762,13 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Height",
+          label: "t:resource.common.height",
           default: 15,
         },
         {
           type: "image_picker",
           id: "hotspot_image",
-          label: "Hotspot Hover Image",
+          label: "t:resource.common.hotspot_hover_image",
           options: {
             aspect_ratio: "1:1",
             aspect_ratio_strict_check: true,
@@ -799,28 +777,28 @@ export const settings = {
         {
           type: "text",
           id: "hotspot_header",
-          label: "Header",
-          placeholder: "Header",
+          label: "t:resource.common.header",
+          placeholder: "t:resource.common.header",
           value: "",
         },
         {
           type: "textarea",
           id: "hotspot_description",
-          label: "Description",
-          placeholder: "Description",
+          label: "t:resource.common.description",
+          placeholder: "t:resource.common.description",
           value: "",
         },
         {
           type: "text",
           id: "hotspot_link_text",
-          label: "Hover Link Text",
-          placeholder: "Link text",
+          label: "t:resource.common.hover_link_text",
+          placeholder: "t:resource.common.link_text",
           value: "",
         },
         {
           type: "url",
           id: "redirect_link",
-          label: "Redirect Link",
+          label: "t:resource.common.redirect_link",
         },
       ],
     },

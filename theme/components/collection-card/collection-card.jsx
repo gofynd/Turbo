@@ -1,7 +1,7 @@
 import React from "react";
 import { FDKLink } from "fdk-core/components";
-import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import placeholderImage from "../../assets/images/placeholder/collections-listing.png";
 import styles from "./collection-card.less";
 

@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import dayjs from "dayjs";
 import { ORDER_LISTING, ORDER_BY_ID } from "../../queries/ordersQuery";
 import { ADD_TO_CART } from "../../queries/pdpQuery";
 import { CART_ITEMS_COUNT } from "../../queries/wishlistQuery";
 import { fetchCartDetails } from "../cart/useCart";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
+import dayjs from "dayjs";
 import { useSnackbar, useThemeConfig } from "../../helper/hooks";
 
 const useOrdersListing = (fpi) => {
+  const { t } = useGlobalTranslation("translation");
   const location = useLocation();
   const params = useParams();
   const { showSnackbar } = useSnackbar();
@@ -18,7 +19,7 @@ const useOrdersListing = (fpi) => {
   const [orderShipments, setOrderShipments] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  const getDateRange = function getDateRange(days) {
+  const getDateRange = function (days) {
     const fromDate = dayjs().subtract(days, "days").format("MM-DD-YYYY");
     const toDate = dayjs().add(1, "days").format("MM-DD-YYYY");
     return {
@@ -98,14 +99,14 @@ const useOrdersListing = (fpi) => {
       if (outRes?.data?.addItemsToCart?.success) {
         fpi.executeGQL(CART_ITEMS_COUNT, null).then((res) => {
           showSnackbar(
-            outRes?.data?.addItemsToCart?.message || "Added to Cart",
+            outRes?.data?.addItemsToCart?.message || t("resource.common.add_to_cart_success"),
             "success"
           );
         });
         fetchCartDetails(fpi);
       } else {
         showSnackbar(
-          outRes?.data?.addItemsToCart?.message || "Failed to add to cart",
+          outRes?.data?.addItemsToCart?.message || t("resource.common.add_cart_failure"),
           "error"
         );
       }

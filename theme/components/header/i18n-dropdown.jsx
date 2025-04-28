@@ -1,22 +1,25 @@
 import React, { useState, useEffect, Fragment, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useLocation } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
-import Modal from "@gofynd/theme-template/components/core/modal/modal";
-import "@gofynd/theme-template/components/core/modal/modal.css";
-import FyInput from "@gofynd/theme-template/components/core/fy-input/fy-input";
-import "@gofynd/theme-template/components/core/fy-input/fy-input.css";
+import { useLocation, useParams } from "react-router-dom";
+import { useGlobalStore, useGlobalTranslation, useLocale } from "fdk-core/utils";
+import Modal from "fdk-react-templates/components/core/modal/modal";
+import "fdk-react-templates/components/core/modal/modal.css";
+import FyInput from "fdk-react-templates/components/core/fy-input/fy-input";
+import "fdk-react-templates/components/core/fy-input/fy-input.css";
 import styles from "./styles/i18n-dropdown.less";
 import FyDropdownLib from "../core/fy-dropdown/fy-dropdown-lib";
 import useInternational from "./useInternational";
 import { LOCALITY } from "../../queries/logisticsQuery";
 import { useSyncedState, useSnackbar } from "../../helper/hooks";
+import { LANGUAGES } from "../../queries/languageQuery";
 import { createLocalitiesPayload } from "../../helper/utils";
 import InternationalIcon from "../../assets/images/international.svg";
 import ArrowDownIcon from "../../assets/images/arrow-down.svg";
 import CrossIcon from "../../assets/images/cross-black.svg";
 
-function I18Dropdown({ fpi }) {
+function I18Dropdown({ fpi, languageIscCode = [] }) {
+  const { locale } = useParams();
+  const { t } = useGlobalTranslation("translation");
   const {
     isInternational,
     i18nDetails,
@@ -32,11 +35,13 @@ function I18Dropdown({ fpi }) {
   } = useInternational({
     fpi,
   });
+  const { activeLocale, updateLocale } = useLocale();
+  const i18N_DETAILS = useGlobalStore(fpi.getters.i18N_DETAILS);
 
   const { showSnackbar } = useSnackbar();
   const location = useLocation();
   const [countryInfo, setCountryInfo] = useSyncedState(countryDetails);
-  const { isI18ModalOpen = false } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
+  const { isI18ModalOpen = false, showLanguageDropdown = false } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
 
   const [formSchema, setFormSchema] = useState([]);
@@ -49,6 +54,10 @@ function I18Dropdown({ fpi }) {
       currency: currentCurrency,
     },
   });
+
+  useEffect(() => {
+    setValue("language", languageIscCode?.find(lang => lang.locale === activeLocale) || {});
+  }, [languageIscCode])
 
   const showI18Dropdown = useMemo(() => {
     const whiteListedRoutes = [
@@ -63,11 +72,14 @@ function I18Dropdown({ fpi }) {
 
     const currentPath = location.pathname;
 
-    if (currentPath === "/") {
+    if (currentPath === "/" || currentPath === `/${locale}/` || currentPath === `/${locale}`) {
       return true;
     }
 
-    return whiteListedRoutes.some((route) => currentPath.indexOf(route) === 0);
+    return whiteListedRoutes.some(
+      (route) =>
+        currentPath.startsWith(route) || currentPath.startsWith(`/${locale}${route}`)
+    );
   }, [location.pathname]);
 
   const addressFieldsMap = useMemo(() => {
@@ -102,7 +114,7 @@ function I18Dropdown({ fpi }) {
           [slug]: localities,
         }));
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const checkLocality = (localityValue, localityType, selectedValues) => {
@@ -117,7 +129,7 @@ function I18Dropdown({ fpi }) {
       .then((res) => {
         if (!res?.data?.locality) {
           showSnackbar(
-            res?.errors?.[0]?.message || "Something went wrong",
+            res?.errors?.[0]?.message || t("resource.common.error_message"),
             "error"
           );
           throw res;
@@ -127,7 +139,16 @@ function I18Dropdown({ fpi }) {
   };
 
   const handleSetI18n = (formValues) => {
-    const { currency } = formValues;
+    const { currency, language } = formValues;
+    updateLocale(language?.locale);
+
+    fpi.setI18nDetails({
+      ...i18N_DETAILS,
+      language: {
+        ...i18N_DETAILS?.language,
+        locale: language?.locale,
+      },
+    });
     setI18nDetails(
       {
         iso: countryInfo.iso2,
@@ -147,9 +168,10 @@ function I18Dropdown({ fpi }) {
         formValues
       ).then(() => {
         fpi.custom.setValue("isI18ModalOpen", false);
+        fpi.custom.setValue("showLanguageDropdown", false)
       });
     }
-  };
+  }
 
   const onDynamicFieldChange = async (selectedField) => {
     const serviceabilitySlugs =
@@ -195,19 +217,22 @@ function I18Dropdown({ fpi }) {
         );
         setValue("currency", countryCurrency ?? defaultCurrency);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const openI18nModal = () => {
     fpi.custom.setValue("isI18ModalOpen", true);
+    fpi.custom.setValue("showLanguageDropdown", true)
   };
 
   const closeI18nModal = () => {
     fpi.custom.setValue("isI18ModalOpen", false);
+    fpi.custom.setValue("showLanguageDropdown", false)
     setCountryInfo(countryDetails);
     reset({
       country: currentCountry,
       currency: currentCurrency,
+      language: languageIscCode?.find(localeObj => localeObj.locale === activeLocale) || {},
     });
   };
 
@@ -215,9 +240,9 @@ function I18Dropdown({ fpi }) {
     const result = {};
     let errorText =
       field?.display_name?.toLowerCase() === "postcode" ||
-      field?.display_name?.toLowerCase() === "postal code"
-        ? `Invalid ${field?.display_name}`
-        : (error_text ?? "Invalid");
+        field?.display_name?.toLowerCase() === "postal code"
+        ? `${t("resource.common.invalid")} ${field?.display_name}`
+        : (error_text ?? t("resource.common.invalid"));
 
     if (type === "list") {
       result.validate = (value) =>
@@ -259,6 +284,12 @@ function I18Dropdown({ fpi }) {
       setValue("country", currentCountry);
     }
   }, [currentCountry, setValue]);
+
+  useEffect(() => {
+    if (activeLocale && getValues("language")?.locale !== activeLocale) {
+      setValue("language", languageIscCode?.find(localeObj => localeObj.locale === activeLocale) || {});
+    }
+  }, [activeLocale, languageIscCode, setValue]);
 
   useEffect(() => {
     if (currentCurrency && Object.keys(currentCurrency).length > 0) {
@@ -334,24 +365,24 @@ function I18Dropdown({ fpi }) {
 
   return (
     <div className={`${styles.internationalization}`}>
-      {isInternational && showI18Dropdown && (
+      {(languageIscCode.length > 1 || (isInternational && showI18Dropdown)) && (
         <button
-          className={`${styles.internationalization__selected}`}
+          className={styles.internationalization__selected}
           onClick={openI18nModal}
         >
           <InternationalIcon className={styles.internationalIcon} />
-          {currentCountry?.display_name && currentCurrency?.code && (
+          {currentCountry?.display_name && currentCurrency?.code ? (
             <>
               <span
                 className={`${styles.locationLabel} ${styles.locationLabelMobile}`}
               >
-                Deliver to{" "}
+                {t("resource.common.deliver_to")}{" "}
               </span>
               <span
-                className={styles.locationLabel}
+                className={`${styles.locationLabel} ${styles.languageDisplayContainer}`}
               >{`${currentCountry.display_name} - ${currentCurrency.code}`}</span>
             </>
-          )}
+          ) : languageIscCode.length > 1 && <span className={styles.languageDisplayContainer}>{languageIscCode?.find(localeObj => localeObj.locale === activeLocale)?.display_name || ""}</span>}
           <ArrowDownIcon className={styles.angleDownIcon} />
         </button>
       )}
@@ -364,14 +395,13 @@ function I18Dropdown({ fpi }) {
         ignoreClickOutsideForClass="fydrop"
       >
         <h4 className={styles.title}>
-          Choose your location{" "}
+          {isInternational && showI18Dropdown ? t("resource.localization.choose_location") : languageIscCode.length > 1 && t("resource.localization.select_language")}{" "}
           <span onClick={closeI18nModal}>
             <CrossIcon />
           </span>
         </h4>
         <p className={styles.description}>
-          Choose your address location to see product availability and delivery
-          options
+          {isInternational && showI18Dropdown && t("resource.localization.choose_address_for_availability")}
         </p>
 
         <form
@@ -384,14 +414,14 @@ function I18Dropdown({ fpi }) {
                 formData={{
                   key: "country",
                   type: "list",
-                  label: "Select country",
-                  placeholder: "Select country",
+                  label: t("resource.localization.select_country"),
+                  placeholder: t("resource.localization.select_country"),
                   options: countries,
                   dataKey: "uid",
                   onChange: handleCountryChange,
                   validation: {
                     validate: (value) =>
-                      Object.keys(value || {}).length > 0 || `Invalid country`,
+                      Object.keys(value || {}).length > 0 || t("resource.localization.invalid_country"),
                   },
                   getOptionLabel: (option) => option.display_name || "",
                 }}
@@ -399,7 +429,6 @@ function I18Dropdown({ fpi }) {
               />
             </div>
           )}
-
           {formSchema.map((field) => (
             <Fragment key={field.slug}>
               {field?.input ? (
@@ -425,33 +454,58 @@ function I18Dropdown({ fpi }) {
             </Fragment>
           ))}
 
-          {isInternational && (
+          {
+            isInternational && (
+              <div className={`${styles.section}`}>
+                <FormField
+                  formData={{
+                    key: "currency",
+                    type: "list",
+                    label: t("resource.localization.select_currency"),
+                    placeholder: t("resource.localization.select_currency"),
+                    options: currencies,
+                    dataKey: "code",
+                    validation: {
+                      validate: (value) =>
+                        Object.keys(value || {}).length > 0 || t("resource.localization.invalid_currency"),
+                    },
+                    getOptionLabel: (option) => {
+                      return option?.code ? `${option?.code} - ${option?.name}` : ""
+                    }
+
+                  }}
+                  control={control}
+                />
+              </div>
+            )
+          }
+          {showLanguageDropdown && languageIscCode.length > 1 &&
             <div className={`${styles.section}`}>
               <FormField
                 formData={{
-                  key: "currency",
+                  key: "language",
                   type: "list",
-                  label: "Select currency",
-                  placeholder: "Select currency",
-                  options: currencies,
-                  dataKey: "code",
+                  label: t("resource.localization.select_language"),
+                  placeholder: t("resource.localization.select_language"),
+                  options: languageIscCode,
+                  dataKey: "locale",
                   validation: {
-                    validate: (value) =>
-                      Object.keys(value || {}).length > 0 || `Invalid currency`,
+                    required: t("resource.header.language_is_required"), // Ensure language selection is required
+                    validate: (value) => (value?.locale ? true : t("resource.header.language_is_required"))
                   },
-                  getOptionLabel: (option) =>
-                    option?.code ? `${option?.code} - ${option?.name}` : "",
+                  getOptionLabel: (option) => {
+                    return option.display_name || ""
+                  },
                 }}
                 control={control}
               />
-            </div>
-          )}
+            </div>}
           <button className={`${styles.save_btn}`} type="submit">
-            Apply
+            {t("resource.facets.apply")}
           </button>
-        </form>
-      </Modal>
-    </div>
+        </form >
+      </Modal >
+    </div >
   );
 }
 
@@ -462,7 +516,7 @@ const FormField = ({ formData, control }) => {
     options = [],
     key = "",
     type = "",
-    onChange = (value) => {},
+    onChange = (value) => { },
     validation = {},
     getOptionLabel,
     disabled = false,
