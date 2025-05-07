@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { FDKLink } from "fdk-core/components";
-import FyImage from "../core/fy-image/fy-image";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
 import { currencyFormat, isRunningOnClient, formatLocale } from "../../helper/utils";
 import styles from "./product-hotspot.less";
 import HotspotIcon from "../../assets/images/hotspot.svg";

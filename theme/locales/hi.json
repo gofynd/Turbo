@@ -309,7 +309,8 @@
         "enter_valid_username": "कृपया मान्य उपयोगकर्ता नाम दर्ज करें",
         "reset_link_sent_to": "रीसेट लिंक भेजा गया है",
         "back_to_login_caps": "लॉगिन पर वापस जाएं",
-        "sorry_we_couldnt_find_any_results": "क्षमा करें, हमें कोई परिणाम नहीं मिला"
+        "sorry_we_couldnt_find_any_results": "क्षमा करें, हमें कोई परिणाम नहीं मिला",
+        "in": "में"
       },
       "categories": {
         "empty_state": "कोई श्रेणी नहीं मिली"

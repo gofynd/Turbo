@@ -167,7 +167,7 @@ function Footer({ fpi }) {
               </div>
               {hasOne() && (
                 <div
-                  className={`${styles["footer__top--contactInfo"]} ${globalConfig?.footer_contact_background ? "" : styles["footer__top--noBackground"]}`}
+                  className={`${styles["footer__top--contactInfo"]} ${globalConfig?.footer_contact_background !== false ? "" : styles["footer__top--noBackground"]}`}
                 >
                   {emailActive && emailArray?.length > 0 && (
                     <div className={styles.listData}>
@@ -216,16 +216,20 @@ function Footer({ fpi }) {
                   <div className={`${styles.list} ${styles.listSocial} `}>
                     {isSocialLinks && (
                       <>
-                        {/* <h5
-                          className={`${styles.title} ${styles.socialTitle} ${styles.contacts} ${styles.fontBody}`}
-                        >
-                          Social Media
-                        </h5> */}
-                        <span>
-                          <SocialLinks
-                            social_links={contactInfo?.social_links}
-                          />
-                        </span>
+                        <div className={`${styles.socialContainer}`}>
+                          {globalConfig?.footer_social_text && (
+                            <h5
+                              className={`${styles.title} ${styles.socialTitle} ${styles.contacts} ${styles.fontBody}`}
+                            >
+                              {globalConfig?.footer_social_text}
+                            </h5>
+                          )}
+                          <span>
+                            <SocialLinks
+                              social_links={contactInfo?.social_links}
+                            />
+                          </span>
+                        </div>
                       </>
                     )}
                   </div>
@@ -233,24 +237,24 @@ function Footer({ fpi }) {
               )}
             </div>
           </div>
-         {contactInfo?.copyright_text && (
-          <div className={styles.footer__bottom}>
-            <div className={styles.footerContainer}>
-              <div className={`${styles.copyright} b1 ${styles.fontBody}`}>
-                {contactInfo?.copyright_text}
-              </div>
-              {globalConfig?.payments_logo && (
-                <div className={styles.paymentLogo}>
-                  <img
-                    src={globalConfig?.payments_logo}
-                    alt={t("resource.footer.payment_logo_alt_text")}
-                    loading="lazy"
-                    fetchpriority="low"
-                  />
+          {contactInfo?.copyright_text && (
+            <div className={styles.footer__bottom}>
+              <div className={styles.footerContainer}>
+                <div className={`${styles.copyright} b1 ${styles.fontBody}`}>
+                  {contactInfo?.copyright_text}
                 </div>
-              )}
+                {globalConfig?.payments_logo && (
+                  <div className={styles.paymentLogo}>
+                    <img
+                      src={globalConfig?.payments_logo}
+                      alt={t("resource.footer.payment_logo_alt_text")}
+                      loading="lazy"
+                      fetchpriority="low"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
           )}
         </>
       </footer>

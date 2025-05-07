@@ -47,7 +47,7 @@ export const settings = {
     {
       type: "checkbox",
       id: "show_blog_slide_show",
-      label: "t:resource.sections.show_blog_slideshow",
+      label: "t:resource.sections.blog.show_blog_slideshow",
       default: true,
     },
     {

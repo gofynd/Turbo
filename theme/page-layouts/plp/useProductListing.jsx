@@ -476,7 +476,7 @@ const useProductListing = ({ fpi, props }) => {
     productCount: page?.item_total,
     isScrollTop: back_top,
     title: searchParams.get("q")
-      ? `${t("resource.common.results_for")} "${searchParams.get("q")}"`
+      ? `${t("resource.common.result_for")} "${searchParams.get("q")}"`
       : "",
     description: description,
     filterList,

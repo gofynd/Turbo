@@ -182,7 +182,7 @@ export const settings = {
     },
     {
       id: "img_resize",
-      label: "resource.sections.products_listing.image_size_for_tablet_desktop",
+      label: "t:resource.sections.products_listing.image_size_for_tablet_desktop",
       type: "select",
       options: [
         {

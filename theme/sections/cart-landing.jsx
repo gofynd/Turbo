@@ -65,7 +65,7 @@ export function Component({ blocks }) {
   const cartShare = useCartShare({ fpi, cartData });
   const cartComment = useCartComment({ fpi, cartData });
   const cartGst = useCartGst({ fpi, cartData });
-  const { availableCouponList, ...restCartCoupon } = useCartCoupon({
+  const { availableCouponList, ...restCouponProps } = useCartCoupon({
     fpi,
     cartData,
   });
@@ -115,7 +115,7 @@ export function Component({ blocks }) {
             <EmptyCartIcon />
           </div>
         }
-        title={t("resource.section.order.empty_state_title")}
+        title={t("resource.section.cart.empty_state_title")}
       />
     );
   }
@@ -194,7 +194,7 @@ export function Component({ blocks }) {
                         <Coupon
                           key={key}
                           availableCouponList={availableCouponList}
-                          {...restCartCoupon}
+                          {...restCouponProps}
                           currencySymbol={currencySymbol}
                         />
                       )
@@ -250,7 +250,7 @@ export function Component({ blocks }) {
                               className={styles.priceSummaryLoginButton}
                               onClick={redirectToLogin}
                             >
-                              {t("resource.section.cart.checkout_button")}
+                              {t("resource.auth.login.login_caps")}
                             </button>
                             {isAnonymous && (
                               <button

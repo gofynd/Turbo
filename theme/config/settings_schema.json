@@ -66,6 +66,22 @@
       "info": "It adds a border below header on desktop devices"
     },
     {
+      "type": "checkbox",
+      "id": "header_border",
+      "default": true,
+      "category": "Header",
+      "label": "Show border on desktop",
+      "info": "It adds a border below header on desktop devices"
+    },
+    {
+      "type": "checkbox",
+      "id": "header_border",
+      "default": true,
+      "category": "Header",
+      "label": "Show border on desktop",
+      "info": "It adds a border below header on desktop devices"
+    },
+    {
       "type": "select",
       "id": "logo_menu_alignment",
       "default": "layout_1",
@@ -352,6 +368,190 @@
     },
     {
       "type": "checkbox",
+      "id": "header_mega_menu_fullwidth",
+      "default": false,
+      "category": "Header",
+      "label": "Use full width Mega Menu",
+      "info": "The mega menu will be full width"
+    },
+    {
+      "type": "select",
+      "id": "nav_weight",
+      "category": "Header",
+      "label": "Navigation font weight",
+      "info": "",
+      "default": "semibold",
+      "options": [
+        {
+          "value": "regular",
+          "text": "Regular"
+        },
+        {
+          "value": "semibold",
+          "text": "Semibold"
+        },
+        {
+          "value": "bold",
+          "text": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "is_hyperlocal",
+      "default": false,
+      "category": "Header",
+      "label": "Serviceability check in header"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_mandatory_pincode",
+      "category": "Header",
+      "label": "Mandatory serviceability check",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_minutes",
+      "default": false,
+      "category": "Header",
+      "label": "Minutes",
+      "info": "Show delivery promise in minutes."
+    },
+    {
+      "type": "text",
+      "id": "max_delivery_min",
+      "label": "Minutes",
+      "category": "Header",
+      "default": "60",
+      "info": "Set minute threshold for promise."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_hours",
+      "default": false,
+      "category": "Header",
+      "label": "Hours",
+      "info": "Show delivery promise in hours."
+    },
+    {
+      "type": "text",
+      "id": "max_delivery_hours",
+      "label": "Hours",
+      "category": "Header",
+      "default": "2",
+      "info": "Set hour threshold for promise."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_day",
+      "default": false,
+      "category": "Header",
+      "label": "Today / Tomorrow",
+      "info": "Show delivery promise as today/tomorrow."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_date",
+      "default": false,
+      "category": "Header",
+      "label": "Date Range",
+      "info": "Show delivery promise in date range."
+    },
+    {
+      "type": "checkbox",
+      "id": "header_mega_menu_fullwidth",
+      "default": false,
+      "category": "Header",
+      "label": "Use full width Mega Menu",
+      "info": "The mega menu will be full width"
+    },
+    {
+      "type": "select",
+      "id": "nav_weight",
+      "category": "Header",
+      "label": "Navigation font weight",
+      "info": "",
+      "default": "semibold",
+      "options": [
+        {
+          "value": "regular",
+          "text": "Regular"
+        },
+        {
+          "value": "semibold",
+          "text": "Semibold"
+        },
+        {
+          "value": "bold",
+          "text": "Bold"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "is_hyperlocal",
+      "default": false,
+      "category": "Header",
+      "label": "Serviceability check in header"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_mandatory_pincode",
+      "category": "Header",
+      "label": "Mandatory serviceability check",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_minutes",
+      "default": false,
+      "category": "Header",
+      "label": "Minutes",
+      "info": "Show delivery promise in minutes."
+    },
+    {
+      "type": "text",
+      "id": "max_delivery_min",
+      "label": "Minutes",
+      "category": "Header",
+      "default": "60",
+      "info": "Set minute threshold for promise."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_hours",
+      "default": false,
+      "category": "Header",
+      "label": "Hours",
+      "info": "Show delivery promise in hours."
+    },
+    {
+      "type": "text",
+      "id": "max_delivery_hours",
+      "label": "Hours",
+      "category": "Header",
+      "default": "2",
+      "info": "Set hour threshold for promise."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_day",
+      "default": false,
+      "category": "Header",
+      "label": "Today / Tomorrow",
+      "info": "Show delivery promise as today/tomorrow."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_date",
+      "default": false,
+      "category": "Header",
+      "label": "Date Range",
+      "info": "Show delivery promise in date range."
+    },
+    {
+      "type": "checkbox",
       "id": "algolia_enabled",
       "label": "t:resource.settings_schema.algolia_configuration.enable_algolia",
       "default": false,
@@ -412,6 +612,28 @@
       "default": true,
       "category": "Footer",
       "label": "Show Footer Contact Details Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "footer_contact_background",
+      "default": true,
+      "category": "Footer",
+      "label": "Show Footer Contact Details Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "footer_contact_background",
+      "default": true,
+      "category": "Footer",
+      "label": "Show Footer Contact Details Background"
+    },
+    {
+      "type": "text",
+      "id": "footer_social_text",
+      "default": "Social Media",
+      "category": "Footer",
+      "label": "Social media text label",
+      "info": "Show Label text for social media"
     },
     {
       "type": "header",
@@ -593,6 +815,28 @@
       "info": "Border radius for Badge"
     },
     {
+      "type": "range",
+      "category": "Product Card Configuration",
+      "id": "badge_border_radius",
+      "min": 0,
+      "max": 30,
+      "unit": "px",
+      "label": "Badge Border Radius",
+      "default": 24,
+      "info": "Border radius for Badge"
+    },
+    {
+      "type": "range",
+      "category": "Product Card Configuration",
+      "id": "badge_border_radius",
+      "min": 0,
+      "max": 30,
+      "unit": "px",
+      "label": "Badge Border Radius",
+      "default": 24,
+      "info": "Border radius for Badge"
+    },
+    {
       "type": "header",
       "category": "t:resource.settings_schema.common.product_card_configuration",
       "value": "-------------------------------------"
@@ -641,22 +885,7 @@
     {
       "type": "header",
       "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": "-------------------------------------"
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": "t:resource.settings_schema.other_page_configuration.section_margins"
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": "-------------------------------------"
+      "value": "-----------------------------------"
     },
     {
       "type": "header",
@@ -678,11 +907,6 @@
       "label": "t:resource.settings_schema.other_page_configuration.button_border_radius",
       "default": 4,
       "info": "t:resource.settings_schema.other_page_configuration.border_radius_for_button"
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": "-------------------------------------"
     },
     {
       "type": "checkbox",

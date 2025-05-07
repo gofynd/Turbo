@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-vars */
 
 import React, { useState, useEffect, useRef } from "react";
-// import Hammer from "hammerjs";
-// import Modal from "./../../global/components/modal"; // Adjust import path as needed
-import FyImage from "../../../../components/core/fy-image/fy-image";
+import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
+import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import styles from "./lightbox-image.less";
 import {
   getProductImgAspectRatio,
@@ -258,18 +257,10 @@ function LightboxImage({
                   src={images[select]?.url}
                   alt={images[select]?.alt}
                   customClass={`${styles.lbModalMedia} ${styles.lbModalImage}`}
-                  sources={
-                    globalConfig?.img_hd
-                      ? []
-                      : [
-                          { breakpoint: { min: 481 }, width: 1100 },
-                          { breakpoint: { max: 480 }, width: 1000 },
-                        ]
-                  }
-                  mobileAspectRatio={getProductImgAspectRatio(globalConfig)}
+                  sources={[]}
                   aspectRatio={getProductImgAspectRatio(globalConfig)}
                   globalConfig={globalConfig}
-                  showSkeleton={false}
+                  defer={false}
                 />
               )}
               {images[select].type === "video" && (
@@ -385,23 +376,14 @@ function LightboxImage({
                           <FyImage
                             src={image?.url}
                             alt={image?.alt}
-                            customClass={`${styles.lbModalThumbnail} ${select === index
-                              ? `${styles["lbModalThumbnail-active"]}`
-                              : ""
-                              }`}
-                            mobileAspectRatio={getProductImgAspectRatio(
-                              globalConfig
-                            )}
+                            customClass={`${styles.lbModalThumbnail} ${
+                              select === index
+                                ? `${styles["lbModalThumbnail-active"]}`
+                                : ""
+                            }`}
                             aspectRatio={getProductImgAspectRatio(globalConfig)}
                             globalConfig={globalConfig}
-                            sources={
-                              globalConfig?.img_hd
-                                ? []
-                                : [
-                                    { breakpoint: { min: 481 }, width: 1100 },
-                                    { breakpoint: { max: 480 }, width: 1000 },
-                                  ]
-                            }
+                            sources={[{ width: 100 }]}
                           />
                         )}
                         {image.type === "video" && (

@@ -20,7 +20,6 @@ export function Component({ props, globalConfig }) {
     padding_bottom,
   } = props;
   const { t } = useGlobalTranslation("translation");
-  const [isMobile, setIsMobile] = useState(false);
   const [showOverlay, setShowOverlay] = useState(!autoplay?.value);
   const [ytOverlay, setYtOverlay] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -457,8 +456,8 @@ export const settings = {
       type: "checkbox",
       id: "showloop",
       default: true,
-      label: "Play Video in Loop",
-      info: "check to disable Loop",
+      label: "t:resource.sections.hero_video.play_video_loop",
+      info: "t:resource.sections.hero_video.disable_video_loop",
     },
     {
       type: "checkbox",
@@ -489,9 +488,9 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "px",
-      label: "Top padding",
+      label: "t:resource.sections.categories.top_padding",
       default: 0,
-      info: "Top padding for section",
+      info: "t:resource.sections.categories.top_padding_for_section",
     },
     {
       type: "range",
@@ -500,9 +499,9 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "px",
-      label: "Bottom padding",
+      label: "t:resource.sections.categories.bottom_padding",
       default: 16,
-      info: "Bottom padding for section",
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
   ],
 };

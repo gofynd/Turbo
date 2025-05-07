@@ -19,6 +19,8 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     mobile_layout: { value: mobileLayout } = {},
     item_count_mobile = {},
     card_radius: { value: cardRadius } = {},
+    padding_top: { value: paddingTop = 16 } = {},
+    padding_bottom: { value: paddingBottom = 16 } = {},
   } = props;
 
   const itemCount = Number(item_count?.value ?? 5);
@@ -47,61 +49,66 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     ];
   }, [globalConfig?.img_hd, itemCount, itemCountMobile]);
 
+  const dynamicStyles = {
+    paddingTop: `${paddingTop}px`,
+    paddingBottom: `${paddingBottom}px`,
+    maxWidth: "100vw",
+    "--bd-radius": `${(cardRadius || 0) / 2}%`,
+  };
+
   return (
-    <div
-      style={{
-        paddingTop: "16px",
-        maxWidth: "100vw",
-        paddingBottom: `16px`,
-        "--bd-radius": `${(cardRadius || 0) / 2}%`,
-      }}
-    >
-      <div>
-        <div className={styles.titleBlock}>
-          {title && (
-            <h2 className={`${styles.sectionHeading} fontHeader`}>{title}</h2>
-          )}
-          {description && (
-            <p className={`${styles.description} b2`}>{description}</p>
-          )}
-        </div>
-        {isHorizontalView && (
-          <HorizontalLayout
-            items={galleryItems}
-            globalConfig={globalConfig}
-            colCount={itemCount}
-            colCountMobile={itemCountMobile}
-            sources={getImgSrcSet}
-            autoplay={autoplay}
-            autoplaySpeed={playSlides * 1000}
-            desktopLayout={desktopLayout}
-            mobileLayout={mobileLayout}
-          />
+    <section style={dynamicStyles}>
+      <div className={`fx-title-block ${styles.titleBlock}`}>
+        {title && (
+          <h2 className={`fx-title ${styles.sectionHeading} fontHeader`}>
+            {title}
+          </h2>
         )}
-        {isStackView && (
-          <StackLayout
-            items={galleryItems}
-            globalConfig={globalConfig}
-            colCount={itemCount}
-            colCountMobile={itemCountMobile}
-            sources={getImgSrcSet}
-            desktopLayout={desktopLayout}
-            mobileLayout={mobileLayout}
-          />
+        {description && (
+          <p className={`fx-description ${styles.description} b2`}>
+            {description}
+          </p>
         )}
       </div>
-    </div>
+      {isHorizontalView && (
+        <HorizontalLayout
+          className={`${desktopLayout === "grid" ? styles.hideOnDesktop : ""} ${
+            mobileLayout === "grid" ? styles.hideOnTablet : ""
+          }`}
+          items={galleryItems}
+          globalConfig={globalConfig}
+          colCount={itemCount}
+          colCountMobile={itemCountMobile}
+          sources={getImgSrcSet}
+          autoplay={autoplay}
+          autoplaySpeed={playSlides * 1000}
+        />
+      )}
+      {isStackView && (
+        <StackLayout
+          className={`${
+            desktopLayout === "horizontal" ? styles.hideOnDesktop : ""
+          } ${mobileLayout === "horizontal" ? styles.hideOnTablet : ""}`}
+          items={galleryItems}
+          globalConfig={globalConfig}
+          colCount={itemCount}
+          colCountMobile={itemCountMobile}
+          sources={getImgSrcSet}
+          desktopLayout={desktopLayout}
+          mobileLayout={mobileLayout}
+        />
+      )}
+    </section>
   );
 }
 
 const StackLayout = ({
+  className,
   items,
   globalConfig,
   colCount,
   colCountMobile,
   sources,
-  desktopLayout,
-  mobileLayout,
 }) => {
   const dynamicStyles = {
     "--item-count": `${colCount}`,
@@ -109,14 +116,7 @@ const StackLayout = ({
   };
 
   return (
-    <div
-      className={`${styles.imageGrid} ${
-        desktopLayout === "grid" ? styles.desktopVisible : styles.desktopHidden
-      } ${
-        mobileLayout === "grid" ? styles.mobileVisible : styles.mobileHidden
-      }`}
-      style={dynamicStyles}
-    >
+    <div className={`${styles.imageGrid} ${className}`} style={dynamicStyles}>
       {items.map(({ props: block }, index) => (
         <div key={index}>
           <FDKLink to={block?.link?.value || ""}>
@@ -135,6 +135,7 @@ const StackLayout = ({
 };
 
 const HorizontalLayout = ({
+  className,
   items,
   globalConfig,
   colCount,
@@ -142,8 +143,6 @@ const HorizontalLayout = ({
   sources,
   autoplay,
   autoplaySpeed,
-  desktopLayout,
-  mobileLayout,
 }) => {
   const config = useMemo(
     () => ({
@@ -176,7 +175,7 @@ const HorizontalLayout = ({
         },
       ],
     }),
-    [colCount, colCountMobile, autoplay, autoplaySpeed]
+    [items.length, colCount, autoplay, autoplaySpeed]
   );
   const configMobile = useMemo(
     () => ({
@@ -189,7 +188,7 @@ const HorizontalLayout = ({
       autoplay,
       autoplaySpeed,
       cssEase: "linear",
-      centerMode: false,
+      centerMode: true,
       centerPadding: "25px",
       swipe: true,
       swipeToSlide: false,
@@ -200,31 +199,20 @@ const HorizontalLayout = ({
       nextArrow: <SliderRightIcon />,
       prevArrow: <SliderLeftIcon />,
     }),
-    [colCount, colCountMobile, autoplay, autoplaySpeed]
+    [items?.length, colCountMobile, autoplay, autoplaySpeed]
   );
 
   return (
     <div
-      className={`${styles.slideWrap} ${
-        desktopLayout === "horizontal"
-          ? styles.desktopVisible
-          : styles.desktopHidden
-      } ${
-        mobileLayout === "horizontal"
-          ? styles.mobileVisible
-          : styles.mobileHidden
-      }`}
+      className={`${styles.imageSlider} ${items?.length <= colCountMobile ? styles.mobileItemLess : ""} ${className}`}
       style={{
         "--slick-dots": `${Math.ceil(items?.length / colCount) * 22 + 10}px`,
         maxWidth: "100vw",
       }}
     >
-      <Slider
-        {...config}
-        className={`${items?.length / colCount === 0 || items?.length < colCount ? "no-nav" : ""} ${styles.customSlider}  ${styles.hideOnMobile}`}
-      >
+      <Slider {...config} className={styles.hideOnMobile}>
         {items.map(({ props: block }, index) => (
-          <div key={index} className={styles.sliderView}>
+          <div key={index} className={styles.sliderItem}>
             <FDKLink to={block?.link?.value || ""}>
               <FyImage
                 customClass={styles.imageGallery}
@@ -237,12 +225,9 @@ const HorizontalLayout = ({
           </div>
         ))}
       </Slider>
-      <Slider
-        {...configMobile}
-        className={`${items?.length / colCount === 0 || items?.length < colCount ? "no-nav" : ""} ${styles.customSlider} ${styles.hideOnDesktop}`}
-      >
+      <Slider {...configMobile} className={styles.showOnMobile}>
         {items.map(({ props: block }, index) => (
-          <div key={index} className={styles.sliderView}>
+          <div key={index} className={styles.sliderItem}>
             <FDKLink to={block?.link?.value || ""}>
               <FyImage
                 customClass={styles.imageGallery}
@@ -354,6 +339,28 @@ export const settings = {
       label: "t:resource.common.change_slides_every",
       default: 3,
     },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.top_padding",
+      default: 16,
+      info: "t:resource.sections.categories.top_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
+    },
   ],
   blocks: [
     {
@@ -429,5 +436,3 @@ export const settings = {
   },
 };
 export default Component;
-
-

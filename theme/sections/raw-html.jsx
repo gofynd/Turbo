@@ -18,14 +18,14 @@ export function Component({ props }) {
 }
 
 export const settings = {
-  label: "t:resource.sections.custom_html.custom_html",
+  label: "t:resource.sections.raw_html.custom_html",
   props: [
     {
       id: "code",
-      label: "t:resource.sections.custom_html.your_code_here",
+      label: "t:resource.sections.raw_html.your_code_here",
       type: "code",
       default: "",
-      info: "t:resource.sections.custom_html.custom_html_code_editor",
+      info: "t:resource.sections.raw_html.custom_html_code_editor",
     },
     {
       type: "range",
@@ -34,9 +34,9 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "px",
-      label: "Top padding",
+      label: "t:resource.sections.categories.top_padding",
       default: 16,
-      info: "Top padding for section",
+      info: "t:resource.sections.categories.top_padding_for_section",
     },
     {
       type: "range",
@@ -45,9 +45,9 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "px",
-      label: "Bottom padding",
+      label: "t:resource.sections.categories.bottom_padding",
       default: 16,
-      info: "Bottom padding for section",
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
   ],
   blocks: [],

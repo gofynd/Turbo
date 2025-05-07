@@ -1015,7 +1015,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                             >
                               <button
                                 type="button"
-                                className={`${styles.button} btnPrimary ${styles.buyNow} ${styles.fontBody}`}
+                                className={`${styles.button} btnPrimary ${styles.customBtnStyle} ${styles.fontBody}`}
                               >
                                 {getBlockConfigValue(
                                   block,
@@ -1347,14 +1347,6 @@ export const settings = {
       type: "select",
       options: [
         {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
-        {
           value: "700",
           text: "700px",
         },
@@ -1369,6 +1361,18 @@ export const settings = {
         {
           value: "1300",
           text: "1300px",
+        },
+        {
+          value: "1500",
+          text: "1500px",
+        },
+        {
+          value: "1700",
+          text: "1700px",
+        },
+        {
+          value: "2000",
+          text: "2000px",
         },
       ],
       default: "700",

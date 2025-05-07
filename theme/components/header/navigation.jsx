@@ -13,6 +13,7 @@ import MegaMenu from "./mega-menu";
 import { useGlobalTranslation } from "fdk-core/utils";
 import { useParams } from "react-router-dom";
 import I18Dropdown from "./i18n-dropdown";
+import MegaMenuLarge from "./mega-menu-large";
 
 function Navigation({
   reset,
@@ -31,7 +32,6 @@ function Navigation({
   const [showSidebarNav, setShowSidebarNav] = useState(true);
   const [sidebarl2Nav, setSidebarl2Nav] = useState({});
   const [sidebarl3Nav, setSidebarl3Nav] = useState({});
-  const [scrollY, setScrollY] = useState(0);
   const [activeItem, setActiveItem] = useState(null);
   const [hoveredL2Index, setHoveredL2Index] = useState(null);
   const [isClient, setIsClient] = useState(false);
@@ -77,36 +77,27 @@ function Navigation({
     if (isRunningOnClient()) {
       setIsClient(true);
       if (showSidebar) {
-        document.body.style.position = "fixed";
-        document.body.style.width = "100%";
-        document.body.style.top = `-${scrollY}px`;
+        document.body.classList.add("remove-scroll");
       } else {
-        const docScrollY = document.body.style.top;
-        document.body.style.position = "";
-        document.body.style.top = "";
-        window.scrollTo(0, parseInt(docScrollY, 10 || "0") * -1);
+        document.body.classList.remove("remove-scroll");
       }
+      return () => {
+        document.body.classList.remove("remove-scroll");
+      };
     }
+  }, [showSidebar]);
 
-    return () => {
-      // Cleanup scroll position on showSidebar change
-    };
-  }, [showSidebar, scrollY]);
   const isHorizontalNav = navigationList?.length > 0 && !isSidebarNav;
   const isMegaMenu =
-    globalConfig?.header_mega_menu && globalConfig?.header_layout === "double";
+    isHorizontalNav &&
+    globalConfig?.header_mega_menu &&
+    globalConfig?.header_layout === "double";
+  const isFullWidthMegamenu =
+    globalConfig?.header_mega_menu_fullwidth && isMegaMenu;
   const getNavigation = navigationList?.slice(0, maxMenuLength);
-  const getMenuOffset = () => {
-    const val = globalConfig?.menu_layout_desktop;
-
-    return val === "layout_1" || val === "layout_2"
-      ? { paddingTop: "20px" }
-      : { paddingTop: "4px" };
-  };
 
   const getShopLogoMobile = () =>
     appInfo?.mobile_logo?.secure_url || appInfo?.logo?.secure_url || "";
-  // fallbackLogo;
 
   const openSidebarNav = () => {
     setShowSidebar(true);
@@ -161,7 +152,17 @@ function Navigation({
 
   return (
     <div className={customClass}>
-      {isHorizontalNav && !isMegaMenu && (
+      {isFullWidthMegamenu ? (
+        <MegaMenuLarge
+          headerNavigation={getNavigation}
+          l1MenuClassName={navWeightClassName}
+        ></MegaMenuLarge>
+      ) : isMegaMenu ? (
+        <MegaMenu
+          headerNavigation={getNavigation}
+          l1MenuClassName={navWeightClassName}
+        ></MegaMenu>
+      ) : isHorizontalNav ? (
         <nav className={`${styles.nav} ${customClass}`}>
           <AnimatePresence>
             <motion.ul
@@ -302,7 +303,7 @@ function Navigation({
             </motion.ul>
           </AnimatePresence>
         </nav>
-      )}
+      ) : null}
       <button
         className={`${styles.icon} ${styles.flexCenter}`}
         style={{ display: isSidebarNav ? "flex" : "none" }}
@@ -313,14 +314,6 @@ function Navigation({
           className={`${styles.hamburgerIcon} ${styles.menuIcon}`}
         />
       </button>
-      {isHorizontalNav && isMegaMenu && (
-        <div className={`${styles.headerMegaMenu}`}>
-          <MegaMenu
-            headerNavigation={getNavigation}
-            l1MenuClassName={navWeightClassName}
-          ></MegaMenu>
-        </div>
-      )}
       {/* Sidebar If */}
       <div>
         <motion.div
@@ -446,8 +439,8 @@ function Navigation({
                   >
                     {convertActionToUrl(nav?.action) ? (
                       <FDKLink
-                        className={styles["nav-link"]}
-                        action={nav?.action}
+                        className={styles.navLink}
+                        to={nav?.action}
                         onClick={() => {
                           goBack("l1");
                           closeSidebarNav();
@@ -516,7 +509,7 @@ function Navigation({
                           closeSidebarNav();
                         }}
                       >
-                        <p>{nav.display}</p>
+                        {nav.display}
                       </FDKLink>
                     ) : (
                       <button

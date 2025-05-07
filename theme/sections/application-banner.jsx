@@ -16,6 +16,7 @@ export function Component({ props, blocks, globalConfig }) {
     banner_link,
     padding_top,
     padding_bottom,
+    hover_application_banner,
   } = props;
 
   const dynamicBoxStyle = (block) => {
@@ -72,7 +73,7 @@ export function Component({ props, blocks, globalConfig }) {
       {banner_link?.value?.length > 0 ? (
         <FDKLink to={banner_link?.value}>
           <FyImage
-            customClass={`${styles.imageWrapper}`}
+           customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
             src={desktopImage}
             sources={getImgSrcSet()}
             isLazyLoaded={false}
@@ -82,7 +83,7 @@ export function Component({ props, blocks, globalConfig }) {
         </FDKLink>
       ) : (
         <FyImage
-          customClass={`${styles.imageWrapper}`}
+          customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
           src={desktopImage}
           sources={getImgSrcSet()}
           isLazyLoaded={false}
@@ -187,9 +188,9 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "px",
-      label: "Top padding",
+      label: "t:resource.sections.categories.top_padding",
       default: 0,
-      info: "Top padding for section",
+      info: "t:resource.sections.categories.top_padding_for_section",
     },
     {
       type: "range",
@@ -198,9 +199,15 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "px",
-      label: "Bottom padding",
+      label: "t:resource.sections.categories.bottom_padding",
       default: 16,
-      info: "Bottom padding for section",
+      info: "t:resource.sections.categories.bottom_padding_for_section",
+    },
+    {
+      type: "checkbox",
+      id: "hover_application_banner",
+      label: "t:resource.sections.application_banner.enable_hover_effect_on_banner",
+      default: false,
     },
   ],
   blocks: [

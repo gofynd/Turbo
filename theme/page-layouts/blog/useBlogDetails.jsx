@@ -1,21 +1,13 @@
 import { useEffect, useState, useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useGlobalStore } from "fdk-core/utils";
-import placeholderImage from "../../assets/images/blog-placeholder.png";
 import { GET_BLOG } from "../../queries/blogQuery";
+import { useThemeConfig } from "../../helper/hooks";
 
 const useBlogDetails = ({ fpi }) => {
   const location = useLocation();
   const { slug = "" } = useParams();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const THEME = useGlobalStore(fpi?.getters?.THEME);
-  const mode = THEME?.config?.list.find(
-    (f) => f.name === THEME?.config?.current
-  );
-  const globalConfig = mode?.global_config?.custom?.props;
-  const pageConfig =
-    mode?.page?.find((f) => f.page === "blog")?.settings?.props || {};
+  const { pageConfig } = useThemeConfig({ fpi, page: "blog" });
 
   const footerProps = useMemo(
     () => ({
@@ -34,7 +26,7 @@ const useBlogDetails = ({ fpi }) => {
       show_search: pageConfig?.show_search || "",
       show_tags: pageConfig?.show_tags || "",
       show_top_blog: pageConfig?.show_top_blog || "",
-      fallback_image: pageConfig?.fallback_image || placeholderImage,
+      fallback_image: pageConfig?.fallback_image,
       button_text: pageConfig?.button_text || "",
       autoplay: pageConfig?.autoplay || false,
       slide_interval: pageConfig?.slide_interval || 3,

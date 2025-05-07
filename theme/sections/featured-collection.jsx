@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import { FDKLink } from "fdk-core/components";
 import { useGlobalStore, useFPI } from "fdk-core/utils";
 import Slider from "react-slick";
@@ -9,31 +9,45 @@ import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import ArrowRightIcon from "../assets/images/arrow-right.svg";
-import { isRunningOnClient, throttle, getProductImgAspectRatio } from "../helper/utils";
 import { FEATURED_COLLECTION } from "../queries/collectionsQuery";
 import "fdk-react-templates/components/product-card/product-card.css";
 import placeholderBanner from "../assets/images/placeholder/featured-collection-banner.png";
 import placeholderProduct from "../assets/images/placeholder/featured-collection-product.png";
 import useAddToCartModal from "../page-layouts/plp/useAddToCartModal";
-import Modal from "fdk-react-templates/components/core/modal/modal";
-import AddToCart from "fdk-react-templates/page-layouts/plp/Components/add-to-cart/add-to-cart";
-import "fdk-react-templates/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
-import SizeGuide from "fdk-react-templates/page-layouts/plp/Components/size-guide/size-guide";
-import "fdk-react-templates/page-layouts/plp/Components/size-guide/size-guide.css";
 import {
   useViewport,
   useAccounts,
   useWishlist,
   useThemeFeature,
+  useWindowWidth,
 } from "../helper/hooks";
+import { getProductImgAspectRatio } from "../helper/utils";
+import "fdk-react-templates/page-layouts/plp/Components/size-guide/size-guide.css";
+import "fdk-react-templates/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
+
+const Modal = React.lazy(
+  () => import("fdk-react-templates/components/core/modal/modal")
+);
+const AddToCart = React.lazy(
+  () =>
+    import(
+      "fdk-react-templates/page-layouts/plp/Components/add-to-cart/add-to-cart"
+    )
+);
+const SizeGuide = React.lazy(
+  () =>
+    import(
+      "fdk-react-templates/page-layouts/plp/Components/size-guide/size-guide"
+    )
+);
 
 export function Component({ props, globalConfig }) {
   const fpi = useFPI();
-  const bannerRef = useRef(null);
-  const isTablet = useViewport(0, 768);
   const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
   const listingPrice =
     CONFIGURATION?.app_features?.common?.listing_price?.value || "range";
+  const bannerRef = useRef(null);
+  const isTablet = useViewport(0, 768);
 
   const addToCartConfigs = {
     mandatory_pincode: props.mandatory_pincode?.value,
@@ -55,8 +69,6 @@ export function Component({ props, globalConfig }) {
     ...restAddToModalProps
   } = addToCartModalProps;
   const {
-    autoplay,
-    play_slides,
     heading,
     description,
     item_count,
@@ -65,18 +77,20 @@ export function Component({ props, globalConfig }) {
     img_fill,
     img_container_bg,
     button_text,
+    button_position,
     collection,
     show_add_to_cart,
-    show_wishlist_icon,
     item_count_mobile,
     show_view_all,
-    show_badge,
     max_count,
     text_alignment,
-    // title_size,
     img_resize,
     img_resize_mobile,
+    padding_top,
+    padding_bottom,
   } = props;
+  const itemCountMobile = Number(item_count_mobile?.value ?? 1);
+
   const [isLoading, setIsLoading] = useState(
     !!collection?.value ? true : false
   );
@@ -96,73 +110,110 @@ export function Component({ props, globalConfig }) {
   const slug =
     customValues?.[`featuredCollectionData-${collection?.value}`]?.data
       ?.collection?.slug ?? "";
-  const [windowWidth, setWindowWidth] = useState(0);
-  // const [getGallery, setGetGallery] = useState([]);
-  // const [slug, setSlug] = useState("");
+  const windowWidth = useWindowWidth();
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const i18nDetails = useGlobalStore(fpi.getters.i18N_DETAILS);
   const [isClient, setIsClient] = useState(false);
-  const [config, setConfig] = useState({
-    dots: imagesForScrollView()?.length > item_count?.value,
-    speed: 300,
-    slidesToShow: item_count?.value,
-    slidesToScroll: item_count?.value,
-    swipeToSlide: true,
-    autoplay: false,
-    infinite: false,
-    autoplaySpeed: 3000,
-    cssEase: "linear",
-    arrows: imagesForScrollView()?.length > item_count?.value,
-    adaptiveHeight: false,
-    nextArrow: <SliderRightIcon />,
-    prevArrow: <SliderLeftIcon />,
-    responsive: [
-      {
-        breakpoint: 780,
-        settings: {
-          arrows: false,
-          slidesToShow: 3,
-          slidesToScroll: 3,
-          dots: true,
-          swipe: true,
-          swipeToSlide: false,
-          touchThreshold: 80,
-          draggable: false,
-          touchMove: true,
-        },
-      },
-    ],
-  });
-  const [configMobile, setConfigMobile] = useState({
-    dots: false,
-    arrows: false,
-    speed: 300,
-    slidesToShow: item_count_mobile?.value ? item_count_mobile?.value : 1,
-    slidesToScroll: 1,
-    swipeToSlide: false,
-    swipe: true,
-    autoplay: false,
-    infinite: false,
-    autoplaySpeed: 3000,
-    cssEase: "linear",
-    adaptiveHeight: false,
-    nextArrow: <SliderRightIcon />,
-    prevArrow: <SliderLeftIcon />,
-    // centerMode: true,
-    centerPadding: "30px",
-    touchThreshold: 80,
-    draggable: false,
-    touchMove: true,
-  });
 
-  const columnCount = {
-    desktop: item_count?.value > 3 ? 4 : 2,
-    tablet: item_count?.value > 2 ? 3 : 2,
-    mobile: item_count_mobile?.value,
-  };
+  const imagesForScrollView = useMemo(() => {
+    if (!getGallery) return [];
+    return getGallery.slice(0, max_count?.value);
+  }, [getGallery, max_count?.value]);
+
+  const config = useMemo(() => {
+    const itemCount = Number(item_count?.value ?? 4);
+    const itemLength = imagesForScrollView?.length;
+    return {
+      dots: itemLength > itemCount,
+      arrows: itemLength > itemCount,
+      infinite: itemLength > itemCount,
+      speed: 300,
+      slidesToShow: itemCount,
+      slidesToScroll: itemCount,
+      swipeToSlide: true,
+      autoplay: false,
+      cssEase: "linear",
+      nextArrow: <SliderRightIcon />,
+      prevArrow: <SliderLeftIcon />,
+      responsive: [
+        {
+          breakpoint: 780,
+          settings: {
+            arrows: false,
+            slidesToShow: 3,
+            slidesToScroll: 3,
+            dots: true,
+            swipe: true,
+            swipeToSlide: false,
+            touchThreshold: 80,
+            draggable: false,
+            touchMove: true,
+          },
+        },
+      ],
+    };
+  }, [item_count?.value, imagesForScrollView?.length]);
+
+  const configMobile = useMemo(() => {
+    return {
+      dots: false,
+      arrows: false,
+      speed: 300,
+      slidesToShow: itemCountMobile,
+      slidesToScroll: 1,
+      swipeToSlide: false,
+      swipe: true,
+      autoplay: false,
+      infinite: imagesForScrollView?.length > itemCountMobile,
+      cssEase: "linear",
+      nextArrow: <SliderRightIcon />,
+      prevArrow: <SliderLeftIcon />,
+      centerMode: imagesForScrollView?.length > itemCountMobile,
+      centerPadding: "25px",
+      touchThreshold: 80,
+      draggable: false,
+      touchMove: true,
+    };
+  }, [itemCountMobile, imagesForScrollView?.length]);
+
+  const bannerConfig = useMemo(
+    () => ({
+      dots: false,
+      speed: 500,
+      slidesToShow: 2.5,
+      slidesToScroll: 2,
+      infinite: false,
+      cssEase: "linear",
+      arrows: false,
+      centerMode: false,
+      responsive: [
+        {
+          breakpoint: 780,
+          settings: {
+            arrows: false,
+            dots: true,
+            slidesToShow: 3,
+            slidesToScroll: 3,
+          },
+        },
+        {
+          breakpoint: 500,
+          settings: {
+            dots: false,
+            arrows: false,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            infinite: imagesForScrollView?.length > 1,
+            centerMode: imagesForScrollView?.length > 1,
+            centerPadding: "25px",
+          },
+        },
+      ],
+    }),
+    [imagesForScrollView.length]
+  );
 
   useEffect(() => {
-    setWindowWidth(isRunningOnClient() ? window.innerWidth : 0);
     setIsClient(true);
     if (collection?.value) {
       const payload = {
@@ -180,95 +231,20 @@ export function Component({ props, globalConfig }) {
     }
   }, [collection, locationDetails?.pincode, i18nDetails?.currency?.code]);
 
-  const bannerConfig = {
-    dots: false,
-    speed: 500,
-    slidesToShow: 2.5,
-    slidesToScroll: 2,
-    infinite: false,
-    cssEase: "linear",
-    arrows: false,
-    centerMode: false,
-    responsive: [
-      {
-        breakpoint: 780,
-        settings: {
-          arrows: false,
-          dots: true,
-          slidesToShow: 3,
-          slidesToScroll: 3,
-        },
-      },
-      {
-        breakpoint: 500,
-        settings: {
-          dots: false,
-          arrows: false,
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          centerMode: getGallery?.length !== 1,
-          centerPadding: "16px",
-        },
-      },
-    ],
-  };
-
-  useEffect(() => {
-    if (autoplay?.value !== config.autoplay) {
-      setConfig((prevConfig) => ({
-        ...prevConfig,
-        autoplay: autoplay?.value,
-      }));
-    }
-
-    if (item_count?.value !== config.slidesToShow) {
-      setConfig((prevConfig) => ({
-        ...prevConfig,
-        slidesToShow: item_count?.value,
-        slidesToScroll: item_count?.value,
-      }));
-    }
-
-    if (play_slides?.value * 1000 !== config.autoplaySpeed) {
-      setConfig((prevConfig) => ({
-        ...prevConfig,
-        autoplaySpeed: play_slides?.value * 1000,
-      }));
-    }
-    if (config.arrows !== imagesForScrollView()?.length > item_count?.value) {
-      setConfig((prevConfig) => ({
-        ...prevConfig,
-        arrows: true,
-        dots: true,
-      }));
-    }
-  }, [autoplay, play_slides, item_count, imagesForScrollView()?.length]);
-
-  useEffect(() => {
-    const handleResize = throttle(() => {
-      setWindowWidth(isRunningOnClient() ? window.innerWidth : 0);
-    }, 500);
-
-    if (isRunningOnClient()) {
-      window.addEventListener("resize", handleResize);
-    }
-
-    return () => {
-      if (isRunningOnClient()) {
-        window.removeEventListener("resize", handleResize);
-      }
-    };
-  }, []);
-
   function getImgSrcSet() {
     if (globalConfig?.img_hd) {
       return [];
     }
     return [
-      { breakpoint: { min: 1024 }, width: 450 },
-      { breakpoint: { min: 768 }, width: 250 },
-      { breakpoint: { min: 481 }, width: 480 },
-      { breakpoint: { max: 390 }, width: 390 },
+      { breakpoint: { min: 1728 }, width: 1691 },
+      { breakpoint: { min: 1512 }, width: 1487 },
+      { breakpoint: { min: 1296 }, width: 1282 },
+      { breakpoint: { min: 1080 }, width: 1069 },
+      { breakpoint: { min: 900 }, width: 897 },
+      { breakpoint: { min: 720 }, width: 1530 },
+      { breakpoint: { min: 540 }, width: 1170 },
+      { breakpoint: { min: 360 }, width: 810 },
+      { breakpoint: { min: 180 }, width: 450 },
     ];
   }
 
@@ -295,11 +271,6 @@ export function Component({ props, globalConfig }) {
     return getGallery.slice(0, itemCount * 2);
   }
 
-  function imagesForScrollView() {
-    if (!getGallery) return [];
-    return getGallery.slice(0, max_count?.value);
-  }
-
   function showStackedView() {
     if (windowWidth <= 768) {
       return (
@@ -309,18 +280,21 @@ export function Component({ props, globalConfig }) {
     }
     return desktop_layout?.value === "grid";
   }
+
   function showScrollView() {
     if (windowWidth <= 768) {
       return mobile_layout?.value === "horizontal";
     }
     return desktop_layout?.value === "horizontal";
   }
+
   function showBannerScrollView() {
     if (windowWidth <= 768) {
       return mobile_layout?.value === "banner_horizontal_scroll";
     }
     return desktop_layout?.value === "banner_horizontal_scroll";
   }
+
   const handleWishlistToggle = (data) => {
     if (!isLoggedIn) {
       openLogin();
@@ -342,18 +316,17 @@ export function Component({ props, globalConfig }) {
   const titleSizeDesktop = "32px";
   const titleSizeTablet = "28px";
 
+  const dynamicStyles = {
+    paddingTop: `${padding_top?.value ?? 16}px`,
+    paddingBottom: `${padding_bottom?.value ?? 16}px`,
+    "--bg-color": `${img_container_bg?.value || "#00000000"}`,
+  };
+
   return (
-    <div
-      className={styles.sectionWrapper}
-      style={{
-        paddingTop: "16px",
-        paddingBottom: `16px`,
-        "--bg-color": `${img_container_bg?.value || "#00000000"}`,
-      }}
-    >
-      <div>
+    <>
+      <section className={styles.sectionWrapper} style={dynamicStyles}>
         <div
-          className={`${styles.titleBlock} ${desktop_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""}  ${mobile_layout?.value === "banner_horizontal_scroll" ? styles.hideOnMobile : ""}`}
+          className={`fx-title-block ${styles.titleBlock} ${desktop_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""}  ${mobile_layout?.value === "banner_horizontal_scroll" ? styles.hideOnMobile : ""}`}
           style={{
             alignItems:
               text_alignment?.value === "left"
@@ -365,7 +338,7 @@ export function Component({ props, globalConfig }) {
         >
           {heading?.value?.length > 0 && (
             <h2
-              className={`${styles.sectionHeading} fontHeader`}
+              className={`fx-title ${styles.sectionHeading} fontHeader`}
               style={{
                 textAlign: text_alignment?.value,
                 fontSize:
@@ -377,17 +350,32 @@ export function Component({ props, globalConfig }) {
           )}
           {description?.value?.length > 0 && (
             <p
-              className={`${styles.description} b2`}
+              className={`fx-description ${styles.description} b2`}
               style={{ textAlign: text_alignment?.value }}
             >
               {description?.value}
             </p>
           )}
+          {button_text?.value &&
+            show_view_all?.value &&
+            button_position?.value !== "below_products" && (
+              <div
+                className={`${styles["gap-above-button"]} ${styles.visibleOnDesktop}`}
+              >
+                <FDKLink to={`/collection/${slug}`}>
+                  <button
+                    type="button"
+                    className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
+                  >
+                    {button_text?.value}
+                  </button>
+                </FDKLink>
+              </div>
+            )}
         </div>
-
         {getGallery?.length > 0 && (
           <div
-            className={`${styles.bannerImageSliderWrap} ${styles.slideWrap}  ${
+            className={`${styles.bannerImageSliderWrap} ${
               desktop_layout?.value === "banner_horizontal_scroll"
                 ? styles.desktopVisibleFlex
                 : styles.desktopHiddenFlex
@@ -417,12 +405,11 @@ export function Component({ props, globalConfig }) {
                       : text_alignment?.value === "right"
                         ? "flex-end"
                         : "center",
-                  paddingLeft: "10px",
                 }}
               >
                 {heading?.value?.length > 0 && (
                   <h2
-                    className={`${styles.sectionHeading} fontHeader`}
+                    className={`fx-title ${styles.sectionHeading} fontHeader`}
                     style={{
                       textAlign: text_alignment?.value,
                       fontSize:
@@ -434,64 +421,48 @@ export function Component({ props, globalConfig }) {
                 )}
                 {description?.value?.length > 0 && (
                   <p
-                    className={`${styles.description} b2`}
+                    className={`fx-description ${styles.description} b2`}
                     style={{ textAlign: text_alignment?.value }}
                   >
                     {description?.value}
                   </p>
                 )}
-                {button_text?.value && show_view_all?.value && (
-                  <div
-                    className={` ${styles["gap-above-button"]} ${styles.visibleOnDesktop}`}
-                  >
-                    <FDKLink to={`/collection/${slug}`}>
-                      <button
-                        type="button"
-                        className={`btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
-                      >
-                        {button_text?.value}
-                      </button>
-                    </FDKLink>
-                  </div>
-                )}
-              </div>
-              <div className={styles.slWrap}>
-                <Slider
-                  className={imagesForScrollView()?.length <= 3 ? "no-nav" : ""}
-                  {...bannerConfig}
-                  ref={bannerRef}
-                >
-                  {imagesForScrollView()?.map((product, index) => (
-                    <div key={index} className={styles.sliderView}>
-                      <FDKLink to={`/product/${product.slug}`}>
-                        <ProductCard
-                          product={product}
-                          listingPrice={listingPrice}
-                          isSaleBadgeDisplayed={false}
-                          showBadge={show_badge?.value}
-                          columnCount={columnCount}
-                          isWishlistDisplayed={show_wishlist_icon?.value}
-                          isWishlistIcon={show_wishlist_icon?.value}
-                          isImageFill={img_fill?.value}
-                          isPrice={globalConfig?.show_price}
-                          onWishlistClick={handleWishlistToggle}
-                          followedIdList={followedIdList}
-                          aspectRatio={getProductImgAspectRatio(globalConfig)}
-                          centerAlign={
-                            windowWidth <= 480
-                              ? mobile_layout?.value !==
-                                "banner_horizontal_scroll"
-                              : desktop_layout?.value !==
-                                "banner_horizontal_scroll"
-                          }
-                          imagePlaceholder={placeholderProduct}
-                          showAddToCart={showAddToCart}
-                          imgSrcSet={imgSrcSet}
-                          handleAddToCart={handleAddToCart}
-                          isSlider
-                        />
+                {button_text?.value &&
+                  show_view_all?.value &&
+                  button_position?.value !== "below_products" && (
+                    <div
+                      className={`${styles["gap-above-button"]} ${styles.visibleOnDesktop}`}
+                    >
+                      <FDKLink to={`/collection/${slug}`}>
+                        <button
+                          type="button"
+                          className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
+                        >
+                          {button_text?.value}
+                        </button>
                       </FDKLink>
                     </div>
+                  )}
+              </div>
+              <div
+                className={`${styles.productSlider} ${styles.bannerSlider} ${imagesForScrollView?.length <= 1 ? styles.lessItem : ""}`}
+              >
+                <Slider {...bannerConfig} ref={bannerRef}>
+                  {imagesForScrollView?.map((product, index) => (
+                    <ProductCardItem
+                      key={`${product.uid}_${index}`}
+                      className={styles.sliderItem}
+                      product={product}
+                      imgSrcSet={imgSrcSet}
+                      listingPrice={listingPrice}
+                      props={props}
+                      globalConfig={globalConfig}
+                      showAddToCart={showAddToCart}
+                      followedIdList={followedIdList}
+                      isSlider={true}
+                      handleWishlistToggle={handleWishlistToggle}
+                      handleAddToCart={handleAddToCart}
+                    />
                   ))}
                 </Slider>
                 {getGallery?.length > 1 && (
@@ -513,12 +484,12 @@ export function Component({ props, globalConfig }) {
               </div>
               {button_text?.value && show_view_all?.value && (
                 <div
-                  className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]} ${styles.visibleOnMobile}`}
+                  className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]} ${button_position?.value === "below_products" ? "" : styles.visibleOnMobile}`}
                 >
                   <FDKLink to={`/collection/${slug}`}>
                     <button
                       type="button"
-                      className={`btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
+                      className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
                     >
                       {button_text?.value}
                     </button>
@@ -530,7 +501,7 @@ export function Component({ props, globalConfig }) {
         )}
         {getGallery.length > 0 && (
           <div
-            className={`${styles.slideWrap}  ${
+            className={`${styles.productSlider} ${imagesForScrollView?.length <= itemCountMobile ? styles.lessItem : ""} ${
               desktop_layout?.value === "horizontal"
                 ? styles.desktopVisible
                 : styles.desktopHidden
@@ -540,82 +511,50 @@ export function Component({ props, globalConfig }) {
                 : styles.mobileHidden
             }`}
             style={{
-              "--slick-dots": `${Math.ceil(imagesForScrollView()?.length / item_count?.value) * 22 + 10}px`,
+              "--slick-dots": `${Math.ceil(imagesForScrollView?.length / item_count?.value) * 22 + 10}px`,
             }}
           >
-            <Slider
-              className={`${imagesForScrollView()?.length <= 3 ? "no-nav" : ""} ${styles.hideOnMobile}`}
-              {...config}
-            >
-              {imagesForScrollView()?.map((product, index) => (
-                <div key={index} className={styles.sliderView}>
-                  <FDKLink to={`/product/${product.slug}`}>
-                    <ProductCard
-                      product={product}
-                      isSaleBadgeDisplayed={false}
-                      showBadge={show_badge?.value}
-                      columnCount={columnCount}
-                      isWishlistDisplayed={false}
-                      onWishlistClick={handleWishlistToggle}
-                      followedIdList={followedIdList}
-                      isWishlistIcon={show_wishlist_icon?.value}
-                      isImageFill={img_fill?.value}
-                      isPrice={globalConfig?.show_price}
-                      aspectRatio={getProductImgAspectRatio(globalConfig)}
-                      centerAlign={
-                        windowWidth <= 480
-                          ? mobile_layout?.value !== "banner_horizontal_scroll"
-                          : desktop_layout?.value !== "banner_horizontal_scroll"
-                      }
-                      imagePlaceholder={placeholderProduct}
-                      showAddToCart={showAddToCart}
-                      handleAddToCart={handleAddToCart}
-                      imgSrcSet={imgSrcSet}
-                      isSlider
-                    />
-                  </FDKLink>
-                </div>
+            <Slider className={`${styles.hideOnMobile}`} {...config}>
+              {imagesForScrollView?.map((product, index) => (
+                <ProductCardItem
+                  key={`${product.uid}_${index}`}
+                  className={styles.sliderItem}
+                  product={product}
+                  imgSrcSet={imgSrcSet}
+                  listingPrice={listingPrice}
+                  props={props}
+                  globalConfig={globalConfig}
+                  showAddToCart={showAddToCart}
+                  followedIdList={followedIdList}
+                  isSlider={true}
+                  handleWishlistToggle={handleWishlistToggle}
+                  handleAddToCart={handleAddToCart}
+                />
               ))}
             </Slider>
-            <Slider
-              className={`${imagesForScrollView()?.length <= 3 ? "no-nav" : ""} ${styles.hideOnDesktop}`}
-              {...configMobile}
-            >
-              {imagesForScrollView()?.map((product, index) => (
-                <div key={index} className={styles.sliderView}>
-                  <FDKLink to={`/product/${product.slug}`}>
-                    <ProductCard
-                      product={product}
-                      isSaleBadgeDisplayed={false}
-                      showBadge={show_badge?.value}
-                      columnCount={columnCount}
-                      isWishlistDisplayed={false}
-                      onWishlistClick={handleWishlistToggle}
-                      followedIdList={followedIdList}
-                      isWishlistIcon={show_wishlist_icon?.value}
-                      isImageFill={img_fill?.value}
-                      isPrice={globalConfig?.show_price}
-                      aspectRatio={getProductImgAspectRatio(globalConfig)}
-                      centerAlign={
-                        windowWidth <= 480
-                          ? mobile_layout?.value !== "banner_horizontal_scroll"
-                          : desktop_layout?.value !== "banner_horizontal_scroll"
-                      }
-                      imagePlaceholder={placeholderProduct}
-                      showAddToCart={showAddToCart}
-                      handleAddToCart={handleAddToCart}
-                      imgSrcSet={imgSrcSet}
-                      isSlider
-                    />
-                  </FDKLink>
-                </div>
+            <Slider className={`${styles.hideOnDesktop}`} {...configMobile}>
+              {imagesForScrollView?.map((product, index) => (
+                <ProductCardItem
+                  key={`${product.uid}_${index}`}
+                  className={styles.sliderItem}
+                  product={product}
+                  imgSrcSet={imgSrcSet}
+                  listingPrice={listingPrice}
+                  props={props}
+                  globalConfig={globalConfig}
+                  showAddToCart={showAddToCart}
+                  followedIdList={followedIdList}
+                  isSlider={true}
+                  handleWishlistToggle={handleWishlistToggle}
+                  handleAddToCart={handleAddToCart}
+                />
               ))}
             </Slider>
           </div>
         )}
         {getGallery.length > 0 && (
           <div
-            className={`${styles.slideWrap}  ${
+            className={`${
               desktop_layout?.value === "grid"
                 ? styles.desktopVisible
                 : styles.desktopHidden
@@ -642,7 +581,6 @@ export function Component({ props, globalConfig }) {
                 />
               </FDKLink>
             )}
-
             <div
               className={`${styles.imageGrid} ${
                 imagesForStackedView().length === 1 && styles.singleItem
@@ -653,33 +591,18 @@ export function Component({ props, globalConfig }) {
               }}
             >
               {imagesForStackedView().map((product, index) => (
-                <div key={index} className={styles["pos-relative"]}>
-                  <FDKLink to={`/product/${product.slug}`}>
-                    <ProductCard
-                      product={product}
-                      isSaleBadgeDisplayed={false}
-                      showBadge={show_badge?.value}
-                      columnCount={columnCount}
-                      isWishlistDisplayed={false}
-                      onWishlistClick={handleWishlistToggle}
-                      followedIdList={followedIdList}
-                      isWishlistIcon={show_wishlist_icon?.value}
-                      isImageFill={img_fill?.value}
-                      isPrice={globalConfig?.show_price}
-                      aspectRatio={getProductImgAspectRatio(globalConfig)}
-                      centerAlign={
-                        windowWidth <= 480
-                          ? mobile_layout?.value !== "banner_horizontal_scroll"
-                          : desktop_layout?.value !== "banner_horizontal_scroll"
-                      }
-                      imagePlaceholder={placeholderProduct}
-                      showAddToCart={showAddToCart}
-                      handleAddToCart={handleAddToCart}
-                      imgSrcSet={imgSrcSet}
-                      isSlider
-                    />
-                  </FDKLink>
-                </div>
+                <ProductCardItem
+                  key={`${product.uid}_${index}`}
+                  product={product}
+                  imgSrcSet={imgSrcSet}
+                  listingPrice={listingPrice}
+                  props={props}
+                  globalConfig={globalConfig}
+                  showAddToCart={showAddToCart}
+                  followedIdList={followedIdList}
+                  handleWishlistToggle={handleWishlistToggle}
+                  handleAddToCart={handleAddToCart}
+                />
               ))}
             </div>
           </div>
@@ -753,7 +676,7 @@ export function Component({ props, globalConfig }) {
                   <FDKLink to={`/collection/${slug}`}>
                     <button
                       type="button"
-                      className={`btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
+                      className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
                     >
                       {button_text?.value}
                     </button>
@@ -790,26 +713,22 @@ export function Component({ props, globalConfig }) {
               />
             )}
             <div
-              className={`${showStackedView() ? styles.placeholderGrid : ""} ${showScrollView() ? styles.placeholderScroll : ""}`}
+              className={`${showStackedView() ? styles.imageGrid : ""} ${showScrollView() ? styles.placeholderScroll : ""}`}
               style={{
                 "--per_row": item_count?.value,
-                "--per_row_mobile": item_count_mobile?.value,
+                "--per_row_mobile": itemCountMobile,
               }}
             >
-              {new Array(item_count?.value).fill(0).map((_, index) => (
-                <div
-                  key={index}
-                  data-cardtype="'Categories'"
-                  className={styles["pos-relative"]}
-                >
-                  <div style={{ padding: "0 12px" }}>
-                    <FyImage
-                      customClass={`${styles.imageGallery} ${
-                        img_fill?.value ? styles.streach : ""
-                      }`}
-                      src={placeholderProduct}
-                    />
-                  </div>
+              {Array.from(
+                { length: item_count?.value },
+                (_, index) => index
+              ).map((index) => (
+                <div key={index} style={{ padding: "0 12px" }}>
+                  <FyImage
+                    customClass={`${styles.imageGallery}`}
+                    src={placeholderProduct}
+                    isImageFill={!!img_fill?.value}
+                  />
                 </div>
               ))}
             </div>
@@ -820,45 +739,112 @@ export function Component({ props, globalConfig }) {
           !showBannerScrollView() &&
           getGallery?.length > 0 && (
             <div
-              className={`${styles["flex-justify-center"]} ${imagesForScrollView()?.length <= 3 ? styles.lessGap : ""
-                } ${showScrollView() && isClient ? styles["gap-above-button-horizontal"] : styles["gap-above-button"]}`}
+              className={`${styles["flex-justify-center"]} ${
+                imagesForScrollView?.length <= 3 ? styles.lessGap : ""
+              } ${showScrollView() && isClient ? styles["gap-above-button-horizontal"] : styles["gap-above-button"]} ${button_position?.value === "below_products" ? "" : styles.visibleOnMobile}`}
             >
               <FDKLink to={`/collection/${slug}`}>
                 <button
                   type="button"
-                  className={`btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
+                  className={`fx-button btn-secondary ${styles["section-button"]}`}
                 >
                   {button_text?.value}
                 </button>
               </FDKLink>
             </div>
-          )
-        }
-      </div >
+          )}
+      </section>
       {showAddToCart && (
         <>
-          <Modal
-            isOpen={isAddToCartOpen}
-            hideHeader={!isTablet}
-            bodyClassName={styles.addToCartBody}
-            title={
-              isTablet ? restAddToModalProps?.productData?.product?.name : ""
-            }
-            closeDialog={restAddToModalProps?.handleClose}
-            containerClassName={styles.addToCartContainer}
-          >
-            <AddToCart {...restAddToModalProps} globalConfig={globalConfig} />
-          </Modal>
-          <SizeGuide
-            isOpen={showSizeGuide}
-            onCloseDialog={handleCloseSizeGuide}
-            productMeta={restAddToModalProps?.productData?.product?.sizes}
-          />
+          {isAddToCartOpen && (
+            <Suspense fallback={<div />}>
+              <Modal
+                isOpen={isAddToCartOpen}
+                hideHeader={!isTablet}
+                bodyClassName={styles.addToCartBody}
+                title={
+                  isTablet
+                    ? restAddToModalProps?.productData?.product?.name
+                    : ""
+                }
+                closeDialog={restAddToModalProps?.handleClose}
+                containerClassName={styles.addToCartContainer}
+              >
+                <AddToCart
+                  {...restAddToModalProps}
+                  globalConfig={globalConfig}
+                />
+              </Modal>
+            </Suspense>
+          )}
+          {showSizeGuide && (
+            <Suspense fallback={<div />}>
+              <SizeGuide
+                isOpen={showSizeGuide}
+                onCloseDialog={handleCloseSizeGuide}
+                productMeta={restAddToModalProps?.productData?.product?.sizes}
+              />
+            </Suspense>
+          )}
         </>
       )}
-    </div >
+    </>
   );
 }
+
+const ProductCardItem = ({
+  className = "",
+  product,
+  imgSrcSet,
+  listingPrice,
+  isSlider = false,
+  props,
+  globalConfig,
+  showAddToCart = false,
+  followedIdList,
+  handleWishlistToggle,
+  handleAddToCart,
+}) => {
+  const {
+    show_badge,
+    show_wishlist_icon,
+    img_fill,
+    item_count,
+    item_count_mobile,
+  } = props;
+
+  const columnCount = {
+    desktop: item_count?.value > 3 ? 4 : 2,
+    tablet: item_count?.value > 2 ? 3 : 2,
+    mobile: item_count_mobile?.value,
+  };
+
+  return (
+    <div className={className}>
+      <FDKLink to={`/product/${product.slug}`}>
+        <ProductCard
+          product={product}
+          listingPrice={listingPrice}
+          isSaleBadgeDisplayed={false}
+          showBadge={show_badge?.value}
+          columnCount={columnCount}
+          isWishlistDisplayed={false}
+          onWishlistClick={handleWishlistToggle}
+          followedIdList={followedIdList}
+          isWishlistIcon={show_wishlist_icon?.value}
+          isImageFill={img_fill?.value}
+          isPrice={globalConfig?.show_price}
+          aspectRatio={getProductImgAspectRatio(globalConfig)}
+          imagePlaceholder={placeholderProduct}
+          showAddToCart={showAddToCart}
+          handleAddToCart={handleAddToCart}
+          imgSrcSet={imgSrcSet}
+          isSlider={isSlider}
+        />
+      </FDKLink>
+    </div>
+  );
+};
 
 export const settings = {
   label: "t:resource.sections.featured_collection.featured_collection",
@@ -917,7 +903,7 @@ export const settings = {
     },
     {
       id: "img_resize",
-      label: "Image size for Tablet/Desktop",
+      label: "t:resource.sections.products_listing.image_size_for_tablet_desktop",
       type: "select",
       options: [
         {
@@ -949,63 +935,7 @@ export const settings = {
     },
     {
       id: "img_resize_mobile",
-      label: "Image size for Mobile",
-      type: "select",
-      options: [
-        {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
-        {
-          value: "700",
-          text: "700px",
-        },
-        {
-          value: "900",
-          text: "900px",
-        },
-      ],
-      default: "500",
-    },
-    {
-      id: "img_resize",
-      label: "Image size for Tablet/Desktop",
-      type: "select",
-      options: [
-        {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
-        {
-          value: "700",
-          text: "700px",
-        },
-        {
-          value: "900",
-          text: "900px",
-        },
-        {
-          value: "1100",
-          text: "1100px",
-        },
-        {
-          value: "1300",
-          text: "1300px",
-        },
-      ],
-      default: "300",
-    },
-    {
-      id: "img_resize_mobile",
-      label: "Image size for Mobile",
+      label: "t:resource.sections.products_listing.image_size_for_mobile",
       type: "select",
       options: [
         {
@@ -1106,6 +1036,23 @@ export const settings = {
       label: "t:resource.common.button_text",
     },
     {
+      id: "button_position",
+      type: "select",
+      options: [
+        {
+          value: "below_description",
+          text: "t:resource.sections.blog.below_description",
+        },
+        {
+          value: "below_products",
+          text: "t:resource.sections.blog.below_products",
+        },
+      ],
+      default: "below_description",
+      label: "t:resource.sections.blog.button_position",
+      info: "t:resource.sections.blog.button_position_info",
+    },
+    {
       type: "range",
       id: "item_count",
       min: 3,
@@ -1183,6 +1130,28 @@ export const settings = {
       label: "t:resource.common.preselect_size",
       info: "t:resource.pages.wishlist.preselect_size_info",
       default: false,
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.top_padding",
+      default: 16,
+      info: "t:resource.sections.categories.top_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
   ],
 };

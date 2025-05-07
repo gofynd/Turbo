@@ -87,7 +87,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
         {blocksData?.map((block, index) => (
           <FDKLink to={block?.props?.redirect_link?.value ?? ""} key={index}>
             <FyImage
-             
               src={getDesktopImage(block?.props)}
               sources={getImgSrcSet(block?.props, globalConfig)}
               defer={index < 1 ? false : true}
@@ -197,6 +196,28 @@ export const settings = {
       label: "Bottom padding",
       default: 16,
       info: "Bottom padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.top_padding",
+      default: 0,
+      info: "t:resource.sections.categories.top_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
   ],
   preset: {

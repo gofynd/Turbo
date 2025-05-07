@@ -33,15 +33,12 @@
   }
   &__info {
     flex: 1;
-    padding: 0 1rem;
+    padding: 0 @SectionInlinePaddingMobile;
     @media @tablet-strict {
-      padding: 0 1.5rem;
+      padding: 0 @SectionInlinePaddingTablet;
     }
     @media @desktop {
-      padding-top: 0px;
-      padding-inline-end: 2.5rem;
-      padding-bottom: 0px;
-      padding-inline-start: 0px;
+      padding: 0 @SectionInlinePaddingDesktop 0 0;
     }
   }
   &__heading {
@@ -93,10 +90,7 @@
         }
       }
       @media @desktop {
-        padding-top: 0px;
-        padding-inline-end: 0px;
-        padding-bottom: 0px;
-        padding-inline-start: 2.5rem;
+        padding: 0 0 0 @SectionInlinePaddingDesktop;
       }
     }
   }

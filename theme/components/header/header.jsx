@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, Suspense } from "react";
+import React, { useState, useEffect, useMemo, Suspense, useRef } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { FDKLink } from "fdk-core/components";
 import {
@@ -29,6 +29,7 @@ const LocationModal = React.lazy(
 
 function Header({ fpi }) {
   const { t } = useGlobalTranslation("translation");
+  const headerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -80,8 +81,7 @@ function Header({ fpi }) {
   }, []);
 
   useEffect(() => {
-    if (!i18N_DETAILS || activeLocale === i18N_DETAILS?.language?.locale) return;
-
+    if (!i18N_DETAILS || !i18N_DETAILS?.language || activeLocale === i18N_DETAILS?.language?.locale) return;
     fpi.setI18nDetails({
       ...i18N_DETAILS,
       language: {
@@ -89,7 +89,6 @@ function Header({ fpi }) {
         locale: activeLocale || "en",
       },
     });
-
     window.location.reload();
   }, [activeLocale, i18N_DETAILS]);
 
@@ -106,6 +105,9 @@ function Header({ fpi }) {
       };
       fpi.executeGQL(CART_COUNT, payload);
     }
+
+    const observers = [];
+
     if (isRunningOnClient()) {
       const header = document?.querySelector(".fdk-theme-header");
       if (header) {
@@ -116,11 +118,24 @@ function Header({ fpi }) {
           );
         });
         resizeObserver.observe(header);
-        return () => {
-          resizeObserver.disconnect();
-        };
+        observers.push(resizeObserver);
+      }
+
+      if (headerRef.current) {
+        const themeHeaderObserver = new ResizeObserver(() => {
+          fpi.custom.setValue(
+            `themeHeaderHeight`,
+            headerRef.current.getBoundingClientRect().height
+          );
+        });
+        themeHeaderObserver.observe(headerRef.current);
+        observers.push(themeHeaderObserver);
       }
     }
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
@@ -194,6 +209,7 @@ function Header({ fpi }) {
       {!isHeaderHidden && (
         <div
           className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""}`}
+          ref={headerRef}
         >
           <header
             className={`${styles.header} ${globalConfig?.header_border ? styles.seperator : ""}`}

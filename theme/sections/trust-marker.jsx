@@ -1,21 +1,23 @@
 import React, { useMemo } from "react";
+import { FDKLink } from "fdk-core/components";
 import Slider from "react-slick";
 import styles from "../styles/trust-marker.less";
 import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
 import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
-import { FDKLink } from "fdk-core/components";
 
 export function Component({ props, globalConfig, blocks, preset }) {
   const {
-    title: { value: title },
-    description: { value: description },
-    desktop_layout: { value: desktopLayout },
-    mobile_layout: { value: mobileLayout },
-    per_row_desktop: { value: perRowDesktop },
-    per_row_mobile: { value: perRowMobile },
-    card_background: { value: cardBackground },
+    title: { value: title } = {},
+    description: { value: description } = {},
+    desktop_layout: { value: desktopLayout } = {},
+    mobile_layout: { value: mobileLayout } = {},
+    per_row_desktop: { value: perRowDesktop } = {},
+    per_row_mobile: { value: perRowMobile } = {},
+    card_background: { value: cardBackground } = {},
+    padding_top: { value: paddingTop = 16 } = {},
+    padding_bottom: { value: paddingBottom = 16 } = {},
   } = props;
 
   const getTrustMarker = useMemo(
@@ -28,24 +30,30 @@ export function Component({ props, globalConfig, blocks, preset }) {
     desktopLayout === "horizontal" || mobileLayout === "horizontal";
 
   const dynamicStyles = {
+    paddingTop: `${paddingTop}px`,
+    paddingBottom: `${paddingBottom}px`,
     "--img-background-color": cardBackground || globalConfig?.img_container_bg,
   };
 
   return (
     <section className={styles.sectionContainer} style={dynamicStyles}>
-      <div className={styles.headingContainer}>
+      <div className={`fx-title-block ${styles.headingContainer}`}>
         {!!title && (
-          <h2 className={`${styles.sectionTitle} fontHeader`}>{title}</h2>
+          <h2 className={`fx-title ${styles.sectionTitle} fontHeader`}>
+            {title}
+          </h2>
         )}
         {!!description && (
-          <p className={`${styles.sectionDescription} bSmall`}>{description}</p>
+          <p className={`fx-description ${styles.sectionDescription} bSmall`}>
+            {description}
+          </p>
         )}
       </div>
       {isStackView && (
         <StackLayout
           className={`${
-            desktopLayout === "horizontal" ? styles.desktopHidden : ""
-          } ${mobileLayout === "horizontal" ? styles.mobileHidden : ""}`}
+            desktopLayout === "horizontal" ? styles.hideOnDesktop : ""
+          } ${mobileLayout === "horizontal" ? styles.hideOnTablet : ""}`}
           trustMarker={getTrustMarker}
           globalConfig={globalConfig}
           colCount={Number(perRowDesktop)}
@@ -54,8 +62,8 @@ export function Component({ props, globalConfig, blocks, preset }) {
       )}
       {isHorizontalView && (
         <HorizontalLayout
-          className={`${desktopLayout === "grid" ? styles.desktopHidden : ""} ${
-            mobileLayout === "grid" ? styles.mobileHidden : ""
+          className={`${desktopLayout === "grid" ? styles.hideOnDesktop : ""} ${
+            mobileLayout === "grid" ? styles.hideOnTablet : ""
           }`}
           trustMarker={getTrustMarker}
           globalConfig={globalConfig}
@@ -81,14 +89,7 @@ const StackLayout = ({
   return (
     <div className={`${styles.stackLayout} ${className}`} style={dynamicStyles}>
       {trustMarker.map(({ props }, i) => (
-        <Trustmark
-          key={i}
-          markerTitle={props?.marker_heading?.value}
-          markerDescription={props?.marker_description?.value}
-          markerLogo={props?.marker_logo?.value}
-          markerLink={props?.marker_link?.value}
-          globalConfig={globalConfig}
-        />
+        <Trustmark key={i} props={props} globalConfig={globalConfig} />
       ))}
     </div>
   );
@@ -117,35 +118,9 @@ const HorizontalLayout = ({
       prevArrow: <SliderLeftIcon />,
       responsive: [
         {
-          breakpoint: 1440,
-          settings: {
-            centerPadding: "75px",
-          },
-        },
-        {
           breakpoint: 1023,
           settings: {
             arrows: false,
-            centerPadding: "50px",
-          },
-        },
-        {
-          breakpoint: 768,
-          settings: {
-            arrows: false,
-            centerPadding: "64px",
-          },
-        },
-        {
-          breakpoint: 480,
-          settings: {
-            dots: trustMarker?.length > Number(colCountMobile),
-            arrows: false,
-            infinite: trustMarker?.length > Number(colCountMobile),
-            slidesToShow: Number(colCountMobile),
-            slidesToScroll: Number(colCountMobile),
-            // centerMode: trustMarker.length !== 1,
-            centerPadding: "50px",
           },
         },
       ],
@@ -176,32 +151,22 @@ const HorizontalLayout = ({
         "--slick-dots": `${Math.ceil(trustMarker?.length / colCount) * 22 + 10}px`,
       }}
     >
-      <Slider
-        className={`${trustMarker?.length - 1 >= colCount ? "" : "no-nav"} ${trustMarker?.length - 1 >= colCountMobile ? "" : "no-nav-mobile"} ${styles.hideOnMobile}`}
-        {...slickSetting}
-      >
+      <Slider className={`${styles.hideOnMobile}`} {...slickSetting}>
         {trustMarker?.map(({ props }, i) => (
           <Trustmark
             key={i}
-            markerTitle={props?.marker_heading?.value}
-            markerDescription={props?.marker_description?.value}
-            markerLogo={props?.marker_logo?.value}
-            markerLink={props?.marker_link?.value}
+            className={styles.horizontalItem}
+            props={props}
             globalConfig={globalConfig}
           />
         ))}
       </Slider>
-      <Slider
-        className={`${trustMarker?.length - 1 >= colCount ? "" : "no-nav"} ${trustMarker?.length - 1 >= colCountMobile ? "" : "no-nav-mobile"} ${styles.hideOnDesktop}`}
-        {...slickSettingMobile}
-      >
+      <Slider className={`${styles.showOnMobile}`} {...slickSettingMobile}>
         {trustMarker?.map(({ props }, i) => (
           <Trustmark
             key={i}
-            markerTitle={props?.marker_heading?.value}
-            markerDescription={props?.marker_description?.value}
-            markerLogo={props?.marker_logo?.value}
-            markerLink={props?.marker_link?.value}
+            className={styles.horizontalItem}
+            props={props}
             globalConfig={globalConfig}
           />
         ))}
@@ -210,40 +175,43 @@ const HorizontalLayout = ({
   );
 };
 
-const Trustmark = ({
-  className = "",
-  markerLink,
-  markerLogo,
-  markerTitle,
-  markerDescription,
-  globalConfig,
-}) => {
+const Trustmark = ({ className = "", props = {}, globalConfig }) => {
+  const {
+    marker_heading: { value: markerTitle } = {},
+    marker_description: { value: markerDescription } = {},
+    marker_logo: { value: markerLogo } = {},
+    marker_link: { value: markerLink } = {},
+  } = props;
   return (
-    <FDKLink to={markerLink} className={`${styles.trustmark} ${className}`}>
-      {markerLogo && (
-        <FyImage
-          customClass={styles.trustmarkImage}
-          sources={globalConfig?.img_hd ? [] : [{ width: 200 }]}
-          backgroundColor={globalConfig?.img_container_bg}
-          src={markerLogo}
-          isFixedAspectRatio={false}
-        />
-      )}
-      <div className={styles.trustmarkData}>
-        {!!markerTitle && (
-          <span
-            className={`${styles.trustmarkHeading} captionSemiBold fontHeader`}
-          >
-            {markerTitle}
-          </span>
+    <div className={`fx-trustmark-card ${className}`}>
+      <FDKLink to={markerLink} className={`${styles.trustmark}`}>
+        {markerLogo && (
+          <FyImage
+            customClass={`fx-trustmark-image ${styles.trustmarkImage}`}
+            sources={globalConfig?.img_hd ? [] : [{ width: 200 }]}
+            backgroundColor={globalConfig?.img_container_bg}
+            src={markerLogo}
+            isFixedAspectRatio={false}
+          />
         )}
-        {!!markerDescription && (
-          <span className={`${styles.trustmarkDescription} bSmall`}>
-            {markerDescription}
-          </span>
-        )}
-      </div>
-    </FDKLink>
+        <div className={styles.trustmarkData}>
+          {!!markerTitle && (
+            <span
+              className={`fx-trustmark-title ${styles.trustmarkHeading} captionSemiBold fontHeader`}
+            >
+              {markerTitle}
+            </span>
+          )}
+          {!!markerDescription && (
+            <span
+              className={`fx-trustmark-description ${styles.trustmarkDescription} bSmall`}
+            >
+              {markerDescription}
+            </span>
+          )}
+        </div>
+      </FDKLink>
+    </div>
   );
 };
 
@@ -324,6 +292,28 @@ export const settings = {
       info: "t:resource.sections.trust_marker.not_applicable_desktop",
       default: "2",
     },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.top_padding",
+      default: 16,
+      info: "t:resource.sections.categories.top_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
+    },
   ],
   blocks: [
     {
@@ -384,7 +374,7 @@ export const settings = {
           },
           marker_description: {
             type: "textarea",
-            default: "Don’t love it? Don’t worry. Return delivery is free.",
+            default: "Don’t love it? Don’t worry. Return delivery is free",
           },
         },
       },

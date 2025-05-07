@@ -89,39 +89,40 @@
   }
 }
 
-@media @desktop {
-  .hideOnDesktop {
+.hideOnDesktop {
+  @media @desktop {
     display: none;
   }
 }
-@media @tablet {
-  .hideOnDesktop {
+.hideOnTablet {
+  @media @tablet {
+    --gap: 12px;
+    padding-inline: @SectionInlinePaddingTablet;
+  }
+  @media @mobile {
+  padding: 0;
+  }
+  :global {
+    .slick-list {
+      margin: 0 calc(var(--gap) / 2 * -1);
+    }
+  }
+  .sliderItem {
+    padding-inline: calc(var(--gap) / 2);
+  }
+  &.singleItem {
+    @media @mobile {
+      padding-inline: @SectionInlinePaddingMobile;
+    }
+  }
+}
+.hideOnMobile {
+  @media @mobile {
     display: none;
   }
 }
-@media @mobile {
-  .hideOnMobile {
+.showOnMobile {
+  @media @mobile-up {
     display: none;
-  }
-  .hideOnDesktop {
-    display: block;
-  }
-}
-@media @desktop {
-  .hideOnDesktop {
-    display: none;
-  }
-}
-@media @tablet {
-  .hideOnDesktop {
-    display: none;
-  }
-}
-@media @mobile {
-  .hideOnMobile {
-    display: none;
-  }
-  .hideOnDesktop {
-    display: block;
   }
 }

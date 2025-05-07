@@ -1,44 +1,27 @@
 @import "../main.less";
 
-&.pr-16 {
-  @media @mobile {
-    padding-inline-end: 16px;
-  }
-}
-
-.featureBlogWrapper {
-  padding-inline: 16px;
-  :global {
-    .slick-track {
-      align-items: unset;
-    }
-  }
-  @media @mobile {
-    padding-inline: unset;
-  }
-}
-
-.blogSection {
-  // padding: 0 0 0 16px;
-  @media @mobile {
-    padding: 0 16px;
-  }
+.blogTitleWrapper {
+  text-align: center;
+  padding-inline: @SectionInlinePaddingMobile;
+  margin-bottom: 16px;
   @media @mobile-up {
-    padding: 0 24px;
+    padding-inline: @SectionInlinePaddingTablet;
+    margin-bottom: 24px;
   }
   @media @desktop {
-    padding: 0 40px;
+    padding-inline: @SectionInlinePaddingDesktop;
+    margin-bottom: 32px;
   }
-  &__heading {
-    text-align: center;
+
+  .blogTitle {
     margin-bottom: 8px;
     @media @desktop {
       margin-bottom: 16px;
     }
   }
-  &__description {
+
+  .blogDescription {
     font-size: 14px;
-    text-align: center;
     margin: 0 auto;
     max-width: 620px;
     color: @TextBody;
@@ -46,23 +29,37 @@
       font-size: 12px;
     }
   }
-  &__list {
-    margin-top: 24px;
-    @media @mobile {
-      margin-top: 16px;
-    }
-    @media @desktop {
-      margin-top: 32px;
+}
+
+.blogSlider {
+  --gap: 12px;
+  padding-inline: @SectionInlinePaddingMobile;
+  @media @mobile-up {
+    --gap: 16px;
+    padding-inline: @SectionInlinePaddingTablet;
+  }
+  @media @desktop {
+    --gap: 24px;
+    padding-inline: @SectionInlinePaddingDesktop;
+  }
+  .sliderItem {
+    position: relative;
+    padding: 0 calc(var(--gap) / 2);
+  }
+  :global {
+    .slick-list {
+      margin: 0 calc(var(--gap) / 2 * -1);
     }
   }
-  &__ctaWrapper {
-    text-align: center;
-    margin-top: 24px;
-    @media @mobile-up {
-      display: none;
-    }
+}
+
+.blogCtaWrapper {
+  text-align: center;
+  padding-top: 24px;
+  @media @mobile-up {
+    display: none;
   }
-  &__cta {
+  .blogCta {
     height: 44px;
     padding: 14px 24px;
     display: inline-block;
@@ -75,19 +72,6 @@
     font-size: 12px;
     line-height: 14px;
     letter-spacing: -0.02em;
-  }
-}
-.sliderView {
-  position: relative;
-  --gap: 24px;
-  padding: 0 calc(var(--gap) / 2);
-  @media @tablet {
-    --gap: 16px;
-  }
-  @media @mobile {
-    --gap: 12px;
-    padding-inline-start: 16px;
-    padding-inline-end: var(--p-right-mob, 16px);
   }
 }
 .blog {
@@ -167,21 +151,14 @@
     }
   }
 }
-@media @desktop {
-  .hideOnDesktop {
+
+.hideOnMobile {
+  @media @mobile {
     display: none;
   }
 }
-@media @tablet {
-  .hideOnDesktop {
+.showOnMobile {
+  @media @mobile-up {
     display: none;
-  }
-}
-@media @mobile {
-  .hideOnMobile {
-    display: none;
-  }
-  .hideOnDesktop {
-    display: block;
   }
 }

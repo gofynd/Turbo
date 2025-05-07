@@ -43,6 +43,8 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     preselect_size,
     img_resize,
     img_resize_mobile,
+    padding_top,
+    padding_bottom,
   } = props;
   const showAddToCart =
     !isInternational && show_add_to_cart?.value && !globalConfig?.disable_cart;
@@ -153,21 +155,16 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
       draggable: true, // Allow dragging for swipe gestures
       focusOnSelect: false, // Avoid snapping to selected slide on tap
       centerMode: false, // Prevent sticky slides on swipe
-      adaptiveHeight: true, // Prevent layout jump between slides
       initialSlide: 0, // Start from the first slide
       waitForAnimate: false, // Avoid delays between slides during swipe
       edgeFriction: 0.35, // Provide some resistance at the edges
-      // centerMode: activeCollectionItems?.length !== 1,
-      // centerPadding: "25px",
     };
   }, [activeCollectionItems?.length, per_row?.value]);
 
-  const dynamicStyles = {
-    paddingBottom: `16px`,
-  };
   const handleLinkChange = (index) => {
     setActiveLink(index);
   };
+
   const navigationsAndCollections = useMemo(
     () =>
       (blocks ?? []).reduce((result, block) => {
@@ -231,18 +228,24 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     }
   }, [activeLink, navigationsAndCollections, pincode]);
 
+  const dynamicStyles = {
+    paddingTop: `${padding_top?.value ?? 16}px`,
+    paddingBottom: `${padding_bottom?.value ?? 16}px`,
+  };
+
   return (
     <>
-      <div style={dynamicStyles} className={`${styles.sectionWrapper} `}>
+      <section className={styles.sectionWrapper} style={dynamicStyles}>
         {heading?.value && (
           <div
             className={`${styles.titleBlock} ${position?.value === "center" ? styles.moveCenter : ""
               } ${viewAll?.value ? styles.isViewAllCta : ""}`}
           >
-            <h2 className="fontHeader">{heading.value}</h2>
+            <h2 className="fx-title fontHeader">{heading.value}</h2>
             {viewAll?.value && (
               <div className={`${styles.viewAllCta} ${styles.alignViewAll}`}>
                 <FDKLink
+                  className={"fx-button"}
                   to={navigationsAndCollections?.[activeLink]?.link ?? ""}
                 >
                   <span>{t("resource.facets.view_all")}</span>
@@ -252,11 +255,12 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
           </div>
         )}
 
-        <div className={styles.navigationBlockWrapper}>
-          <div
-            className={`${styles.navigationBlock} ${position?.value === "center" ? styles.moveCenter : ""
-              }`}
-          >
+        <div
+          className={`${styles.navigationBlockWrapper} ${
+            position?.value === "center" ? styles.moveCenter : ""
+          }`}
+        >
+          <div className={`${styles.navigationBlock}`}>
             {navigationsAndCollections.map((item, index) => (
               <NavigationButton
                 key={index + item.text}
@@ -275,14 +279,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                 "--slick-dots": `${Math.ceil(activeCollectionItems?.length / per_row?.value) * 22 + 10}px`,
               }}
             >
-              <Slider
-                className={`
-                ${activeCollectionItems?.length <= per_row?.value
-                    ? "no-nav"
-                    : ""
-                } ${styles.customSlider} ${styles.hideOnMobile}`}
-                {...config}
-              >
+              <Slider className={`${styles.hideOnMobile}`} {...config}>
                 {activeCollectionItems?.map((product, index) => (
                   <div
                     data-cardtype="'Products'"
@@ -311,15 +308,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                   </div>
                 ))}
               </Slider>
-              <Slider
-                className={`
-                ${
-                  activeCollectionItems?.length <= per_row?.value
-                    ? "no-nav"
-                    : ""
-                } ${styles.customSlider} ${styles.hideOnDesktop}`}
-                {...configMobile}
-              >
+              <Slider className={`${styles.showOnMobile}`} {...configMobile}>
                 {activeCollectionItems?.map((product, index) => (
                   <div
                     data-cardtype="'Products'"
@@ -351,7 +340,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
             </div>
           )}
         </div>
-      </div>
+      </section>
       {showAddToCart && (
         <>
           <Modal
@@ -382,7 +371,7 @@ const NavigationButton = ({ navigation, isActive, onClick = () => {} }) => {
   if (collection) {
     return (
       <button
-        className={`${styles.navigation} ${isActive ? styles.activeLink : ""}`}
+        className={`fx-nav-button ${styles.navigation} ${isActive ? styles.activeLink : ""}`}
         onClick={onClick}
       >
         <NavigationButtonContent icon={icon} text={text} />
@@ -391,7 +380,7 @@ const NavigationButton = ({ navigation, isActive, onClick = () => {} }) => {
   }
   return (
     <FDKLink
-      className={`${styles.navigation} ${isActive ? styles.activeLink : ""}`}
+      className={`fx-nav-button ${styles.navigation} ${isActive ? styles.activeLink : ""}`}
       to={link}
     >
       <NavigationButtonContent icon={icon} text={text} />
@@ -458,7 +447,7 @@ export const settings = {
     },
     {
       id: "img_resize",
-      label: "Image size for Tablet/Desktop",
+      label: "t:resource.sections.products_listing.image_size_for_tablet_desktop",
       type: "select",
       options: [
         {
@@ -490,63 +479,7 @@ export const settings = {
     },
     {
       id: "img_resize_mobile",
-      label: "Image size for Mobile",
-      type: "select",
-      options: [
-        {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
-        {
-          value: "700",
-          text: "700px",
-        },
-        {
-          value: "900",
-          text: "900px",
-        },
-      ],
-      default: "500",
-    },
-    {
-      id: "img_resize",
-      label: "Image size for Tablet/Desktop",
-      type: "select",
-      options: [
-        {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
-        {
-          value: "700",
-          text: "700px",
-        },
-        {
-          value: "900",
-          text: "900px",
-        },
-        {
-          value: "1100",
-          text: "1100px",
-        },
-        {
-          value: "1300",
-          text: "1300px",
-        },
-      ],
-      default: "300",
-    },
-    {
-      id: "img_resize_mobile",
-      label: "Image size for Mobile",
+      label: "t:resource.sections.products_listing.image_size_for_mobile",
       type: "select",
       options: [
         {
@@ -622,6 +555,28 @@ export const settings = {
       label: "t:resource.common.preselect_size",
       info: "t:resource.pages.wishlist.preselect_size_info",
       default: false,
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.top_padding",
+      default: 16,
+      info: "t:resource.sections.categories.top_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
   ],
   blocks: [

@@ -230,23 +230,37 @@
     display: block !important;
   }
 }
-@media @tablet{
-  .listData {
-      margin-bottom: 16px;
+
+
+.listData {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+
+  @media @tablet {
+    margin-bottom: 16px;
+  }
+    .footerSupportData {
+      padding-bottom: 12px;
+  
+      &:last-child {
+        padding-bottom: 0; 
+      }
     }
 }
 
-@media @desktop {
-  .listData {
-    display: flex;
-    align-items: center;
-  }
+.socialContainer{
+  @media @desktop {
+      display: flex;
+      align-items: center;
+    }
 }
 
 
 .socialTitle{
   @media @desktop {
-      padding-bottom: 12px;
+      padding-right: 12px;
     }
 }
 

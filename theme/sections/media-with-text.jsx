@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
 import "fdk-react-templates/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/media-with-text.less";
-import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
+import { getProductImgAspectRatio } from "../helper/utils";
 import Hotspot from "../components/hotspot/product-hotspot";
 import { FEATURE_PRODUCT_DETAILS } from "../queries/featureProductQuery";
+import { useViewport } from "../helper/hooks";
 import { FDKLink } from "fdk-core/components";
 
 export function Component({ props, globalConfig, blocks, fpi }) {
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useViewport(0, 768);
   const [products, setProducts] = useState([]);
   const {
     image_desktop,
@@ -20,30 +21,20 @@ export function Component({ props, globalConfig, blocks, fpi }) {
     align_text_desktop,
     text_alignment,
     text_alignment_mobile,
+    padding_top,
+    padding_bottom,
   } = props;
 
-  // const customValues = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
-
-  const getMobileImage = () =>
-    image_mobile?.value !== ""
-      ? image_mobile?.value
-      : require("../assets/images/placeholder9x16.png");
-
-  const getDesktopImage = () =>
-    image_desktop?.value !== ""
-      ? image_desktop?.value
-      : require("../assets/images/placeholder16x9.png");
+  const getMobileImage =
+    image_mobile?.value || require("../assets/images/placeholder9x16.png");
+  const getDesktopImage =
+    image_desktop?.value || require("../assets/images/placeholder16x9.png");
 
   const getImgSrcSet = () => {
     if (globalConfig?.img_hd) {
       return [
-        {
-          breakpoint: { min: 481 },
-        },
-        {
-          breakpoint: { max: 480 },
-          url: getMobileImage(),
-        },
+        { breakpoint: { min: 481 } },
+        { breakpoint: { max: 480 }, url: getMobileImage },
       ];
     }
     return [
@@ -53,9 +44,9 @@ export function Component({ props, globalConfig, blocks, fpi }) {
       { breakpoint: { min: 1080 }, width: 1472 },
       { breakpoint: { min: 900 }, width: 1236 },
       { breakpoint: { min: 720 }, width: 1530 },
-      { breakpoint: { max: 180 }, width: 450, url: getMobileImage() },
-      { breakpoint: { max: 360 }, width: 810, url: getMobileImage() },
-      { breakpoint: { max: 540 }, width: 1170, url: getMobileImage() },
+      { breakpoint: { max: 180 }, width: 450, url: getMobileImage },
+      { breakpoint: { max: 360 }, width: 810, url: getMobileImage },
+      { breakpoint: { max: 540 }, width: 1170, url: getMobileImage },
     ];
   };
   const getProductSlugs = () => {
@@ -113,24 +104,6 @@ export function Component({ props, globalConfig, blocks, fpi }) {
       mobile: blocks?.filter((block) => block?.type === "hotspot_mobile"),
     };
   };
-  useEffect(() => {
-    if (isRunningOnClient()) {
-      const localDetectMobileWidth = () =>
-        document?.getElementsByTagName("body")?.[0]?.getBoundingClientRect()
-          ?.width <= 768;
-
-      const handleResize = () => {
-        // setWindowWidth(window?.innerWidth);
-      };
-      setIsMobile(localDetectMobileWidth());
-
-      window?.addEventListener("resize", handleResize);
-
-      return () => {
-        window.removeEventListener("resize", handleResize);
-      };
-    }
-  }, []);
 
   const mapAlignment = !isMobile
     ? {
@@ -199,21 +172,19 @@ export function Component({ props, globalConfig, blocks, fpi }) {
     };
 
   const dynamicStyles = {
-    paddingTop: `16px`,
-    paddingBottom: `16px`,
+    paddingTop: `${padding_top?.value ?? 16}px`,
+    paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
   return (
-    <div
+    <section
       className={`${styles.media_text} ${align_text_desktop?.value && styles["media_text--invert"]}`}
       style={dynamicStyles}
     >
       <div className={styles["media_text__image-wrapper"]}>
         <FyImage
           customClass={styles.imageWrapper}
-          src={getDesktopImage()}
-          aspectRatio={314 / 229}
-          mobileAspectRatio={320 / 467}
+          src={getDesktopImage}
           sources={getImgSrcSet()}
           isFixedAspectRatio={false}
         />
@@ -239,7 +210,6 @@ export function Component({ props, globalConfig, blocks, fpi }) {
             />
           ))}
       </div>
-
       <div
         className={styles.media_text__info}
         style={
@@ -249,25 +219,25 @@ export function Component({ props, globalConfig, blocks, fpi }) {
         }
       >
         {title?.value && (
-          <h2 className={`${styles.media_text__heading} fontHeader`}>
+          <h2 className={`fx-title ${styles.media_text__heading} fontHeader`}>
             {title?.value}
           </h2>
         )}
         {description?.value && (
-          <p className={`${styles.media_text__description} fontBody`}>
+          <p className={`fx-description ${styles.media_text__description}`}>
             {description?.value}
           </p>
         )}
         {button_text?.value && (
           <FDKLink
-            className={`${styles.media_text__cta} btnSecondary fontBody`}
+            className={`fx-button ${styles.media_text__cta} btnSecondary`}
             to={banner_link?.value}
           >
             {button_text?.value}
           </FDKLink>
         )}
       </div>
-    </div>
+    </section>
   );
 }
 export const settings = {
@@ -387,6 +357,28 @@ export const settings = {
       default: false,
       label: "t:resource.sections.media_with_text.invert_section",
       info: "t:resource.sections.media_with_text.reverse_section_desktop",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.top_padding",
+      default: 16,
+      info: "t:resource.sections.categories.top_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
   ],
   blocks: [
