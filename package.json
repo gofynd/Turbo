@@ -1,5 +1,5 @@
 {
-  "name": "Multilang-Turbo-payment",
+  "name": "Multilang-Turbo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -70,7 +70,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.12",
     "dompurify": "^3.1.6",
-    "fdk-react-templates": "github:gofynd/fdk-react-templates#V.0.0.6-multilang",
+    "fdk-react-templates": "github:gofynd/fdk-react-templates#V.0.0.12-multilang",
     "fdk-store": "github:gofynd/fdk-store-gql#v3.0.48-beta.0",
     "framer-motion": "^11.3.28",
     "google-libphonenumber": "^3.2.38",
