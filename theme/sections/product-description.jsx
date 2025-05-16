@@ -43,8 +43,12 @@ import ScaleIcon from "../assets/images/scale.svg";
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
-  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
-  const locale = language?.locale;
+  // const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
+  // const locale = language?.locale;
+
+  const i18nDetails = useGlobalStore(fpi?.getters?.i18N_DETAILS) || {};
+  const locale = i18nDetails?.language?.locale || "en";
+  const countryCode = i18nDetails?.countryCode || "IN";
   const { t } = useGlobalTranslation("translation");
   const {
     icon_color,
@@ -984,7 +988,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                           </div>
                         </>
                       );
-
+//
                     case "size_guide":
                       return (
                         <>

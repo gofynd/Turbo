@@ -67,10 +67,7 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
       .then((res) => { })
       .catch((err) => {
         if (err?.details?.meta?.is_deleted) {
-          navigate({
-            pathname: "/auth/account-locked",
-            search: location.search,
-          });
+          navigate("/auth/account-locked" + (location.search ? location.search : ""));
         }
         setOtpError({ message: err?.message || t("resource.common.error_message") });
       });

@@ -9,7 +9,7 @@ const ScrollToTop = () => {
   const [isToTopActive, setIsToTopActive] = useState(false);
 
   useEffect(() => {
-    if (isRunningOnClient) {
+    if (isRunningOnClient()) {
       const handleScroll = () => {
         setIsToTopActive(window.scrollY > 200);
       };

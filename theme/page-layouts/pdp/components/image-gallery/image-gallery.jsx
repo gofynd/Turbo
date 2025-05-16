@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import PicZoom from "../pic-zoom/pic-zoom";
 import FyImage from "fdk-react-templates/components/core/fy-image/fy-image";
 import "fdk-react-templates/components/core/fy-image/fy-image.css";
-import { getProductImgAspectRatio } from "../../../../helper/utils";
+import { getProductImgAspectRatio, isRunningOnClient } from "../../../../helper/utils";
 import styles from "./image-gallery.less";
 import MobileSlider from "../mobile-slider/mobile-slider";
 import VideoPlayIcon from "../../../../assets/images/video-play.svg";
@@ -45,7 +45,7 @@ function PdpImageGallery({
   };
 
   useEffect(() => {
-    if (typeof document !== "undefined") {
+    if (isRunningOnClient()) {
       const classList = document.body?.classList;
 
       if (enableLightBox && classList) {

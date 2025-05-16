@@ -1,8 +1,7 @@
-import React, { useState, useEffect, Fragment, useMemo } from "react";
+import React, { useState, useEffect, Fragment, useMemo, Suspense } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useParams } from "react-router-dom";
 import { useGlobalStore, useGlobalTranslation, useLocale } from "fdk-core/utils";
-import Modal from "fdk-react-templates/components/core/modal/modal";
 import "fdk-react-templates/components/core/modal/modal.css";
 import FyInput from "fdk-react-templates/components/core/fy-input/fy-input";
 import "fdk-react-templates/components/core/fy-input/fy-input.css";
@@ -16,7 +15,9 @@ import { createLocalitiesPayload } from "../../helper/utils";
 import InternationalIcon from "../../assets/images/international.svg";
 import ArrowDownIcon from "../../assets/images/arrow-down.svg";
 import CrossIcon from "../../assets/images/cross-black.svg";
-
+const Modal = React.lazy(
+  () => import("fdk-react-templates/components/core/modal/modal")
+);
 function I18Dropdown({ fpi, languageIscCode = [] }) {
   const { locale } = useParams();
   const { t } = useGlobalTranslation("translation");
@@ -386,6 +387,8 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
           <ArrowDownIcon className={styles.angleDownIcon} />
         </button>
       )}
+      {isI18ModalOpen && (
+    <Suspense fallback={<div />}>      
       <Modal
         hideHeader={true}
         isOpen={isI18ModalOpen}
@@ -505,6 +508,8 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
           </button>
         </form >
       </Modal >
+    </Suspense>
+    )}
     </div >
   );
 }

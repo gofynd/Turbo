@@ -100,7 +100,8 @@
       "image_banner": "Image Banner",
       "infinite_scroll": "Infinite Scroll",
       "register": "Register",
-      "login": "Login"
+      "login": "Login",
+      "hide_single_size_info": "Hide single size"
     },
     "settings_schema": {
       "common": {
@@ -115,7 +116,9 @@
       },
       "typography": {
         "font_header": "Font Header",
-        "font_body": "Font Body"
+        "font_body": "Font Body",
+        "title_font": "Title Font",
+        "body_font": "Body Font"
       },
       "header": {
         "layout": "Layout",
@@ -129,7 +132,27 @@
         "logo_left_menu_right": "Logo left, Menu right",
         "logo_centre": "Logo Centre",
         "switch_to_mega_menu": "Switch to Mega Menu",
-        "mega_menu_double_row_required": "The mega menu will only be displayed with a \"Double Row Navigation\" Layout configuration"
+        "mega_menu_double_row_required": "The mega menu will only be displayed with a \"Double Row Navigation\" Layout configuration",
+        "show_border_on_desktop": "Show border on desktop",
+        "show_border_on_desktop_info": "It adds a border below header on desktop devices",
+        "use_full_width_mega_menu": "Use full width Mega Menu",
+        "use_full_width_mega_menu_info": "The mega menu will be full width",
+        "navigation_font_weight": "Navigation font weight",
+        "serviceability_check_in_header": "Serviceability check in header",
+        "mandatory_serviceability_check": "Mandatory serviceability check",
+        "minutes": "Minutes",
+        "show_delivery_promise_in_minutes": "Show delivery promise in minutes",
+        "set_minute_threshold_for_promise": "Set minute threshold for promise",
+        "hours": "Hours",
+        "show_delivery_promise_in_hours": "Show delivery promise in hours",
+        "set_hour_threshold_for_promise": "Set hour threshold for promise",
+        "today_tomorrow": "Today / Tomorrow",
+        "today_tomorrow_info": "Show delivery promise as today/tomorrow",
+        "date_range": "Date Range",
+        "date_range_info": "Show delivery promise in date range",
+        "bold": "Bold",
+        "regular": "Regular",
+        "semibold": "Semibold"
       },
       "algolia_configuration": {
         "enable_algolia": "Enable Algolia"
@@ -139,7 +162,10 @@
         "bottom_bar_image": "Bottom Bar Image",
         "enable_footer_image": "Enable Footer Image",
         "desktop": "Desktop",
-        "mobile_tablet": "Mobile/Tablet"
+        "mobile_tablet": "Mobile/Tablet",
+        "show_footer_contact_details_background": "Show Footer Contact Details Background",
+        "social_media_text": "Social media text label",
+        "social_media_text_info": "Show Label text for social media"
       },
       "cart_and_button_configuration": {
         "cart_options": "Cart Options",
@@ -170,7 +196,9 @@
         "image_border_radius": "Image Border Radius",
         "border_radius_for_image": "Border radius for Image",
         "show_image_on_hover": "Show image on hover",
-        "hover_image_display": "This option controls whether an additional image is displayed when hovering over the product card"
+        "hover_image_display": "This option controls whether an additional image is displayed when hovering over the product card",
+        "badge_border_radius": "Badge Border Radius",
+        "badge_border_radius_info": "Border radius for Badge"
       },
       "other_page_configuration": {
         "improve_image_quality": "Improve Image Quality",
@@ -181,7 +209,8 @@
         "bottom_margin_for_section": "Bottom margin for section",
         "border_radius": "Border Radius",
         "button_border_radius": "Button Border Radius",
-        "border_radius_for_button": "Border radius for Button"
+        "border_radius_for_button": "Border radius for Button",
+        "use_original_images": "Use Original Images"
       },
       "google_maps": {
         "enable_google_maps": "Enable Google Maps",
@@ -283,7 +312,8 @@
         "maximum_products_to_show": "Maximum products to show",
         "max_products_horizontal_scroll": "Maximum products to show in horizontal scroll",
         "show_badge": "Show Badge",
-        "show_view_all_button": "Show View All Button"
+        "show_view_all_button": "Show View All Button",
+        "button_link": "Button Link"
       },
       "featured_products": "Featured Products",
       "hero_image": {

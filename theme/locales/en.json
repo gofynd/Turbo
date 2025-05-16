@@ -46,8 +46,9 @@
       "verify_email": "Verify Email",
       "verify_mobile": "Verify Mobile",
       "please_enter_a_valid_password": "Please enter a valid password",
-      "password_didnt_match_try_again": "Password didn’t match. Try again"
-    },
+      "password_didnt_match_try_again": "Password didn’t match. Try again",
+      "continue_shopping_caps":"CONTINUE SHOPPING"
+   },
     "common": {
       "delivery_custom_fees_notice": "Local taxes, duties or custom clearance fees may apply on delivery",
       "password_reset_successful": "Password reset successful",
@@ -191,7 +192,7 @@
       "add_cart_failure": "Failed to add to cart",
       "wishlist_add_success": "Added to wishlist",
       "wishlist_remove_success": "Removed from Wishlist",
-      "delivery_by": "Delivery by",
+      "delivery_by": "Delivery by {{date}}",
       "brand": "Brand",
       "buy_again": "BUY AGAIN",
       "payment_mode": "PAYMENT MODE",
@@ -557,7 +558,8 @@
       "total_price": "Total Price",
       "view_bill": "View Bill",
       "view_price_details": "View Price Details",
-      "pay_now": "PAY NOW"
+      "pay_now": "PAY NOW",
+      "add_to_cart_caps": "ADD TO CART"
     },
     "compare": {
       "product_comparison_limit": "You can only compare 4 products at a time",
@@ -620,7 +622,8 @@
       "desktop_grid_two": "Desktop grid two",
       "desktop_grid_four": "Desktop grid four",
       "desktop_banner_alt": "desktop banner",
-      "mobile_banner": "mobile banner"
+      "mobile_banner": "mobile banner",
+      "please_select_size": "Please Select Size"
     },
     "profile": {
       "phone_number_verified": "Phone Number verified",
@@ -809,7 +812,12 @@
       "order_summary": "Order Summary",
       "edit_cart_lower": "Edit Cart",
       "proceed_to_pay": "Proceed To Pay",
-      "proceed_to_pay_caps": "PROCEED TO PAY"
+      "proceed_to_pay_caps": "PROCEED TO PAY",
+      "expiry_date": "Expiry Date",
+      "save_this_card_rbi_guidelines": "Save this card as per RBI Guidelines",
+      "improve_your_card_security": "Improve your card security",
+      "card_consent_request_1": "Your bank/card network will securely save your card info via tokenization if you give consent for the same.",
+      "card_consent_request_2": "In case you choose to not tokenize, you will have to enter the card details every time you pay."
     },
     "contact_us": {
       "please_enter_your_name": "Please enter your name",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import PropTypes from "prop-types";
 import styles from "./more-offers.less";
 import { HTMLContent } from "../../../marketing/HTMLContent";
@@ -51,6 +51,7 @@ function MoreOffers({
   };
 
   return (
+    <Suspense>
     <Modal
       modalType="right-modal"
       isOpen={isOpen}
@@ -113,6 +114,7 @@ function MoreOffers({
         </div>
       </div>
     </Modal >
+    </Suspense>
   );
 }
 

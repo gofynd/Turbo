@@ -141,10 +141,7 @@ const ProfileAddressPage = ({ fpi }) => {
       phoneCode: addressItem.country_code,
       name: addressItem.country,
     });
-    navigate({
-      pathname: location.pathname,
-      search: `edit=true&address_id=${addressId}`,
-    });
+    navigate(location.pathname + `?edit=true&address_id=${addressId}`);
     resetScrollPosition();
   };
   const onCancelClick = () => {

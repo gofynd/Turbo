@@ -21,54 +21,54 @@
               "general_setting": {
                 "theme": {
                   "page_background": "#ffffff",
-                  "theme_accent": "#eeeded"
+                  "theme_accent": "#EAF5FD"
                 },
                 "text": {
-                  "text_heading": "#585555",
-                  "text_body": "#010e15",
-                  "text_label": "#494e50",
-                  "text_secondary": "#3e4447"
+                  "text_heading": "#1D1D1D",
+                  "text_body": "#212529",
+                  "text_label": "#383838",
+                  "text_secondary": "#605E5E"
                 },
                 "button": {
-                  "button_primary": "#5e5a5a",
-                  "button_secondary": "#ffffff",
-                  "button_link": "#552531"
+                  "button_primary": "#1D1D1D",
+                  "button_secondary": "#FFFFFF",
+                  "button_link": "#1D1D1D"
                 },
                 "sale_discount": {
-                  "sale_badge_background": "#fa7272",
-                  "sale_badge_text": "#f7f7f7",
-                  "sale_discount_text": "#1867b0",
-                  "sale_timer": "#231f20"
+                  "sale_badge_background": "#E9F7E9",
+                  "sale_badge_text": "#135610",
+                  "sale_discount_text": "#008000",
+                  "sale_timer": "#DD1E1E"
                 },
                 "header": {
-                  "header_background": "#ffffff",
-                  "header_nav": "#000000",
-                  "header_icon": "#000000"
+                  "header_background": "#FFFFFF",
+                  "header_nav": "#1D1D1D",
+                  "header_icon": "#383838"
                 },
                 "footer": {
-                  "footer_background": "#efeae9",
-                  "footer_bottom_background": "#efeae9",
-                  "footer_heading_text": "#fe0101",
-                  "footer_body_text": "#050605",
-                  "footer_icon": "#cae30d"
+                  "footer_background": "#E7E0DE",
+                  "footer_bottom_background": "#E7E0DE",
+                  "footer_heading_text": "#1D1D1D",
+                  "footer_body_text": "#212529",
+                  "footer_icon": "#383838"
                 }
               },
               "advance_setting": {
                 "overlay_popup": {
-                  "dialog_backgroung": "#ffffff",
+                  "dialog_backgroung": "#FFFFFF",
                   "overlay": "#716f6f"
                 },
                 "divider_stroke_highlight": {
-                  "divider_strokes": "#efeae9",
-                  "highlight": "#dfd2d4"
+                  "divider_strokes": "#E4E4E4",
+                  "highlight": "#F0F0F0"
                 },
                 "user_alerts": {
-                  "success_background": "#e9f9ed",
-                  "success_text": "#1C958F",
-                  "error_background": "#fff5f5",
-                  "error_text": "#B24141",
-                  "info_background": "#fff359",
-                  "info_text": "#D28F51"
+                  "success_background": "#E9F7E9",
+                  "success_text": "#135610",
+                  "error_background": "#FEE6EA",
+                  "error_text": "#660014",
+                  "info_background": "#FEF0E7",
+                  "info_text": "#F06D0F"
                 }
               }
             },
@@ -112,9 +112,9 @@
             "footer_border_color": "#a6e7bf",
             "footer_nav_hover_color": "#59e8b9",
             "menu_layout_desktop": "layout_3",
-            "logo": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/company/5178/applications/671619856d07006ffea459c6/theme/pictures/free/original/theme-image-1729670762584.png",
+            "logo": "",
             "logo_width": 774,
-            "footer_description": "Welcome to our store! This section is where you can include important links and details about your store. Provide a brief overview of your brand's history, contact information, and key policies to enhance your customers' experience and keep them informed.",
+            "footer_description": "Welcome to our store! Use this section to share key links, a brief brand overview, contact details, and essential policies to inform and enhance your customers’ experience",
             "logo_menu_alignment": "layout_4",
             "header_layout": "double",
             "section_margin_top": 89,
@@ -122,51 +122,51 @@
               "variants": {
                 "light": {
                   "name": "300",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32KxfXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmserifdisplay/v12/-nFnOHM81r4j6k0gjAW3mujVU2B2G_7g.ttf"
                 },
                 "regular": {
                   "name": "regular",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K0nXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmserifdisplay/v12/-nFnOHM81r4j6k0gjAW3mujVU2B2G_7g.ttf"
                 },
                 "medium": {
                   "name": "500",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K3vXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmserifdisplay/v12/-nFnOHM81r4j6k0gjAW3mujVU2B2G_7g.ttf"
                 },
                 "semi_bold": {
                   "name": "600",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K5fQNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmserifdisplay/v12/-nFnOHM81r4j6k0gjAW3mujVU2B2G_7g.ttf"
                 },
                 "bold": {
                   "name": "700",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K67QNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmserifdisplay/v12/-nFnOHM81r4j6k0gjAW3mujVU2B2G_7g.ttf"
                 }
               },
-              "family": "Work Sans"
+              "family": "DM Serif Display"
             },
             "font_body": {
               "variants": {
                 "light": {
                   "name": "300",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32KxfXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmsans/v15/rP2Hp2ywxg089UriCZOIHQ.ttf"
                 },
                 "regular": {
                   "name": "regular",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K0nXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmsans/v15/rP2Bp2ywxg089UriAOw.ttf"
                 },
                 "medium": {
                   "name": "500",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K3vXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmsans/v15/rP2Cp2ywxg089UriCZOCAQ.ttf"
                 },
                 "semi_bold": {
                   "name": "600",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K5fQNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmsans/v15/rP2Cp2ywxg089UriCZOEAg.ttf"
                 },
                 "bold": {
                   "name": "700",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K67QNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/dmsans/v15/rP2Cp2ywxg089UriCZOGAw.ttf"
                 }
               },
-              "family": "Work Sans"
+              "family": "DM Sans"
             },
             "section_margin_bottom": 18,
             "button_border_radius": 11,
@@ -188,7 +188,185 @@
           }
         }
       },
-      "page": []
+      "page": [
+        {
+          "page": "product-description",
+          "settings": {
+            "props": {
+              "reviews": false,
+              "add_to_compare": true,
+              "product_request": false,
+              "store_selection": true,
+              "compare_products": false,
+              "variants": true,
+              "ratings": false,
+              "similar_products": true,
+              "bulk_prices": false,
+              "badge_url_1": "",
+              "badge_url_2": "",
+              "badge_url_3": "",
+              "badge_url_4": "",
+              "badge_url_5": "",
+              "show_products_breadcrumb": true,
+              "show_category_breadcrumb": true,
+              "show_brand_breadcrumb": true,
+              "mrp_label": true,
+              "tax_label": "Price inclusive of all tax",
+              "item_code": true,
+              "product_details_bullets": true,
+              "enable_buy_now": true,
+              "show_size_guide": true,
+              "show_offers": true,
+              "hide_single_size": false,
+              "badge_logo_1": "",
+              "badge_label_1": "",
+              "badge_label_2": "",
+              "badge_label_3": "",
+              "badge_label_4": "",
+              "badge_label_5": "",
+              "badge_logo_5": "",
+              "badge_logo_3": "",
+              "size_selection_style": "dropdown",
+              "variant_position": "accordion",
+              "mandatory_pincode": true,
+              "preselect_size": true,
+              "badge_logo_4": "",
+              "badge_logo_2": "",
+              "show_seller": true,
+              "return": true,
+              "seller_store_selection": false
+            }
+          }
+        },
+        {
+          "page": "cart-landing",
+          "settings": {
+            "props": {
+              "show_info_message": true,
+              "gst": false,
+              "staff_selection": true,
+              "enable_customer": false,
+              "enable_guest": false
+            }
+          }
+        },
+        {
+          "page": "brands",
+          "settings": {
+            "props": {
+              "title": "",
+              "description": "",
+              "logo_only": false,
+              "infinite_scroll": true,
+              "back_top": true
+            }
+          }
+        },
+        {
+          "page": "product-listing",
+          "settings": {
+            "props": {
+              "hide_brand": false,
+              "infinite_scroll": false,
+              "product_number": true,
+              "loading_options": "pagination",
+              "back_top": true,
+              "in_new_tab": false,
+              "grid_desktop": "4",
+              "grid_tablet": "3",
+              "grid_mob": "2",
+              "description": "",
+              "banner_link": "",
+              "show_add_to_cart": true
+            }
+          }
+        },
+        {
+          "page": "collection-listing",
+          "settings": {
+            "props": {
+              "product_number": true,
+              "loading_options": "pagination",
+              "back_top": true,
+              "in_new_tab": true,
+              "hide_brand": false,
+              "grid_desktop": "4",
+              "grid_tablet": "3",
+              "grid_mob": "2"
+            }
+          }
+        },
+        {
+          "page": "categories",
+          "settings": {
+            "props": {
+              "heading": "",
+              "description": "",
+              "back_top": true
+            }
+          }
+        },
+        {
+          "page": "home",
+          "settings": {
+            "props": {
+              "code": ""
+            }
+          }
+        },
+        {
+          "page": "login",
+          "settings": {
+            "props": {
+              "image_banner": "",
+              "image_layout": "no_banner"
+            }
+          }
+        },
+        {
+          "page": "collections",
+          "settings": {
+            "props": {
+              "title": "",
+              "description": "",
+              "infinite_scroll": true,
+              "back_top": true
+            }
+          }
+        },
+        {
+          "page": "blog",
+          "settings": {
+            "props": {
+              "button_link": "",
+              "show_blog_slide_show": true,
+              "btn_text": "Read More",
+              "show_tags": true,
+              "show_search": true,
+              "show_recent_blog": true,
+              "show_top_blog": true,
+              "show_filters": true,
+              "loading_options": "pagination",
+              "title": "The Unparalleled Shopping Experience",
+              "description": "Everything you need for that ultimate stylish wardrobe, Fynd has got it!",
+              "button_text": "Shop Now"
+            }
+          }
+        },
+        {
+          "page": "contact-us",
+          "settings": {
+            "props": {
+              "align_image": "right",
+              "show_address": true,
+              "show_phone": true,
+              "show_email": true,
+              "show_icons": true,
+              "show_working_hours": true
+            }
+          }
+        }
+      ]
     }
   ],
   "current": "Default",
@@ -235,7 +413,7 @@
               },
               "button_link": {
                 "type": "url",
-                "value": "https://www.google.com"
+                "value": "/products"
               },
               "invert_button_color": {
                 "type": "checkbox",
@@ -247,7 +425,7 @@
               },
               "text_placement_desktop": {
                 "type": "select",
-                "value": "top_left"
+                "value": "top_start"
               },
               "text_alignment_desktop": {
                 "type": "select",
@@ -258,7 +436,7 @@
                 "value": ""
               },
               "text_placement_mobile": {
-                "value": "top_left",
+                "value": "top_start",
                 "type": "select"
               },
               "text_alignment_mobile": {
@@ -469,6 +647,9 @@
                 "value": 2,
                 "type": "range"
               }
+            },
+            "preset": {
+              "blocks": []
             }
           },
           {
@@ -483,15 +664,15 @@
                   },
                   "author_testimonial": {
                     "type": "textarea",
-                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                    "value": "Amazing experience! From browsing to checkout, everything was smooth and hassle-free. The product exceeded my expectations, and I couldn’t be happier with the service"
                   },
                   "author_name": {
                     "type": "text",
-                    "value": "Mark A"
+                    "value": "Sophie Patel"
                   },
                   "author_description": {
                     "type": "text",
-                    "value": "Los Angeles, CA"
+                    "value": "Mumbai, India"
                   }
                 }
               },
@@ -505,15 +686,15 @@
                   },
                   "author_testimonial": {
                     "type": "textarea",
-                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                    "value": "Great service and fast delivery. The entire process was seamless, and the product quality truly impressed me. I will definitely recommend this to family and friends."
                   },
                   "author_name": {
                     "type": "text",
-                    "value": "Mark A"
+                    "value": "Liam Chen"
                   },
                   "author_description": {
                     "type": "text",
-                    "value": "Los Angeles, CA"
+                    "value": "Singapore"
                   }
                 }
               },
@@ -527,15 +708,15 @@
                   },
                   "author_testimonial": {
                     "type": "textarea",
-                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                    "value": "Highly impressed with the variety and ease of ordering. The item arrived on time, beautifully packed, and just as described. I look forward to shopping here again."
                   },
                   "author_name": {
                     "type": "text",
-                    "value": "Mark A"
+                    "value": "Amelia Johnson"
                   },
                   "author_description": {
                     "type": "text",
-                    "value": "Los Angeles, CA"
+                    "value": "London, UK"
                   }
                 }
               },
@@ -549,15 +730,15 @@
                   },
                   "author_testimonial": {
                     "type": "textarea",
-                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                    "value": "Reliable, efficient, and excellent value for money. The customer service team was responsive and helpful throughout. I’ve already shared this with several friends!"
                   },
                   "author_name": {
                     "type": "text",
-                    "value": "Mark A"
+                    "value": "Noah Smith"
                   },
                   "author_description": {
                     "type": "text",
-                    "value": "Los Angeles, CA"
+                    "value": "New York, USA"
                   }
                 }
               }
@@ -591,15 +772,15 @@
                     },
                     "author_testimonial": {
                       "type": "textarea",
-                      "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                      "value": "Amazing experience! From browsing to checkout, everything was smooth and hassle-free. The product exceeded my expectations, and I couldn’t be happier with the service"
                     },
                     "author_name": {
                       "type": "text",
-                      "value": "Mark A"
+                      "value": "Sophie Patel"
                     },
                     "author_description": {
                       "type": "text",
-                      "value": "Los Angeles, CA"
+                      "value": "Mumbai, India"
                     }
                   }
                 },
@@ -612,15 +793,15 @@
                     },
                     "author_testimonial": {
                       "type": "textarea",
-                      "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                      "value": "Great service and fast delivery. The entire process was seamless, and the product quality truly impressed me. I will definitely recommend this to family and friends."
                     },
                     "author_name": {
                       "type": "text",
-                      "value": "Mark A"
+                      "value": "Liam Chen"
                     },
                     "author_description": {
                       "type": "text",
-                      "value": "Los Angeles, CA"
+                      "value": "Singapore"
                     }
                   }
                 }
@@ -706,15 +887,15 @@
                 "props": {
                   "hide_single_size": {
                     "type": "checkbox",
-                    "default": false
+                    "value": false
                   },
                   "preselect_size": {
                     "type": "checkbox",
-                    "default": true
+                    "value": true
                   },
                   "size_selection_style": {
                     "type": "radio",
-                    "default": "dropdown",
+                    "value": "dropdown",
                     "options": [
                       {
                         "value": "dropdown",
@@ -734,7 +915,7 @@
                 "props": {
                   "show_logo": {
                     "type": "checkbox",
-                    "default": true
+                    "value": true
                   }
                 }
               },
@@ -784,7 +965,44 @@
               }
             },
             "preset": {},
-            "props": {}
+            "props": {
+              "product_details_bullets": {
+                "type": "checkbox",
+                "value": true
+              },
+              "enable_buy_now": {
+                "type": "checkbox",
+                "value": true
+              },
+              "icon_color": {
+                "type": "color",
+                "value": "#D6D6D6"
+              },
+              "mandatory_pincode": {
+                "type": "checkbox",
+                "value": true
+              },
+              "variant_position": {
+                "type": "radio",
+                "value": "accordion"
+              },
+              "show_products_breadcrumb": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_category_breadcrumb": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_brand_breadcrumb": {
+                "type": "checkbox",
+                "value": true
+              },
+              "first_accordian_open": {
+                "type": "checkbox",
+                "value": true
+              }
+            }
           }
         ],
         "value": "product-description"
@@ -1121,7 +1339,7 @@
               },
               "show_add_to_cart": {
                 "type": "checkbox",
-                "value": false
+                "value": true
               },
               "show_size_guide": {
                 "type": "checkbox",
@@ -1156,7 +1374,7 @@
         "sections": [
           {
             "blocks": [],
-            "label": "Collection Product Listing",
+            "label": "Collection Product Grid",
             "name": "collection-listing",
             "predicate": {
               "route": {
@@ -1318,7 +1536,7 @@
         "sections": [
           {
             "blocks": [],
-            "label": "Collections",
+            "label": "All Collections",
             "name": "collections",
             "predicate": {
               "route": {
@@ -1412,7 +1630,7 @@
                 "type": "tags-list"
               },
               "slide_interval": {
-                "value": "3.5",
+                "value": "3",
                 "type": "range"
               },
               "btn_text": {

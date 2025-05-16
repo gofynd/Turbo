@@ -24,7 +24,8 @@ function Navigation({
   globalConfig,
   appInfo,
   checkLogin,
-  languageIscCode
+  languageIscCode,
+  fpi
 }) {
   const { locale } = useParams();
   const { t } = useGlobalTranslation("translation");

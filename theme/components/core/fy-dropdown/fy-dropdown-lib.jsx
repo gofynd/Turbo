@@ -29,6 +29,7 @@ import styles from "./fy-dropdown-lib.less";
 import ArrowDownIcon from "../../../assets/images/arrow-down.svg";
 import { createPortal } from "react-dom";
 import { useGlobalTranslation } from "fdk-core/utils";
+import { isRunningOnClient } from "../../../helper/utils";
 
 const FyDropdown = ({
   options = [],
@@ -90,6 +91,7 @@ const FyDropdown = ({
   }, []);
 
   const adjustDropdownMenuPosition = useCallback(() => {
+    if (!isRunningOnClient()) return;
     const dropdownButtonElement = dropdownButton?.current;
     const dropdownListElement = dropdownList?.current;
 
@@ -141,6 +143,7 @@ const FyDropdown = ({
   };
 
   useEffect(() => {
+    if (!isRunningOnClient()) return;
     const clearEventListeners = () => {
       window.removeEventListener("click", handleClickOutside);
       window.removeEventListener("scroll", adjustDropdownMenuPosition);
@@ -234,7 +237,7 @@ const FyDropdown = ({
             className={`${styles.dropdownIcon} ${isOpen ? styles.open : ""}`}
           />
         </div>
-        {createPortal(
+        {isRunningOnClient() && createPortal(
           <ul
             className={`${styles.dropdownList}  ${isOpen ? styles.open : ""}`}
             ref={dropdownList}

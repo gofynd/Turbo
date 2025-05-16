@@ -100,7 +100,8 @@
       "image_banner": "छवि बैनर",
       "infinite_scroll": "अनंत स्क्रॉल",
       "register": "पंजीकरण करवाना",
-      "login": "लॉग इन करें"
+      "login": "लॉग इन करें",
+      "hide_single_size_info": "एकल आकार छिपाएं"
     },
     "settings_schema": {
       "common": {
@@ -110,11 +111,14 @@
         "cart_and_button_configuration": "गाड़ी और बटन विन्यास",
         "product_card_configuration": "उत्पाद कार्ड विन्यास",
         "other_page_configuration": "अन्य पृष्ठ विन्यास",
-        "google_maps": "गूगल मैप्स"
+        "google_maps": "गूगल मैप्स",
+        "mobile_logo_max_height": "मोबाइल लोगो अधिकतम ऊंचाई"
       },
       "typography": {
         "font_header": "फ़ॉन्ट हेडर",
-        "font_body": "फ़ॉन्ट बॉडी"
+        "font_body": "फ़ॉन्ट बॉडी",
+        "title_font": "टाइटल फ़ॉन्ट",
+        "body_font": "शरीर का अगला हिस्सा"
       },
       "header": {
         "layout": "लेआउट",
@@ -128,7 +132,27 @@
         "logo_left_menu_right": "लोगो बाएं, मेनू दाएं",
         "logo_centre": "लोगो केंद्र",
         "switch_to_mega_menu": "मेगा मेनू पर स्विच करें",
-        "mega_menu_double_row_required": "मेगा मेनू केवल \"डबल रो नेविगेशन\" लेआउट कॉन्फ़िगरेशन के साथ प्रदर्शित किया जाएगा"
+        "mega_menu_double_row_required": "मेगा मेनू केवल \"डबल रो नेविगेशन\" लेआउट कॉन्फ़िगरेशन के साथ प्रदर्शित किया जाएगा",
+        "show_border_on_desktop": "डेस्कटॉप पर सीमा दिखाएं",
+        "show_border_on_desktop_info": "यह डेस्कटॉप उपकरणों पर हेडर के नीचे एक सीमा जोड़ता है",
+        "use_full_width_mega_menu": "पूर्ण चौड़ाई मेगा मेनू का उपयोग करें",
+        "use_full_width_mega_menu_info": "मेगा मेनू पूरी चौड़ाई होगी",
+        "navigation_font_weight": "नेविगेशन फ़ॉन्ट वजन",
+        "serviceability_check_in_header": "हेडर में सर्विसेबिलिटी चेक",
+        "mandatory_serviceability_check": "अनिवार्य सेवाक्षमता चेक",
+        "minutes": "मिनट",
+        "show_delivery_promise_in_minutes": "मिनटों में डिलीवरी का वादा दिखाएं",
+        "set_minute_threshold_for_promise": "वादा के लिए मिनट सीमा निर्धारित करें",
+        "hours": "घंटे",
+        "show_delivery_promise_in_hours": "घंटों में डिलीवरी का वादा दिखाएं",
+        "set_hour_threshold_for_promise": "वादे के लिए घंटे सीमा निर्धारित करें",
+        "today_tomorrow": "आज / कल",
+        "today_tomorrow_info": "आज/कल के रूप में डिलीवरी का वादा दिखाएं",
+        "date_range": "दिनांक सीमा",
+        "date_range_info": "दिनांक सीमा में डिलीवरी का वादा दिखाएं",
+        "bold": "बोल्ड",
+        "regular": "नियमित",
+        "semibold": "सेमीबोल्ड"
       },
       "algolia_configuration": {
         "enable_algolia": "अल्गोलिया सक्षम करें"
@@ -138,7 +162,10 @@
         "bottom_bar_image": "निचला बार छवि",
         "enable_footer_image": "पाद छवि को सक्षम करें",
         "desktop": "डेस्कटॉप",
-        "mobile_tablet": "मोबाइल/टैबलेट"
+        "mobile_tablet": "मोबाइल/टैबलेट",
+        "show_footer_contact_details_background": "पाद संपर्क विवरण पृष्ठभूमि दिखाएं",
+        "social_media_text": "सोशल मीडिया पाठ लेबल",
+        "social_media_text_info": "सोशल मीडिया के लिए लेबल पाठ दिखाएं"
       },
       "cart_and_button_configuration": {
         "cart_options": "गाड़ी विकल्प",
@@ -169,18 +196,21 @@
         "image_border_radius": "छवि सीमा त्रिज्या",
         "border_radius_for_image": "छवि के लिए सीमा त्रिज्या",
         "show_image_on_hover": "होवर पर छवि दिखाएं",
-        "hover_image_display": "यह विकल्प नियंत्रित करता है कि उत्पाद कार्ड पर मंडराने पर एक अतिरिक्त छवि प्रदर्शित होती है या नहीं"
+        "hover_image_display": "यह विकल्प नियंत्रित करता है कि उत्पाद कार्ड पर मंडराने पर एक अतिरिक्त छवि प्रदर्शित होती है या नहीं",
+        "badge_border_radius": "बैज बॉर्डर रेडियस",
+        "badge_border_radius_info": "बैज के लिए सीमा त्रिज्या"
       },
       "other_page_configuration": {
         "improve_image_quality": "छवि गुणवत्ता में सुधार करें",
-        "upscale_images": "Upscale चित्र",
+        "upscale_images": "उत्कृष्ट छवियाँ",
         "home_page_performance_impact": "यह आपके पृष्ठ के प्रदर्शन को प्रभावित कर सकता है।होम-पेज के लिए लागू",
         "section_margins": "खंड मार्जिन",
         "bottom_margin": "नीचे में मार्जिन",
         "bottom_margin_for_section": "अनुभाग के लिए निचला मार्जिन",
         "border_radius": "सीमा त्रिज्या",
         "button_border_radius": "बटन सीमा त्रिज्या",
-        "border_radius_for_button": "बटन के लिए सीमा त्रिज्या"
+        "border_radius_for_button": "बटन के लिए सीमा त्रिज्या",
+        "use_original_images": "मूल छवियों का उपयोग करें"
       },
       "google_maps": {
         "enable_google_maps": "Google मानचित्र सक्षम करें",
@@ -192,7 +222,8 @@
       "application_banner": {
         "application_banner": "अनुप्रयोग बैनर",
         "box_pointer_only": "केवल बॉक्स पॉइंटर प्रकार के लिए लागू होता है",
-        "circular_pointer_only": "केवल परिपत्र सूचक प्रकार के लिए लागू होता है"
+        "circular_pointer_only": "केवल परिपत्र सूचक प्रकार के लिए लागू होता है",
+        "enable_hover_effect_on_banner": "बैनर पर होवर प्रभाव सक्षम करें"
       },
       "brand_listing": {
         "brands_listing": "ब्रांड सूची",
@@ -253,7 +284,9 @@
         "loading_options_info": "उपयोगकर्ता इंटरैक्शन के आधार पर पेज पर उत्पाद कैसे लोड करें, चुनें।अनंत स्क्रॉल लगातार उपयोगकर्ता स्क्रॉल के रूप में अधिक उत्पादों को लोड करता है।पेजिनेशन नेविगेशन नियंत्रण के साथ अलग -अलग पृष्ठों में उत्पादों का आयोजन करता है।अधिक लोड देखें अतिरिक्त उत्पाद केवल तभी देखें जब उपयोगकर्ता एक बटन पर क्लिक करें",
         "show_size_guide_info": "कार्ट पॉपअप में जोड़ने के लिए लागू",
         "heading_info": "संग्रह पृष्ठ के लिए शीर्षक पाठ सेट करें",
-        "description_info": "संग्रह पृष्ठ के लिए एक विवरण जोड़ें"
+        "description_info": "संग्रह पृष्ठ के लिए एक विवरण जोड़ें",
+        "collection_title": "संग्रह शीर्षक और बटन प्लेसमेंट",
+        "collection_title_info": "छवि के अंदर या बाहर बटन संग्रह शीर्षक और बटन रखें"
       },
       "featured_collection": {
         "featured_collection": "विशेष संग्रह",
@@ -279,7 +312,8 @@
         "maximum_products_to_show": "अधिकतम उत्पाद दिखाने के लिए",
         "max_products_horizontal_scroll": "क्षैतिज स्क्रॉल में दिखाने के लिए अधिकतम उत्पाद",
         "show_badge": "बैज दिखाओ",
-        "show_view_all_button": "सभी बटन देखें"
+        "show_view_all_button": "सभी बटन देखें",
+        "button_link": "बटन लिंक"
       },
       "featured_products": "विशेष रुप से प्रदर्शित प्रोडक्टस",
       "hero_image": {
@@ -316,7 +350,9 @@
         "disable_video_controls": "वीडियो नियंत्रण अक्षम करने के लिए जाँच करें",
         "play_video_loop": "लूप में वीडियो खेलें",
         "disable_video_loop": "लूप को अक्षम करने के लिए जाँच करें",
-        "thumbnail_image": "थंबनेल छवि"
+        "thumbnail_image": "थंबनेल छवि",
+        "display_pause_on_hover": "होवर पर डिस्प्ले पॉज़",
+        "display_pause_on_hover_info": "डेस्कटॉप पर वीडियो होवर पर रोकें बटन दिखाएं"
       },
       "image_gallery": {
         "image_gallery": "छवि गैलरी",
@@ -461,7 +497,7 @@
         "show_tags": "टैग्स दिखाएं",
         "show_search_bar": "खोज बार दिखाएं",
         "show_recently_published": "हाल ही में प्रकाशित शो",
-        "recently_published_info": "हाल ही में प्रकाशित अनुभाग नवीनतम पांच प्रकाशित ब्लॉगों को प्रदर्शित करेगा",
+        "recently_published_info": "हाल ही में प्रकाशित अनुभाग में नवीनतम पांच प्रकाशित ब्लॉग प्रदर्शित किए जाएंगे",
         "recently_published_blogs": "हाल ही में प्रकाशित ब्लॉग",
         "show_top_viewed": "शीर्ष देखे गए दिखाएँ",
         "top_viewed_info": "शीर्ष देखे गए खंड ने 'टॉप 5' मान के साथ टैग किए गए नवीनतम पांच प्रकाशित ब्लॉगों को प्रदर्शित किया होगा",
@@ -470,7 +506,11 @@
         "button_label": "बटन लेबल",
         "fallback_image": "गिरावट छवि",
         "change_slides_every_info": "उस गति को सेट करें जिस पर ब्लॉग स्लाइड शो में ऑटोप्ले किया जाना है",
-        "loading_options_info": "उपयोगकर्ता इंटरैक्शन के आधार पर पृष्ठ पर ब्लॉग कैसे लोड करते हैं, चुनें।अनंत स्क्रॉल लगातार उपयोगकर्ताओं के स्क्रॉल के रूप में अधिक ब्लॉग लोड करता है।पेजिनेशन नेविगेशन नियंत्रण के साथ अलग -अलग पृष्ठों में ब्लॉग का आयोजन करता है"
+        "loading_options_info": "उपयोगकर्ता इंटरैक्शन के आधार पर पृष्ठ पर ब्लॉग कैसे लोड करते हैं, चुनें।अनंत स्क्रॉल लगातार उपयोगकर्ताओं के स्क्रॉल के रूप में अधिक ब्लॉग लोड करता है।पेजिनेशन नेविगेशन नियंत्रण के साथ अलग -अलग पृष्ठों में ब्लॉग का आयोजन करता है",
+        "button_position": "बटन की स्थिति",
+        "button_position_info": "केवल डेस्कटॉप दृश्य के लिए लागू",
+        "below_products": "नीचे उत्पाद",
+        "below_description": "नीचे विवरण"
       },
       "contact_us": {
         "banner_alignment": "बैनर संरेखण",
@@ -487,7 +527,7 @@
         "social_media_icons": "सोशल मीडिया आइकन",
         "show_icons": "आइकन दिखाएं",
         "working_hours": "कार्य के घंटे",
-        "show_working_hours": "काम के घंटे दिखाएं",
+        "show_working_hours": "कार्य के घंटे दिखाएँ",
         "contact_us": "हमसे संपर्क करें"
       },
       "products_listing": {
@@ -499,9 +539,13 @@
         "page_loading_options": "पृष्ठ लोडिंग विकल्प",
         "description_info": "उत्पाद लिस्टिंग पृष्ठ के निचले भाग में प्रदर्शित होने के लिए एक विवरण जोड़ें",
         "show_size_guide_info": "कार्ट पॉपअप में ऐड में आकार गाइड दिखाएं।अंतर्राष्ट्रीय वेबसाइटों के लिए लागू नहीं है",
-        "tax_label_info": "'Add To Cart' पॉपअप में प्रदर्शित मूल्य कर लेबल के लिए पाठ सेट करें।अंतर्राष्ट्रीय वेबसाइटों के लिए लागू नहीं है",
-        "size_selection_style_info": "Add To Cart Popup में आकार प्रदर्शन प्रारूप का चयन करें।अंतर्राष्ट्रीय वेबसाइटों के लिए लागू नहीं है",
-        "back_top": "शीर्ष बटन पर वापस दिखाएं"
+        "tax_label_info": "'कार्ट में जोड़ें' पॉपअप में प्रदर्शित मूल्य कर लेबल के लिए पाठ सेट करें।अंतर्राष्ट्रीय वेबसाइटों के लिए लागू नहीं है",
+        "size_selection_style_info": "कार्ट में जोड़ें पॉपअप में आकार प्रदर्शन प्रारूप का चयन करें।अंतर्राष्ट्रीय वेबसाइटों के लिए लागू नहीं है",
+        "back_top": "शीर्ष बटन पर वापस दिखाएं",
+        "image_size_for_tablet_desktop": "टैबलेट/डेस्कटॉप के लिए छवि का आकार",
+        "products_per_page": "प्रति पृष्ठ उत्पाद",
+        "enable_sales_badge": "बैज सक्षम करें",
+        "image_size_for_mobile": "मोबाइल के लिए छवि आकार"
       },
       "custom_html": {
         "custom_html": "कस्टम HTML"
@@ -525,7 +569,11 @@
         "category_name_text_alignment": "श्रेणी नाम पाठ संरेखण",
         "category_name_text_alignment_info": "श्रेणी के नाम के संरेखण का चयन करें - बाएं, केंद्र या दाएं",
         "bottom": "श्रेणी का नाम स्थिति",
-        "bottom_info": "श्रेणी कार्ड के शीर्ष, केंद्र या नीचे श्रेणी का नाम प्रदर्शित करें"
+        "bottom_info": "श्रेणी कार्ड के शीर्ष, केंद्र या नीचे श्रेणी का नाम प्रदर्शित करें",
+        "top_padding": "टॉप पैडिंग",
+        "top_padding_for_section": "अनुभाग के लिए शीर्ष गद्दी",
+        "bottom_padding": "निचला गद्दी",
+        "bottom_padding_for_section": "अनुभाग के लिए निचला पैडिंग"
       }
     },
     "pages": {
@@ -562,7 +610,9 @@
       "testimonial_title": "लोग हमारे बारे में क्या कह रहे हैं",
       "testimonial_textarea": "अपने स्टोर के खुश ग्राहकों को दिखाने के लिए ग्राहक समीक्षा और प्रशंसापत्र जोड़ें",
       "trust_maker_title": "शीर्षक",
-      "add_description": "विवरण जोड़ें"
+      "add_description": "विवरण जोड़ें",
+      "free_delivery": "नि: शुल्क डिलिवरी",
+      "marker_description": "यह प्यार नहीं करता?चिंता मत करो।रिटर्न डिलीवरी फ्री है"
     }
   }
 }

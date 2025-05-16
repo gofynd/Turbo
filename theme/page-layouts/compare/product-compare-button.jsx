@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Modal from "fdk-react-templates/components/core/modal/modal";
 import "fdk-react-templates/components/core/modal/modal.css";
 import { PRODUCT_COMPARISON } from "../../queries/compareQuery";
@@ -8,6 +8,7 @@ import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 import CompareWarningIcon from "../../assets/images/compare-warning.svg";
 import CloseIcon from "../../assets/images/close.svg";
 import CompareIcon from "../../assets/images/compare-icon.svg";
+import { isRunningOnClient } from "../../helper/utils";
 
 const ProductCompareButton = ({ slug, fpi, customClass }) => {
   const { t } = useGlobalTranslation("translation");
@@ -19,9 +20,11 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
 
   const addCompareProducts = () => {
     if (!slug) return;
-    const existingSlugs = JSON.parse(
-      localStorage?.getItem("compare_slugs") || "[]"
-    );
+    const existingSlugs = isRunningOnClient()
+    ? JSON.parse(localStorage?.getItem("compare_slugs") || "[]")
+    : [];
+  
+
     if (existingSlugs.includes(slug)) {
       navigate("/compare");
     } else if (existingSlugs.length < 4) {
@@ -36,7 +39,9 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
     try {
       let productsToBeCompared = [];
       if (action === "remove") {
-        localStorage.removeItem("compare_slug");
+        if (isRunningOnClient()) {
+          localStorage.removeItem("compare_slug");
+        }        
         productsToBeCompared = [slug];
       } else if (action === "goToCompare") {
         navigate("/compare");
@@ -51,10 +56,12 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
               return;
             }
             if (data?.productComparison) {
-              localStorage?.setItem(
-                "compare_slugs",
-                JSON.stringify(productsToBeCompared)
-              );
+              if (isRunningOnClient()) {
+                localStorage?.setItem(
+                  "compare_slugs",
+                  JSON.stringify(productsToBeCompared)
+                );
+              }
               navigate("/compare");
             }
           });
@@ -78,6 +85,7 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
         <CompareIcon className={styles.compareIcon} />
         {t("resource.compare.add_to_compare")}
       </button>
+      <Suspense fallback={<div/>}>
       <Modal
         isOpen={isOpen}
         closeDialog={closeDialog}
@@ -125,6 +133,7 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
           </div>
         </div >
       </Modal >
+      </Suspense>
     </>
   );
 };

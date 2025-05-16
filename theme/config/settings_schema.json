@@ -5,19 +5,19 @@
       "id": "font_header",
       "category": "t:resource.settings_schema.common.typography",
       "default": false,
-      "label": "t:resource.settings_schema.typography.font_header"
+      "label": "t:resource.settings_schema.typography.title_font"
     },
     {
       "type": "font",
       "id": "font_body",
       "category": "t:resource.settings_schema.common.typography",
       "default": false,
-      "label": "t:resource.settings_schema.typography.font_body"
+      "label": "t:resource.settings_schema.typography.body_font"
     },
     {
       "type": "range",
       "id": "mobile_logo_max_height",
-      "category": "Header",
+      "category": "t:resource.common.header",
       "label": "t:resource.settings_schema.common.mobile_logo_max_height",
       "min": 20,
       "max": 100,
@@ -53,33 +53,9 @@
       "type": "checkbox",
       "id": "header_border",
       "default": true,
-      "category": "Header",
-      "label": "Show border on desktop",
-      "info": "It adds a border below header on desktop devices"
-    },
-    {
-      "type": "checkbox",
-      "id": "header_border",
-      "default": true,
-      "category": "Header",
-      "label": "Show border on desktop",
-      "info": "It adds a border below header on desktop devices"
-    },
-    {
-      "type": "checkbox",
-      "id": "header_border",
-      "default": true,
-      "category": "Header",
-      "label": "Show border on desktop",
-      "info": "It adds a border below header on desktop devices"
-    },
-    {
-      "type": "checkbox",
-      "id": "header_border",
-      "default": true,
-      "category": "Header",
-      "label": "Show border on desktop",
-      "info": "It adds a border below header on desktop devices"
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.show_border_on_desktop",
+      "info": "t:resource.settings_schema.header.show_border_on_desktop_info"
     },
     {
       "type": "select",
@@ -115,284 +91,32 @@
       "info": "t:resource.settings_schema.header.mega_menu_double_row_required"
     },
     {
-      "type": "select",
-      "id": "nav_weight",
-      "category": "Header",
-      "label": "Navigation font weight",
-      "info": "",
-      "default": "semibold",
-      "options": [
-        {
-          "value": "regular",
-          "text": "Regular"
-        },
-        {
-          "value": "semibold",
-          "text": "Semibold"
-        },
-        {
-          "value": "bold",
-          "text": "Bold"
-        }
-      ]
-    },
-    {
-      "type": "checkbox",
-      "id": "is_hyperlocal",
-      "default": false,
-      "category": "Header",
-      "label": "Serviceability check in header"
-    },
-    {
-      "type": "checkbox",
-      "id": "is_mandatory_pincode",
-      "category": "Header",
-      "label": "Mandatory serviceability check",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_minutes",
-      "default": false,
-      "category": "Header",
-      "label": "Minutes",
-      "info": "Show delivery promise in minutes."
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_min",
-      "label": "Minutes",
-      "category": "Header",
-      "default": "60",
-      "info": "Set minute threshold for promise."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_hours",
-      "default": false,
-      "category": "Header",
-      "label": "Hours",
-      "info": "Show delivery promise in hours."
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_hours",
-      "label": "Hours",
-      "category": "Header",
-      "default": "2",
-      "info": "Set hour threshold for promise."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_day",
-      "default": false,
-      "category": "Header",
-      "label": "Today / Tomorrow",
-      "info": "Show delivery promise as today/tomorrow."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_date",
-      "default": false,
-      "category": "Header",
-      "label": "Date Range",
-      "info": "Show delivery promise in date range."
-    },
-    {
-      "type": "select",
-      "id": "nav_weight",
-      "category": "Header",
-      "label": "Navigation font weight",
-      "info": "",
-      "default": "semibold",
-      "options": [
-        {
-          "value": "regular",
-          "text": "Regular"
-        },
-        {
-          "value": "semibold",
-          "text": "Semibold"
-        },
-        {
-          "value": "bold",
-          "text": "Bold"
-        }
-      ]
-    },
-    {
-      "type": "checkbox",
-      "id": "is_hyperlocal",
-      "default": false,
-      "category": "Header",
-      "label": "Serviceability check in header"
-    },
-    {
-      "type": "checkbox",
-      "id": "is_mandatory_pincode",
-      "category": "Header",
-      "label": "Mandatory serviceability check",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_minutes",
-      "default": false,
-      "category": "Header",
-      "label": "Minutes",
-      "info": "Show delivery promise in minutes."
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_min",
-      "label": "Minutes",
-      "category": "Header",
-      "default": "60",
-      "info": "Set minute threshold for promise."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_hours",
-      "default": false,
-      "category": "Header",
-      "label": "Hours",
-      "info": "Show delivery promise in hours."
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_hours",
-      "label": "Hours",
-      "category": "Header",
-      "default": "2",
-      "info": "Set hour threshold for promise."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_day",
-      "default": false,
-      "category": "Header",
-      "label": "Today / Tomorrow",
-      "info": "Show delivery promise as today/tomorrow."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_date",
-      "default": false,
-      "category": "Header",
-      "label": "Date Range",
-      "info": "Show delivery promise in date range."
-    },
-    {
-      "type": "select",
-      "id": "nav_weight",
-      "category": "Header",
-      "label": "Navigation font weight",
-      "info": "",
-      "default": "semibold",
-      "options": [
-        {
-          "value": "regular",
-          "text": "Regular"
-        },
-        {
-          "value": "semibold",
-          "text": "Semibold"
-        },
-        {
-          "value": "bold",
-          "text": "Bold"
-        }
-      ]
-    },
-    {
-      "type": "checkbox",
-      "id": "is_hyperlocal",
-      "default": false,
-      "category": "Header",
-      "label": "Serviceability check in header"
-    },
-    {
-      "type": "checkbox",
-      "id": "is_mandatory_pincode",
-      "category": "Header",
-      "label": "Mandatory serviceability check",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_minutes",
-      "default": false,
-      "category": "Header",
-      "label": "Minutes",
-      "info": "Show delivery promise in minutes."
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_min",
-      "label": "Minutes",
-      "category": "Header",
-      "default": "60",
-      "info": "Set minute threshold for promise."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_hours",
-      "default": false,
-      "category": "Header",
-      "label": "Hours",
-      "info": "Show delivery promise in hours."
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_hours",
-      "label": "Hours",
-      "category": "Header",
-      "default": "2",
-      "info": "Set hour threshold for promise."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_day",
-      "default": false,
-      "category": "Header",
-      "label": "Today / Tomorrow",
-      "info": "Show delivery promise as today/tomorrow."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_date",
-      "default": false,
-      "category": "Header",
-      "label": "Date Range",
-      "info": "Show delivery promise in date range."
-    },
-    {
       "type": "checkbox",
       "id": "header_mega_menu_fullwidth",
       "default": false,
-      "category": "Header",
-      "label": "Use full width Mega Menu",
-      "info": "The mega menu will be full width"
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.use_full_width_mega_menu",
+      "info": "t:resource.settings_schema.header.use_full_width_mega_menu_info"
     },
     {
       "type": "select",
       "id": "nav_weight",
-      "category": "Header",
-      "label": "Navigation font weight",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.navigation_font_weight",
       "info": "",
       "default": "semibold",
       "options": [
         {
           "value": "regular",
-          "text": "Regular"
+          "text": "t:resource.settings_schema.header.regular"
         },
         {
           "value": "semibold",
-          "text": "Semibold"
+          "text": "t:resource.settings_schema.header.semibold"
         },
         {
           "value": "bold",
-          "text": "Bold"
+          "text": "t:resource.settings_schema.header.bold"
         }
       ]
     },
@@ -400,155 +124,63 @@
       "type": "checkbox",
       "id": "is_hyperlocal",
       "default": false,
-      "category": "Header",
-      "label": "Serviceability check in header"
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.serviceability_check_in_header"
     },
     {
       "type": "checkbox",
       "id": "is_mandatory_pincode",
-      "category": "Header",
-      "label": "Mandatory serviceability check",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.mandatory_serviceability_check",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "is_delivery_minutes",
       "default": false,
-      "category": "Header",
-      "label": "Minutes",
-      "info": "Show delivery promise in minutes."
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.minutes",
+      "info": "t:resource.settings_schema.header.show_delivery_promise_in_minutes"
     },
     {
       "type": "text",
       "id": "max_delivery_min",
-      "label": "Minutes",
-      "category": "Header",
+      "label": "t:resource.settings_schema.header.minutes",
+      "category": "t:resource.common.header",
       "default": "60",
-      "info": "Set minute threshold for promise."
+      "info": "t:resource.settings_schema.header.set_minute_threshold_for_promise"
     },
     {
       "type": "checkbox",
       "id": "is_delivery_hours",
       "default": false,
-      "category": "Header",
-      "label": "Hours",
-      "info": "Show delivery promise in hours."
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.hours",
+      "info": "t:resource.settings_schema.header.show_delivery_promise_in_hours"
     },
     {
       "type": "text",
       "id": "max_delivery_hours",
-      "label": "Hours",
-      "category": "Header",
+      "label": "t:resource.settings_schema.header.hours",
+      "category": "t:resource.common.header",
       "default": "2",
-      "info": "Set hour threshold for promise."
+      "info": "t:resource.settings_schema.header.set_hour_threshold_for_promise"
     },
     {
       "type": "checkbox",
       "id": "is_delivery_day",
       "default": false,
-      "category": "Header",
-      "label": "Today / Tomorrow",
-      "info": "Show delivery promise as today/tomorrow."
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.today_tomorrow",
+      "info": "t:resource.settings_schema.header.today_tomorrow_info"
     },
     {
       "type": "checkbox",
       "id": "is_delivery_date",
       "default": false,
-      "category": "Header",
-      "label": "Date Range",
-      "info": "Show delivery promise in date range."
-    },
-    {
-      "type": "checkbox",
-      "id": "header_mega_menu_fullwidth",
-      "default": false,
-      "category": "Header",
-      "label": "Use full width Mega Menu",
-      "info": "The mega menu will be full width"
-    },
-    {
-      "type": "select",
-      "id": "nav_weight",
-      "category": "Header",
-      "label": "Navigation font weight",
-      "info": "",
-      "default": "semibold",
-      "options": [
-        {
-          "value": "regular",
-          "text": "Regular"
-        },
-        {
-          "value": "semibold",
-          "text": "Semibold"
-        },
-        {
-          "value": "bold",
-          "text": "Bold"
-        }
-      ]
-    },
-    {
-      "type": "checkbox",
-      "id": "is_hyperlocal",
-      "default": false,
-      "category": "Header",
-      "label": "Serviceability check in header"
-    },
-    {
-      "type": "checkbox",
-      "id": "is_mandatory_pincode",
-      "category": "Header",
-      "label": "Mandatory serviceability check",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_minutes",
-      "default": false,
-      "category": "Header",
-      "label": "Minutes",
-      "info": "Show delivery promise in minutes."
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_min",
-      "label": "Minutes",
-      "category": "Header",
-      "default": "60",
-      "info": "Set minute threshold for promise."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_hours",
-      "default": false,
-      "category": "Header",
-      "label": "Hours",
-      "info": "Show delivery promise in hours."
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_hours",
-      "label": "Hours",
-      "category": "Header",
-      "default": "2",
-      "info": "Set hour threshold for promise."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_day",
-      "default": false,
-      "category": "Header",
-      "label": "Today / Tomorrow",
-      "info": "Show delivery promise as today/tomorrow."
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_date",
-      "default": false,
-      "category": "Header",
-      "label": "Date Range",
-      "info": "Show delivery promise in date range."
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.date_range",
+      "info": "t:resource.settings_schema.header.date_range_info"
     },
     {
       "type": "checkbox",
@@ -603,47 +235,21 @@
       "type": "checkbox",
       "id": "footer_contact_background",
       "default": true,
-      "category": "Footer",
-      "label": "Show Footer Contact Details Background"
-    },
-    {
-      "type": "checkbox",
-      "id": "footer_contact_background",
-      "default": true,
-      "category": "Footer",
-      "label": "Show Footer Contact Details Background"
-    },
-    {
-      "type": "checkbox",
-      "id": "footer_contact_background",
-      "default": true,
-      "category": "Footer",
-      "label": "Show Footer Contact Details Background"
-    },
-    {
-      "type": "checkbox",
-      "id": "footer_contact_background",
-      "default": true,
-      "category": "Footer",
-      "label": "Show Footer Contact Details Background"
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.show_footer_contact_details_background"
     },
     {
       "type": "text",
       "id": "footer_social_text",
       "default": "Social Media",
-      "category": "Footer",
-      "label": "Social media text label",
-      "info": "Show Label text for social media"
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.social_media_text",
+      "info": "t:resource.settings_schema.footer.social_media_text_info"
     },
     {
       "type": "header",
       "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "value": "t:resource.settings_schema.cart_and_button_configuration.cart_options"
+      "value": "Cart Options"
     },
     {
       "type": "checkbox",
@@ -664,17 +270,7 @@
     {
       "type": "header",
       "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "value": "-------------------------------------"
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "value": "t:resource.settings_schema.cart_and_button_configuration.buy_button_configurations"
+      "value": "Buy Button Configurations"
     },
     {
       "type": "select",
@@ -723,7 +319,7 @@
       "id": "custom_button_text",
       "label": "t:resource.common.custom_button_text",
       "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "default": "Enquire now",
+      "default": "t:resource.default_values.enquire_now",
       "info": "t:resource.settings_schema.cart_and_button_configuration.applicable_pdp_featured_product"
     },
     {
@@ -736,10 +332,10 @@
     {
       "type": "checkbox",
       "id": "show_quantity_control",
-      "label": "Show Quantity Control",
-      "category": "Cart & Button Configuration",
+      "label": "t:resource.settings_schema.cart_and_button_configuration.show_quantity_control",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "default": false,
-      "info": "Displays in place of Add to Cart when enabled."
+      "info": "t:resource.settings_schema.cart_and_button_configuration.display_in_place_of_add_to_cart"
     },
     {
       "type": "image_picker",
@@ -756,12 +352,7 @@
     {
       "type": "header",
       "category": "t:resource.settings_schema.common.product_card_configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.product_card_configuration",
-      "value": "t:resource.settings_schema.product_card_configuration.product_card_aspect_ratio"
+      "value": "Product Card Aspect Ratio"
     },
     {
       "type": "text",
@@ -778,11 +369,6 @@
       "default": "",
       "label": "t:resource.settings_schema.product_card_configuration.height_in_px",
       "info": "t:resource.settings_schema.product_card_configuration.default_aspect_ratio_limit"
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.product_card_configuration",
-      "value": "-------------------------------------"
     },
     {
       "type": "checkbox",
@@ -805,41 +391,14 @@
     },
     {
       "type": "range",
-      "category": "Product Card Configuration",
-      "id": "badge_border_radius",
-      "min": 0,
-      "max": 30,
-      "unit": "px",
-      "label": "Badge Border Radius",
-      "default": 24,
-      "info": "Border radius for Badge"
-    },
-    {
-      "type": "range",
-      "category": "Product Card Configuration",
-      "id": "badge_border_radius",
-      "min": 0,
-      "max": 30,
-      "unit": "px",
-      "label": "Badge Border Radius",
-      "default": 24,
-      "info": "Border radius for Badge"
-    },
-    {
-      "type": "range",
-      "category": "Product Card Configuration",
-      "id": "badge_border_radius",
-      "min": 0,
-      "max": 30,
-      "unit": "px",
-      "label": "Badge Border Radius",
-      "default": 24,
-      "info": "Border radius for Badge"
-    },
-    {
-      "type": "header",
       "category": "t:resource.settings_schema.common.product_card_configuration",
-      "value": "-------------------------------------"
+      "id": "badge_border_radius",
+      "min": 0,
+      "max": 30,
+      "unit": "px",
+      "label": "t:resource.settings_schema.product_card_configuration.badge_border_radius",
+      "default": 24,
+      "info": "t:resource.settings_schema.product_card_configuration.badge_border_radius_info"
     },
     {
       "type": "checkbox",
@@ -867,35 +426,20 @@
     {
       "type": "header",
       "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": "t:resource.settings_schema.other_page_configuration.improve_image_quality"
+      "value": "Improve Image Quality"
     },
     {
       "type": "checkbox",
       "id": "img_hd",
       "category": "t:resource.settings_schema.common.other_page_configuration",
       "default": false,
-      "label": "Use Original Images",
-      "info": "This may affect your page performance. Applicable for home-page."
+      "label": "t:resource.settings_schema.other_page_configuration.use_original_images",
+      "info": "t:resource.settings_schema.other_page_configuration.home_page_performance_impact"
     },
     {
       "type": "header",
       "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": "-----------------------------------"
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.other_page_configuration",
-      "value": "t:resource.settings_schema.other_page_configuration.border_radius"
+      "value": "Border Radius"
     },
     {
       "type": "range",

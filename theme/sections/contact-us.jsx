@@ -50,7 +50,7 @@ function Component({ props = {} }) {
           content: {
             attachments: [],
             description: finalText,
-            title: t("resource.contact.contact_request"),
+            title: t("resource.header.contact_request"),
           },
           priority: "low",
         },

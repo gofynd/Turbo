@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import PropTypes from "prop-types";
 import styles from "./size-guide.less";
 import FyImage from "../../../components/core/fy-image/fy-image";
 import FyHTMLRenderer from "../../../components/core/fy-html-renderer/fy-html-renderer";
-import Modal from "fdk-react-templates/components/core/modal/modal";
+// import Modal from "fdk-react-templates/components/core/modal/modal";
 import "fdk-react-templates/components/core/modal/modal.css";
 import { FDKLink } from "fdk-core/components";
 import { useGlobalTranslation } from "fdk-core/utils";
-
+const Modal = React.lazy(
+  () => import("fdk-react-templates/components/core/modal/modal")
+);
 function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
   const { t } = useGlobalTranslation("translation");
   const [previewSelectedMetric, setPreviewSelectedMetric] = useState("cm");
@@ -91,6 +93,7 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
   }, [activeTab]);
 
   return (
+    <Suspense fallback={<div/>}>
     <Modal
       modalType="right-modal"
       isOpen={isOpen}
@@ -111,7 +114,7 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
             }`}
             onClick={() => setActiveTab("size_guide")}
           >
-            {t("resource.common.size_guide_lower")}
+            {t("resource.product.size_guide_lower")}
           </button>
         )}
 
@@ -124,7 +127,7 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
             }`}
             onClick={() => setActiveTab("measure")}
           >
-            {t("product.how_to_measure")}
+            {t("resource.product.how_to_measure")}
           </button>
         )}
       </div>
@@ -271,6 +274,7 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
         </div>
       </div>
     </Modal>
+    </Suspense>
   );
 }
 

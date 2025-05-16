@@ -81,7 +81,8 @@ function Header({ fpi }) {
   }, []);
 
   useEffect(() => {
-    if (!i18N_DETAILS || !i18N_DETAILS?.language || activeLocale === i18N_DETAILS?.language?.locale) return;
+    if (!isRunningOnClient()) return;
+    if (!i18N_DETAILS || activeLocale === i18N_DETAILS?.language?.locale) return;
     fpi.setI18nDetails({
       ...i18N_DETAILS,
       language: {
@@ -256,6 +257,7 @@ function Header({ fpi }) {
                     globalConfig={globalConfig}
                     checkLogin={checkLogin}
                     languageIscCode={languageIscCode}
+                    fpi={fpi}
                   />
                   <FDKLink
                     to="/"

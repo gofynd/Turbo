@@ -8,6 +8,7 @@ import {
   useGoogleMapConfig,
 } from "../../helper/hooks";
 import { LOCALITY, DELIVERY_PROMISE } from "../../queries/logisticsQuery";
+import { isRunningOnClient } from "../../helper/utils";
 
 const useHyperlocal = (fpi) => {
   const { t } = useGlobalTranslation("translation");
@@ -76,6 +77,7 @@ const useHyperlocal = (fpi) => {
   };
 
   const handleCurrentLocClick = () => {
+    if (!isRunningOnClient()) return;
     if (!navigator || !("geolocation" in navigator)) {
       setServicibilityError({
         message: t("resource.header.location_access_failed"),
@@ -184,13 +186,13 @@ const useHyperlocal = (fpi) => {
 
   return {
     isHyperlocal: useMemo(() => {
-      const regexPattern =
-        /^(\/cart\/checkout|\/profile\/orders(\/shipment\/\w+)?)$/;
+      if (!isRunningOnClient()) return false;
+      const regexPattern = /^(\/cart\/checkout|\/profile\/orders(\/shipment\/\w+)?)$/;
       if (regexPattern.test(location.pathname)) {
         return false;
       }
       return isHyperlocal;
-    }, [location.pathname, isHyperlocal]),
+    }, [location?.pathname, isHyperlocal]),
     isLoading: isPromiseLoading,
     pincode: locationDetails?.pincode,
     deliveryMessage,

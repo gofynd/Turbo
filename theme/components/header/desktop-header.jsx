@@ -71,6 +71,7 @@ function HeaderDesktop({
               reset
               checkLogin={checkLogin}
               languageIscCode={languageIscCode}
+              fpi={fpi}
             />
           )}
           {isDoubleRowHeader && globalConfig?.always_on_search && (
@@ -218,6 +219,7 @@ function HeaderDesktop({
           LoggedIn={LoggedIn}
           checkLogin={checkLogin}
           languageIscCode={languageIscCode}
+          fpi={fpi}
         />
       )}
     </div>
