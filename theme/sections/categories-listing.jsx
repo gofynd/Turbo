@@ -1,18 +1,22 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { FDKLink } from "fdk-core/components";
 import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
 import Slider from "react-slick";
-import { useFPI, useGlobalStore } from "fdk-core/utils";
+import { useFPI, useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import styles from "../styles/sections/category-listing.less";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useCategories from "../page-layouts/categories/useCategories";
 import placeholderImage from "../assets/images/placeholder/categories-listing.png";
 import CategoriesCard from "../components/categories-card/categories-card";
+import { useParams } from "react-router-dom";
 import { CATEGORIES_LISTING } from "../queries/categoryQuery";
 import { useWindowWidth } from "../helper/hooks";
 
+// check for FDKLink here
 export function Component({ props, blocks, preset, globalConfig }) {
+  const { locale } = useParams();
+  const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
   const {
     autoplay,
@@ -20,14 +24,28 @@ export function Component({ props, blocks, preset, globalConfig }) {
     title,
     cta_text,
     item_count,
+    item_count_mobile,
     mobile_layout,
     desktop_layout,
     img_container_bg,
     button_text,
+    padding_top,
+    padding_bottom,
   } = props;
 
   const customValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const { getCategoriesByDepartment } = useCategories(fpi);
+
+
+const sortCategoriesByPriority = (categoriesList) => {
+  if (!categoriesList) return [];
+  return [...categoriesList]
+    .sort((a, b) => (a?.priority ?? Infinity) - (b?.priority ?? Infinity))
+    .map((category) => ({
+      ...category,
+      childs: sortCategoriesByPriority(category?.childs),
+    }));
+};
 
   const departments = useMemo(() => {
     if (!blocks) {
@@ -49,6 +67,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
   }, [departments, customValue]);
 
   const itemCount = Number(item_count?.value ?? 4);
+  const itemCountMobile = Number(item_count_mobile?.value ?? 1);
   const windowWidth = useWindowWidth();
 
   const getImgSrcSet = useMemo(() => {
@@ -63,10 +82,10 @@ export function Component({ props, blocks, preset, globalConfig }) {
       { breakpoint: { min: 900 }, width: Math.round(1890 / itemCount) },
       { breakpoint: { min: 720 }, width: Math.round(1530 / 3) },
       { breakpoint: { min: 540 }, width: Math.round(1170 / 3) },
-      { breakpoint: { min: 360 }, width: Math.round(810) },
-      { breakpoint: { min: 180 }, width: Math.round(450) },
+      { breakpoint: { min: 360 }, width: Math.round(810 / itemCountMobile) },
+      { breakpoint: { min: 180 }, width: Math.round(450 / itemCountMobile) },
     ];
-  }, [globalConfig?.img_hd, itemCount]);
+  }, [globalConfig?.img_hd, itemCount, itemCountMobile]);
 
   function getWidthByCount() {
     if (windowWidth <= 768) {
@@ -147,20 +166,20 @@ export function Component({ props, blocks, preset, globalConfig }) {
       arrows: false,
       dots: false,
       speed: 500,
-      slidesToShow: 1,
+      slidesToShow: itemCountMobile,
       slidesToScroll: 1,
       swipeToSlide: true,
-      infinite: imagesForScrollView?.length > 1,
+      infinite: imagesForScrollView?.length > itemCountMobile,
       autoplay: autoplay?.value,
       autoplaySpeed: (play_slides?.value ?? 3) * 1000,
       cssEase: "linear",
       nextArrow: <SliderRightIcon />,
       prevArrow: <SliderLeftIcon />,
-      centerMode: imagesForScrollView?.length > 1,
+      centerMode: imagesForScrollView?.length > itemCountMobile,
       centerPadding: "25px",
     }),
     [
-      itemCount,
+      itemCountMobile,
       autoplay?.value,
       play_slides?.value,
       imagesForScrollView?.length,
@@ -181,8 +200,8 @@ export function Component({ props, blocks, preset, globalConfig }) {
         ];
       }
       fpi.custom.setValue(
-        `categories-listing-${departments?.join("__")}`,
-        accumulatedCategories
+      `categories-listing-${departments?.join("__")}`,
+        sortCategoriesByPriority(accumulatedCategories)
       );
     };
     if (categories?.length === 0) {
@@ -190,17 +209,24 @@ export function Component({ props, blocks, preset, globalConfig }) {
     }
   }, [departments]);
 
+ const sortedCategories = categories;
+
+  const dynamicStyles = {
+    paddingTop: `${padding_top?.value ?? 16}px`,
+    paddingBottom: `${padding_bottom?.value ?? 16}px`,
+    "--bg-color": `${img_container_bg?.value || "#00000000"}`,
+  };
+
   return (
-    <section
-      style={{
-        padding: `16px 0`,
-        "--bg-color": `${img_container_bg?.value || "#00000000"}`,
-      }}
-    >
+    <section style={dynamicStyles}>
       {(!!title?.value || !!cta_text?.value) && (
-        <div className={styles.titleBlock}>
-          {!!title?.value && <h2 className={`fontHeader`}>{title?.value}</h2>}
-          {!!cta_text?.value && <p className={`b2`}>{cta_text?.value}</p>}
+        <div className={`fx-title-block ${styles.titleBlock}`}>
+          {!!title?.value && (
+            <h2 className={`fx-title fontHeader`}>{title?.value}</h2>
+          )}
+          {!!cta_text?.value && (
+            <p className={`fx-description b2`}>{cta_text?.value}</p>
+          )}
         </div>
       )}
       {!!categories?.length > 0 && showScrollView() && (
@@ -211,10 +237,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
           }}
         >
           <Slider
-            className={`
-                  ${
-                    imagesForScrollView?.length <= itemCount ? "no-nav" : ""
-                  } ${styles.hideOnMobile}`}
+            className={`${styles.hideOnMobile}`}
             {...config}
             initialSlide={0}
           >
@@ -230,10 +253,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
             ))}
           </Slider>
           <Slider
-            className={`
-                  ${
-                    imagesForScrollView?.length <= itemCount ? "no-nav" : ""
-                  } ${styles.hideOnDesktop}`}
+            className={`${styles.hideOnDesktop}`}
             {...configMobile}
             initialSlide={0}
           >
@@ -257,6 +277,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
           }`}
           style={{
             "--per_row": itemCount,
+            "--per-row-mobile": itemCountMobile,
             "--brand-item": getWidthByCount() || 1,
           }}
         >
@@ -297,7 +318,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
         >
           <FDKLink
             to="/categories/"
-            className={`btn-secondary ${styles.sectionButton}`}
+            className={`fx-button btn-secondary ${styles.sectionButton}`}
           >
             {button_text?.value}
           </FDKLink>
@@ -323,7 +344,7 @@ const CategoriesItem = ({
     category_name_text_alignment,
   } = props;
   return (
-    <div className={className}>
+    <div className={`fx-category-card ${className}`}>
       <CategoriesCard
         config={{
           category_name_placement: category_name_placement?.value,
@@ -346,34 +367,34 @@ const CategoriesItem = ({
 };
 
 export const settings = {
-  label: "Categories Listing",
+  label: "t:resource.sections.categories_listing.categories_listing",
   props: [
     {
       type: "checkbox",
       id: "autoplay",
       default: false,
-      label: "Auto Play Slides",
+      label: "t:resource.common.auto_play_slides",
     },
     {
       type: "checkbox",
       id: "show_category_name",
       default: true,
-      label: "Show category name",
+      label: "t:resource.common.show_category_name",
     },
     {
       type: "select",
       id: "category_name_placement",
-      label: "Category name placement",
+      label: "t:resource.sections.categories_listing.category_name_placement",
       default: "inside",
-      info: "Place the category name inside or outside the image",
+      info: "t:resource.common.category_name_placement_info",
       options: [
         {
           value: "inside",
-          text: "Inside the image",
+          text: "t:resource.sections.categories_listing.inside_the_image",
         },
         {
           value: "outside",
-          text: "Outside the image",
+          text: "t:resource.sections.categories_listing.outside_the_image",
         },
       ],
     },
@@ -383,20 +404,20 @@ export const settings = {
       options: [
         {
           value: "top",
-          text: "Top",
+          text: "t:resource.sections.categories_listing.top",
         },
         {
           value: "center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
         {
           value: "bottom",
-          text: "Bottom",
+          text: "t:resource.sections.categories_listing.bottom",
         },
       ],
       default: "bottom",
-      label: "Category name position",
-      info: "Display category name at top, bottom or center",
+      label: "t:resource.sections.categories_listing.category_name_position",
+      info: "t:resource.sections.categories_listing.category_name_alignment",
     },
     {
       id: "category_name_text_alignment",
@@ -404,20 +425,20 @@ export const settings = {
       options: [
         {
           value: "text-left",
-          text: "Left",
+          text: "t:resource.common.left",
         },
         {
           value: "text-center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
         {
           value: "text-right",
-          text: "Right",
+          text: "t:resource.common.right",
         },
       ],
       default: "text-center",
-      label: "Category name text alignment",
-      info: "Align category name left, right or center",
+      label: "t:resource.sections.categories_listing.category_name_text_alignment",
+      info: "t:resource.sections.categories_listing.align_category_name",
     },
     {
       type: "range",
@@ -426,7 +447,7 @@ export const settings = {
       max: 10,
       step: 1,
       unit: "sec",
-      label: "Change slides every",
+      label: "t:resource.common.change_slides_every",
       default: 3,
     },
     {
@@ -436,25 +457,36 @@ export const settings = {
       max: 5,
       step: 1,
       unit: "",
-      label: "Items per row(Desktop)",
+      label: "t:resource.sections.categories_listing.items_per_row_desktop",
       default: 4,
-      info: "Maximum items allowed per row for Horizontal view, for gallery max 5 are viewable and only 5 blocks are required",
+      info: "t:resource.sections.categories_listing.max_items_per_row_horizontal",
+    },
+    {
+      type: "range",
+      id: "item_count_mobile",
+      min: 1,
+      max: 2,
+      step: 1,
+      unit: "",
+      label: "t:resource.sections.categories.item_count_mobile",
+      default: 1,
+      info: "t:resource.sections.categories.item_count_mobile_info",
     },
     {
       type: "color",
       id: "img_container_bg",
-      category: "Image Container",
+      category: "t:resource.common.image_container",
       default: "#00000000",
-      label: "Container Background Color",
-      info: "This color will be used as the container background color of the Product/Collection/Category/Brand images wherever applicable",
+      label: "t:resource.common.container_background_color",
+      info: "t:resource.common.image_container_bg_color",
     },
     {
       type: "checkbox",
       id: "img_fill",
-      category: "Image Container",
+      category: "t:resource.common.image_container",
       default: true,
-      label: "Fit image to the container",
-      info: "If the image aspect ratio is different from the container, the image will be clipped to fit the container. The aspect ratio of the image will be maintained",
+      label: "t:resource.common.fit_image_to_container",
+      info: "t:resource.common.clip_image_to_fit_container",
     },
     {
       id: "mobile_layout",
@@ -462,16 +494,16 @@ export const settings = {
       options: [
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal scroll ",
+          text: "t:resource.common.horizontal_scroll",
         },
       ],
       default: "grid",
-      label: "Mobile Layout",
-      info: "Alignment of content",
+      label: "t:resource.common.mobile_layout",
+      info: "t:resource.common.alignment_of_content",
     },
     {
       id: "desktop_layout",
@@ -479,45 +511,67 @@ export const settings = {
       options: [
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal scroll",
+          text: "t:resource.common.horizontal_scroll",
         },
       ],
       default: "horizontal",
-      label: "Desktop Layout",
-      info: "Alignment of content",
+      label: "t:resource.sections.categories_listing.desktop_layout",
+      info: "t:resource.common.alignment_of_content",
     },
     {
       type: "text",
       id: "title",
-      default: "A True Style",
-      label: "Heading",
+      default: "t:resource.default_values.a_true_style",
+      label: "t:resource.common.heading",
     },
     {
       type: "text",
       id: "cta_text",
-      default: "Be exclusive, Be Divine, Be yourself",
-      label: "Description",
+      default: "t:resource.default_values.cta_text",
+      label: "t:resource.common.description",
     },
     {
       type: "text",
       id: "button_text",
       default: "",
-      label: "Button Text",
+      label: "t:resource.common.button_text",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.top_padding",
+      default: 16,
+      info: "t:resource.sections.categories.top_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
   ],
   blocks: [
     {
-      name: "Category Item",
+      name: "t:resource.sections.categories_listing.category_item",
       type: "category",
       props: [
         {
           type: "department",
           id: "department",
-          label: "Select Department",
+          label: "t:resource.sections.categories_listing.select_department",
         },
       ],
     },
@@ -525,46 +579,46 @@ export const settings = {
   preset: {
     blocks: [
       {
-        name: "Category Item",
+        name: "t:resource.sections.categories_listing.category_item",
         type: "category",
         props: [
           {
             type: "department",
             id: "department",
-            label: "Select Department",
+            label: "t:resource.sections.categories_listing.select_department",
           },
         ],
       },
       {
-        name: "Category Item",
+        name: "t:resource.sections.categories_listing.category_item",
         type: "category",
         props: [
           {
             type: "department",
             id: "department",
-            label: "Select Department",
+            label: "t:resource.sections.categories_listing.select_department",
           },
         ],
       },
       {
-        name: "Category Item",
+        name: "t:resource.sections.categories_listing.category_item",
         type: "category",
         props: [
           {
             type: "department",
             id: "department",
-            label: "Select Department",
+            label: "t:resource.sections.categories_listing.select_department",
           },
         ],
       },
       {
-        name: "Category Item",
+        name: "t:resource.sections.categories_listing.category_item",
         type: "category",
         props: [
           {
             type: "department",
             id: "department",
-            label: "Select Department",
+            label: "t:resource.sections.categories_listing.select_department",
           },
         ],
       },
@@ -606,10 +660,12 @@ Component.serverFetch = async ({ fpi, blocks }) => {
         ...newCategories.slice(0, 12 - accumulatedCategories.length),
       ];
     }
-    return fpi.custom.setValue(
+   const sortedCategories = sortCategoriesByPriority(accumulatedCategories);
+    fpi.custom.setValue(
       `categories-listing-${departments?.join("__")}`,
-      accumulatedCategories
+      sortedCategories
     );
+    return sortedCategories;
   } catch (err) {
     fpi.custom.setValue("error-section", err);
   }

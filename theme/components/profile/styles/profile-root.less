@@ -16,8 +16,11 @@
     }
 
     .navContainer {
-      border-left: 1px solid @DividerStokes;
-      padding: 0 16px 16px 28px;
+      border-inline-start: 1px solid @DividerStokes;
+      padding-top: 0px;
+      padding-inline-end: 16px;
+      padding-bottom: 16px;
+      padding-inline-start: 28px;
       width: 25%;
 
       .userData {
@@ -60,7 +63,10 @@
 
       .nav {
         display: flex;
-        padding: 10px 10px 10px 0;
+        padding-top: 10px;
+        padding-inline-end: 10px;
+        padding-bottom: 10px;
+        padding-inline-start: 0px;
         align-items: center;
         border-bottom: 1px solid @DividerStokes;
         cursor: pointer;
@@ -80,7 +86,7 @@
         .menuIcon {
           height: 24px;
           aspect-ratio: 1;
-          margin-right: 10px;
+          margin-inline-end: 10px;
         }
       }
 
@@ -102,7 +108,7 @@
 
       .navContainer {
         width: 100%;
-        border-left: 0;
+        border-inline-start: 0;
 
         .userData {
           .nameContainer {

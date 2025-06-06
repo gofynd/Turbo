@@ -8,6 +8,7 @@ import "@gofynd/theme-template/components/quantity-control/quantity-control.css"
 import DeliveryInfo from "../delivery-info/delivery-info";
 import SizeGuide from "../../size-guide/size-guide";
 import styles from "./sticky-addtocart.less";
+import { useGlobalTranslation } from "fdk-core/utils";
 import CartIcon from "../../../../assets/images/cart.svg";
 import BuyNowIcon from "../../../../assets/images/buy-now.svg";
 import ScaleIcon from "../../../../assets/images/scale.svg";
@@ -26,7 +27,9 @@ const StickyAddToCart = ({
   showBuyNow,
   quantityControllerProps,
   isMto,
+  mandatoryPincode,
 }) => {
+  const { t } = useGlobalTranslation("translation");
   const [showSizeModal, setShowSizeModal] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [modalType, setModalType] = useState("");
@@ -43,11 +46,9 @@ const StickyAddToCart = ({
   } = quantityControllerProps;
 
   const openSizeModal = (e, modalType) => {
-    if (
-      selectedSize &&
-      deliveryInfoProps?.pincode &&
-      deliveryInfoProps?.isValidDeliveryLocation
-    ) {
+    const isPincodeValid =
+      !mandatoryPincode || deliveryInfoProps?.isValidDeliveryLocation;
+    if (selectedSize && isPincodeValid) {
       cartHandler(e, modalType === "buy-now");
     } else {
       e.preventDefault();
@@ -76,7 +77,7 @@ const StickyAddToCart = ({
             onClick={(e) => openSizeModal(e, "add-to-cart")}
           >
             <CartIcon className={styles.cartIcon} />
-            ADD TO CART
+            {t("resource.common.add_to_cart")}
           </button>
         </motion.div>
         {showBuyNow && (
@@ -94,15 +95,15 @@ const StickyAddToCart = ({
               onClick={(e) => openSizeModal(e, "buy-now")}
             >
               <BuyNowIcon className={styles.cartIcon} />
-              Buy Now
+              {t("resource.common.buy_now")}
             </button>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence >
       <div className={styles.addToCartModal}>
         <Modal
           isOpen={showSizeModal}
-          title="Select Size"
+          title={t("resource.common.select_size")}
           closeDialog={() => setShowSizeModal(false)}
           headerClassName={styles.customMHeader}
           bodyClassName={styles.customMBody}
@@ -112,8 +113,8 @@ const StickyAddToCart = ({
             <div className={styles.guideCta}>
               <span style={{ width: "65%" }}>
                 {selectedSize
-                  ? `Style : Size (${selectedSize})`
-                  : "SELECT SIZE"}
+                  ? `${t("resource.product.style_size")} (${selectedSize})`
+                  : t("resource.common.select_size_caps")}
               </span>
               {isSizeGuideAvailable && (
                 <>
@@ -124,12 +125,12 @@ const StickyAddToCart = ({
                     }}
                     className={styles["product__size--guide"]}
                   >
-                    <span>SIZE GUIDE</span>
+                    <span>{t("resource.common.size_guide")}</span>
                     <ScaleIcon className={styles.scaleIcon} />
                   </button>
                 </>
               )}
-            </div>
+            </div >
 
             <div className={styles.sizes}>
               <ul>
@@ -146,14 +147,14 @@ const StickyAddToCart = ({
                 ))}
               </ul>
             </div>
-          </div>
+          </div >
 
           <div className={styles.priceBlock}>
             <div className={styles.productPrice}>
               {getProductPrice("effective") &&
                 blockProps?.mrp_label &&
                 getProductPrice("effective") === getProductPrice("marked") && (
-                  <span className="mrp-label">MRP:</span>
+                  <span className="mrp-label">{t("resource.common.mrp")}</span>
                 )}
               <h4 className={styles["productPrice--effective"]}>
                 {getProductPrice("effective")}
@@ -163,7 +164,7 @@ const StickyAddToCart = ({
                 blockProps?.mrp_label &&
                 getProductPrice("effective") !== getProductPrice("marked") && (
                   <>
-                    <span className={styles.mrpLabel}>MRP:</span>
+                    <span className={styles.mrpLabel}>{t("resource.common.mrp")}</span>
                     <span className={styles["productPrice--marked"]}>
                       {getProductPrice("marked")}
                     </span>
@@ -239,7 +240,7 @@ const StickyAddToCart = ({
                   disabled={!productMeta.sellable}
                 >
                   <CartIcon className={styles.cartIcon} />
-                  ADD TO CART
+                  {t("resource.common.add_to_cart")}
                 </button>
               )}
             </>
@@ -253,7 +254,7 @@ const StickyAddToCart = ({
               disabled={!productMeta.sellable}
             >
               <BuyNowIcon className={styles.cartIcon} />
-              Buy Now
+              {t("resource.common.buy_now")}
             </button>
           )}
         </Modal>
@@ -268,7 +269,7 @@ const StickyAddToCart = ({
             productMeta={productMeta}
           />
         )}
-      </div>
+      </div >
     </>
   );
 };

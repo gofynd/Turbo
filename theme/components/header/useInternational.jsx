@@ -1,21 +1,23 @@
 import { useMemo } from "react";
 import { useGlobalStore } from "fdk-core/utils";
-import {
-  COUNTRY_DETAILS,
-  FETCH_LOCALITIES,
-} from "../../queries/internationlQuery";
+import { COUNTRY_DETAILS, FETCH_LOCALITIES } from "../../queries/internationlQuery";
 import { useThemeFeature } from "../../helper/hooks";
+import { isRunningOnClient } from "../../helper/utils";
+
 
 const useInternational = ({ fpi }) => {
+  const customValues = isRunningOnClient() ? useGlobalStore(fpi?.getters?.CUSTOM_VALUE) : {};
+  const locationDetails = isRunningOnClient() ? useGlobalStore(fpi?.getters?.LOCATION_DETAILS) : {};
+  const i18nDetails = isRunningOnClient() ? useGlobalStore(fpi?.getters?.i18N_DETAILS) : {};
+
   const {
     countries,
     currencies,
     defaultCurrency: defaultCurrencyCode,
     countryDetails,
-  } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) ?? {};
+  } = customValues ?? {};
+
   const { isInternational } = useThemeFeature({ fpi });
-  const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
-  const i18nDetails = useGlobalStore(fpi.getters.i18N_DETAILS);
 
   const currentCountry = useMemo(() => {
     return countries?.find(
@@ -60,7 +62,6 @@ const useInternational = ({ fpi }) => {
         countryDetails?.fields?.serviceability_fields || [];
       return requiredFields.every((field) => field in locationDetails);
     }
-
     return false;
   }, [locationDetails, countryDetails]);
 
@@ -106,6 +107,7 @@ const useInternational = ({ fpi }) => {
       newCurrency = countryCurrency?.code ?? defaultCurrencyCode;
     }
     const cookiesData = {
+      ...i18nDetails,
       currency: { code: newCurrency },
       country: {
         iso_code: iso,
@@ -120,8 +122,7 @@ const useInternational = ({ fpi }) => {
   function fetchLocalities(payload) {
     return fpi.executeGQL(FETCH_LOCALITIES, payload).then((res) => {
       if (res?.data?.localities) {
-        const data = res?.data?.localities;
-        return data.items;
+        return res?.data?.localities.items;
       }
     });
   }

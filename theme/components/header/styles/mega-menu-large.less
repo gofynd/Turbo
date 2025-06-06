@@ -1,0 +1,161 @@
+@import "../../../styles/main.less";
+
+.headerNavigation {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  .navigationItem {
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.3px;
+    text-align: left;
+    height: 100%;
+
+    .l1Category {
+      padding: 12px 0;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      height: 100%;
+    }
+    .l1Category,
+    a {
+      cursor: pointer;
+    }
+  }
+}
+
+.megamenuWrapper {
+  position: fixed;
+  top: calc(var(--theme-header-height) - 1px);
+  left: 0;
+  right: 0;
+  padding-top: 1px;
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.megamenuContainer {
+  padding: 24px 14.5px 24px 72px;
+  background-color: @DialogBackground;
+  box-shadow:
+      0 12px 16px rgba(0, 0, 0, 0.16),
+      0 4px 4px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 min(@ButtonRadius, 8px) min(@ButtonRadius, 8px);
+  max-height: 436px;
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+.megamenuContent {
+  display: flex;
+  gap: 42px;
+  padding-right: 54.5px;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  &::-webkit-scrollbar {
+    all: revert;
+    width: 3px;
+    height: 0px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: @DividerStokes ;
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: @TextLabel;
+    border-radius: 6px;
+  }
+
+  .l2Container {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+
+    .l2Column {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+  .navigationImage {
+    flex: 0 0 21.219%
+  }
+}
+
+.l2NavigationBlock {
+  padding: 12px;
+  .l3NavigationBlock {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    margin-top: 12px;
+  }
+  .l2NavigationItem,.l3NavigationItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    .navLogo {
+      flex: 0 0 24px;
+      min-width: 0;
+      height: auto;
+    }
+  }
+  .l2NavigationText,
+  .l3NavigationText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+  .l2NavigationText {
+    color: @ButtonLink;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: -0.32px;
+  }
+  .l3NavigationText {
+    color: @HeaderNav;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: -0.28px;
+  }
+}
+
+.navigationItem {
+  position: relative;
+  .l1CategoryHeading {
+    color: @HeaderNav;
+    font-weight: inherit;
+  }
+  &:hover {
+    .l1CategoryHeading {
+      opacity: 0.5;
+    }
+
+    .menuIcon {
+      transform: rotate(180deg);
+      opacity: 0.5;
+    }
+
+    .megamenuWrapper {
+      display: block;
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+}
+
+.menuIcon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  fill: @HeaderIcon;
+  min-width: 24px;
+}

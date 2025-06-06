@@ -35,40 +35,40 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
 }
 
 export const settings = {
-  label: "Collection Product Grid",
+  label: "t:resource.sections.collections_listing.collection_product_grid",
   props: [
     {
       type: "collection",
       id: "collection",
-      label: "Select Collection",
-      info: "Select a collection to display its products. Applicable when the section is used on pages other than the collection listing page",
+      label: "t:resource.sections.collections_listing.select_collection",
+      info: "t:resource.sections.collections_listing.select_collection_info",
     },
     {
       type: "image_picker",
       id: "desktop_banner",
-      label: "Desktop Banner Image",
-      info: "Upload an image to be displayed as a banner on desktop devices",
+      label: "t:resource.sections.products_listing.desktop_banner_image",
+      info: "t:resource.sections.products_listing.desktop_banner_info",
       default: "",
     },
     {
       type: "image_picker",
       id: "mobile_banner",
-      label: "Mobile Banner Image",
-      info: "Upload an image to be displayed as a banner on mobile devices",
+      label: "t:resource.sections.products_listing.mobile_banner_image",
+      info: "t:resource.sections.products_listing.mobile_banner_info",
       default: "",
     },
     {
       type: "url",
       id: "button_link",
       default: "",
-      info: "Select the destination link where users will be redirected when they click on the banner image",
-      label: "Redirect Link",
+      info: "t:resource.sections.collections_listing.button_link_info",
+      label: "t:resource.common.redirect_link",
     },
     {
       type: "checkbox",
       id: "product_number",
-      label: "Show Product Numbers",
-      info: "Show the number of products in the listing",
+      label: "t:resource.sections.collections_listing.product_number",
+      info: "t:resource.sections.collections_listing.product_number_info",
       default: true,
     },
     {
@@ -77,20 +77,20 @@ export const settings = {
       options: [
         {
           value: "view_more",
-          text: "View More",
-        },
-        {
-          value: "infinite",
-          text: "Infinite Loading",
-        },
-        {
-          value: "pagination",
-          text: "Pagination",
-        },
+        text: "t:resource.common.view_more",
+      },
+      {
+        value: "infinite",
+        text: "t:resource.common.infinite_loading",
+      },
+      {
+        value: "pagination",
+        text: "t:resource.common.pagination",
+      },
       ],
-      info: "Choose how products load on the page based on user interaction. Infinite Scroll continuously loads more products as users scroll. Pagination organises products into separate pages with navigation controls. View More loads additional products only when users click a button",
+      info: "t:resource.sections.collections_listing.loading_options_info",
       default: "pagination",
-      label: "Loading Options",
+      label: "t:resource.common.loading_options",
     },
     {
       id: "page_size",
@@ -119,27 +119,27 @@ export const settings = {
       ],
       default: 12,
       info: "",
-      label: "Products per Page",
+      label: "t:resource.sections.products_listing.products_per_page",
     },
     {
       type: "checkbox",
       id: "back_top",
-      label: "Show back to top button",
+      label: "t:resource.common.show_back_to_top",
       default: true,
     },
     {
       type: "checkbox",
       id: "in_new_tab",
-      label: "Open product in new tab",
-      default: false,
-      info: "Open product in new tab for desktop",
+      label: "t:resource.common.open_product_in_new_tab",
+      default: true,
+      info: "t:resource.common.open_product_in_new_tab_desktop",
     },
     {
       type: "checkbox",
       id: "hide_brand",
-      label: "Hide Brand Name",
+      label: "t:resource.common.hide_brand_name",
       default: false,
-      info: "Check to hide Brand name",
+      info: "t:resource.common.hide_brand_name_info",
     },
     {
       id: "grid_desktop",
@@ -147,15 +147,15 @@ export const settings = {
       options: [
         {
           value: "4",
-          text: "4 Cards",
+          text: "t:resource.common.four_cards",
         },
         {
           value: "2",
-          text: "2 Cards",
+          text: "t:resource.common.two_cards",
         },
       ],
       default: "4",
-      label: "Default grid layout desktop",
+      label: "t:resource.common.default_grid_layout_desktop",
     },
     {
       id: "grid_tablet",
@@ -163,15 +163,15 @@ export const settings = {
       options: [
         {
           value: "3",
-          text: "3 Cards",
+          text: "t:resource.common.three_cards",
         },
         {
           value: "2",
-          text: "2 Cards",
+          text: "t:resource.common.two_cards",
         },
       ],
       default: "3",
-      label: "Default grid layout tablet",
+      label: "t:resource.common.default_grid_layout_tablet",
     },
     {
       id: "grid_mob",
@@ -179,19 +179,19 @@ export const settings = {
       options: [
         {
           value: "2",
-          text: "2 Cards",
-        },
-        {
-          value: "1",
-          text: "1 Card",
-        },
+      text: "t:resource.common.two_cards",
+      },
+      {
+        value: "1",
+        text: "t:resource.common.one_card",
+      },
       ],
       default: "1",
-      label: "Default grid layout mobile",
+      label: "t:resource.common.default_grid_layout_mobile",
     },
     {
       id: "img_resize",
-      label: "Image size for Tablet/Desktop",
+      label: "t:resource.sections.products_listing.image_size_for_tablet_desktop",
       type: "select",
       options: [
         {
@@ -223,7 +223,7 @@ export const settings = {
     },
     {
       id: "img_resize_mobile",
-      label: "Image size for Mobile",
+      label: "t:resource.sections.products_listing.image_size_for_mobile",
       type: "select",
       options: [
         {
@@ -248,56 +248,62 @@ export const settings = {
     {
       type: "checkbox",
       id: "show_add_to_cart",
-      label: "Show Add to Cart",
-      info: "Not Applicable for International Websites",
+      label: "t:resource.common.show_add_to_cart",
+      info: "t:resource.common.not_applicable_international_websites",
       default: true,
+    },
+    {
+      type: "text",
+      id: "card_cta_text",
+      label: "t:resource.common.button_text",
+      default: "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
     },
     {
       type: "checkbox",
       id: "show_size_guide",
-      label: "Show Size Guide",
+      label: "t:resource.common.show_size_guide",
       default: true,
-      info: "Applicable for Add to Cart popup",
+      info: "t:resource.sections.collections_listing.show_size_guide_info",
     },
     {
       type: "text",
       id: "tax_label",
-      label: "Price tax label text",
-      default: "Price inclusive of all tax",
-      info: "Applicable for Add to Cart popup",
+      label: "t:resource.common.price_tax_label_text",
+      default: "t:resource.default_values.tax_label",
+      info: "t:resource.sections.collections_listing.show_size_guide_info",
     },
     {
       type: "checkbox",
       id: "mandatory_pincode",
-      label: "Mandatory Delivery check",
+      label: "t:resource.common.mandatory_delivery_check",
       default: true,
     },
     {
       type: "checkbox",
       id: "hide_single_size",
-      label: "Hide single size",
+      label: "t:resource.common.hide_single_size",
       default: false,
     },
     {
       type: "checkbox",
       id: "preselect_size",
-      label: "Preselect size",
-      info: "Applicable only for multiple-size products",
+      label: "t:resource.common.preselect_size",
+      info: "t:resource.common.applicable_for_multiple_size_products",
       default: true,
     },
     {
       type: "radio",
       id: "size_selection_style",
-      label: "Size selection style",
+      label: "t:resource.common.size_selection_style",
       default: "dropdown",
       options: [
         {
           value: "dropdown",
-          text: "Dropdown style",
+          text: "t:resource.common.dropdown_style",
         },
         {
           value: "block",
-          text: "Block style",
+          text: "t:resource.common.block_style",
         },
       ],
     },

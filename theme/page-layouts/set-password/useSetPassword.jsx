@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { SEND_RESET_TOKEN } from "../../queries/authQuery";
 import { useAccounts, useSnackbar } from "../../helper/hooks";
+import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 
 const useSetPassword = ({ fpi }) => {
+  const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,10 +34,7 @@ const useSetPassword = ({ fpi }) => {
         })
         .catch((err) => {
           const queryParams = new URLSearchParams();
-          navigate({
-            pathname: "/auth/login",
-            search: queryParams.toString(),
-          });
+          navigate("/auth/login" + (queryParams?.toString() ? `?${queryParams.toString()}` : ""));
         });
     };
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
@@ -48,10 +47,10 @@ const useSetPassword = ({ fpi }) => {
     })
       .then((res) => {
         setError(null);
-        showSnackbar("Password reset successful", "success");
+        showSnackbar(t("resource.common.password_reset_successful"), "success");
       })
       .catch((err) => {
-        setError({ message: err?.message || "Something went wrong" });
+        setError({ message: err?.message || t("resource.common.error_message") });
       });
 
   return { error, onSetPasswordSubmit: handleSetPassword };

@@ -24,13 +24,13 @@
     display: flex;
     align-items: center;
     position: relative;
-    padding: 8px 16px;
+    padding: 4px 16px;
 
     @media @desktop {
       width: 800px;
       padding: 0;
-      margin-left: auto;
-      margin-right: auto;
+      margin-inline-start: auto;
+      margin-inline-end: auto;
     }
   }
 
@@ -83,7 +83,7 @@
       position: absolute;
       top: 45%;
       transform: translateY(-50%);
-      left: 8px;
+      inset-inline-start: 8px;
       fill: #928b8b;
       @media @desktop {
         width: 24px;
@@ -102,8 +102,8 @@
   &__suggestions {
     position: absolute;
     top: 100%;
-    left: 0;
-    right: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
     @media @desktop {
       top: calc(100% + 6px);
     }
@@ -156,7 +156,7 @@
       .productThumb {
         flex: 0 0 56px;
         border-radius: 4px;
-        margin-right: 12px;
+        margin-inline-end: 12px;
       }
 
       .productTitle {
@@ -199,15 +199,15 @@
   .search {
     padding: 0;
     &--closeIcon {
-      margin-left: 16px;
+      margin-inline-start: 16px;
       @media @desktop {
         width: 32px !important;
         height: 32px !important;
-        margin-left: 32px;
+        margin-inline-start: 32px;
       }
     }
     &__wrapper {
-      padding: 8px;
+      padding: 4px 8px;
       @media @mobile-up {
         padding: 8px 24px;
       }
@@ -234,13 +234,13 @@
         border-radius: unset;
         position: absolute;
         bottom: 4px;
-        left: 16px;
+        inset-inline-start: 16px;
         z-index: 2;
       }
       &--label {
         position: absolute;
         top: 50%;
-        left: 16px;
+        inset-inline-start: 16px;
         transform: translateY(-50%);
         color: @TextDisabled;
         transition: 300ms all cubic-bezier(0, 0, 0.2, 1);
@@ -255,8 +255,8 @@
         }
       }
       &--search-icon {
-        left: unset;
-        right: 10px;
+        inset-inline-start: unset;
+        inset-inline-end: 10px;
         fill: @TextHeading;
         z-index: 3;
       }

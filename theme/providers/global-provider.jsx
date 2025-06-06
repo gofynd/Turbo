@@ -1,8 +1,7 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import Values from "values.js";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useFPI, useGlobalStore } from "fdk-core/utils";
-// eslint-disable-next-line import/no-unresolved
 import { Helmet } from "react-helmet-async";
 import {
   getProductImgAspectRatio,
@@ -112,6 +111,7 @@ export function ThemeProvider({ children }) {
         --font-header: ${headerFontName};
         --section-bottom-padding: ${globalConfig?.section_margin_bottom}px;
         --imageRadius: ${globalConfig?.image_border_radius}px;
+        --badgeRadius: ${globalConfig?.badge_border_radius ?? 24}px;
         --buttonRadius: ${globalConfig?.button_border_radius}px;
         --productImgAspectRatio: ${getProductImgAspectRatio(globalConfig)};
         --buttonPrimaryL1: #${buttonPrimaryShade.tint(20).hex};
@@ -190,6 +190,7 @@ export function ThemeProvider({ children }) {
         window?.scrollTo?.(0, 0);
       }, 0);
   }, [location?.pathname]);
+
 
   useEffect(() => {
     if (

@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useAccounts } from "../../helper/hooks";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import useInternational from "../../components/header/useInternational";
+import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
 
 const useLoginOtp = ({ fpi, isLoginToggle }) => {
+  const { t } = useGlobalTranslation("translation");
   const [submittedMobile, setSubmittedMobile] = useState("");
   const [otpResendTime, setOtpResendTime] = useState(0);
   const [isFormSubmitSuccess, setIsFormSubmitSuccess] = useState(false);
@@ -62,15 +64,12 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
       isRedirection: true,
     };
     signInWithOtp(payload)
-      .then((res) => {})
+      .then((res) => { })
       .catch((err) => {
         if (err?.details?.meta?.is_deleted) {
-          navigate({
-            pathname: "/auth/account-locked",
-            search: location.search,
-          });
+          navigate("/auth/account-locked" + (location.search ? location.search : ""));
         }
-        setOtpError({ message: err?.message || "Something went wrong" });
+        setOtpError({ message: err?.message || t("resource.common.error_message") });
       });
   };
   const handleResendOtp = ({ phone }) => {

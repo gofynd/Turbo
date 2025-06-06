@@ -1,4 +1,12 @@
 /* eslint-disable  import/prefer-default-export */
+import featureCollection1 from "../assets/images/placeholder/featured-collection-1.jpg";
+import featureCollection2 from "../assets/images/placeholder/featured-collection-2.jpg";
+import featureCollection3 from "../assets/images/placeholder/featured-collection-3.jpg";
+import featureCollection4 from "../assets/images/placeholder/featured-collection-4.jpg";
+import featureCollection5 from "../assets/images/placeholder/featured-collection-5.jpg";
+import featureCollection6 from "../assets/images/placeholder/featured-collection-6.jpg";
+import mediaWithTextHotspot from "../assets/images/placeholder/media-with-text-hotspot.jpg";
+
 export const SINGLE_FILTER_VALUES = {
   page_no: true,
 };
@@ -66,23 +74,270 @@ export const GENDER_OPTIONS = [
 
 export const DATE_FILTERS = [
   {
-    display: "Last 30 days",
+    display: "resource.common.date_filter_options.last_30_days",
     value: 30,
     is_selected: false,
   },
   {
-    display: "Last 6 months",
+    display: "resource.common.date_filter_options.last_6_months",
     value: 180,
     is_selected: false,
   },
   {
-    display: "Last 12 months",
+    display: "resource.common.date_filter_options.last_12_months",
     value: 365,
     is_selected: false,
   },
   {
-    display: "Last 24 months",
+    display: "resource.common.date_filter_options.last_24_months",
     value: 730,
     is_selected: true,
   },
 ];
+
+export const LANGUAGE_ISO_CODE = [
+  {
+    label: "Arabic",
+    "iso-code": "ar",
+  },
+  {
+    label: "English",
+    "iso-code": "en",
+  },
+  {
+    label: "Hindi",
+    "iso-code": "hi_IN",
+  },
+];
+
+export const DEFAULT_UTC_LOCALE = "en-US";
+export const DEFAULT_CURRENCY_LOCALE = "en-IN";
+
+export const DIRECTION_ADAPTIVE_CSS_PROPERTIES = {
+  TEXT_ALIGNMENT: "text-align",
+  FLOAT: "float",
+};
+
+export const TEXT_ALIGNMENT_MAP = {
+  left: "start",
+  right: "end",
+  center: "center",
+};
+
+export const FLOAT_MAP = {
+  left: "start",
+  right: "end",
+};
+export const FEATURED_COLLECTION_PLACEHOLDER_PRODUCTS = [
+  {
+    uid: 1,
+    slug: "",
+    media: [
+      {
+        alt: "The watering Can",
+        type: "image",
+        url: featureCollection1,
+      },
+    ],
+    teaser_tag: null,
+    sellable: true,
+    discount: "",
+    name: "The watering Can",
+    price: {
+      effective: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+      marked: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+    },
+  },
+  {
+    uid: 2,
+    slug: "",
+    media: [
+      {
+        alt: "The Boots",
+        type: "image",
+        url: featureCollection2,
+      },
+    ],
+    teaser_tag: null,
+    sellable: true,
+    discount: "",
+    name: "The Boots",
+    price: {
+      effective: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+      marked: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+    },
+  },
+  {
+    uid: 3,
+    slug: "",
+    media: [
+      {
+        alt: "The Cute Planter",
+        type: "image",
+        url: featureCollection3,
+      },
+    ],
+    teaser_tag: null,
+    sellable: true,
+    discount: "",
+    name: "The Cute Planter",
+    price: {
+      effective: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+      marked: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+    },
+  },
+  {
+    uid: 4,
+    slug: "",
+    media: [
+      {
+        alt: "The Tools",
+        type: "image",
+        url: featureCollection4,
+      },
+    ],
+    teaser_tag: null,
+    sellable: true,
+    discount: "",
+    name: "The Tools",
+    price: {
+      effective: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+      marked: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+    },
+  },
+  // {
+  //   uid: 5,
+  //   slug: "",
+  //   media: [
+  //     {
+  //       alt: "The Hanging planter",
+  //       type: "image",
+  //       url: featureCollection5,
+  //     },
+  //   ],
+  //   teaser_tag: null,
+  //   sellable: true,
+  //   discount: "",
+  //   name: "The Hanging planter",
+  //   price: {
+  //     effective: {
+  //       currency_code: "INR",
+  //       currency_symbol: "₹",
+  //       max: 20.12,
+  //       min: 20.12,
+  //     },
+  //     marked: {
+  //       currency_code: "INR",
+  //       currency_symbol: "₹",
+  //       max: 20.12,
+  //       min: 20.12,
+  //     },
+  //   },
+  // },
+  // {
+  //   uid: 6,
+  //   slug: "",
+  //   media: [
+  //     {
+  //       alt: "The Watering Can",
+  //       type: "image",
+  //       url: featureCollection6,
+  //     },
+  //   ],
+  //   teaser_tag: null,
+  //   sellable: true,
+  //   discount: "",
+  //   name: "The Watering Can",
+  //   price: {
+  //     effective: {
+  //       currency_code: "INR",
+  //       currency_symbol: "₹",
+  //       max: 20.12,
+  //       min: 20.12,
+  //     },
+  //     marked: {
+  //       currency_code: "INR",
+  //       currency_symbol: "₹",
+  //       max: 20.12,
+  //       min: 20.12,
+  //     },
+  //   },
+  // },
+];
+
+export const MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT = {
+  uid: 1,
+  media: [
+    {
+      alt: "The Wheel Baroww",
+      type: "image",
+      url: mediaWithTextHotspot,
+    },
+  ],
+  sizes: {
+    discount: "",
+    sellable: true,
+    price: {
+      effective: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+      marked: {
+        currency_code: "INR",
+        currency_symbol: "₹",
+        max: 20.12,
+        min: 20.12,
+      },
+    },
+  },
+  name: "The Wheel Barrow",
+  brand: {
+    name: "Bloom",
+  },
+  slug: "",
+  type: "product",
+  variants: [],
+  action: null,
+};

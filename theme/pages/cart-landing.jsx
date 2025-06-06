@@ -1,17 +1,12 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useNavigate } from "fdk-core/utils";
 import { SectionRenderer } from "fdk-core/components";
+import { useThemeConfig } from "../helper/hooks";
 
 function CartPage({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
-  const THEME = useGlobalStore(fpi.getters.THEME);
   const navigate = useNavigate();
-
-  const mode = THEME?.config?.list.find(
-    (f) => f.name === THEME?.config?.current
-  );
-  const globalConfig = mode?.global_config?.custom?.props;
+  const { globalConfig } = useThemeConfig({ fpi });
   const { sections = [] } = page || {};
 
   useEffect(() => {

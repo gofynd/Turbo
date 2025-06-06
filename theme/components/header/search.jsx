@@ -1,7 +1,10 @@
-import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { isRunningOnClient, debounce } from "../../helper/utils";
+import {
+  isRunningOnClient,
+  debounce,
+  getProductImgAspectRatio,
+} from "../../helper/utils";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import SearchIcon from "../../assets/images/single-row-search.svg";
@@ -9,8 +12,8 @@ import CloseIcon from "../../assets/images/close.svg";
 import InputSearchIcon from "../../assets/images/search.svg";
 import styles from "./styles/search.less";
 import { SEARCH_PRODUCT, AUTOCOMPLETE } from "../../queries/headerQuery";
+import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
 import OutsideClickHandler from "react-outside-click-handler";
-import { getProductImgAspectRatio } from "../../helper/utils";
 
 function Search({
   screen,
@@ -21,6 +24,7 @@ function Search({
   showCloseButton = true,
   alwaysOnSearch = false,
 }) {
+  const { t } = useGlobalTranslation("translation");
   const [searchData, setSearchData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [showSearch, setShowSearch] = useState(alwaysOnSearch);
@@ -112,14 +116,16 @@ function Search({
     fpi.executeGQL(AUTOCOMPLETE, { query: searchText });
   };
 
-  const setEnterSearchData = debounce((e) => {
-    if (!showSearch) {
-      setShowSearch(true);
-    }
-
-    setSearchText(e.target.value);
-    getEnterSearchData(e.target.value);
-  }, 400);
+  const setEnterSearchData = useCallback(
+    debounce((e) => {
+      if (!showSearch) {
+        setShowSearch(true);
+      }
+      setSearchText(e.target.value);
+      getEnterSearchData(e.target.value);
+    }, 400),
+    []
+  );
   const redirectToProduct = (link) => {
     navigate(link);
     closeSearch();
@@ -201,7 +207,11 @@ function Search({
                 id="searchInput"
                 autoComplete="off"
                 defaultValue={searchText}
-                placeholder={isDoubleRowHeader ? "Search" : ""}
+                placeholder={
+                  isDoubleRowHeader
+                    ? t("resource.facets.search")
+                    : ""
+                }
                 onChange={(e) => setEnterSearchData(e)}
                 onKeyUp={(e) =>
                   e.key === "Enter" &&
@@ -223,12 +233,11 @@ function Search({
               <label
                 htmlFor="searchInput"
                 id="search-input-label"
-                className={`${styles["search__input--label"]} b1 ${
-                  styles.fontBody
-                } ${isSearchFocused ? styles.active : ""}`}
+                className={`${styles["search__input--label"]} b1 ${styles.fontBody
+                  } ${isSearchFocused ? styles.active : ""}`}
                 style={{ display: !isDoubleRowHeader ? "block" : "none" }}
               >
-                Search
+                {t("resource.facets.search")}
               </label>
             </div>
             {showCloseButton && (
@@ -253,7 +262,7 @@ function Search({
                             : "none",
                       }}
                     >
-                      PRODUCTS
+                      {t("resource.header.products_title_text")}
                     </div>
                     <ul
                       style={{
@@ -307,7 +316,7 @@ function Search({
                         <li
                           className={`${styles.flexAlignCenter} ${styles.noResult} fontBody`}
                         >
-                          No match found
+                          {t("resource.common.no_match_found")}
                         </li>
                       </button>
                     </ul>
@@ -324,7 +333,7 @@ function Search({
                           redirectToProduct(`/products/?q=${searchText}`)
                         }
                       >
-                        <span>SEE ALL {totalCount} PRODUCTS</span>
+                        <span>{t("resource.common.see_all")} {totalCount} {t("resource.header.products_title_text")}</span>
                       </button>
                     </div>
                   </>
@@ -332,7 +341,7 @@ function Search({
                   <div
                     className={`${styles["search__suggestions--item "]} ${styles.fontBody}`}
                   >
-                    Loading...
+                    {t("resource.common.loading")}
                   </div>
                 )}
               </div>

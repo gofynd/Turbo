@@ -20,55 +20,55 @@
             "palette": {
               "general_setting": {
                 "theme": {
-                  "page_background": "#ffffff",
-                  "theme_accent": "#eeeded"
+                  "page_background": "#FFFFFF",
+                  "theme_accent": "#ABC9F6"
                 },
                 "text": {
-                  "text_heading": "#585555",
-                  "text_body": "#010e15",
-                  "text_label": "#494e50",
-                  "text_secondary": "#3e4447"
+                  "text_heading": "#0E0E0E",
+                  "text_body": "#272727",
+                  "text_label": "#383838",
+                  "text_secondary": "#605E5E"
                 },
                 "button": {
-                  "button_primary": "#5e5a5a",
-                  "button_secondary": "#ffffff",
-                  "button_link": "#552531"
+                  "button_primary": "#0E0E0E",
+                  "button_secondary": "#FFFFFF",
+                  "button_link": "#0E0E0E"
                 },
                 "sale_discount": {
-                  "sale_badge_background": "#fa7272",
-                  "sale_badge_text": "#f7f7f7",
-                  "sale_discount_text": "#1867b0",
-                  "sale_timer": "#231f20"
+                  "sale_badge_background": "#E9F7E9",
+                  "sale_badge_text": "#135610",
+                  "sale_discount_text": "#008000",
+                  "sale_timer": "#DD1E1E"
                 },
                 "header": {
-                  "header_background": "#ffffff",
-                  "header_nav": "#000000",
-                  "header_icon": "#000000"
+                  "header_background": "#FFFFFF",
+                  "header_nav": "#0E0E0E",
+                  "header_icon": "#383838"
                 },
                 "footer": {
-                  "footer_background": "#efeae9",
-                  "footer_bottom_background": "#efeae9",
-                  "footer_heading_text": "#fe0101",
-                  "footer_body_text": "#050605",
-                  "footer_icon": "#cae30d"
+                  "footer_background": "#DFE5FF",
+                  "footer_bottom_background": "#3D6FBF",
+                  "footer_heading_text": "#0E0E0E",
+                  "footer_body_text": "#272727",
+                  "footer_icon": "#383838"
                 }
               },
               "advance_setting": {
                 "overlay_popup": {
-                  "dialog_backgroung": "#ffffff",
-                  "overlay": "#716f6f"
+                  "dialog_backgroung": "#FFFFFF",
+                  "overlay": "#000000"
                 },
                 "divider_stroke_highlight": {
-                  "divider_strokes": "#efeae9",
-                  "highlight": "#dfd2d4"
+                  "divider_strokes": "#E4E4E4",
+                  "highlight": "#F0F0F0"
                 },
                 "user_alerts": {
-                  "success_background": "#e9f9ed",
-                  "success_text": "#1C958F",
-                  "error_background": "#fff5f5",
-                  "error_text": "#B24141",
-                  "info_background": "#fff359",
-                  "info_text": "#D28F51"
+                  "success_background": "#E9F7E9",
+                  "success_text": "#135610",
+                  "error_background": "#FEE6EA",
+                  "error_text": "#660014",
+                  "info_background": "#FEF0E7",
+                  "info_text": "#F06D0F"
                 }
               }
             },
@@ -103,72 +103,61 @@
         },
         "custom": {
           "props": {
-            "header_icon_color": "#000000",
-            "menu_position": "bottom",
-            "artwork": "https://cdn.pixelbin.io/v2/falling-surf-7c8bb8/fyndnp/wrkr/addsale/company/11197/applications/60b8c8a67b0862f85a672571/theme/pictures/free/original/theme-image-1668580342482.jpeg",
-            "enable_artwork": false,
-            "footer_bg_color": "#792a2a",
-            "footer_text_color": "#9f8484",
-            "footer_border_color": "#a6e7bf",
-            "footer_nav_hover_color": "#59e8b9",
             "menu_layout_desktop": "layout_3",
-            "logo": "https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/company/5178/applications/671619856d07006ffea459c6/theme/pictures/free/original/theme-image-1729670762584.png",
+            "logo": "",
             "logo_width": 774,
-            "footer_description": "Welcome to our store! This section is where you can include important links and details about your store. Provide a brief overview of your brand's history, contact information, and key policies to enhance your customers' experience and keep them informed.",
             "logo_menu_alignment": "layout_4",
             "header_layout": "double",
-            "section_margin_top": 89,
             "font_header": {
               "variants": {
                 "light": {
                   "name": "300",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32KxfXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/redhatdisplay/v20/8vIf7wUr0m80wwYf0QCXZzYzUoTK8RZQvRd-D1NYbjKWck05-Xecg3w.woff2"
                 },
                 "regular": {
                   "name": "regular",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K0nXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/redhatdisplay/v20/8vIf7wUr0m80wwYf0QCXZzYzUoTK8RZQvRd-D1NYbmyWck05-Xecg3w.woff2"
                 },
                 "medium": {
                   "name": "500",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K3vXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/redhatdisplay/v20/8vIf7wUr0m80wwYf0QCXZzYzUoTK8RZQvRd-D1NYbl6Wck05-Xecg3w.woff2"
                 },
                 "semi_bold": {
                   "name": "600",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K5fQNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/redhatdisplay/v20/8vIf7wUr0m80wwYf0QCXZzYzUoTK8RZQvRd-D1NYbrKRck05-Xecg3w.woff2"
                 },
                 "bold": {
                   "name": "700",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K67QNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/redhatdisplay/v20/8vIf7wUr0m80wwYf0QCXZzYzUoTK8RZQvRd-D1NYbouRck05-Xecg3w.woff2"
                 }
               },
-              "family": "Work Sans"
+              "family": "Red Hat Display"
             },
             "font_body": {
               "variants": {
                 "light": {
                   "name": "300",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32KxfXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuOKfMZ1rib2Bg-4.woff2"
                 },
                 "regular": {
                   "name": "regular",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K0nXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZ1rib2Bg-4.woff2"
                 },
                 "medium": {
                   "name": "500",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K3vXNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuI6fMZ1rib2Bg-4.woff2"
                 },
                 "semi_bold": {
                   "name": "600",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K5fQNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuGKYMZ1rib2Bg-4.woff2"
                 },
                 "bold": {
                   "name": "700",
-                  "file": "https://fonts.gstatic.com/s/worksans/v19/QGY_z_wNahGAdqQ43RhVcIgYT2Xz5u32K67QNigDp6_cOyA.ttf"
+                  "file": "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZ1rib2Bg-4.woff2"
                 }
               },
-              "family": "Work Sans"
+              "family": "Inter"
             },
-            "section_margin_bottom": 18,
             "button_border_radius": 11,
             "product_img_width": "300",
             "product_img_height": "1000",
@@ -184,7 +173,11 @@
             "disable_cart": false,
             "is_delivery_minutes": false,
             "is_delivery_day": true,
-            "is_hyperlocal": false
+            "is_hyperlocal": false,
+            "footer_description": "Rooted in care, grown with purpose. Bloom is more than a brand — it’s a reminder that meaningful growth starts with connection. Whether it's people, products, or planet — we nurture what matters.",
+            "footer_image": true,
+            "footer_image_desktop": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/desktop-footer-image.jpg",
+            "footer_image_mobile": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/mobile-footer-image.jpg"
           }
         }
       },
@@ -214,6 +207,7 @@
               "tax_label": "Price inclusive of all tax",
               "item_code": true,
               "product_details_bullets": true,
+              "enable_buy_now": true,
               "show_size_guide": true,
               "show_offers": true,
               "hide_single_size": false,
@@ -330,9 +324,9 @@
               "description": "",
               "infinite_scroll": true,
               "back_top": true
-            }
           }
-        },
+        }
+      },
         {
           "page": "blog",
           "settings": {
@@ -374,7 +368,6 @@
       {
         "sections": [
           {
-            "blocks": [],
             "label": "Hero Image",
             "name": "hero-image",
             "predicate": {
@@ -396,11 +389,11 @@
             "props": {
               "heading": {
                 "type": "text",
-                "value": "Welcome to Your New Store"
+                "value": "Where your ideas begin to bloom"
               },
               "description": {
                 "type": "text",
-                "value": "Begin your journey by adding unique images and banners. This is your chance to create a captivating first impression. Customize it to reflect your brand's personality and style!"
+                "value": "In this enchanted greenhouse, every seed you plant becomes a story. Start building a website that grows with you—bright, bold, and full of life."
               },
               "overlay_option": {
                 "value": "no_overlay",
@@ -408,11 +401,11 @@
               },
               "button_text": {
                 "type": "text",
-                "value": "EXPLORE NOW"
+                "value": "SHOP NOW"
               },
               "button_link": {
                 "type": "url",
-                "value": "https://www.google.com"
+                "value": "/products"
               },
               "invert_button_color": {
                 "type": "checkbox",
@@ -424,87 +417,31 @@
               },
               "text_placement_desktop": {
                 "type": "select",
-                "value": "top_left"
+                "value": "top_start"
               },
               "text_alignment_desktop": {
                 "type": "select",
-                "value": "left"
+                "value": "center"
               },
               "mobile_banner": {
                 "type": "image_picker",
                 "value": ""
               },
               "text_placement_mobile": {
-                "value": "top_left",
+                "value": "top_start",
                 "type": "select"
               },
               "text_alignment_mobile": {
-                "value": "left",
+                "value": "center",
                 "type": "select"
               }
-            }
+            },
+            "blocks": [],
+            "preset": {}
           },
           {
-            "blocks": [
-              {
-                "type": "gallery",
-                "name": "Image card",
-                "props": {
-                  "image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "link": {
-                    "type": "url",
-                    "value": ""
-                  }
-                }
-              },
-              {
-                "type": "gallery",
-                "name": "Image card",
-                "props": {
-                  "image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "link": {
-                    "type": "url",
-                    "value": ""
-                  }
-                }
-              },
-              {
-                "type": "gallery",
-                "name": "Image card",
-                "props": {
-                  "image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "link": {
-                    "type": "url",
-                    "value": ""
-                  }
-                }
-              },
-              {
-                "type": "gallery",
-                "name": "Image card",
-                "props": {
-                  "image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "link": {
-                    "type": "url",
-                    "value": ""
-                  }
-                }
-              }
-            ],
-            "label": "Image Gallery",
-            "name": "image-gallery",
+            "label": "Featured Collection",
+            "name": "featured-collection",
             "predicate": {
               "route": {
                 "exact_url": "",
@@ -524,48 +461,15 @@
             "props": {
               "heading": {
                 "type": "text",
-                "value": "Customize Your Style"
+                "value": "Everything you need to grow"
               },
               "description": {
                 "type": "text",
-                "value": "This flexible gallery lets you highlight key products and promotions, guiding customers to the right places."
+                "value": "This is where your star products shine. Add your most-loved, top-selling, or newest arrivals to help customers fall in love at first scroll. Think of it as your shop window—make it count."
               },
               "button_text": {
                 "type": "text",
-                "value": "View all"
-              },
-              "card_radius": {
-                "type": "range",
-                "min": 0,
-                "max": 100,
-                "step": 1,
-                "unit": "%",
-                "label": "Card Radius",
-                "default": 0
-              },
-              "play_slides": {
-                "type": "range",
-                "min": 1,
-                "max": 10,
-                "step": 1,
-                "unit": "sec",
-                "label": "Change slides every",
-                "default": 3
-              },
-              "item_count": {
-                "type": "range",
-                "min": 3,
-                "max": 5,
-                "step": 1,
-                "unit": "",
-                "label": "Items per row(Desktop)",
-                "default": 4,
-                "value": 4,
-                "info": "Maximum items allowed per row for Horizontal view, for gallery max 5 are viewable and only 5 blocks are required"
-              },
-              "item_count_mobile": {
-                "type": "range",
-                "value": 2
+                "value": ""
               },
               "img_fill": {
                 "type": "checkbox",
@@ -573,172 +477,201 @@
               },
               "desktop_layout": {
                 "type": "select",
-                "value": "grid"
+                "value": "horizontal"
               },
               "mobile_layout": {
                 "type": "select",
                 "value": "grid"
+              },
+              "item_count": {
+                "type": "range",
+                "value": 4
+              },
+              "item_count_mobile": {
+                "type": "range",
+                "value": 1
               }
-            }
+            },
+            "blocks": [],
+            "preset": {}
           },
           {
-            "blocks": [
-              {
-                "type": "gallery",
-                "name": "Image card",
-                "props": {
-                  "image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "mobile_image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "redirect_link": {
-                    "type": "url",
-                    "value": ""
-                  }
-                }
-              },
-              {
-                "type": "gallery",
-                "name": "Image card",
-                "props": {
-                  "image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "mobile_image": {
-                    "type": "image_picker",
-                    "value": ""
-                  },
-                  "redirect_link": {
-                    "type": "url",
-                    "value": ""
-                  }
-                }
-              }
-            ],
+            "label": "Image Slideshow",
+            "name": "image-slideshow",
             "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
               "screen": {
-                "mobile": true,
                 "desktop": true,
+                "mobile": true,
                 "tablet": true
               },
               "user": {
-                "authenticated": true,
-                "anonymous": true
-              },
-              "route": {
-                "selected": "none",
-                "exact_url": ""
+                "anonymous": true,
+                "authenticated": true
               }
             },
-            "label": "Image Slideshow",
-            "name": "image-slideshow",
             "props": {
               "autoplay": {
-                "value": true,
-                "type": "checkbox"
+                "type": "checkbox",
+                "value": true
               },
               "slide_interval": {
-                "value": 2,
-                "type": "range"
+                "type": "range",
+                "value": 3
+              },
+              "padding_top": {
+                "type": "range",
+                "value": 0
+              },
+              "padding_bottom": {
+                "type": "range",
+                "value": 16
+              },
+              "open_in_new_tab": {
+                "type": "checkbox",
+                "value": false
               }
-            }
-          },
-          {
+            },
             "blocks": [
               {
-                "type": "testimonial",
-                "name": "Testimonial",
+                "name": "Image card",
+                "type": "gallery",
                 "props": {
-                  "author_image": {
+                  "image": {
                     "type": "image_picker",
                     "value": ""
                   },
-                  "author_testimonial": {
-                    "type": "textarea",
-                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
+                  "mobile_image": {
+                    "type": "image_picker",
+                    "value": ""
                   },
-                  "author_name": {
-                    "type": "text",
-                    "value": "Mark A"
-                  },
-                  "author_description": {
-                    "type": "text",
-                    "value": "Los Angeles, CA"
+                  "redirect_link": {
+                    "type": "url",
+                    "value": ""
                   }
                 }
               },
               {
-                "type": "testimonial",
-                "name": "Testimonial",
+                "name": "Image card",
+                "type": "gallery",
                 "props": {
-                  "author_image": {
+                  "image": {
                     "type": "image_picker",
                     "value": ""
                   },
-                  "author_testimonial": {
-                    "type": "textarea",
-                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
-                  },
-                  "author_name": {
-                    "type": "text",
-                    "value": "Mark A"
-                  },
-                  "author_description": {
-                    "type": "text",
-                    "value": "Los Angeles, CA"
-                  }
-                }
-              },
-              {
-                "type": "testimonial",
-                "name": "Testimonial",
-                "props": {
-                  "author_image": {
+                  "mobile_image": {
                     "type": "image_picker",
                     "value": ""
                   },
-                  "author_testimonial": {
-                    "type": "textarea",
-                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
-                  },
-                  "author_name": {
-                    "type": "text",
-                    "value": "Mark A"
-                  },
-                  "author_description": {
-                    "type": "text",
-                    "value": "Los Angeles, CA"
-                  }
-                }
-              },
-              {
-                "type": "testimonial",
-                "name": "Testimonial",
-                "props": {
-                  "author_image": {
-                    "type": "image_picker",
+                  "redirect_link": {
+                    "type": "url",
                     "value": ""
-                  },
-                  "author_testimonial": {
-                    "type": "textarea",
-                    "value": "Thank you for the excellent sales support and for contributing to a more humane and sustainable world. The products are of great quality, and it's wonderful to support a brand that cares about ethics and sustainability."
-                  },
-                  "author_name": {
-                    "type": "text",
-                    "value": "Mark A"
-                  },
-                  "author_description": {
-                    "type": "text",
-                    "value": "Los Angeles, CA"
                   }
                 }
               }
             ],
+            "preset": {
+              "blocks": []
+            }
+          },
+          {
+            "label": "Media with Text",
+            "name": "media-with-text",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "props": {
+              "image_desktop": {
+                "type": "image_picker",
+                "value": ""
+              },
+              "image_mobile": {
+                "type": "image_picker",
+                "value": ""
+              },
+              "text_alignment": {
+                "type": "select",
+                "value": "center_left"
+              },
+              "text_alignment_mobile": {
+                "type": "select",
+                "value": "center"
+              },
+              "title": {
+                "type": "text",
+                "value": "The Wheel Barrow"
+              },
+              "description": {
+                "type": "textarea",
+                "value": "Strong, steady, and built to carry the load—this website builder is your wheelbarrow in the garden of commerce. Whether you're just starting out or growing something big, it helps you gather, arrange, and present your best with ease."
+              },
+              "button_text": {
+                "type": "text",
+                "value": "Shop all"
+              },
+              "align_text_desktop": {
+                "type": "checkbox",
+                "value": false
+              }
+            },
+            "blocks": [
+              {
+                "type": "hotspot_desktop",
+                "name": "Hotspot Desktop",
+                "props": {
+                  "y_position": {
+                    "type": "range",
+                    "value": 48
+                  },
+                  "x_position": {
+                    "type": "range",
+                    "value": 64
+                  },
+                  "product": {
+                    "type": "product",
+                    "value": ""
+                  }
+                }
+              },
+              {
+                "type": "hotspot_mobile",
+                "name": "Hotspot Mobile",
+                "props": {
+                  "y_position": {
+                    "type": "range",
+                    "value": 71
+                  },
+                  "x_position": {
+                    "type": "range",
+                    "value": 61
+                  },
+                  "product": {
+                    "type": "product",
+                    "value": ""
+                  }
+                }
+              }
+            ],
+            "preset": {}
+          },
+          {
             "label": "Testimonial",
             "name": "testimonials",
             "predicate": {
@@ -757,6 +690,88 @@
                 "authenticated": true
               }
             },
+            "props": {
+              "title": {
+                "value": "Tended with Love. Trusted by Many.",
+                "type": "text"
+              },
+              "autoplay": {
+                "value": false,
+                "type": "checkbox"
+              },
+              "slide_interval": {
+                "value": 2,
+                "type": "range"
+              }
+            },
+            "blocks": [
+              {
+                "type": "testimonial",
+                "name": "Testimonial",
+                "props": {
+                  "author_image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "author_testimonial": {
+                    "type": "textarea",
+                    "value": "I never felt overwhelmed, even when I was just starting out. The way everything is laid out—the templates, the guidance, the flow—it just made sense. I could focus on what mattered most: telling my story and connecting with customers. The site I built doesn't just function well, it feels like a reflection of me."
+                  },
+                  "author_name": {
+                    "type": "text",
+                    "value": "Albert Flores"
+                  },
+                  "author_description": {
+                    "type": "text",
+                    "value": "Small business owner"
+                  }
+                }
+              },
+              {
+                "type": "testimonial",
+                "name": "Testimonial",
+                "props": {
+                  "author_image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "author_testimonial": {
+                    "type": "textarea",
+                    "value": "What stood out the most was how human the whole experience felt. I wasn’t just dragging blocks or choosing fonts—I was setting up a space that felt personal, welcoming, and mine. This builder feels like it understands the rhythm of small businesses. It took away the pressure and left behind joy.”"
+                  },
+                  "author_name": {
+                    "type": "text",
+                    "value": "Priya Mehra"
+                  },
+                  "author_description": {
+                    "type": "text",
+                    "value": "Ceramic artist"
+                  }
+                }
+              },
+              {
+                "type": "testimonial",
+                "name": "Testimonial",
+                "props": {
+                  "author_image": {
+                    "type": "image_picker",
+                    "value": ""
+                  },
+                  "author_testimonial": {
+                    "type": "textarea",
+                    "value": "I started with a vague idea and a notebook full of dreams. Bloom gave me the space—and the tools—to bring it all to life. The builder is so intuitive, I didn’t feel like I was designing a website, I felt like I was crafting a story. Everything from uploading my products to customizing colors felt natural, almost meditative."
+                  },
+                  "author_name": {
+                    "type": "text",
+                    "value": "Amina Yusuf"
+                  },
+                  "author_description": {
+                    "type": "text",
+                    "value": "Homegrown Skincare Brand"
+                  }
+                }
+              }
+            ],
             "preset": {
               "blocks": [
                 {
@@ -802,20 +817,6 @@
                   }
                 }
               ]
-            },
-            "props": {
-              "title": {
-                "value": "What People Are Saying About Us ",
-                "type": "text"
-              },
-              "autoplay": {
-                "value": false,
-                "type": "checkbox"
-              },
-              "slide_interval": {
-                "value": 2,
-                "type": "range"
-              }
             }
           }
         ],
@@ -963,6 +964,10 @@
             "preset": {},
             "props": {
               "product_details_bullets": {
+                "type": "checkbox",
+                "value": true
+              },
+              "enable_buy_now": {
                 "type": "checkbox",
                 "value": true
               },
@@ -1331,7 +1336,7 @@
               },
               "show_add_to_cart": {
                 "type": "checkbox",
-                "value": false
+                "value": true
               },
               "show_size_guide": {
                 "type": "checkbox",
@@ -1695,6 +1700,10 @@
                 "type": "checkbox"
               },
               "logo_only": {
+                "value": false,
+                "type": "checkbox"
+              },
+              "img_fill": {
                 "value": false,
                 "type": "checkbox"
               },

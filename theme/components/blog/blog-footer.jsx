@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { FDKLink } from "fdk-core/components";
 import styles from "./styles/blog-footer.less";
+import { FDKLink } from "fdk-core/components";
 
 function BlogFooter({ title, description, button_text, button_link }) {
   if (!title && !description && !button_text) {

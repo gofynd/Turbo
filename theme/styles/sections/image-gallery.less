@@ -1,32 +1,33 @@
 @import "../main.less";
 
 .titleBlock {
-  padding: 0 40px;
+  text-align: center;
+  padding-inline: @SectionInlinePaddingDesktop;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
   @media @tablet {
-    padding: 0 16px;
+    padding-inline: @SectionInlinePaddingTablet;
+    gap: 8px;
+    margin-bottom: 24px;
   }
-  .sectionHeading {
-    margin-bottom: 16px;
-    text-align: center;
-    @media @tablet {
-      margin-bottom: 8px;
-    }
+  @media @mobile {
+    padding-inline: @SectionInlinePaddingMobile;
   }
-  .description {
-    text-align: center;
-    margin-bottom: 32px;
-    @media @tablet {
-      margin-bottom: 24px;
-    }
-  }
+}
+
+.imageGallery {
+  border-radius: var(--bd-radius, 0);
+  -webkit-mask-image: -webkit-radial-gradient(white, black); //safari fix
 }
 
 .imageGrid {
   --row-gap: 32px;
   --col-gap: 24px;
   --col-count: var(--item-count);
+  padding-inline: @SectionInlinePaddingDesktop;
   display: grid;
-  padding: 0 40px;
   gap: var(--row-gap) var(--col-gap);
   grid-template-columns: repeat(
     auto-fit,
@@ -35,109 +36,64 @@
         (var(--col-gap) * (var(--col-count) - 1) / var(--col-count))
     )
   );
-
   @media @tablet {
     --row-gap: 24px;
     --col-gap: 16px;
-    padding: 0 24px;
+    padding-inline: @SectionInlinePaddingTablet;
   }
   @media @mobile {
     --row-gap: 14px;
     --col-gap: 14px;
     --col-count: var(--item-count-mobile);
-    padding: 0 16px;
+    padding-inline: @SectionInlinePaddingMobile;
   }
 }
-.imageGallery {
-  border-radius: var(--bd-radius, 0);
-  -webkit-mask-image: -webkit-radial-gradient(white, black); //safari fix
-}
 
-.sliderView {
+.imageSlider {
   --gap: 24px;
-  padding: 0 calc(var(--gap) / 2);
+  padding-inline: @SectionInlinePaddingDesktop;
   @media @tablet {
-    --gap: 16px;
-  }
-  @media @mobile {
     --gap: 12px;
-    padding-left: 16px;
-    padding: 0 calc(var(--gap) / 2);
-  }
-}
-
-.slideWrap {
-  max-width: 100vw;
-  @media @tablet {
-    padding: 0 10px;
+    padding-inline: @SectionInlinePaddingTablet;
   }
   @media @mobile {
-    padding-left: 0;
+    padding: 0;
   }
   :global {
     .slick-list {
-      padding-left: 5px !important;
+      margin: 0 calc(var(--gap) / 2 * -1);
     }
-    .slick-slider:not(.no-nav) {
-      padding-bottom: unset;
-      margin-bottom: unset;
-    }
-    .slick-next {
-      transform: translate(100%, 0);
-    }
-    .slick-prev {
-      transform: translate(-100%, 0%);
-    }
-    .slick-dots {
-      position: static;
-      transform: unset;
-      padding-top: 32px;
-
-      @media @tablet {
-        padding-top: 24px;
-      }
-
-      @media @mobile {
-        width: auto;
-        margin-right: -10px;
-      }
+  }
+  .sliderItem {
+    padding: 0 calc(var(--gap) / 2);
+  }
+  &.mobileItemLess {
+    @media @mobile {
+      padding-inline: @SectionInlinePaddingMobile;
     }
   }
 }
-.customSlider {
-  min-width: 0;
+
+.hideOnDesktop {
+  @media @desktop {
+    display: none;
+  }
+}
+
+.hideOnTablet {
+  @media @tablet {
+    display: none;
+  }
+}
+
+.hideOnMobile {
   @media @mobile {
-    padding-bottom: 0 !important;
-    margin-bottom: 0 !important;
-  }
-}
-@media @desktop {
-  .desktopVisible {
-    display: grid;
-  }
-  .desktopHidden {
-    display: none;
-  }
-  .hideOnDesktop {
     display: none;
   }
 }
-@media @tablet {
-  .mobileVisible {
-    display: grid;
-  }
-  .mobileHidden {
+
+.showOnMobile {
+  @media @mobile-up {
     display: none;
-  }
-  .hideOnDesktop {
-    display: none;
-  }
-}
-@media @mobile {
-  .hideOnMobile {
-    display: none;
-  }
-  .hideOnDesktop {
-    display: block;
   }
 }

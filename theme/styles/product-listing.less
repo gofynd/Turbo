@@ -43,8 +43,8 @@
     background-color: #fff;
     z-index: 1;
     top: 0;
-    left: 0;
-    right: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
     position: fixed;
     transition: top 0.4s ease-in-out;
 
@@ -64,16 +64,16 @@
 
         .icon {
           fill: @TextHeading;
-          margin-right: 4px;
+          margin-inline-end: 4px;
           width: 16px;
           height: 16px;
         }
       }
 
       .filter {
-        padding-right: 16px;
-        border-right: 1px solid @DividerStokes;
-        margin-right: 16px;
+        padding-inline-end: 16px;
+        border-inline-end: 1px solid @DividerStokes;
+        margin-inline-end: 16px;
       }
     }
 
@@ -90,7 +90,7 @@
     border-radius: 2px;
     cursor: pointer;
     &:not(:last-child) {
-      margin-right: 8px;
+      margin-inline-end: 8px;
     }
     &.active {
       border-color: @DividerStokes;
@@ -130,7 +130,7 @@
     .left {
       flex: 0 0 259px;
       .fontBody;
-      margin-right: 16px;
+      margin-inline-end: 16px;
       z-index: 1;
       @media @tablet {
         display: none;
@@ -183,7 +183,7 @@
         &--right {
           margin-bottom: 24px;
           .sort-by {
-            margin-right: 14px;
+            margin-inline-end: 14px;
           }
           .col-icon {
             fill: @TextHeading;
@@ -285,7 +285,7 @@
   .filter__modal {
     position: fixed;
     top: 0;
-    left: 0;
+    inset-inline-start: 0;
     width: 100%;
     height: 100%;
     display: flex;
@@ -343,7 +343,7 @@
             width: 28px;
             height: 28px;
             padding: 4px;
-            margin-right: 8px;
+            margin-inline-end: 8px;
 
             &.selected {
               color: @ButtonPrimary;
@@ -374,14 +374,14 @@
       .leftPane {
         flex: 0 0 122px;
         overflow-y: auto;
-        border-right: 1px solid @DividerStokes;
+        border-inline-end: 1px solid @DividerStokes;
 
         .filter-title {
           padding: 14px 16px;
           border-bottom: 1px solid @DividerStokes;
 
           &.active {
-            border-right: 2px solid @ButtonPrimary;
+            border-inline-end: 2px solid @ButtonPrimary;
           }
         }
       }
@@ -409,9 +409,12 @@
     position: fixed;
     top: calc(var(--topPosition, var(--headerHeight)) + 69px);
     z-index: 1;
-    right: 50%;
+    inset-inline-end: 50%;
     z-index: 1;
     transform: translateX(50%);
+    [dir="rtl"] & {
+      transform: translateX(-50%);
+    }
 
     & > .arrow-top-icon {
       fill: currentColor;
@@ -422,7 +425,7 @@
     @media @desktop {
       justify-content: center;
       top: unset;
-      right: 40px;
+      inset-inline-end: 40px;
       bottom: 40px;
       width: 40px;
       height: 40px;

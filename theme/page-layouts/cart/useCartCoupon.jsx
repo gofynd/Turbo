@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import couponSuccessGif from "../../assets/images/coupon-success.gif";
 import { APPLY_COUPON, REMOVE_COUPON } from "../../queries/cartQuery";
 import { fetchCartDetails } from "./useCart";
 
 const useCartCoupon = ({ fpi, cartData }) => {
+  const { t } = useGlobalTranslation("translation");
   const coupons = useGlobalStore(fpi.getters.COUPONS);
 
   const [isCouponListModalOpen, setIsCouponListModalOpen] = useState(false);
@@ -18,7 +19,7 @@ const useCartCoupon = ({ fpi, cartData }) => {
   const { breakup_values: breakUpValues } = cartData;
   const couponAttrs = useMemo(() => {
     let attrs = {
-      title: "COUPONS",
+      title: t("resource.cart.coupons_title"),
     };
     if (breakUpValues?.coupon?.is_applied && breakUpValues?.coupon?.code) {
       attrs = {
@@ -29,7 +30,7 @@ const useCartCoupon = ({ fpi, cartData }) => {
         hasCancel: true,
       };
     } else {
-      attrs = { ...attrs, subtitle: "View all offers" };
+      attrs = { ...attrs, subtitle: t("resource.cart.view_all_offers") };
     }
     return attrs;
   }, [breakUpValues]);
@@ -70,7 +71,7 @@ const useCartCoupon = ({ fpi, cartData }) => {
           clearTimeout(id);
         }, 2000);
       } else {
-        setError({ message: couponBreakup?.message || "Something went wrong" });
+        setError({ message: couponBreakup?.message || t("resource.common.error_message") });
       }
     });
   };

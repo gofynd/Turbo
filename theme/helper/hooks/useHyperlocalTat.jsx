@@ -1,13 +1,24 @@
 import { useCallback } from "react";
 import { useThemeConfig } from "./useThemeConfig";
+import {
+  useGlobalStore,
+  useGlobalTranslation
+} from "fdk-core/utils";
+import { convertUTCDateToLocalDate, formatLocale } from "../utils";
 
 export const useHyperlocalTat = ({ fpi }) => {
   const { globalConfig } = useThemeConfig({ fpi });
+  // const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
+  // const locale = language?.locale
 
+  const i18nDetails = useGlobalStore(fpi?.getters?.i18N_DETAILS) || {};
+  const locale = i18nDetails?.language?.locale || "en";
+  const countryCode = i18nDetails?.countryCode || "IN";
+  const { t } = useGlobalTranslation("translation");
   const convertUTCToHyperlocalTat = useCallback(
     (timestamp) => {
       if (!timestamp) {
-        return "Please provide a valid time.";
+        return t("resource.localization.provide_valid_time");
       }
 
       const {
@@ -25,7 +36,7 @@ export const useHyperlocalTat = ({ fpi }) => {
         !is_delivery_day &&
         !is_delivery_date
       ) {
-        return "Please select at least one delivery option";
+        return t("resource.localization.select_delivery_option");
       }
 
       const setEndOfDay = (date) => {
@@ -36,9 +47,7 @@ export const useHyperlocalTat = ({ fpi }) => {
       const deliveryTime = new Date(timestamp);
       const now = new Date();
       const today = setEndOfDay(new Date());
-      const tomorrow = setEndOfDay(
-        new Date(new Date().setDate(now.getDate() + 1))
-      );
+      const tomorrow = setEndOfDay(new Date(now.getTime() + 86400000)); // +1 day
 
       const diffInMins = Math.ceil((deliveryTime - now) / 60000);
       const diffInHours = Math.ceil((deliveryTime - now) / 3600000);
@@ -51,31 +60,41 @@ export const useHyperlocalTat = ({ fpi }) => {
         diffInMins <= maxDeliveryMinutes &&
         is_delivery_minutes
       ) {
-        return `Delivery in ${diffInMins} Minutes`;
+        return t("resource.header.delivery_time_in_mins", {
+          minutes: diffInMins,
+        });
       } else if (
         diffInMins > maxDeliveryMinutes &&
         diffInHours <= maxDeliveryHours &&
         is_delivery_hours
       ) {
-        return `Delivery in ${diffInHours} Hours`;
+        return t("resource.header.delivery_time_in_hours", {
+          hours: diffInHours,
+        });
       } else if (deliveryTime <= today && is_delivery_day) {
-        return `Delivery by Today`;
+        return t("resource.header.delivery_by_today");
       } else if (
         deliveryTime > today &&
         deliveryTime <= tomorrow &&
         is_delivery_day
       ) {
-        return `Delivery by Tomorrow`;
+        return t("resource.header.delivery_by_tomorrow");
       } else if (is_delivery_date) {
-        return `Delivery by ${deliveryTime.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        })}`;
+        const deliveryBy = convertUTCDateToLocalDate(
+          deliveryTime,
+          {
+            month: "short",
+            day: "numeric",
+          },
+          formatLocale(locale, countryCode)
+        );
+        return `${t("resource.common.delivery_by", { date: deliveryBy })}`;
       } else {
-        return "Delivery option didn't match";
+        return t("resource.localization.delivery_not_match");
       }
     },
     [globalConfig]
+    // [globalConfig, locale, countryCode, t]
   );
 
   return {

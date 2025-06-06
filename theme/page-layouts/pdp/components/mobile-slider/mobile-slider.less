@@ -30,6 +30,9 @@
     .slick-dots {
       width: 100%;
       transform: translate(-50%, 200%);
+      [dir="rtl"] & {
+        transform: translate(50%, -50%);
+      }
 
       li {
         margin: 0 2px;
@@ -45,7 +48,7 @@
       }
     }
     .slick-list {
-      padding-left: 0 !important;
+      padding-inline-start: 0 !important;
       @media @tablet {
         min-height: 730px;
       }
@@ -59,7 +62,7 @@
     }
 
     .slick-slide {
-      border-right: 3px solid #fff;
+      border-inline-end: 3px solid #fff;
       @media @mobile {
         border-width: 0;
       }
@@ -105,8 +108,11 @@
   display: block;
   position: absolute;
   top: 50%;
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translate(-50%, -50%);
+  [dir="rtl"] & {
+    transform: translate(50%, -50%);
+  }
   pointer-events: none;
 }
 
@@ -122,8 +128,8 @@
 .wishlistIcon {
   position: absolute;
   top: 18px !important;
-  right: 17px !important;
-  left: unset !important;
+  inset-inline-end: 17px !important;
+  inset-inline-start: unset !important;
   bottom: unset !important;
   cursor: pointer;
   width: 22px;
@@ -159,10 +165,10 @@
 .autoRotateIcon {
   position: absolute;
   bottom: 8px;
-  right: 8px;
+  inset-inline-end: 8px;
   width: 40px;
   height: 40px;
-  margin-right: 48px;
+  margin-inline-end: 48px;
   rect {
     fill: @PageBackground;
   }
@@ -193,7 +199,7 @@
   width: 40px;
   height: 40px;
   top: unset !important;
-  left: unset !important;
+  inset-inline-start: unset !important;
   g > path {
     fill: @TextBody;
   }
@@ -224,19 +230,22 @@
   .playerMute {
     position: absolute;
     bottom: 10px;
-    left: 10px;
+    inset-inline-start: 10px;
   }
 
   .playerExpand {
     position: absolute;
     bottom: 10px;
-    right: 10px;
+    inset-inline-end: 10px;
   }
 
   .playerReplay {
     position: absolute;
     top: 50%;
-    left: 50%;
+    inset-inline-start: 50%;
     transform: translate(-50%, -50%);
+    [dir="rtl"] & {
+      transform: translate(50%, -50%);
+    }
   }
 }

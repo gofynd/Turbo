@@ -10,9 +10,11 @@ import BankForm from "../refund/bank-form";
 import UpiForm from "../refund/upi-form";
 import WalletForm from "../refund/wallet-form";
 import { useSnackbar } from "../../helper/hooks";
+import { useGlobalTranslation } from "fdk-core/utils";
 import CrossIcon from "../../assets/images/cross-black.svg";
 
 function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
+  const { t } = useGlobalTranslation("translation");
   const [showAddPayments, setShowAddPayments] = useState(false);
   const [showError, setShowError] = useState(false);
   const [loadSpinner, setLoadSpinner] = useState(false);
@@ -45,7 +47,7 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
     if (shipment?.order_id) {
       getActiveRefundMode(shipment?.order_id);
     }
-    return () => {};
+    return () => { };
   }, [shipment?.order_id]);
 
   useEffect(() => {
@@ -61,7 +63,6 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
       };
     }, [showAddPayments]);
 
-
   const onClose = () => {
     setPageState(1);
     setShowAddPayments(false);
@@ -69,7 +70,7 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
   };
   const getModalTitle = () => {
     if (!selectedPayment) {
-      return "Add Refund Account";
+      return t("resource.order.add_refund_account");
     }
 
     const paymentLabel = selectedPayment
@@ -77,7 +78,7 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(" ");
 
-    return `Add ${paymentLabel}`;
+    return `${t("resource.facets.add")} ${paymentLabel}`;
   };
   const getoption = (event) => {
     setPageState(2);
@@ -92,14 +93,19 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
     verifyOtpForBank(data)
       .then((data) => {
         onClose();
-        showSnackbar("New payment added successfully", "success");
+        showSnackbar(
+          t("resource.order.new_payment_added_success"),
+          "success"
+        );
         setVerifiedPayment(true);
       })
       .catch((err) => {
-        const errMsg = err.response || "Something went wrong";
+        const errMsg =
+          err.response ||
+          t("resource.common.error_message");
         showSnackbar(errMsg, "error");
       })
-      .finally(() => {});
+      .finally(() => { });
   };
   const addVPA = (formdata) => {
     const data = {
@@ -158,7 +164,12 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
             setVerifiedPayment(true);
             setPageState(1);
             onClose();
-            showSnackbar("New payment added successfully", "success");
+            showSnackbar(
+              t(
+                "resource.order.new_payment_added_success"
+              ),
+              "success"
+            );
             getBeneficiaryDetails();
             return;
           }
@@ -169,13 +180,17 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
           });
           setPageState(3);
         } else {
-          const errMsg = data?.errors?.[0]?.message || "Something went wrong";
+          const errMsg =
+            data?.errors?.[0]?.message ||
+            t("resource.common.error_message");
           showSnackbar(errMsg, "error");
           setLoadSpinner(false);
         }
       })
       .catch((err) => {
-        const errMsg = err.response || "Something went wrong";
+        const errMsg =
+          err.response ||
+          t("resource.common.error_message");
         showSnackbar(errMsg, "error");
         setLoadSpinner(false);
       })
@@ -192,7 +207,7 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
         <p
           className={`${styles.paymentTitle} ${styles.boldxs} ${styles.uktLinks}`}
         >
-          Add Refund Account
+          {t("resource.order.add_refund_account")}
         </p>
       </div>
       {showAddPayments && (
@@ -239,12 +254,12 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
                     {((selectedPayment === "PAYTM" && pageState === 2) ||
                       (selectedPayment === "AMAZON PAY" &&
                         pageState === 2)) && (
-                      <WalletForm
-                        fpi={fpi}
-                        loadSpinner={loadSpinner}
-                        addWalletAccount={addWalletAccount}
-                      ></WalletForm>
-                    )}
+                        <WalletForm
+                          fpi={fpi}
+                          loadSpinner={loadSpinner}
+                          addWalletAccount={addWalletAccount}
+                        ></WalletForm>
+                      )}
                   </div>
                 )}
               </div>

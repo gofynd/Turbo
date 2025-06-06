@@ -33,12 +33,12 @@
   }
   &__info {
     flex: 1;
-    padding: 0 1rem;
+    padding: 0 @SectionInlinePaddingMobile;
     @media @tablet-strict {
-      padding: 0 1.5rem;
+      padding: 0 @SectionInlinePaddingTablet;
     }
     @media @desktop {
-      padding: 0 2.5rem 0 0;
+      padding: 0 @SectionInlinePaddingDesktop 0 0;
     }
   }
   &__heading {
@@ -90,7 +90,7 @@
         }
       }
       @media @desktop {
-        padding: 0 0 0 2.5rem;
+        padding: 0 0 0 @SectionInlinePaddingDesktop;
       }
     }
   }

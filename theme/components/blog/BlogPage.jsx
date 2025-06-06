@@ -5,6 +5,7 @@ import useBlogDetails from "../../page-layouts/blog/useBlogDetails";
 import { GET_BLOG } from "../../queries/blogQuery";
 import { getHelmet } from "../../providers/global-provider";
 import EmptyState from "../../components/empty-state/empty-state";
+import { useGlobalTranslation } from "fdk-core/utils";
 import SocailMedia from "../socail-media/socail-media";
 
 function BlogDetails({ fpi }) {
@@ -17,12 +18,12 @@ function BlogDetails({ fpi }) {
     isBlogDetailsLoading,
     isBlogNotFound,
   } = useBlogDetails({ fpi });
-
+  const { t } = useGlobalTranslation("translation");
   return (
     <>
       {getHelmet({ seo: blogDetails?.seo })}
       {isBlogNotFound ? (
-        <EmptyState title="No Blog Found" />
+        <EmptyState title={t("resource.blog.no_blog_found")} />
       ) : (
         <BlogPage
           contactInfo={contactInfo}
@@ -43,69 +44,69 @@ export const settings = JSON.stringify({
     {
       type: "image_picker",
       id: "image",
-      label: "Image",
+      label: "t:resource.common.image",
       default: "",
     },
     {
       type: "checkbox",
       id: "show_recent_blog",
-      label: "Show Recently Published",
+      label: "t:resource.sections.blog.show_recently_published",
       default: true,
-      info: "The Recently Published section will display the latest five published blogs",
+      info: "t:resource.sections.blog.recently_published_info",
     },
     {
       id: "recent_blogs",
       type: "blog-list",
       default: "",
-      label: "Recently Published Blogs",
+      label: "t:resource.sections.blog.recently_published_blogs",
       info: "",
     },
     {
       type: "checkbox",
       id: "show_top_blog",
-      label: "Show Top Viewed",
+      label: "t:resource.sections.blog.show_top_viewed",
       default: true,
-      info: "The Top Viewed section will display the latest five published blogs tagged with the 'top5' value",
+      info: "t:resource.sections.blog.top_viewed_info",
     },
     {
       id: "top_blogs",
       type: "blog-list",
       default: "",
-      label: "Top Viewed Blogs",
+      label: "t:resource.sections.blog.top_viewed_blogs",
       info: "",
     },
     {
       id: "title",
       type: "text",
       value: "The Unparalleled Shopping Experience",
-      default: "The Unparalleled Shopping Experience",
-      label: "Heading",
+      default: "t:resource.default_values.the_unparalleled_shopping_experience",
+      label: "t:resource.common.heading",
     },
     {
       id: "description",
       type: "text",
       value:
         "Everything you need for that ultimate stylish wardrobe, Fynd has got it!",
-      default: "Everything you need for that ultimate stylish wardrobe, Fynd has got it!",
-      label: "Description",
+      default: "t:resource.default_values.blog_description",
+      label: "t:resource.common.description",
     },
     {
       type: "text",
       id: "button_text",
       value: "Shop Now",
-      default: "Shop Now",
-      label: "Button Label",
+      default: "t:resource.default_values.shop_now",
+      label: "t:resource.sections.blog.button_label",
     },
     {
       type: "url",
       id: "button_link",
       default: "",
-      label: "Redirect Link",
+      label: "t:resource.common.redirect_link",
     },
     {
       type: "image_picker",
       id: "fallback_image",
-      label: "Fallback Image",
+      label: "t:resource.sections.blog.fallback_image",
       default: "",
     },
   ],

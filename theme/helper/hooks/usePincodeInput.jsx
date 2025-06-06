@@ -1,9 +1,10 @@
 import { useCallback } from "react";
-import { useFPI } from "fdk-core/utils";
+import { useFPI, useGlobalTranslation } from "fdk-core/utils";
 import useInternational from "../../components/header/useInternational";
 import { createFieldValidation } from "../utils";
 
 export const usePincodeInput = () => {
+  const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
   const { countryAddressFieldMap } = useInternational({
     fpi,
@@ -16,7 +17,7 @@ export const usePincodeInput = () => {
   const { value, length } = regex || {};
   const { min, max } = length || {};
 
-  const validatePincode = useCallback(createFieldValidation(pincodeField), [
+  const validatePincode = useCallback(createFieldValidation(pincodeField, t), [
     display_name,
     required,
     type,

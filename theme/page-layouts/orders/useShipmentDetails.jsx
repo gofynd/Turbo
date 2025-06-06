@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   GET_SHIPMENT_DETAILS,
   SHIPMENT_REASONS,
@@ -7,8 +7,10 @@ import {
   UPDATE_SHIPMENT_STATUS,
 } from "../../queries/shipmentQuery";
 import { useSnackbar } from "../../helper/hooks";
+import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 
 const useShipmentDetails = (fpi) => {
+  const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
@@ -88,7 +90,7 @@ const useShipmentDetails = (fpi) => {
             ?.final_state?.shipment_id;
         if (type === "return") {
           showSnackbar(
-            "Your return request has been accepted. Refunds will be processed in selected refund option within 7 days of return pickup.",
+            t("resource.order.return_accepted"),
             "success"
           );
         }

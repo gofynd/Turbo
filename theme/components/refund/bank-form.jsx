@@ -2,6 +2,7 @@ import React, { useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import styles from "./styles/bank-form.less";
 import useRefundDetails from "../../page-layouts/orders/useRefundDetails";
+import { useGlobalTranslation } from "fdk-core/utils";
 import Input from "@gofynd/theme-template/components/core/fy-input/fy-input";
 import "@gofynd/theme-template/components/core/fy-input/fy-input.css";
 import VerifiedTickIcon from "../../assets/images/verified-tick.svg";
@@ -15,6 +16,7 @@ function BankForm({
   exisitingBankRefundOptions=[],
   footerClassName = "",
 }) {
+  const { t } = useGlobalTranslation("translation");
   const [inProgress, setInProgress] = useState(false);
   const [isValidIfsc, setIsValidIfsc] = useState(false);
   const [branchName, setBranchName] = useState(null);
@@ -46,7 +48,7 @@ function BankForm({
       setIsValidIfsc(false);
       setBranchName("");
       setBankName("");
-      return "Please Enter Valid IFSC Code";
+      return t("resource.order.enter_valid_ifsc_code");
     }
 
     try {
@@ -62,13 +64,13 @@ function BankForm({
         setIsValidIfsc(false);
         setBranchName("");
         setBankName("");
-        return data?.message || "Invalid IFSC Code";
+        return data?.message || t("resource.common.invalid_ifsc_code");
       }
     } catch (error) {
       setIsValidIfsc(false);
       setBranchName("");
       setBankName("");
-      return "Error While Validating IFSC Code";
+      return t("resource.common.error_validating_ifsc");
     }
   };
   const handleFormSubmit = (formdata) => {
@@ -76,26 +78,26 @@ function BankForm({
   };
   const validateAccounHolder = (value) => {
     if (!value || value.trim().length === 0) {
-      return "Account Holder Name is Required";
+      return t("resource.refund_order.account_holder_required");
     }
 
     if (/\d/.test(value)) {
-      return "Numbers Are Not Allowed in Account Holder Name";
+      return t("resource.refund_order.numbers_not_allowed_in_account_holder_name");
     }
 
     // Add validation for special characters (except spaces and common name characters)
     if (!/^[a-zA-Z\s.',-]+$/.test(value)) {
-      return "Special Characters Are Not Allowed in Account Holder Name";
+      return t("resource.refund_order.special_characters_not_allowed_in_account_holder_name");
     }
 
     // Minimum name length check
     if (value.trim().length <= 5) {
-      return "Account Holder Name Should Be More than 5 Characters";
+      return t("resource.refund_order.account_holder_name_should_be_more_than_5_characters");
     }
 
     // Maximum name length check (assuming a reasonable max)
     if (value.trim().length > 50) {
-      return "Account Holder Name Should Not Exceed 50 Characters";
+      return t("resource.refund_order.account_holder_name_should_not_exceed_50_characters");
     }
 
     return true;
@@ -103,7 +105,7 @@ function BankForm({
 
   const validateAccountNo = (value) => {
     if (!value || value.toString().trim().length === 0) {
-      return "Account Number is Required";
+      return t("resource.refund_order.account_number_is_required");
     }
 
     // Remove any spaces for validation
@@ -111,17 +113,17 @@ function BankForm({
 
     // Check if it contains only digits
     if (!/^\d+$/.test(accountNumber)) {
-      return "Account Number Should Contain Only Numbers";
+      return t("resource.refund_order.account_number_should_contain_only_numbers");
     }
 
     // Check minimum length (typical minimum for most banks)
     if (accountNumber.length < 9) {
-      return "Account Number Should Be At Least 9 Digits";
+      return t("resource.refund_order.account_number_should_be_at_least_9_digits");
     }
 
     // Check maximum length (typical maximum for most banks)
     if (accountNumber.length > 18) {
-      return "Account Number Should Not Exceed 18 Digits";
+      return t("resource.refund_order.account_number_should_not_exceed_18_digits");
     }
 
     return true;
@@ -135,7 +137,7 @@ function BankForm({
       >
         <div className={styles.formItem}>
           <Input
-            label="IFSC Code"
+            label={t("resource.common.ifsc_code")}
             labelVariant="floating"
             showAsterik
             required
@@ -157,7 +159,7 @@ function BankForm({
         </div>
         <div className={styles.formItem}>
           <Input
-            label="Account Number"
+            label={t("resource.order.account_number")}
             labelVariant="floating"
             inputClassName={styles.paymentInputSecurity}
             showAsterik
@@ -166,7 +168,7 @@ function BankForm({
             type="number"
             {...register("accountNo", {
               validate: (value) =>
-                validateAccountNo(value) || "Please Enter Valid Account Number",
+                validateAccountNo(value) || t("resource.order.enter_valid_account_number"),
             })}
             error={!!errors?.accountNo}
             errorMessage={errors?.accountNo?.message || ""}
@@ -174,7 +176,7 @@ function BankForm({
         </div>
         <div className={styles.formItem}>
           <Input
-            label="Confirm Account Number"
+            label={t("resource.order.confirm_account_number")}
             labelVariant="floating"
             showAsterik
             required
@@ -182,8 +184,7 @@ function BankForm({
             type="number"
             {...register("confirmedAccountNo", {
               validate: (value) =>
-                value === getValues("accountNo") ||
-                "Account Numbers Do Not Match",
+                value === getValues("accountNo") || t("resource.refund_order.account_numbers_do_not_match"),
             })}
             error={!!errors?.confirmedAccountNo}
             errorMessage={errors?.confirmedAccountNo?.message || ""}
@@ -191,7 +192,7 @@ function BankForm({
         </div>
         <div className={styles.formItem}>
           <Input
-            label="Account Holder Name"
+            label={t("resource.order.account_holder_name")}
             labelVariant="floating"
             showAsterik
             required
@@ -199,8 +200,7 @@ function BankForm({
             type="text"
             {...register("accounHolder", {
               validate: (value) =>
-                validateAccounHolder(value) ||
-                "Please Enter Valid Account Holder Name",
+                validateAccounHolder(value) || t("resource.order.account_holder_name_validation"),
             })}
             error={!!errors?.accounHolder}
             errorMessage={errors?.accounHolder?.message || ""}
@@ -209,7 +209,7 @@ function BankForm({
         {exisitingBankRefundOptions?.length === 0 ? (
           <div className={styles.footerSectionContinue}>
             <button className={`${styles.btn}`} type="submit">
-              Continue
+              {t("resource.common.continue")}
             </button>
           </div>
         ) : (
@@ -223,7 +223,7 @@ function BankForm({
                 }
               }}
             >
-              Cancel
+              {t("resource.facets.cancel")}
             </button>
             <button
               className={`${styles.commonBtn} ${styles.btn} ${styles.modalBtn}`}
@@ -235,7 +235,7 @@ function BankForm({
                 />
               )}
 
-              {!loadSpinner && <span>Continue</span>}
+              {!loadSpinner && <span>{t("resource.common.continue")}</span>}
             </button>
           </div>
         )}

@@ -15,6 +15,8 @@
 .video_container {
   background-color: @LightGray;
   position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
   video {
     @media @tablet {
       &::-webkit-media-controls {
@@ -46,7 +48,7 @@
 .yt_video {
   position: absolute;
   top: 0;
-  left: 0;
+  inset-inline-start: 0;
   width: 100%;
   height: 100%;
 }
@@ -56,6 +58,9 @@
   text-align: center;
   inset: 50% auto auto 50%;
   transform: translate(-50%, -50%);
+  [dir="rtl"] & {
+    transform: translate(50%, -50%);
+  }
 }
 .overlay-noimage {
   margin: 50px 0;
@@ -73,8 +78,11 @@
   &__content {
     position: absolute;
     top: 50%;
-    left: 50%;
+    inset-inline-start: 50%;
     transform: translate(-50%, -50%);
+    [dir="rtl"] & {
+      transform: translate(50%, -50%);
+    }
   }
   &__playButton {
     // #play {
@@ -98,8 +106,11 @@
   opacity: 0.5;
   position: absolute;
   transform: translate(-50%, -50%);
+  [dir="rtl"] & {
+    transform: translate(50%, -50%);
+  }
   top: 50%;
-  left: 50%;
+  inset-inline-start: 50%;
   cursor: pointer;
   display: none;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
+import { useLocation } from "react-router-dom";
+import { useGlobalStore, useNavigate } from "fdk-core/utils";
 import { FAQ_CATEGORIES, FAQS_BY_CATEGORY } from "../../queries/faqQuery";
 
 const useFaq = ({ fpi }) => {

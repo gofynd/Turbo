@@ -1,10 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
-import { useGlobalStore } from "fdk-core/utils";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAccounts } from "../../helper/hooks";
 import useVerifyDetails from "../auth/useVerifyDetails";
+import {
+  useGlobalStore,
+  useNavigate,
+  useGlobalTranslation,
+} from "fdk-core/utils";
 
 const useEditProfile = (fpi) => {
+  const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -101,10 +106,7 @@ const useEditProfile = (fpi) => {
         if (verifyEmailLink) {
           const queryParams = new URLSearchParams(location.search);
           queryParams.set("email", email);
-          navigate({
-            pathname: "/auth/verify-email-link",
-            search: queryParams.toString(),
-          });
+          navigate("/auth/verify-email-link" + (queryParams?.toString() ? `?${queryParams.toString()}` : ""));
           return;
         }
         if (verifyMobileOtp || verifyEmailOtp) {
@@ -116,7 +118,7 @@ const useEditProfile = (fpi) => {
       })
       .catch((err) => {
         setError({
-          message: err?.message || "Something went wrong",
+          message: err?.message || t("resource.common.error_message"),
         });
       });
   };

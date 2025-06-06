@@ -3,9 +3,19 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import styles from "./store-item.less";
-import { currencyFormat } from "../../../../helper/utils";
+import { currencyFormat, formatLocale } from "../../../../helper/utils";
+import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
 
-function StoreItem({ storeitem, buybox, onSelectStoreItem }) {
+function StoreItem({
+  storeitem,
+  buybox,
+  onSelectStoreItem,
+}) {
+  const { t } = useGlobalTranslation("translation");
+  const fpi = useFPI();
+  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
+  const locale = language?.locale
+  const isOpen = storeitem.isOpen || false;
   const getStoreLabel = () => {
     const isSellerListing = buybox?.is_seller_buybox_enabled; // Hardcoded for testing purpose
 
@@ -37,12 +47,14 @@ function StoreItem({ storeitem, buybox, onSelectStoreItem }) {
         const pricePerPiece = storeitem?.price_per_piece;
         return currencyFormat(
           pricePerPiece[key],
-          pricePerPiece?.currency_symbol
+          pricePerPiece?.currency_symbol,
+          formatLocale(locale, countryCode, true)
         );
       }
       return currencyFormat(
         storeitem.price[key],
-        storeitem.price.currency_symbol
+        storeitem.price.currency_symbol,
+        formatLocale(locale, countryCode, true)
       );
     }
   };
@@ -54,7 +66,7 @@ function StoreItem({ storeitem, buybox, onSelectStoreItem }) {
   return (
     <div className={styles.storeItemWrapper}>
       <p className={`${styles.storeItemWrapperSold} ${styles.b4}`}>
-        Sold by: <span className={styles.sh4}>{getStoreLabel()}</span>
+        {t("resource.common.sold_by")}: <span className={styles.sh4}>{getStoreLabel()}</span>
       </p>
       <div className={styles.priceWrapper}>
         <span className={`${styles.effective} ${styles.sh4}`}>
@@ -80,14 +92,14 @@ function StoreItem({ storeitem, buybox, onSelectStoreItem }) {
           className={`${styles.button} btnSecondary ${styles.flexCenter} ${styles.addToCart} ${styles.fontBody}`}
           onClick={(event) => selectStoreItem(event, false)}
         >
-          ADD TO CART
+          {t("resource.common.add_to_cart")}
         </button>
         <button
           type="button"
           className={`${styles.button} btnPrimary ${styles.buyNow} ${styles.fontBody}`}
           onClick={(event) => selectStoreItem(event, true)}
         >
-          BUY NOW
+          {t("resource.common.buy_now_caps")}
         </button>
       </div>
     </div>

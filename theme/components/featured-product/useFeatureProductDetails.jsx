@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { useGlobalStore } from "fdk-core/utils";
-import { useNavigate } from "react-router-dom";
 import { ADD_TO_CART } from "../../queries/pdpQuery";
 import {
   ADD_WISHLIST,
@@ -8,6 +6,11 @@ import {
   FOLLOWED_PRODUCTS_IDS,
 } from "../../queries/wishlistQuery";
 import useHeader from "../header/useHeader";
+import {
+  useGlobalStore,
+  useNavigate,
+  useGlobalTranslation,
+} from "fdk-core/utils";
 import { useSnackbar } from "../../helper/hooks";
 import { fetchCartDetails } from "../../page-layouts/cart/useCart";
 
@@ -22,6 +25,7 @@ const useFeatureProductDetails = ({
   store,
   currentPincode,
 }) => {
+  const { t } = useGlobalTranslation("translation");
   const [followed, setFollowed] = useState(false);
   const [pincodeErrorMessage, setPincodeErrorMessage] = useState("");
   const { wishlistIds } = useHeader(fpi);
@@ -47,14 +51,17 @@ const useFeatureProductDetails = ({
     if (currentPincode?.length !== 6) {
       setPincodeErrorMessage("");
       showSnackbar(
-        "Please enter valid Pincode before Add to cart/ Buy now",
+        t("resource.product.enter_valid_pincode"),
         "error"
       );
       return;
     }
 
     if (!selectedSize) {
-      showSnackbar("Please select the size first.", "error");
+      showSnackbar(
+        t("resource.product.select_size_first"),
+        "error"
+      );
       return;
     }
     const payload = {
@@ -80,7 +87,8 @@ const useFeatureProductDetails = ({
     return fpi.executeGQL(ADD_TO_CART, payload).then((outRes) => {
       if (outRes?.data?.addItemsToCart?.success) {
         showSnackbar(
-          outRes?.data?.addItemsToCart?.message || "Added to Cart",
+          outRes?.data?.addItemsToCart?.message ||
+          t("resource.common.add_to_cart_success"),
           "success"
         );
         if (buyNow) {
@@ -91,7 +99,8 @@ const useFeatureProductDetails = ({
         fetchCartDetails(fpi, { buyNow });
       } else {
         showSnackbar(
-          outRes?.data?.addItemsToCart?.message || "Failed to add to cart",
+          outRes?.data?.addItemsToCart?.message ||
+          t("resource.common.add_cart_failure"),
           "error"
         );
       }
@@ -104,7 +113,7 @@ const useFeatureProductDetails = ({
       event.stopPropagation();
     }
     if (!LoggedIn) {
-      showSnackbar("Please Login first.");
+      showSnackbar(t("resource.auth.login.please_login_first"));
       navigate("/auth/login");
       return;
     }
@@ -115,7 +124,7 @@ const useFeatureProductDetails = ({
     fpi.executeGQL(ADD_WISHLIST, values).then((OutRes) => {
       if (OutRes?.data?.followById?.message) {
         fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, null).then((res) => {
-          showSnackbar("Product Added to Wishlist", "success");
+          showSnackbar(t("resource.common.wishlist_add_success"), "success");
           setFollowed(true);
         });
       }
@@ -133,7 +142,7 @@ const useFeatureProductDetails = ({
     fpi.executeGQL(REMOVE_WISHLIST, values).then((OutRes) => {
       if (OutRes?.data?.unfollowById?.message) {
         fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, null).then((res) => {
-          showSnackbar("Product Removed from Wishlist", "success");
+          showSnackbar(t("resource.common.wishlist_remove_success"), "success");
           setFollowed(false);
         });
       }

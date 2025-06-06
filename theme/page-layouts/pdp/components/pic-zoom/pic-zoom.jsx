@@ -5,6 +5,7 @@ import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import styles from "./pic-zoom.less";
 import { getProductImgAspectRatio } from "../../../../helper/utils";
+import { useGlobalTranslation } from "fdk-core/utils";
 import ReplayIcon from "../../../../assets/images/replay.svg";
 import MuteIcon from "../../../../assets/images/mute.svg";
 import UnmuteIcon from "../../../../assets/images/unmute.svg";
@@ -27,6 +28,7 @@ function PicZoom({
   hideImagePreview = false,
   sources = [],
 }) {
+  const { t } = useGlobalTranslation("translation");
   const [isMounted, setIsMounted] = useState(false);
   const [isFrameLoading, setIsFrameLoading] = useState(true);
   const [isMute, setIsMute] = useState(true);
@@ -107,6 +109,7 @@ function PicZoom({
             aspectRatio={getProductImgAspectRatio(globalConfig)}
             globalConfig={globalConfig}
             sources={sources}
+            isImageFill = {globalConfig?.img_fill}
             defer={false}
           />
         </div>
@@ -157,7 +160,7 @@ function PicZoom({
               src={source}
               allowFullScreen
               onLoad={iframeload}
-              title="Youtube"
+              title={t("resource.common.social_accounts.youtube")}
             />
           )}
           {isFrameLoading && <div id="loader" />}
@@ -180,7 +183,7 @@ function PicZoom({
       {/* </Suspense> */}
       <button
         type="button"
-        aria-label="Wishlist"
+        aria-label={t("resource.common.breadcrumb.wishlist")}
         className={`${styles.wishlistIcon} ${followed ? styles.activeWishlist : ""}`}
         onClick={(e) => (followed ? removeFromWishlist(e) : addToWishList(e))}
       >

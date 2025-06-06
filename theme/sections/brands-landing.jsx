@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FDKLink } from "fdk-core/components";
-import { useFPI } from "fdk-core/utils";
+import { useFPI, useGlobalTranslation } from "fdk-core/utils";
 import styles from "../styles/brands.less";
 import useBrandListing from "../page-layouts/brands/useBrandListing";
 import CardList from "../components/card-list/card-list";
@@ -12,26 +12,26 @@ import { BRAND_LISTING } from "../queries/brandsQuery";
 
 export function Component({ props }) {
   const fpi = useFPI();
+  const { t } = useGlobalTranslation("translation");
 
   const { brands, isLoading, pageData, fetchBrands, globalConfig } =
     useBrandListing(fpi);
 
   const pageConfig = getConfigFromProps(props);
 
-  const { title, description, infinite_scroll, logo_only, back_top } =
+  const { title, description, infinite_scroll, logo_only, back_top, img_fill } =
     pageConfig ?? {};
 
   if (!isLoading && Boolean(brands) && !brands?.length) {
-    return <EmptyState title="No brand found" />;
+    return <EmptyState title={t("resource.brand.no_brand_found")} />;
   }
-
   return (
     <div className={`${styles.brands} basePageContainer margin0auto fontBody`}>
       <div className={`${styles.brands__breadcrumbs} captionNormal`}>
         <span>
-          <FDKLink to="/">Home</FDKLink>&nbsp; / &nbsp;
+          <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>&nbsp; / &nbsp;
         </span>
-        <span className={styles.active}>Brands</span>
+        <span className={styles.active}>{t("resource.common.breadcrumb.brands")}</span>
       </div>
       <div>
         {title && (
@@ -54,6 +54,7 @@ export function Component({ props }) {
               cardType="BRANDS"
               showOnlyLogo={!!logo_only}
               globalConfig={globalConfig}
+              img_fill={img_fill}
             />
           </InfiniteLoader>
           {pageData?.has_next && !infinite_scroll && (
@@ -62,7 +63,7 @@ export function Component({ props }) {
                 onClick={() => fetchBrands()}
                 className={`${styles.viewMoreBtn} btn-secondary`}
               >
-                View More
+                {t("resource.facets.view_more")}
               </button>
             </div>
           )}
@@ -74,42 +75,49 @@ export function Component({ props }) {
 }
 
 export const settings = {
-  label: "Brands Landing",
+  label: "t:resource.sections.brand_landing.brands_landing",
   props: [
     {
       type: "checkbox",
       id: "infinite_scroll",
-      label: "Infinity Scroll",
+      label: "t:resource.common.infinity_scroll",
       default: true,
-      info: "If it is enabled, view more button will not be shown, only on scroll products will be displayed",
+      info: "t:resource.common.infinite_scroll_info",
     },
     {
       type: "checkbox",
       id: "back_top",
-      label: "Back to top",
+      label: "t:resource.common.back_to_top",
       default: true,
-      info: "Enable a 'Back to Top' button to help users quickly return to the top of the page.",
+      info: "t:resource.sections.brand_landing.back_to_top_info",
     },
     {
       type: "checkbox",
       id: "logo_only",
       default: false,
-      label: "Only Logo",
-      info: "Display only brand logos.",
+      label: "t:resource.sections.brand_listing.only_logo",
+      info: "t:resource.sections.brand_landing.only_logo_info",
+    },
+    {
+      type: "checkbox",
+      id: "img_fill",
+      default: true,
+      label: "t:resource.common.fit_image_to_container",
+      info: "t:resource.common.clip_image_to_fit_container",
     },
     {
       type: "text",
       id: "title",
       default: "",
-      label: "Heading",
-      info: "Set the heading text for the brands page.",
+      label: "t:resource.common.heading",
+      info: "t:resource.sections.brand_landing.heading_info",
     },
     {
       type: "textarea",
       id: "description",
       default: "",
-      label: "Description",
-      info: "Add a description for the brands page",
+      label: "t:resource.common.description",
+      info: "t:resource.sections.brand_landing.description_info",
     },
   ],
 };

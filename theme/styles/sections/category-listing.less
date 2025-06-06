@@ -5,28 +5,31 @@
   flex-direction: column;
   gap: 16px;
   text-align: center;
-  padding: 0 40px;
+  padding-inline: @SectionInlinePaddingDesktop;
   margin-bottom: 32px;
   @media @tablet {
     gap: 8px;
-    padding: 0 16px;
+    padding-inline: @SectionInlinePaddingTablet;
     margin-bottom: 24px;
+  }
+  @media @mobile {
+    padding-inline: @SectionInlinePaddingMobile;
   }
 }
 
 .categoryGrid {
   display: grid;
   gap: 24px;
-  padding: 0 40px;
+  padding-inline: @SectionInlinePaddingDesktop;
   grid-template-columns: repeat(var(--per_row), 1fr);
   @media @tablet {
     grid-template-columns: repeat(var(--brand-item), 1fr);
     gap: 12px;
-    padding: 0 24px;
+    padding-inline: @SectionInlinePaddingTablet;
   }
   @media @mobile {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0 16px;
+    grid-template-columns: repeat(var(--per-row-mobile), 1fr);
+    padding-inline: @SectionInlinePaddingMobile;
   }
   .gridItem {
     min-width: 0;
@@ -45,10 +48,10 @@
 
 .categorySlider {
   --gap: 24px;
-  padding: 0 40px;
+  padding-inline: @SectionInlinePaddingDesktop;
   @media @tablet {
     --gap: 16px;
-    padding: 0 24px;
+    padding-inline: @SectionInlinePaddingTablet;
   }
   @media @mobile {
     --gap: 12px;
@@ -57,9 +60,6 @@
   :global {
     .slick-list{ 
       margin: 0 calc(var(--gap) / 2 * -1);
-      @media @mobile {
-        margin: 0;
-      }
     }
   }
   .sliderItem {
@@ -67,7 +67,7 @@
   }
   &.singleItem {
     @media @mobile {
-      padding: 0 calc(16px - (var(--gap) / 2));
+      padding-inline: @SectionInlinePaddingMobile;
     } 
   }
 }

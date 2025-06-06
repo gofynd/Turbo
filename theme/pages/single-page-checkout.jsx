@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { useSearchParams } from "react-router-dom";
 import CheckoutPage from "@gofynd/theme-template/pages/checkout/checkout";
 import "@gofynd/theme-template/pages/checkout/checkout.css";
@@ -13,6 +13,7 @@ import useCartCoupon from "../page-layouts/cart/useCartCoupon";
 import useCartComment from "../page-layouts/cart/useCartComment";
 
 function SingleCheckoutPage({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const bagData = useGlobalStore(fpi?.getters?.CART_ITEMS) || {};
   const { shipments } = useGlobalStore(fpi.getters.SHIPMENTS) || {};
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
@@ -24,9 +25,9 @@ function SingleCheckoutPage({ fpi }) {
   const [isApiLoading, setIsApiLoading] = useState(true);
   const { onPriceDetailsClick } = useCart(fpi);
   const steps = [
-    { label: "Address" },
-    { label: "Summary" },
-    { label: "Payment" },
+    { label: t("resource.checkout.address") },
+    { label: t("resource.checkout.summary") },
+    { label: t("resource.checkout.payment") },
   ];
 
   const { isHyperlocal, convertUTCToHyperlocalTat } = useHyperlocalTat({ fpi });

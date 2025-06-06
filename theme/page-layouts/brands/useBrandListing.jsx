@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useGlobalStore } from "fdk-core/utils";
 import { BRAND_LISTING } from "../../queries/brandsQuery";
+import { useGlobalStore } from "fdk-core/utils";
 
 const useBrandListing = (fpi) => {
   const THEME = useGlobalStore(fpi.getters.THEME);

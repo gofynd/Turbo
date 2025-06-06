@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { FETCH_LOCALITIES } from "../../queries/internationlQuery";
 import { LOCALITY } from "../../queries/logisticsQuery";
 import {
@@ -16,6 +16,7 @@ export const useAddressFormSchema = ({
   addressFields,
   addressItem,
 }) => {
+  const { t } = useGlobalTranslation("translation");
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
   const [formFields, SetFormFields] = useState(null);
@@ -30,10 +31,10 @@ export const useAddressFormSchema = ({
     if (slug === "phone") {
       result.validate = (value) => {
         if (required && !value?.mobile?.trim()) {
-          return `${display_name} is required.`;
+          return `${display_name} ${t("resource.common.address.is_required")}`;
         }
         if (!value || !value.isValidNumber) {
-          return "Invalid Phone Number";
+          return t("resource.common.address.invalid_phone_number");
         }
         // if (validation?.regex?.value) {
         //   try {
@@ -51,7 +52,7 @@ export const useAddressFormSchema = ({
 
     result.validate = (value) => {
       if (required && !value?.trim()) {
-        return `${display_name} is required.`;
+        return `${display_name} ${t("resource.common.address.is_required")}`;
       }
 
       if (
@@ -62,10 +63,10 @@ export const useAddressFormSchema = ({
         try {
           const regex = new RegExp(validation.regex.value);
           if (!regex.test(value)) {
-            return `Invalid ${display_name}`;
+            return `${t("resource.common.invalid")} ${display_name}`;
           }
         } catch (error) {
-          return "Invalid regex pattern";
+          return t("resource.common.invalid_regex");
         }
       }
       const { min, max } = validation?.regex?.length || {};
@@ -73,7 +74,7 @@ export const useAddressFormSchema = ({
         (required || value) &&
         ((max && value.length > max) || (min && value.length < min))
       ) {
-        return `${display_name} must be between ${min || 0} and ${max || "∞"} characters`;
+        return `${display_name} ${t("resource.common.validation_length", { min: min || 0, max: max || "∞" })}.`;
       }
       return true;
     };
@@ -270,7 +271,7 @@ export const useAddressFormSchema = ({
           });
         }
       });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const renderTemplate = (template) => {

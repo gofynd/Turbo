@@ -1,18 +1,13 @@
 @import "../styles/main.less";
 
-.sectionContainer {
-  padding: 16px 0;
-  max-width: 100vw;
-}
-
 .headingContainer {
   text-align: center;
-  padding: 0 40px;
+  padding-inline: @SectionInlinePaddingDesktop;
   @media @tablet {
-    padding: 0 24px;
+    padding-inline: @SectionInlinePaddingTablet;
   }
   @media @mobile {
-    padding: 0 16px;
+    padding-inline: @SectionInlinePaddingMobile;
   }
 }
 
@@ -64,36 +59,13 @@
   @media @mobile {
     --gap: 8px;
   }
- 
   :global {
     .slick-list {
       margin: 0 calc(var(--gap) / 2 * -1) !important;
     }
-    .slick-track {
-      display: flex !important;
-      justify-content: center;
-      align-items: stretch !important;
-    }
-    .slick-slide {
-      height: auto !important;
-      padding: 0 calc(var(--gap) / 2);
-    }
-    @media @desktop {
-      .slick-slider:not(.no-nav) {
-        padding-bottom: 32px;
-        margin-bottom: 31px;
-        @media @tablet {
-          padding-bottom: 24px;
-          margin-bottom: 8px;
-        }
-      }
-    }
-    @media @tablet {
-      .slick-slider:not(.no-nav-mobile) {
-        padding-bottom: 24px;
-        margin-bottom: 8px;
-      }
-    }
+  }
+  .horizontalItem {
+    padding: 0 calc(var(--gap) / 2);
   }
 }
 
@@ -151,33 +123,26 @@
   }
 }
 
-@media @desktop {
-  .desktopVisible {
-    display: block;
-  }
-  .desktopHidden {
-    display: none;
-  }
-  .hideOnDesktop {
+.hideOnDesktop {
+  @media @desktop {
     display: none;
   }
 }
-@media @tablet {
-  .mobileVisible {
-    display: block;
-  }
-  .mobileHidden {
-    display: none;
-  }
-  .hideOnDesktop {
+
+.hideOnTablet {
+  @media @tablet {
     display: none;
   }
 }
-@media @mobile {
-  .hideOnMobile {
+
+.hideOnMobile {
+  @media @mobile {
     display: none;
   }
-  .hideOnDesktop {
-    display: block;
+}
+
+.showOnMobile {
+  @media @mobile-up {
+    display: none;
   }
 }

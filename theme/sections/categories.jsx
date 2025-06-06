@@ -9,10 +9,11 @@ import { detectMobileWidth } from "../helper/utils";
 import ScrollToTop from "../components/scroll-to-top/scroll-to-top";
 import EmptyState from "../components/empty-state/empty-state";
 import { CATEGORIES_LISTING } from "../queries/categoryQuery";
-import { useFPI } from "fdk-core/utils";
+import { useFPI, useGlobalTranslation } from "fdk-core/utils";
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
+  const { t } = useGlobalTranslation("translation");
   const { categories, fetchAllCategories, isLoading } = useCategories(fpi);
   const [isMobile, setIsMobile] = useState(true);
 
@@ -49,7 +50,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   }, []);
 
   if (!isLoading && !sortedCategories?.length) {
-    return <EmptyState title="No category found" />;
+    return <EmptyState title={t("resource.categories.empty_state")} />;
   }
 
   return (
@@ -58,9 +59,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     >
       <div className={`${styles.categories__breadcrumbs} captionNormal`}>
         <span>
-          <FDKLink to="/">Home</FDKLink>&nbsp; / &nbsp;
+          <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>&nbsp; / &nbsp;
         </span>
-        <span className={styles.active}>Categories</span>
+        <span className={styles.active}>{t("resource.common.breadcrumb.categories")}</span>
       </div>
 
       {!isLoading ? (
@@ -103,50 +104,50 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 }
 
 export const settings = {
-  label: "Categories",
+  label: "t:resource.sections.categories.categories",
   props: [
     {
       type: "text",
       id: "heading",
       default: "",
-      info: "Set the heading text for the categories page",
-      label: "Heading",
+      info: "t:resource.sections.categories.heading_info",
+      label: "t:resource.common.heading",
     },
     {
       type: "textarea",
       id: "description",
       default: "",
-      info: "Add a description for the categories page",
-      label: "Description",
+      info: "t:resource.sections.categories.description_info",
+      label: "t:resource.common.description",
     },
     {
       type: "checkbox",
       id: "back_top",
-      label: "Back to Top button",
-      info: "Enable a 'Back to Top' button to help users quickly return to the top of the page",
+      label: "t:resource.sections.categories.back_top",
+      info: "t:resource.sections.brand_landing.back_to_top_info",
       default: true,
     },
     {
       type: "checkbox",
       id: "show_category_name",
       default: true,
-      info: "Show the category name on the category cards",
-      label: "Show Category Name",
+      info: "t:resource.sections.categories.show_category_name_info",
+      label: "t:resource.sections.categories.show_category_name",
     },
     {
       type: "select",
       id: "category_name_placement",
-      label: "Category Name Placement",
+      label: "t:resource.sections.categories.category_name_placement",
       default: "inside",
-      info: "Place the category name on the inside or outside the category card",
+      info: "t:resource.sections.categories.category_name_placement_info",
       options: [
         {
           value: "inside",
-          text: "Inside the image",
+          text: "t:resource.sections.categories_listing.inside_the_image",
         },
         {
           value: "outside",
-          text: "Outside the image",
+          text: "t:resource.sections.categories_listing.outside_the_image",
         },
       ],
     },
@@ -156,20 +157,20 @@ export const settings = {
       options: [
         {
           value: "top",
-          text: "Top",
+          text: "t:resource.sections.categories_listing.top",
         },
         {
           value: "center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
         {
           value: "bottom",
-          text: "Bottom",
+          text: "t:resource.sections.categories_listing.bottom",
         },
       ],
       default: "bottom",
-      label: "Category Name Position",
-      info: "Display category name at the top, center or bottom of the category card",
+      label: "t:resource.sections.categories.bottom",
+      info: "t:resource.sections.categories.bottom_info",
     },
     {
       id: "category_name_text_alignment",
@@ -177,20 +178,20 @@ export const settings = {
       options: [
         {
           value: "text-left",
-          text: "Left",
+          text: "t:resource.common.left",
         },
         {
           value: "text-center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
         {
           value: "text-right",
-          text: "Right",
+          text: "t:resource.common.right",
         },
       ],
       default: "text-center",
-      label: "Category Name Text Alignment",
-      info: "Select the alignment of the category name - left, center or right",
+      label: "t:resource.sections.categories.category_name_text_alignment",
+      info: "t:resource.sections.categories.category_name_text_alignment_info",
     },
   ],
 };
