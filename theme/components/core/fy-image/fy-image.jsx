@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { motion, useInView } from "framer-motion";
 
 import styles from "./fy-image.less";
@@ -32,6 +32,7 @@ const FyImage = ({
   defer = true,
   isImageCover = false,
 }) => {
+  const { t } = useGlobalTranslation("translation");
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -79,8 +80,9 @@ const FyImage = ({
 
     if (isError) {
       return placeholder;
+    } else {
+      return transformImage(src);
     }
-    return transformImage(src);
   };
 
   function getImageType() {
@@ -143,11 +145,13 @@ const FyImage = ({
         "";
 
       if (min && max) {
-        return `${min} and ${max}`;
+        return `${min} ${t("resource.common.and")} ${max}`;
+      } else {
+        return min || max;
       }
-      return min || max;
+    } else {
+      return "";
     }
-    return "";
   };
 
   const getUrl = (width, url = src) => {
@@ -177,9 +181,8 @@ const FyImage = ({
 
   return (
     <div
-      className={`${styles.imageWrapper} ${
-        globalConfig?.img_fill || isImageCover ? styles.fill : ""
-      } ${customClass}`}
+      className={`${styles.imageWrapper} ${globalConfig?.img_fill || isImageCover ? styles.fill : ""
+        } ${customClass}`}
       style={dynamicStyles}
       ref={imgWrapperRef}
     >

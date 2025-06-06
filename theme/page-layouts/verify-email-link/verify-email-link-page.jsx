@@ -5,8 +5,10 @@ import AuthContainer from "../auth/auth-container/auth-container";
 import styles from "./verify-email-link-page.less";
 import FyButton from "@gofynd/theme-template/components/core/fy-button/fy-button";
 import "@gofynd/theme-template/components/core/fy-button/fy-button.css";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function VerifyEmailLinkPage({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email") || "";
   const { openHomePage } = useAccounts({ fpi });
@@ -15,11 +17,10 @@ function VerifyEmailLinkPage({ fpi }) {
     <AuthContainer>
       <div>
         <div className={styles.verifyEmailLinkTxt}>
-          A verification link has been sent to {email}
+          {t("resource.auth.verification_link_sent_to")} {email}
         </div>
         <p className={styles.verifyEmailLinkDesc}>
-          Please click on the link that has been sent to your email account to
-          verify your email and continue with the registration process.
+          {t("resource.auth.click_link_to_verify_email")}
         </p>
         <FyButton
           variant="contained"
@@ -28,7 +29,7 @@ function VerifyEmailLinkPage({ fpi }) {
           fullWidth={true}
           onClick={openHomePage}
         >
-          Continue
+          {t("resource.common.continue")}
         </FyButton>
       </div>
     </AuthContainer>

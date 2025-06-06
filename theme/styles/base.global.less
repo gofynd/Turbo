@@ -62,10 +62,6 @@ body {
   background-color: @PageBackground;
 }
 
-.fdk-theme-outlet >*>.fdk-theme-wrapper {
-  padding-bottom: var(--section-bottom-padding, 0);
-}
-
 input:focus,
 textarea:focus,
 select:focus,
@@ -366,26 +362,21 @@ button {
 
 ::selection {
   background-color: @primary-color;
-  color: @color-black;
+  color: #000;
 }
 
 img::selection {
   background-color: transparent;
 }
 
-.home-page,
-.homePage {
-  max-width: @page-width;
-}
-
 .mr-5,
 .mr5 {
-  margin-right: 30px !important;
+  margin-inline-end: 30px !important;
 }
 
 .mr-2,
 .mr2 {
-  margin-right: 5px !important;
+  margin-inline-end: 5px !important;
 }
 
 .py-5,
@@ -444,19 +435,19 @@ img::selection {
   height: 100%;
 }
 
-//TODO remove before Prod deployment
-// .wrapper-class {
-//   display: block !important;
-// }
-.slick-slider:not(.no-nav) {
-  padding-bottom: 32px;
-  margin-bottom: 31px;
-  @media @tablet {
-    padding-bottom: 24px;
-    margin-bottom: 8px;
+// Override slick slider style
+.slick-slider {
+  &:has(.slick-dots) {
+    padding-bottom: 32px;
+    margin-bottom: 4px;
+    @media @tablet {
+      padding-bottom: 24px;
+    }
+  }
+  &:has(.slick-arrow){
+    margin-bottom: 31px;
   }
 }
-
 .slick-prev,
 .slick-next {
   cursor: pointer;
@@ -471,25 +462,28 @@ img::selection {
 }
 .slick-next {
   transform: translate(100%, 100%);
-  right: calc(50% - var(--slick-dots) / 2);
+  [dir="rtl"] & {
+    transform: translate(-100%, 100%) rotate(180deg);
+  }
+  inset-inline-end: calc(50% - var(--slick-dots) / 2);
 }
 .slick-prev {
   transform: translate(-100%, 100%);
-  left: calc(50% - var(--slick-dots) / 2);
+  [dir="rtl"] & {
+    transform: translate(100%, 100%) rotate(180deg);
+  }
+  inset-inline-start: calc(50% - var(--slick-dots) / 2);
 }
 .slick-dots {
   font-size: 0;
   position: absolute;
-  left: 50%;
+  inset-inline-start: 50%;
   transform: translate(-50%, 100%);
+  [dir="rtl"] & {
+    transform: translate(50%, -50%);
+  }
   bottom: 0px;
-  padding: 13.5px 0;
-  @media @tablet {
-    padding: 0;
-  }
-  @media @mobile {
-    width: 100%;
-  }
+  padding: 0;
   width: auto;
   li {
     @media @mobile {
@@ -539,22 +533,25 @@ img::selection {
     }
   }
 }
+.slick-arrow + .slick-dots {
+  padding: 13.5px 0;
+}
 
 :global {
   .snackbar {
     top: 80px !important; /* Remove the top position */
     bottom: 20px; /* Ensure it shows at the bottom if needed */
-    left: auto; /* Override if it has a specific left value */
-    right: 0; /* Start from the right side */
+    inset-inline-start: auto; /* Override if it has a specific left value */
+    inset-inline-end: 0; /* Start from the right side */
     animation: slideInRight 0.5s ease-out forwards; /* New animation */
   }
 
   @keyframes slideInRight {
-    from {
-      transform: translateX(100%); /* Start off-screen from the right */
-    }
-    to {
-      transform: translateX(0); /* Move into the viewport */
+  from {
+    transform: translateX(100%); /* Start off-screen from the right */
+  }
+  to {
+    transform: translateX(0); /* Move into the viewport */
     }
   }
 }

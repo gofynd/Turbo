@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useGlobalStore } from "fdk-core/utils";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import {
   CART_DETAILS,
   CART_UPDATE,
@@ -9,6 +8,11 @@ import {
 import { useAccounts, useWishlist, useSnackbar } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
 import useHeader from "../../components/header/useHeader";
+import {
+  useGlobalStore,
+  useNavigate,
+  useGlobalTranslation,
+} from "fdk-core/utils";
 
 export function fetchCartDetails(fpi, payload = {}) {
   const defaultPayload = {
@@ -21,6 +25,7 @@ export function fetchCartDetails(fpi, payload = {}) {
 }
 
 const useCart = (fpi, isActive = true) => {
+  const { t } = useGlobalTranslation("translation");
   const [searchParams] = useSearchParams();
   const CART = useGlobalStore(fpi.getters.CART);
   const appFeatures = useGlobalStore(fpi.getters.APP_FEATURES);
@@ -154,14 +159,14 @@ const useCart = (fpi, isActive = true) => {
           if (res?.data?.updateCart?.success) {
             if (!moveToWishList) {
               showSnackbar(
-                res?.data?.updateCart?.message || "Cart is updated",
+                res?.data?.updateCart?.message || t("resource.cart.cart_update_success"),
                 "success"
               );
             }
             await fetchCartDetails(fpi, { buyNow }); // Wait for fetchCartDetails to complete
           } else if (!isSizeUpdate) {
             showSnackbar(
-              res?.data?.updateCart?.message || "Cart is updated",
+              res?.data?.updateCart?.message || t("resource.cart.cart_update_success"),
               "error"
             );
           }
@@ -181,14 +186,9 @@ const useCart = (fpi, isActive = true) => {
 
   function gotoCheckout() {
     if (cart_items?.id) {
-      navigate({
-        pathname: "/cart/checkout",
-        search: `id=${cart_items?.id}`,
-      });
+      navigate("/cart/checkout" + (cart_items?.id ? `?id=${cart_items.id}` : ""));
     } else {
-      navigate({
-        pathname: "/cart/bag",
-      });
+      navigate("/cart/bag");
     }
   }
 

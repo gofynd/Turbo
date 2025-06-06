@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useGlobalStore } from "fdk-core/utils";
 import {
   DELETE_MOBILE_NUMBER,
   SET_MOBILE_NUMBER_AS_PRIMARY,
 } from "../../queries/phoneQuery";
+import { useGlobalStore } from "fdk-core/utils";
 
 export const usePhone = ({ fpi }) => {
   const { phone_numbers, user = {} } = useGlobalStore(fpi.getters.USER_DATA);

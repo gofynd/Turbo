@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { HTMLContent } from "./marketingHTMLContent";
 import { GET_PAGE } from "../../queries/marketingQuery";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { getHelmet } from "../../providers/global-provider";
 import EmptyState from "../../components/empty-state/empty-state";
 import styles from "./marketing-page.less";
 
 function MarketingPage({ fpi, defaultSlug }) {
+  const { t } = useGlobalTranslation("translation");
   let { slug } = useParams();
   if (defaultSlug) slug = defaultSlug;
   const containerRef = useRef(null);
@@ -55,7 +56,7 @@ function MarketingPage({ fpi, defaultSlug }) {
   }, [content, type]);
 
   if (pageNotFound || !published) {
-    return <EmptyState title="Page Not Found" />;
+    return <EmptyState title={t("resource.common.page_not_found")} />;
   }
 
   return (

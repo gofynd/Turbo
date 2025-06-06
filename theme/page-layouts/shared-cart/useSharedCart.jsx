@@ -1,13 +1,15 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSnackbar } from "../../helper/hooks";
 import {
   SHARED_CART_DETAILS,
   UPDATE_CART_WITH_SHARED_ITEMS,
 } from "../../queries/sharedCartQuery";
 import { CART_ITEMS_COUNT } from "../../queries/wishlistQuery";
+import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 
 const useSharedCart = (fpi) => {
+  const { t } = useGlobalTranslation("translation");
   const [cartItemCount, setCartItemCount] = useState(0);
   const params = useParams();
   const token = useRef(params.token);
@@ -51,7 +53,7 @@ const useSharedCart = (fpi) => {
           `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
         ] = (
           result[
-            `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
+          `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
           ] || []
         ).concat(item);
         return result;
@@ -82,24 +84,24 @@ const useSharedCart = (fpi) => {
       fpi.executeGQL(UPDATE_CART_WITH_SHARED_ITEMS, payload).then((res) => {
         if (res?.errors) {
           showSnackbar(
-            res?.errors?.message || `Failed to ${action} the cart`,
+            res?.errors?.message || t('resource.cart.failed_to_action_cart', { action: action }),
             "error"
           );
         } else {
           showSnackbar(
-            successInfo ?? `Cart ${action}d successfully`,
+            successInfo ?? t('resource.cart.cart_action_successful', { action: action }),
             "success"
           );
           navigate("/cart/bag/");
         }
       });
     } catch (err) {
-      showSnackbar(err?.message || "Something went wrong", "error");
+      showSnackbar(err?.message || t("resource.common.error_message"), "error");
     }
   };
 
   const onAddToBagClick = () => {
-    const info = "Cart Items added successfully";
+    const info = t("resource.cart.cart_item_addition_success");
     updateCartWithSharedItem("merge", info);
   };
   const onMergeBagClick = () => {

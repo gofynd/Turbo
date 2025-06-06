@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { useGlobalStore } from "fdk-core/utils";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import {
+  useGlobalStore,
+  useNavigate,
+  useGlobalTranslation,
+} from "fdk-core/utils";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
   CHECKOUT_LANDING,
   FETCH_SHIPMENTS,
@@ -12,6 +16,7 @@ import useInternational from "../../../components/header/useInternational";
 import { useAddressFormSchema, useSnackbar } from "../../../helper/hooks";
 
 const useAddress = (setShowShipment, setShowPayment, fpi) => {
+  const { t } = useGlobalTranslation("translation");
   const allAddresses =
     useGlobalStore(fpi.getters.ADDRESS)?.address || undefined;
   const isAddressLoading =
@@ -103,7 +108,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           currency: countryInfo.currency.code,
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleCountrySearch = (event) => {
@@ -164,7 +169,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   };
 
   const editAddress = (item) => {
-    setModalTitle("Edit Address");
+    setModalTitle(t("resource.common.address.edit_address"));
     setI18nDetails({
       iso: item.country_iso_code,
       phoneCode: item.country_code,
@@ -219,7 +224,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           if (cart_items?.checkout_mode === "other") {
             setHideAddress(true);
           }
-          showSnackbar("Address added successfully", "success");
+          showSnackbar(t("resource.common.address.address_addition_success"), "success");
           resetAddressState();
           fpi
             .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow })
@@ -230,7 +235,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         } else {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
           showSnackbar(
-            res?.errors?.[0]?.message ?? "Failed to create new address",
+            res?.errors?.[0]?.message ?? t("resource.common.address.new_address_creation_failure"),
             "error"
           );
           setAddressLoader(false);
@@ -283,12 +288,12 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           fpi
             .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow })
             .then(() => selectAddress());
-          showSnackbar("Address updated successfully", "success");
+          showSnackbar(t("resource.common.address.address_update_success"), "success");
           resetAddressState();
         } else {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
           showSnackbar(
-            res?.errors?.[0]?.message || "Failed to update an address",
+            res?.errors?.[0]?.message || t("resource.common.address.address_update_failure"),
             "error"
           );
         }
@@ -310,10 +315,10 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       .then((res) => {
         if (res?.data?.removeAddress?.is_deleted) {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
-          showSnackbar("Address deleted successfully", "success");
+          showSnackbar(t("resource.common.address.address_deletion_success"), "success");
         } else {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
-          showSnackbar("Failed to delete an address", "error");
+          showSnackbar(t("resource.common.address.address_deletion_failure"), "error");
           resetAddressState();
         }
       });
@@ -335,7 +340,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     }
 
     const updatedSearch = searchParameter.toString();
-    navigate({ search: updatedSearch });
+    navigate(`${location.pathname}?${updatedSearch}`);
   };
 
   const selectAddress = (id = "") => {
@@ -411,7 +416,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
 
     const updatedSearch = searchParam.toString();
 
-    navigate({ search: updatedSearch });
+    navigate(updatedSearch ? `?${updatedSearch}` : "");
   };
 
   function backToEdit() {
@@ -421,7 +426,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   }
 
   function showAddNewAddressModal() {
-    setModalTitle("Add New Address");
+    setModalTitle(t("resource.common.address.add_new_address"));
     setOpenModal(true);
   }
 
@@ -453,14 +458,15 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           });
 
           return data;
+        } else {
+          showSnackbar(
+            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure")
+          );
+          data.showError = true;
+          data.errorMsg =
+            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure");
+          return data;
         }
-        showSnackbar(
-          res?.errors?.[0]?.message || "Pincode verification failed"
-        );
-        data.showError = true;
-        data.errorMsg =
-          res?.errors?.[0]?.message || "Pincode verification failed";
-        return data;
       });
   }
 

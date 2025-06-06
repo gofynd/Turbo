@@ -12,6 +12,7 @@ function CardList({
   isImageFill,
   globalConfig,
   pageConfig,
+  img_fill = false,
 }) {
   return (
     <div className={styles.grpListWrap}>
@@ -52,6 +53,7 @@ function CardList({
                   cardType={cardType}
                   isImageFill={isImageFill}
                   globalConfig={globalConfig}
+                  img_fill={cardType === "BRANDS" ? img_fill : false}
                 />
               )
             )}

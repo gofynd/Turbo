@@ -1,8 +1,11 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { GET_QUICK_VIEW_PRODUCT_DETAILS } from "../../queries/plpQuery";
 import { FEATURE_PRODUCT_SIZE_PRICE } from "../../queries/featureProductQuery";
-import { useGlobalStore } from "fdk-core/utils";
+import {
+  useGlobalStore,
+  useGlobalTranslation,
+  useNavigate,
+} from "fdk-core/utils";
 import { LOCALITY } from "../../queries/logisticsQuery";
 import { ADD_TO_CART } from "../../queries/pdpQuery";
 import useCart, { fetchCartDetails } from "../cart/useCart";
@@ -10,6 +13,7 @@ import { useSnackbar, useHyperlocalTat } from "../../helper/hooks";
 import { isEmptyOrNull } from "../../helper/utils";
 
 const useAddToCartModal = ({ fpi, pageConfig }) => {
+  const { t } = useGlobalTranslation("translation");
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const pincodeDetails = useGlobalStore(fpi?.getters?.PINCODE_DETAILS);
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +61,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         if (isEmptyOrNull(productPriceData.data.productPrice)) {
           setPincodeErrorMessage(
             productPriceData?.errors?.[0]?.message ||
-              "Product is not serviceable at given locality"
+            t("resource.product.product_not_serviceable")
           );
         } else {
           setPincodeErrorMessage("");
@@ -172,7 +176,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
           }));
         } else {
           setPincodeErrorMessage(
-            localityData?.errors?.[0]?.message || "Pincode verification failed"
+            localityData?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure")
           );
         }
       } catch (error) {
@@ -221,7 +225,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         (currentPincode?.length !== 6 || pincodeErrorMessage.length)
       ) {
         setPincodeErrorMessage(
-          "Please enter valid pincode before Add to cart/ Buy now"
+          t("resource.product.enter_valid_pincode")
         );
         return;
       }
@@ -231,7 +235,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
           pincodeErrorMessage.length)
       ) {
         setPincodeErrorMessage(
-          "Please enter valid pincode before Add to cart/ Buy now"
+          t("resource.product.enter_valid_pincode")
         );
         return;
       }
@@ -285,7 +289,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
           if (outRes?.data?.addItemsToCart?.success) {
             if (!buyNow) fetchCartDetails(fpi);
             showSnackbar(
-              outRes?.data?.addItemsToCart?.message || "Added to Cart",
+              outRes?.data?.addItemsToCart?.message || t("resource.common.add_to_cart_success"),
               "success"
             );
             if (buyNow) {
@@ -295,7 +299,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
             }
           } else {
             showSnackbar(
-              outRes?.data?.addItemsToCart?.message || "Failed to add to cart",
+              outRes?.data?.addItemsToCart?.message || t("resource.common.add_cart_failure"),
               "error"
             );
           }
@@ -361,13 +365,13 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
     if (!isMto) {
       if (totalQuantity > maxCartQuantity) {
         totalQuantity = maxCartQuantity;
-        showSnackbar(`Maximum quantity is ${maxCartQuantity}.`, "error");
+        showSnackbar(`${t("resource.product.max_quantity")} ${maxCartQuantity}.`, "error");
       }
 
       if (totalQuantity < minCartQuantity) {
         if (operation === "edit_item") {
           totalQuantity = minCartQuantity;
-          showSnackbar(`Minimum quantity is ${minCartQuantity}.`, "error");
+          showSnackbar(`${t("resource.product.min_quantity")} ${minCartQuantity}.`, "error");
         } else if (selectedItemDetails?.quantity > minCartQuantity) {
           totalQuantity = minCartQuantity;
         } else {

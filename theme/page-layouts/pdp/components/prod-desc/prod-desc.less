@@ -28,14 +28,17 @@
     }
   }
   .details {
-    padding: 24px 32px 24px 16px;
+    padding-top: 24px;
+    padding-inline-end: 32px;
+    padding-bottom: 24px;
+    padding-inline-start: 16px;
     background: @ThemeAccentL2;
     border: 1px solid @DividerStokes;
     border-radius: 0px 12px 12px 12px;
 
     .items {
       list-style: outside;
-      padding-left: 1rem;
+      padding-inline-start: 1rem;
     }
   }
 }
@@ -258,7 +261,10 @@
       }
     }
     dd {
-      margin: 0 0 0 40px;
+      margin-top: 0px;
+      margin-inline-end: 0px;
+      margin-bottom: 0px;
+      margin-inline-start: 40px;
     }
     dl {
       margin: 1em 0;
@@ -363,16 +369,15 @@
       border: 2px inset;
     }
   }
+  .removeBullets {
+    list-style-type: none;
+    padding: 0;
+  }
 }
 
 .bulletSpacing {
-  padding-left: 16px;
+  padding-inline-start: 16px;
   list-style: disc;
-}
-
-.removeBullets {
-  list-style-type: none;
-  padding-left: 0 !important;
 }
 
 .noDataPlaceholder {

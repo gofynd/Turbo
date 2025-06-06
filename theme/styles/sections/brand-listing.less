@@ -43,8 +43,8 @@ div[data-cardtype="BRANDS"] .streach picture {
   padding: 0 16px;
   margin-bottom: 24px;
   max-width: 750px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline-start: auto;
+  margin-inline-end: auto;
   @media @tablet {
     margin-bottom: 24px;
   }
@@ -87,7 +87,10 @@ div[data-cardtype="BRANDS"] .streach picture {
 .categories-horizontal {
   width: 100%;
   --gap: 8px;
-  padding: 0 0 0 16px;
+  padding-top: 0px;
+  padding-inline-end: 0px;
+  padding-bottom: 0px;
+  padding-inline-start: 16px;
   // .brand-image{
   //   & img {
   //     margin: 0 4px;
@@ -116,7 +119,7 @@ div[data-cardtype="BRANDS"] .streach picture {
   .custom-slick-list {
     margin: 0 calc(var(--gap) / 2 * -1);
     @media @mobile {
-      padding-left: 0 !important;
+      padding-inline-start: 0 !important;
     }
   }
   .custom-slick-slide {
@@ -135,8 +138,8 @@ div[data-cardtype="BRANDS"] .streach picture {
   border: none;
   background-color: @color-white;
   height: 60px;
-  left: 12px;
-  right: 12px;
+  inset-inline-start: 12px;
+  inset-inline-end: 12px;
   bottom: 12px;
   cursor: pointer;
   display: flex;
@@ -266,7 +269,7 @@ div[data-cardtype="BRANDS"] .streach picture {
 .left {
   :global {
     .slick-track {
-      margin-left: 0;
+      margin-inline-start: 0;
     }
   }
 }
@@ -274,7 +277,7 @@ div[data-cardtype="BRANDS"] .streach picture {
 .right {
   :global {
     .slick-track {
-      margin-right: 0;
+      margin-inline-end: 0;
     }
   }
 }

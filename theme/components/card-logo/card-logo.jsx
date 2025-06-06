@@ -1,7 +1,7 @@
 import React from "react";
-import { FDKLink } from "fdk-core/components";
 import FyImage from "../core/fy-image/fy-image";
 import styles from "./card-logo.less";
+import { FDKLink } from "fdk-core/components";
 
 function CardLogo({ card, cardType, globalConfig }) {
   const getTitle = () => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { useForm } from "react-hook-form";
 import EmptyState from "../components/empty-state/empty-state";
 import useRefundDetails from "../page-layouts/orders/useRefundDetails";
@@ -30,6 +30,7 @@ const TRANSFER_MODE = {
 };
 
 function Refund({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const { orderId, shipmentId } = useParams();
   const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
   const [isLoading, setIsLoading] = useState(true);
@@ -146,8 +147,8 @@ function Refund({ fpi }) {
         setShowBeneficiaryAdditionPage(true);
         setExisingBankRefundOptions([])
       })
-      .catch((error) => {})
-      .finally(() => {});
+      .catch((error) => { })
+      .finally(() => { });
   };
 
   const handleBankFormSubmit = async (
@@ -251,7 +252,7 @@ function Refund({ fpi }) {
   }
 
   if (!orderId || !shipmentId) {
-    return <EmptyState title="Invalid refund link" showButton={false} />;
+    return <EmptyState title={t("resource.refund_order.invalid_refund_link")} showButton={false} />;
   }
   const handleSelectBank = (bankOption) => {
     setSelectedBank(bankOption);
@@ -276,7 +277,7 @@ function Refund({ fpi }) {
                   "original",
                   "resize-h:32"
                 )}
-                alt="name"
+                alt={t("resource.refund_order.name_alt_text")}
               />
             </div>
             <RefundDetails orderId={orderId} shipmentId={shipmentId} />
@@ -293,21 +294,21 @@ function Refund({ fpi }) {
               ) : (
                 <div className={styles.outerContainer}>
                   <div className={styles.refundHeadertext}>
-                    Select Refund Option
+                      {t("resource.profile.select_refund_option")}
                   </div>
                   <div className={styles.mainContentSection}>
                     <div className={styles.contentHeader}>
-                      Bank Account Transfer
+                      {t("resource.refund_order.bank_account_transfer")}
                     </div>
                     <div className={styles.recentlyUsedSection}>
                       <div className={styles.recentlyUsedHeader}>
-                        Recently Used
+                        {t("resource.refund_order.recently_used")}
                       </div>
                       <div
                         className={styles.addBankAccount}
                         onClick={() => setShowBeneficiaryAdditionPage(true)}
                       >
-                        Add Bank Account
+                        {t("resource.refund_order.add_bank_account")}
                       </div>
                     </div>
                     <div className={styles.paymentContent}>
@@ -326,7 +327,7 @@ function Refund({ fpi }) {
                             <div className={styles.bankDetails}>
                               <div className={styles.bankdetailsHeader}>
                                 <div className={styles.bankName}>
-                                  {bankOption.bank_name || "Bank Account"}
+                                  {bankOption.bank_name || t("resource.refund_order.bank_account")}
                                 </div>
                                 <div className={styles.svgWrapper}>
                                   <BankVerifiedIcon />
@@ -337,7 +338,7 @@ function Refund({ fpi }) {
                               </div>
                               <div className={styles.accountNumber}>
                                 <span className={styles.accountNoDiv}>
-                                  Account No:
+                                  {t("resource.refund_order.account_no")}:
                                 </span>
                                 <span className={styles.accountNoValue}>
                                   {maskAccountNumber(bankOption.account_no)}
@@ -345,7 +346,7 @@ function Refund({ fpi }) {
                               </div>
                               <div className={styles.ifscCode}>
                                 <span className={styles.ifscDiv}>
-                                  IFSC Code:
+                                  {t("resource.common.ifsc_code")}:
                                 </span>
                                 <span className={styles.ifscCodeValue}>
                                   {maskIFSC(bankOption.ifsc_code)}
@@ -372,7 +373,7 @@ function Refund({ fpi }) {
                             );
                           }}
                         >
-                          Continue
+                          {t("resource.common.continue")}
                         </button>
                       )}
                     </div>
@@ -400,10 +401,9 @@ function BeneficiarySuccess({ orderId, shipmentId }) {
       <div className={styles.beneficiaryHeader}>
         <CheckmarkFilledIcon />
         <div className={styles.titleWrapper}>
-          <h4>Beneficiary Added</h4>
+          <h4>{t("resource.refund_order.beneficiary_added")}</h4>
           <div className={styles.info}>
-            {/* <span className={styles.amount}>₹500.00 </span> */}
-            <span>Refund Amount will be credited in 7 to 10 working days</span>
+            <span>{t("resource.refund_order.credit_time_message")}</span>
           </div>
         </div>
       </div>
@@ -411,21 +411,21 @@ function BeneficiarySuccess({ orderId, shipmentId }) {
       {/* <div className={styles.beneficiaryDetails}>
         <div className={styles.detailItem}>
           <h5 className={styles.beneficiaryDetailsTitle}>
-            Beneficiary Details
+            {t("resource.refund_order.beneficiary_details")}
           </h5>
         </div>
         <div className={styles.detailItem}>
-          <span className={styles.itemHeader}>Account Holder's Name</span>
+          <span className={styles.itemHeader}>{t("resource.refund_order.account_holders_name")}</span>
           <span className={styles.itemValue}>{beneficiaryDetails?.name}</span>
         </div>
         <div className={styles.detailItem}>
-          <span className={styles.itemHeader}>Bank Account No.</span>
+          <span className={styles.itemHeader}>{t("resource.refund_order.bank_account_no")}</span>
           <span className={styles.itemValue}>
             {beneficiaryDetails?.accountNumber}
           </span>
         </div>
         <div className={styles.detailItem}>
-          <span className={styles.itemHeader}>IFSC Code</span>
+          <span className={styles.itemHeader}>{t("resource.common.ifsc_code")}</span>
           <span className={styles.itemValue}>
             {beneficiaryDetails?.ifscCode}
           </span>
@@ -440,14 +440,15 @@ function RefundDetails({
   shipmentId = "SHIPMENT_ID",
   refundAmount = 0,
 }) {
+  const { t } = useGlobalTranslation("translation");
   return (
     <div className={styles.refundDetails}>
       <div className={styles.refundDetailsItem}>
-        <span>Order ID</span>
+        <span>{t("resource.refund_order.order_id")}</span>
         <span>{orderId}</span>
       </div>
       <div className={styles.refundDetailsItem}>
-        <span>Shipment ID</span>
+        <span>{t("resource.common.shipment_id")}</span>
         <span>{shipmentId}</span>
       </div>
       {/* <div className={styles.refundDetailsItem}>
@@ -473,16 +474,16 @@ function OtpValidationForm({
   return (
     <div className={styles.refundOtp}>
       <div className={styles.refundOtpHead}>
-        <h4>Enter OTP</h4>
+        <h4>{t("resource.common.enter_otp")}</h4>
         <div>
-          {`One Time Password (OTP) successfully sent to the phone number ${customerPhone || ""}`}
+        {t("resource.refund_order.otp_sent_to_phone")} {customerPhone || ""}
         </div>
       </div>
       <form className={styles.refundOtpForm} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.refundFormFieldWrapper}>
           <Input
             type="text"
-            label="Enter OTP"
+            label={t("resource.common.enter_otp")}
             labelVariant="floating"
             labelClassName={styles.otpInputLabel}
             showAsterik
@@ -496,10 +497,10 @@ function OtpValidationForm({
                 .slice(0, 4);
             }}
             {...register("otp", {
-              required: "OTP is required",
+              required: t("resource.refund_order.otp_is_required"),
               pattern: {
                 value: /^[0-9]{4}$/, // Ensures only 4 digits are entered
-                message: "OTP must be a 4-digit number",
+                message: t("resource.refund_order.otp_must_be_4_digits"),
               },
             })}
             error={!!errors.otp}
@@ -514,7 +515,9 @@ function OtpValidationForm({
                 onClick={onResendClick}
                 style={{ cursor: otpResendTime > 0 ? "default" : "pointer" }}
                 >
-                {`RESEND OTP${otpResendTime > 0 ? ` in ${otpResendTime} Sec` : ""}`}
+                {otpResendTime > 0
+                  ? t("resource.refund_order.resend_otp_in_seconds", { time: otpResendTime })
+                  : t("resource.refund_order.resend_otp")}
             </button>
         </div>
         <Button
@@ -526,18 +529,19 @@ function OtpValidationForm({
           type="submit"
           disabled={!isValid}
         >
-          VERIFY
+          {t("resource.refund_order.verify_caps")}
         </Button>
       </form>
     </div>
   );
 }
 
-function BeneficiaryForm({ fpi ,onSubmit,setShowBeneficiaryAdditionPage,exisitingBankRefundOptions}) {
+function BeneficiaryForm({ fpi, onSubmit, setShowBeneficiaryAdditionPage, exisitingBankRefundOptions }) {
+  const { t } = useGlobalTranslation("translation");
   return (
     <div className={styles.beneficiaryForm}>
-      <h4 className={styles.beneficiaryFormTitle}>Enter Bank Details</h4>
-      <BankForm fpi={fpi} addBankAccount={onSubmit} setShowBeneficiaryAdditionPage={setShowBeneficiaryAdditionPage} exisitingBankRefundOptions={exisitingBankRefundOptions}/>
+      <h4 className={styles.beneficiaryFormTitle}>{t("resource.refund_order.enter_bank_details")}</h4>
+      <BankForm fpi={fpi} addBankAccount={onSubmit} setShowBeneficiaryAdditionPage={setShowBeneficiaryAdditionPage} exisitingBankRefundOptions={exisitingBankRefundOptions} />
     </div>
   );
 }

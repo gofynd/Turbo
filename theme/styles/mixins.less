@@ -30,7 +30,7 @@
 // Mixins for ios 14 and below
 .column-gap(@gap) {
   & > *:not(:last-child) {
-    margin-right: @gap;
+    margin-inline-end: @gap;
   }
 }
 
@@ -43,8 +43,8 @@
 .inset(@position) {
   top: @position;
   bottom: @position;
-  left: @position;
-  right: @position;
+  inset-inline-start: @position;
+  inset-inline-end: @position;
 }
 .aspect-ratio(@ratio) {
   position: relative;
@@ -61,12 +61,12 @@
 
 .grid-gap(@row-gap, @column-gap: @row-gap) {
   @supports not (gap: @row-gap @column-gap) {
-    margin-left: -(@column-gap / 2);
-    margin-right: -(@column-gap / 2);
+    margin-inline-start: -(@column-gap / 2);
+    margin-inline-end: -(@column-gap / 2);
     margin-bottom: -@row-gap;
     & > * {
-      padding-left: @column-gap / 2;
-      padding-right: @column-gap / 2;
+      padding-inline-start: @column-gap / 2;
+      padding-inline-end: @column-gap / 2;
       margin-bottom: @row-gap;
     }
   }

@@ -1,11 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import ProfileDetails from "@gofynd/theme-template/pages/profile";
 import "@gofynd/theme-template/pages/profile/profile-details.css";
-import { useGlobalStore } from "fdk-core/utils";
+import {
+  useGlobalStore,
+  useGlobalTranslation,
+  useNavigate,
+} from "fdk-core/utils";
 import { useAccounts, useSnackbar, useWindowWidth } from "../../helper/hooks";
 
 function ProfileDetailsPage({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const windowWidth = useWindowWidth();
   const navigate = useNavigate();
   const { first_name, last_name, gender, user } = useGlobalStore(
@@ -33,7 +37,11 @@ function ProfileDetailsPage({ fpi }) {
         navigate("/profile/profile-tabs");
       }
 
-      showSnackbar("Updated Successfully", "success", "top-center");
+      showSnackbar(
+        t("resource.common.updated_success"),
+        "success",
+        "top-center"
+      );
     } catch (error) {
       showSnackbar(error?.message, "error");
     }

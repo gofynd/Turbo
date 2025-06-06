@@ -1,17 +1,19 @@
 import React from "react";
-import { FDKLink } from "fdk-core/components";
 import styles from "./page-not-found.less";
 import FyButton from "@gofynd/theme-template/components/core/fy-button/fy-button";
 import "@gofynd/theme-template/components/core/fy-button/fy-button.css";
+import { useGlobalTranslation } from "fdk-core/utils";
+import { FDKLink } from "fdk-core/components";
 import PageNotFoundIcon from "../../assets/images/not-found.svg";
 
 function PageNotFound({ title }) {
+  const { t } = useGlobalTranslation("translation");
   return (
     <div className={styles.notFoundContainer}>
       <div className={styles.container}>
         <PageNotFoundIcon />
         <h3 className={`${styles.fontHeader} ${styles.title}`}>
-          Oops! Looks like the page you&apos;re looking for doesn&apos;t exist
+          {t("resource.common.not_found_error")}
         </h3>
         <FDKLink to="/">
           <FyButton
@@ -21,7 +23,7 @@ function PageNotFound({ title }) {
             color="secondary"
             fullWidth={true}
           >
-            Return to Homepage
+            {t("resource.common.return_home")}
           </FyButton>
         </FDKLink>
       </div>

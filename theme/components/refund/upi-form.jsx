@@ -2,8 +2,10 @@ import React, { useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import styles from "./styles/bank-form.less";
 import ButtonSpinnerIcon from "../../assets/images/button-spinner.svg";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 function UpiForm({ loadSpinner, addvpa }) {
+  const { t } = useGlobalTranslation("translation");
   const upiId = useId();
   const {
     register,
@@ -30,7 +32,8 @@ function UpiForm({ loadSpinner, addvpa }) {
       >
         <div className={`${styles.formItem} ${errors.upi ? styles.error : ""}`}>
           <div className={styles.formTitle} htmlFor={upiId}>
-            Enter UPI ID <span className={`${styles.formReq}`}>*</span>
+            {t("resource.common.enter_upi_id")}{" "}
+            <span className={`${styles.formReq}`}>*</span>
           </div>
           <div className={`${styles.formInput}`}>
             <input
@@ -39,7 +42,8 @@ function UpiForm({ loadSpinner, addvpa }) {
               type="text"
               {...register("upi", {
                 validate: (value) =>
-                  validateVPA(value) || "Please Enter Valid UPI ID",
+                  validateVPA(value) ||
+                  t("resource.order.enter_valid_upi_id"),
               })}
             />
           </div>
@@ -52,7 +56,9 @@ function UpiForm({ loadSpinner, addvpa }) {
         >
           {loadSpinner && <ButtonSpinnerIcon className={`${styles.spinner}`} />}
 
-          {!loadSpinner && <span>Add</span>}
+          {!loadSpinner && (
+            <span>{t("resource.facets.add")}</span>
+          )}
         </button>
       </form>
     </div>

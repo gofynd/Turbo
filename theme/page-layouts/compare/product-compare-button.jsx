@@ -1,15 +1,17 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, Suspense } from "react";
 import Modal from "@gofynd/theme-template/components/core/modal/modal";
 import "@gofynd/theme-template/components/core/modal/modal.css";
 import { PRODUCT_COMPARISON } from "../../queries/compareQuery";
 import { useSnackbar } from "../../helper/hooks";
 import styles from "./compare.less";
+import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 import CompareWarningIcon from "../../assets/images/compare-warning.svg";
 import CloseIcon from "../../assets/images/close.svg";
 import CompareIcon from "../../assets/images/compare-icon.svg";
+import { isRunningOnClient } from "../../helper/utils";
 
 const ProductCompareButton = ({ slug, fpi, customClass }) => {
+  const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
 
@@ -18,15 +20,17 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
 
   const addCompareProducts = () => {
     if (!slug) return;
-    const existingSlugs = JSON.parse(
-      localStorage?.getItem("compare_slugs") || "[]"
-    );
+    const existingSlugs = isRunningOnClient()
+    ? JSON.parse(localStorage?.getItem("compare_slugs") || "[]")
+    : [];
+  
+
     if (existingSlugs.includes(slug)) {
       navigate("/compare");
     } else if (existingSlugs.length < 4) {
       compareProducts({ existingSlugs });
     } else {
-      setWarning("You can only compare 4 products at a time");
+      setWarning(t("resource.compare.product_comparison_limit"));
       setIsOpen(true);
     }
   };
@@ -35,7 +39,9 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
     try {
       let productsToBeCompared = [];
       if (action === "remove") {
-        localStorage.removeItem("compare_slug");
+        if (isRunningOnClient()) {
+          localStorage.removeItem("compare_slug");
+        }        
         productsToBeCompared = [slug];
       } else if (action === "goToCompare") {
         navigate("/compare");
@@ -45,21 +51,23 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
           .executeGQL(PRODUCT_COMPARISON, { slug: productsToBeCompared })
           .then(({ data, errors }) => {
             if (errors) {
-              setWarning("Can't compare products of different categories");
+              setWarning(t("resource.compare.cannot_compare_different_categories"));
               setIsOpen(true);
               return;
             }
             if (data?.productComparison) {
-              localStorage?.setItem(
-                "compare_slugs",
-                JSON.stringify(productsToBeCompared)
-              );
+              if (isRunningOnClient()) {
+                localStorage?.setItem(
+                  "compare_slugs",
+                  JSON.stringify(productsToBeCompared)
+                );
+              }
               navigate("/compare");
             }
           });
       }
     } catch (error) {
-      showSnackbar("Something went wrong!", "error");
+      showSnackbar(t("resource.common.error_message"), "error");
       throw error;
     }
   };
@@ -75,8 +83,9 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
         onClick={addCompareProducts}
       >
         <CompareIcon className={styles.compareIcon} />
-        Add to Compare
+        {t("resource.compare.add_to_compare")}
       </button>
+      <Suspense fallback={<div/>}>
       <Modal
         isOpen={isOpen}
         closeDialog={closeDialog}
@@ -108,7 +117,7 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
                   className={`${styles.button} btnSecondary`}
                   onClick={() => compareProducts({ action: "reset" })}
                 >
-                  Reset
+                  {t("resource.facets.reset")}
                 </button>
               </div>
               <div>
@@ -117,13 +126,14 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
                   className={`${styles.button} btnPrimary ${styles.btnNoBorder}`}
                   onClick={() => compareProducts({ action: "goToCompare" })}
                 >
-                  Go to Compare
+                  {t("resource.compare.go_to_compare")}
                 </button>
               </div>
             </div>
           </div>
-        </div>
-      </Modal>
+        </div >
+      </Modal >
+      </Suspense>
     </>
   );
 };

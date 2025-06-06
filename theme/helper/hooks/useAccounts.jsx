@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import { useState, useMemo } from "react";
-import { useGlobalStore } from "fdk-core/utils";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   LOGIN_WITH_OTP,
   UPDATE_PROFILE,
@@ -17,11 +16,18 @@ import {
   FORGOT_PASSWORD,
 } from "../../queries/authQuery";
 import { useSnackbar } from "./hooks";
-import { isRunningOnClient } from "../utils";
+import { isRunningOnClient, getLocalizedRedirectUrl } from "../utils";
+import {
+  useGlobalStore,
+  useNavigate,
+  useGlobalTranslation,
+} from "fdk-core/utils";
 // import { loginUserInFb } from '../../helper/facebook.utils';
 // import { renderButton } from '../../helper/google.utils';
 
 export const useAccounts = ({ fpi }) => {
+  const { locale } = useParams();
+  const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
   const location = useLocation();
@@ -42,10 +48,10 @@ export const useAccounts = ({ fpi }) => {
         encodeURIComponent(location.pathname + location.search)
       );
     }
-    navigate?.({
-      pathname: "/auth/login",
-      search: queryParams?.toString(),
-    });
+    navigate?.(
+      "/auth/login" +
+        (queryParams?.toString() ? `?${queryParams.toString()}` : "")
+    );
   };
 
   const openRegister = ({ redirect = true } = {}) => {
@@ -55,17 +61,16 @@ export const useAccounts = ({ fpi }) => {
     if (redirect) {
       queryParams?.set("redirectUrl", location.pathname);
     }
-    navigate?.({
-      pathname: "/auth/register",
-      search: queryParams?.toString(),
-    });
+    navigate?.(
+      "/auth/register" +
+        (queryParams?.toString() ? `?${queryParams.toString()}` : "")
+    );
   };
 
   const openForgotPassword = () => {
-    navigate?.({
-      pathname: "/auth/forgot-password",
-      search: location.search,
-    });
+    navigate?.(
+      "/auth/forgot-password" + (location.search ? `?${location.search}` : "")
+    );
   };
 
   const openHomePage = () => {
@@ -73,8 +78,11 @@ export const useAccounts = ({ fpi }) => {
       ? new URLSearchParams(location.search)
       : null;
     const redirectUrl = queryParams?.get("redirectUrl") || "";
-    window.location.href =
-      window.location.origin + decodeURIComponent(redirectUrl);
+    const finalUrl = getLocalizedRedirectUrl(
+      decodeURIComponent(redirectUrl),
+      locale
+    );
+    window.location.href = window.location.origin + finalUrl;
   };
 
   const updateProfile = (data) => {
@@ -125,22 +133,31 @@ export const useAccounts = ({ fpi }) => {
     });
   };
 
-  const signOut = () =>
-    fpi.executeGQL(LOGOUT).then((res) => {
-      if (res?.errors) {
-        throw res?.errors?.[0];
-      }
-      if (res?.data?.user?.logout?.logout) {
-        const queryParams = isRunningOnClient()
-          ? new URLSearchParams(location.search)
-          : null;
-        const redirectUrl = queryParams?.get("redirectUrl") || "";
-        window.location.href =
-          window.location.origin + decodeURIComponent(redirectUrl);
-        return res?.data;
-      }
-      return Promise.reject();
-    });
+  const signOut = () => {
+    fpi
+      .executeGQL(LOGOUT)
+      .then((res) => {
+        if (res?.errors) {
+          throw res?.errors?.[0];
+        }
+        if (res?.data?.user?.logout?.logout) {
+          const queryParams = isRunningOnClient()
+            ? new URLSearchParams(location.search)
+            : null;
+          const redirectUrl = queryParams?.get("redirectUrl") || "";
+          const finalUrl = getLocalizedRedirectUrl(
+            decodeURIComponent(redirectUrl),
+            locale
+          );
+          window.location.href = window.location.origin + finalUrl;
+          return res?.data;
+        }
+        return Promise.reject();
+      })
+      .catch((error) => {
+        console.error("Error in signOut function:", error);
+      });
+  };
 
   const signIn = (data) => {
     // return this.$store.dispatch(SIGNIN_USER, data);
@@ -162,8 +179,11 @@ export const useAccounts = ({ fpi }) => {
             ? new URLSearchParams(location.search)
             : null;
           const redirectUrl = queryParams?.get("redirectUrl") || "";
-          window.location.href =
-            window.location.origin + decodeURIComponent(redirectUrl);
+          const finalUrl = getLocalizedRedirectUrl(
+            decodeURIComponent(redirectUrl),
+            locale
+          );
+          window.location.href = window.location.origin + finalUrl;
         }
         return res?.data?.loginWithEmailAndPassword;
       });
@@ -232,18 +252,21 @@ export const useAccounts = ({ fpi }) => {
       const { user_exists: userExists } = res.data.verifyMobileOTP || {};
       if (!userExists) {
         if (isRedirection) {
-          navigate?.({
-            pathname: "/auth/edit-profile",
-            search: location.search,
-          });
+          navigate?.(
+            "/auth/edit-profile" +
+              (location.search ? `?${location.search}` : "")
+          );
         }
       } else {
         const queryParams = isRunningOnClient()
           ? new URLSearchParams(location.search)
           : null;
         const redirectUrl = queryParams?.get("redirectUrl") || "";
-        window.location.href =
-          window.location.origin + decodeURIComponent(redirectUrl);
+        const finalUrl = getLocalizedRedirectUrl(
+          decodeURIComponent(redirectUrl),
+          locale
+        );
+        window.location.href = window.location.origin + finalUrl;
       }
       return res.data.verifyMobileOTP;
     });
@@ -305,9 +328,7 @@ export const useAccounts = ({ fpi }) => {
       if (res?.errors) {
         throw res?.errors?.[0];
       }
-      navigate?.({
-        pathname: "/",
-      });
+      navigate?.("/");
       return res?.data?.forgotPassword;
     });
   };
@@ -347,17 +368,11 @@ export const useAccounts = ({ fpi }) => {
     };
     return fpi.executeGQL(SEND_RESET_PASSWORD_EMAIL, payload).then((res) => {
       if (res?.errors) {
-        showSnackbar(
-          "Failed to send the reset link to your primary email address.",
-          "error"
-        );
+        showSnackbar(t("resource.common.failed_to_send_reset_link"), "error");
         throw res?.errors?.[0];
       }
       if (res?.data?.sendResetPasswordEmail?.status === "success") {
-        showSnackbar(
-          "The reset link has been sent to your primary email address.",
-          "success"
-        );
+        showSnackbar(t("resource.common.reset_link_sent"), "success");
       }
       return res?.data?.sendResetPasswordEmail;
     });
@@ -446,18 +461,21 @@ export const useAccounts = ({ fpi }) => {
               ? new URLSearchParams(location.search)
               : null;
             queryParams?.set("email", email);
-            navigate?.({
-              pathname: "/auth/verify-email-link",
-              search: queryParams?.toString(),
-            });
+            navigate?.(
+              "/auth/verify-email-link" +
+                (queryParams?.toString() ? `?${queryParams.toString()}` : "")
+            );
           }
         } else if (isRedirection) {
           const queryParams = isRunningOnClient()
             ? new URLSearchParams(location.search)
             : null;
           const redirectUrl = queryParams?.get("redirectUrl") || "";
-          window.location.href =
-            window.location.origin + decodeURIComponent(redirectUrl);
+          const finalUrl = getLocalizedRedirectUrl(
+            decodeURIComponent(redirectUrl),
+            locale
+          );
+          window.location.href = window.location.origin + finalUrl;
         }
       }
       return res?.data?.verifyMobileOTP;
@@ -502,8 +520,11 @@ export const useAccounts = ({ fpi }) => {
             ? new URLSearchParams(location.search)
             : null;
           const redirectUrl = queryParams?.get("redirectUrl") || "";
-          window.location.href =
-            window.location.origin + decodeURIComponent(redirectUrl);
+          const finalUrl = getLocalizedRedirectUrl(
+            decodeURIComponent(redirectUrl),
+            locale
+          );
+          window.location.href = window.location.origin + finalUrl;
         }
       }
       return res?.data?.verifyEmailOTP;
@@ -516,9 +537,9 @@ export const useAccounts = ({ fpi }) => {
 
   const facebookText = useMemo(() => {
     if (facebookUser?.is_signed_in) {
-      return `Continue as ${facebookUser.profile.full_name}`;
+      return `${t("resource.common.social_accounts.continue_as")} ${facebookUser.profile.full_name}`;
     }
-    return "Login with Facebook";
+    return t("resource.common.social_accounts.login_with_facebook");
   }, [facebookUser]);
 
   const facebookLogin = async () => {

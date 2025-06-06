@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { useLocation } from "react-router-dom";
 import { useAccounts } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
@@ -7,6 +7,7 @@ import useVerifyDetails from "../auth/useVerifyDetails";
 // import { useLocation, useNavigate, createSearchParams } from 'react-router-dom';
 
 const useRegister = ({ fpi }) => {
+  const { t } = useGlobalTranslation("translation");
   const { pathname } = useLocation();
   const { countryDetails } = useInternational({ fpi });
   const platformData = useGlobalStore(fpi.getters.PLATFORM_DATA);
@@ -48,7 +49,7 @@ const useRegister = ({ fpi }) => {
       })
       .catch((err) => {
         setError({
-          message: err?.message || "Something went wrong",
+          message: err?.message || t("resource.common.error_message"),
         });
       });
   };
@@ -65,7 +66,7 @@ const useRegister = ({ fpi }) => {
       isValidNumber: false,
     },
     error,
-    loginButtonLabel: "GO TO LOGIN",
+    loginButtonLabel: t("resource.auth.login.go_to_login"),
     verifyDetailsProp,
     onLoginButtonClick: handleLoginClick,
     onRegisterFormSubmit: handleFormSubmit,

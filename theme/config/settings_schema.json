@@ -3,22 +3,22 @@
     {
       "type": "font",
       "id": "font_header",
-      "category": "Typography",
+      "category": "t:resource.settings_schema.common.typography",
       "default": false,
-      "label": "Title Font"
+      "label": "t:resource.settings_schema.typography.title_font"
     },
     {
       "type": "font",
       "id": "font_body",
-      "category": "Typography",
+      "category": "t:resource.settings_schema.common.typography",
       "default": false,
-      "label": "Body Font"
+      "label": "t:resource.settings_schema.typography.body_font"
     },
     {
       "type": "range",
       "id": "mobile_logo_max_height",
-      "category": "Header",
-      "label": "Mobile Logo Max Height",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.common.mobile_logo_max_height",
       "min": 20,
       "max": 100,
       "unit": "px",
@@ -28,15 +28,15 @@
       "type": "select",
       "id": "header_layout",
       "default": "single",
-      "category": "Header",
-      "label": "Layout",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.layout",
       "options": [
         {
-          "text": "Single Row Navigation",
+          "text": "t:resource.settings_schema.header.single_row_navigation",
           "value": "single"
         },
         {
-          "text": "Double Row Navigation",
+          "text": "t:resource.settings_schema.header.double_row_navigation",
           "value": "double"
         }
       ]
@@ -45,39 +45,39 @@
       "type": "checkbox",
       "id": "always_on_search",
       "default": false,
-      "category": "Header",
-      "label": "Always on Search",
-      "info": "It provides one click search in header, this option will only be functional with a \"Double Row Navigation\" Layout configuration"
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.always_on_search",
+      "info": "t:resource.settings_schema.header.one_click_search_info"
     },
     {
       "type": "checkbox",
       "id": "header_border",
       "default": true,
-      "category": "Header",
-      "label": "Show border on desktop",
-      "info": "It adds a border below header on desktop devices"
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.show_border_on_desktop",
+      "info": "t:resource.settings_schema.header.show_border_on_desktop_info"
     },
     {
       "type": "select",
       "id": "logo_menu_alignment",
       "default": "layout_1",
-      "category": "Header",
-      "label": "Desktop Logo & Menu Alignment",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.desktop_logo_menu_alignment",
       "options": [
         {
-          "text": "Logo left, Menu centre",
+          "text": "t:resource.settings_schema.header.logo_left_menu_center",
           "value": "layout_1"
         },
         {
-          "text": "Logo left, Menu left",
+          "text": "t:resource.settings_schema.header.logo_left_menu_left",
           "value": "layout_2"
         },
         {
-          "text": "Logo left, Menu right",
+          "text": "t:resource.settings_schema.header.logo_left_menu_right",
           "value": "layout_3"
         },
         {
-          "text": "Logo Centre",
+          "text": "t:resource.settings_schema.header.logo_centre",
           "value": "layout_4"
         }
       ]
@@ -86,29 +86,37 @@
       "type": "checkbox",
       "id": "header_mega_menu",
       "default": false,
-      "category": "Header",
-      "label": "Switch to Mega Menu",
-      "info": "The mega menu will only be displayed with a \"Double Row Navigation\" Layout configuration"
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.switch_to_mega_menu",
+      "info": "t:resource.settings_schema.header.mega_menu_double_row_required"
+    },
+    {
+      "type": "checkbox",
+      "id": "header_mega_menu_fullwidth",
+      "default": false,
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.use_full_width_mega_menu",
+      "info": "t:resource.settings_schema.header.use_full_width_mega_menu_info"
     },
     {
       "type": "select",
       "id": "nav_weight",
-      "category": "Header",
-      "label": "Navigation font weight",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.navigation_font_weight",
       "info": "",
       "default": "semibold",
       "options": [
         {
           "value": "regular",
-          "text": "Regular"
+          "text": "t:resource.settings_schema.header.regular"
         },
         {
           "value": "semibold",
-          "text": "Semibold"
+          "text": "t:resource.settings_schema.header.semibold"
         },
         {
           "value": "bold",
-          "text": "Bold"
+          "text": "t:resource.settings_schema.header.bold"
         }
       ]
     },
@@ -116,232 +124,245 @@
       "type": "checkbox",
       "id": "is_hyperlocal",
       "default": false,
-      "category": "Header",
-      "label": "Serviceability check in header"
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.serviceability_check_in_header"
     },
     {
       "type": "checkbox",
       "id": "is_mandatory_pincode",
-      "category": "Header",
-      "label": "Mandatory serviceability check",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.mandatory_serviceability_check",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "is_delivery_minutes",
       "default": false,
-      "category": "Header",
-      "label": "Minutes",
-      "info": "Show delivery promise in minutes."
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.minutes",
+      "info": "t:resource.settings_schema.header.show_delivery_promise_in_minutes"
     },
     {
       "type": "text",
       "id": "max_delivery_min",
-      "label": "Minutes",
-      "category": "Header",
+      "label": "t:resource.settings_schema.header.minutes",
+      "category": "t:resource.common.header",
       "default": "60",
-      "info": "Set minute threshold for promise."
+      "info": "t:resource.settings_schema.header.set_minute_threshold_for_promise"
     },
     {
       "type": "checkbox",
       "id": "is_delivery_hours",
       "default": false,
-      "category": "Header",
-      "label": "Hours",
-      "info": "Show delivery promise in hours."
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.hours",
+      "info": "t:resource.settings_schema.header.show_delivery_promise_in_hours"
     },
     {
       "type": "text",
       "id": "max_delivery_hours",
-      "label": "Hours",
-      "category": "Header",
+      "label": "t:resource.settings_schema.header.hours",
+      "category": "t:resource.common.header",
       "default": "2",
-      "info": "Set hour threshold for promise."
+      "info": "t:resource.settings_schema.header.set_hour_threshold_for_promise"
     },
     {
       "type": "checkbox",
       "id": "is_delivery_day",
       "default": false,
-      "category": "Header",
-      "label": "Today / Tomorrow",
-      "info": "Show delivery promise as today/tomorrow."
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.today_tomorrow",
+      "info": "t:resource.settings_schema.header.today_tomorrow_info"
     },
     {
       "type": "checkbox",
       "id": "is_delivery_date",
       "default": false,
-      "category": "Header",
-      "label": "Date Range",
-      "info": "Show delivery promise in date range."
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.date_range",
+      "info": "t:resource.settings_schema.header.date_range_info"
     },
     {
       "type": "checkbox",
       "id": "algolia_enabled",
-      "label": "Enable Algolia",
+      "label": "t:resource.settings_schema.algolia_configuration.enable_algolia",
       "default": false,
-      "info": "Enable Algolia",
-      "category": "Algolia Configuration"
+      "info": "t:resource.settings_schema.algolia_configuration.enable_algolia",
+      "category": "t:resource.settings_schema.common.algolia_configuration"
     },
     {
       "type": "image_picker",
       "id": "logo",
       "default": "",
-      "category": "Footer",
-      "label": "Logo"
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.logo"
     },
     {
       "type": "text",
       "id": "footer_description",
-      "label": "Description",
-      "category": "Footer"
+      "label": "t:resource.common.description",
+      "category": "t:resource.settings_schema.common.footer"
     },
     {
       "type": "image_picker",
       "id": "payments_logo",
       "default": "",
-      "category": "Footer",
-      "label": "Bottom Bar Image"
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.bottom_bar_image"
     },
     {
       "type": "checkbox",
       "id": "footer_image",
       "default": false,
-      "category": "Footer",
-      "label": "Enable Footer Image"
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.enable_footer_image"
     },
     {
       "type": "image_picker",
       "id": "footer_image_desktop",
       "default": "",
-      "category": "Footer",
-      "label": "Desktop"
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.desktop"
     },
     {
       "type": "image_picker",
       "id": "footer_image_mobile",
       "default": "",
-      "category": "Footer",
-      "label": "Mobile/Tablet"
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.mobile_tablet"
     },
     {
       "type": "checkbox",
       "id": "footer_contact_background",
       "default": true,
-      "category": "Footer",
-      "label": "Show Footer Contact Details Background"
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.show_footer_contact_details_background"
+    },
+    {
+      "type": "text",
+      "id": "footer_social_text",
+      "default": "Social Media",
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.social_media_text",
+      "info": "t:resource.settings_schema.footer.social_media_text_info"
+    },
+    {
+      "type": "range",
+      "id": "footer_logo_max_height_mobile",
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.footer_logo_max_height_mobile",
+      "min": 25,
+      "max": 100,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "footer_logo_max_height_desktop",
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.footer_logo_max_height_desktop",
+      "min": 36,
+      "max": 100,
+      "unit": "px",
+      "default": 36
     },
     {
       "type": "header",
-      "category": "Cart & Button Configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "Cart & Button Configuration",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "value": "Cart Options"
     },
     {
       "type": "checkbox",
       "id": "disable_cart",
       "default": false,
-      "category": "Cart & Button Configuration",
-      "label": "Disable Cart",
-      "info": "Disables Cart and Checkout"
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
+      "label": "t:resource.settings_schema.cart_and_button_configuration.disable_cart",
+      "info": "t:resource.settings_schema.cart_and_button_configuration.disables_cart_and_checkout"
     },
     {
       "type": "checkbox",
       "id": "show_price",
-      "label": "Show Price",
-      "category": "Cart & Button Configuration",
+      "label": "t:resource.settings_schema.cart_and_button_configuration.show_price",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "default": true,
-      "info": "Applies to Product Card, PDP and Featured Product Section"
+      "info": "t:resource.settings_schema.cart_and_button_configuration.applies_to_product_pdp_featured_section"
     },
     {
       "type": "header",
-      "category": "Cart & Button Configuration",
-      "value": "-------------------------------------"
-    },
-    {
-      "type": "header",
-      "category": "Cart & Button Configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "Cart & Button Configuration",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "value": "Buy Button Configurations"
     },
     {
       "type": "select",
       "id": "button_options",
-      "label": "Button Options",
-      "category": "Cart & Button Configuration",
+      "label": "t:resource.settings_schema.cart_and_button_configuration.button_options",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "default": "addtocart_buynow",
-      "info": "Applicable for PDP and Featured Product Section",
+      "info": "t:resource.settings_schema.cart_and_button_configuration.applicable_pdp_featured_product",
       "options": [
         {
           "value": "addtocart_buynow",
-          "text": "Add to cart & Buy now"
+          "text": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart_buy_now"
         },
         {
           "value": "addtocart_button",
-          "text": "Add to cart & Custom Button"
+          "text": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart_custom_button"
         },
         {
           "value": "buynow_button",
-          "text": "Buy now & Custom Button"
+          "text": "t:resource.settings_schema.cart_and_button_configuration.buy_now_custom_button"
         },
         {
           "value": "button",
-          "text": "Custom Button"
+          "text": "t:resource.common.custom_button"
         },
         {
           "value": "addtocart",
-          "text": "Add to cart"
+          "text": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart"
         },
         {
           "value": "buynow",
-          "text": "Buy now"
+          "text": "t:resource.settings_schema.cart_and_button_configuration.buy_now"
         },
         {
           "value": "addtocart_buynow_button",
-          "text": "All three"
+          "text": "t:resource.settings_schema.cart_and_button_configuration.all_three"
         },
         {
           "value": "none",
-          "text": "None"
+          "text": "t:resource.settings_schema.cart_and_button_configuration.none"
         }
       ]
     },
     {
       "type": "text",
       "id": "custom_button_text",
-      "label": "Custom Button text",
-      "category": "Cart & Button Configuration",
-      "default": "Enquire now",
-      "info": "Applicable for PDP and Featured Product Section"
+      "label": "t:resource.common.custom_button_text",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
+      "default": "t:resource.default_values.enquire_now",
+      "info": "t:resource.settings_schema.cart_and_button_configuration.applicable_pdp_featured_product"
     },
     {
       "type": "url",
       "id": "custom_button_link",
-      "label": "Custom Button link",
-      "category": "Cart & Button Configuration",
+      "label": "t:resource.common.custom_button_link",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "default": ""
     },
     {
       "type": "checkbox",
       "id": "show_quantity_control",
-      "label": "Show Quantity Control",
-      "category": "Cart & Button Configuration",
+      "label": "t:resource.settings_schema.cart_and_button_configuration.show_quantity_control",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "default": false,
-      "info": "Displays in place of Add to Cart when enabled."
+      "info": "t:resource.settings_schema.cart_and_button_configuration.display_in_place_of_add_to_cart"
     },
     {
       "type": "image_picker",
       "id": "custom_button_icon",
-      "label": "Custom Button Icon",
-      "category": "Cart & Button Configuration",
-      "info": "Applicable for PDP and Featured Product Section",
+      "label": "t:resource.common.custom_button_icon",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
+      "info": "t:resource.settings_schema.cart_and_button_configuration.applicable_pdp_featured_product",
       "default": "",
       "options": {
         "aspect_ratio": "1:1",
@@ -350,173 +371,122 @@
     },
     {
       "type": "header",
-      "category": "Product Card Configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "Product Card Configuration",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
       "value": "Product Card Aspect Ratio"
     },
     {
       "type": "text",
       "id": "product_img_width",
-      "category": "Product Card Configuration",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
       "default": "",
-      "label": "Width (in px)",
-      "info": "Default aspect ratio is 0.8. User can update between 0.6 to 1. For more than 1 it will be set to default 0.8. Applicable for lisiting pages, product page & featured collection section"
+      "label": "t:resource.settings_schema.product_card_configuration.width_in_px",
+      "info": "t:resource.settings_schema.product_card_configuration.default_aspect_ratio_limit"
     },
     {
       "type": "text",
       "id": "product_img_height",
-      "category": "Product Card Configuration",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
       "default": "",
-      "label": "Height (in px)",
-      "info": "Default aspect ratio is 0.8. User can update between 0.6 to 1. For more than 1 it will be set to default 0.8. Applicable for lisiting pages, product page & featured collection section"
-    },
-    {
-      "type": "header",
-      "category": "Product Card Configuration",
-      "value": "-------------------------------------"
+      "label": "t:resource.settings_schema.product_card_configuration.height_in_px",
+      "info": "t:resource.settings_schema.product_card_configuration.default_aspect_ratio_limit"
     },
     {
       "type": "checkbox",
       "id": "show_sale_badge",
-      "category": "Product Card Configuration",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
       "default": true,
-      "label": "Display Sale Badge",
-      "info": "Uncheck to hide sale badge"
+      "label": "t:resource.settings_schema.product_card_configuration.display_sale_badge",
+      "info": "t:resource.settings_schema.product_card_configuration.hide_sale_badge"
     },
     {
       "type": "range",
-      "category": "Product Card Configuration",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
       "id": "image_border_radius",
       "min": 0,
       "max": 30,
       "unit": "px",
-      "label": "Image Border Radius",
+      "label": "t:resource.settings_schema.product_card_configuration.image_border_radius",
       "default": 24,
-      "info": "Border radius for Image"
+      "info": "t:resource.settings_schema.product_card_configuration.border_radius_for_image"
     },
     {
-      "type": "header",
-      "category": "Product Card Configuration",
-      "value": "-------------------------------------"
+      "type": "range",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
+      "id": "badge_border_radius",
+      "min": 0,
+      "max": 30,
+      "unit": "px",
+      "label": "t:resource.settings_schema.product_card_configuration.badge_border_radius",
+      "default": 24,
+      "info": "t:resource.settings_schema.product_card_configuration.badge_border_radius_info"
     },
     {
       "type": "checkbox",
       "id": "img_fill",
-      "category": "Product Card Configuration",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
       "default": false,
-      "label": "Fit image to the container",
-      "info": "If the image aspect ratio is different from the container, the image will be clipped to fit the container. The aspect ratio of the image will be maintained"
+      "label": "t:resource.common.fit_image_to_container",
+      "info": "t:resource.common.clip_image_to_fit_container"
     },
     {
       "type": "color",
       "id": "img_container_bg",
-      "category": "Product Card Configuration",
-      "label": "Container Background Color",
-      "info": "This color will be used as the container background color of the Product/Collection/Category/Brand images wherever applicable"
+      "category": "t:resource.settings_schema.common.product_card_configuration",
+      "label": "t:resource.common.container_background_color",
+      "info": "t:resource.common.image_container_bg_color"
     },
     {
       "type": "checkbox",
       "id": "show_image_on_hover",
-      "category": "Product Card Configuration",
-      "label": "Show image on hover",
-      "info": "This option controls whether an additional image is displayed when hovering over the product card.",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
+      "label": "t:resource.settings_schema.product_card_configuration.show_image_on_hover",
+      "info": "t:resource.settings_schema.product_card_configuration.hover_image_display",
       "default": false
     },
     {
       "type": "header",
-      "category": "Other Page Configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "Other Page Configuration",
+      "category": "t:resource.settings_schema.common.other_page_configuration",
       "value": "Improve Image Quality"
     },
     {
       "type": "checkbox",
       "id": "img_hd",
-      "category": "Other Page Configuration",
+      "category": "t:resource.settings_schema.common.other_page_configuration",
       "default": false,
-      "label": "Use Original Images",
-      "info": "This may affect your page performance. Applicable for home-page."
+      "label": "t:resource.settings_schema.other_page_configuration.use_original_images",
+      "info": "t:resource.settings_schema.other_page_configuration.home_page_performance_impact"
     },
     {
       "type": "header",
-      "category": "Other Page Configuration",
-      "value": "-------------------------------------"
-    },
-    {
-      "type": "header",
-      "category": "Other Page Configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "Other Page Configuration",
-      "value": "Section Margins"
-    },
-    {
-      "type": "range",
-      "category": "Other Page Configuration",
-      "id": "section_margin_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "label": "Bottom Margin",
-      "default": 0,
-      "info": "Bottom margin for section"
-    },
-    {
-      "type": "header",
-      "category": "Other Page Configuration",
-      "value": "-------------------------------------"
-    },
-    {
-      "type": "header",
-      "category": "Other Page Configuration",
-      "value": " "
-    },
-    {
-      "type": "header",
-      "category": "Other Page Configuration",
+      "category": "t:resource.settings_schema.common.other_page_configuration",
       "value": "Border Radius"
     },
     {
       "type": "range",
-      "category": "Other Page Configuration",
+      "category": "t:resource.settings_schema.common.other_page_configuration",
       "id": "button_border_radius",
       "min": 0,
       "max": 30,
       "unit": "px",
-      "label": "Button Border Radius",
+      "label": "t:resource.settings_schema.other_page_configuration.button_border_radius",
       "default": 4,
-      "info": "Border radius for Button"
-    },
-    {
-      "type": "header",
-      "category": "Other Page Configuration",
-      "value": "-------------------------------------"
+      "info": "t:resource.settings_schema.other_page_configuration.border_radius_for_button"
     },
     {
       "type": "checkbox",
       "id": "is_google_map",
-      "category": "Google Maps",
+      "category": "t:resource.settings_schema.common.google_maps",
       "default": false,
-      "label": "Enable Google Maps",
+      "label": "t:resource.settings_schema.google_maps.enable_google_maps",
       "info": ""
     },
     {
       "type": "text",
       "id": "map_api_key",
-      "category": "Google Maps",
+      "category": "t:resource.settings_schema.common.google_maps",
       "default": "",
-      "label": "Google Maps API Key",
-      "info": "This API key helps connect your site to Google Maps so you can display interactive maps and location details."
+      "label": "t:resource.settings_schema.google_maps.google_maps_api_key",
+      "info": "t:resource.settings_schema.google_maps.google_maps_api_key_info"
     }
   ]
 }

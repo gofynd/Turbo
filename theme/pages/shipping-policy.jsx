@@ -16,3 +16,5 @@ function ShippingPolicy() {
 export const sections = JSON.stringify([]);
 
 export default ShippingPolicy;
+
+

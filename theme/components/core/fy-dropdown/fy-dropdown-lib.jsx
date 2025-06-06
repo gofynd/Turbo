@@ -28,6 +28,8 @@ import React, {
 import styles from "./fy-dropdown-lib.less";
 import ArrowDownIcon from "../../../assets/images/arrow-down.svg";
 import { createPortal } from "react-dom";
+import { useGlobalTranslation } from "fdk-core/utils";
+import { isRunningOnClient } from "../../../helper/utils";
 
 const FyDropdown = ({
   options = [],
@@ -41,10 +43,11 @@ const FyDropdown = ({
   value,
   disabled = false,
   // optionLabel = "display",
-  onChange = (value) => {},
+  onChange = (value) => { },
   dataKey = "key",
   getOptionLabel = (option) => option.display ?? option,
 }) => {
+  const { t } = useGlobalTranslation("translation");
   const [selectedValue, setSelectedValue] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const dropdown = useRef(null);
@@ -88,6 +91,7 @@ const FyDropdown = ({
   }, []);
 
   const adjustDropdownMenuPosition = useCallback(() => {
+    if (!isRunningOnClient()) return;
     const dropdownButtonElement = dropdownButton?.current;
     const dropdownListElement = dropdownList?.current;
 
@@ -139,6 +143,7 @@ const FyDropdown = ({
   };
 
   useEffect(() => {
+    if (!isRunningOnClient()) return;
     const clearEventListeners = () => {
       window.removeEventListener("click", handleClickOutside);
       window.removeEventListener("scroll", adjustDropdownMenuPosition);
@@ -232,7 +237,7 @@ const FyDropdown = ({
             className={`${styles.dropdownIcon} ${isOpen ? styles.open : ""}`}
           />
         </div>
-        {createPortal(
+        {isRunningOnClient() && createPortal(
           <ul
             className={`${styles.dropdownList}  ${isOpen ? styles.open : ""}`}
             ref={dropdownList}
@@ -252,7 +257,7 @@ const FyDropdown = ({
                 ))
               ) : (
                 <li className={`${styles.dropdownOption} ${styles.noOption}`}>
-                  No options
+                  {t("resource.common.no_options")}
                 </li>
               )}
             </div>

@@ -1,26 +1,35 @@
-import React, { useEffect, useMemo, Suspense } from "react";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import React, { useEffect, useState, useMemo, useRef, Suspense } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { FDKLink } from "fdk-core/components";
-import { useGlobalStore } from "fdk-core/utils";
+import {
+  useGlobalStore,
+  useNavigate,
+  useLocale,
+  useGlobalTranslation,
+} from "fdk-core/utils";
 import { CART_COUNT } from "../../queries/headerQuery";
 import { isRunningOnClient, isEmptyOrNull } from "../../helper/utils";
 import Search from "./search";
 import HeaderDesktop from "./desktop-header";
 import Navigation from "./navigation";
-import I18Dropdown from "./i18n-dropdown";
 import useHeader from "./useHeader";
 import styles from "./styles/header.less";
-import fallbackLogo from "../../assets/images/logo.png";
+import fallbackLogo from "../../assets/images/logo-header.png";
 import { useAccounts } from "../../helper/hooks";
 import useHyperlocal from "./useHyperlocal";
 import CartIcon from "../../assets/images/single-row-cart.svg";
 import AngleDownIcon from "../../assets/images/header-angle-down.svg";
+import "@gofynd/theme-template/components/location-modal/location-modal.css";
+import { LANGUAGES } from "../../queries/languageQuery";
+import I18Dropdown from "./i18n-dropdown";
+
 const LocationModal = React.lazy(
   () => import("@gofynd/theme-template/components/location-modal/location-modal")
 );
-import "@gofynd/theme-template/components/location-modal/location-modal.css";
 
 function Header({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
+  const headerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -35,6 +44,10 @@ function Header({ fpi }) {
     loggedIn,
   } = useHeader(fpi);
   const { openLogin } = useAccounts({ fpi });
+  const { activeLocale } = useLocale();
+  const i18N_DETAILS = useGlobalStore(fpi.getters.i18N_DETAILS);
+  const { supportedLanguages } = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
+  const [languageIscCode, setLanguageIscCode] = useState([]);
 
   const buyNow = searchParams?.get("buy_now") || false;
 
@@ -49,6 +62,38 @@ function Header({ fpi }) {
   }, [location?.pathname]);
 
   useEffect(() => {
+    if (supportedLanguages?.items?.length > 0) {
+      setLanguageIscCode(supportedLanguages?.items);
+    } else {
+      setLanguageIscCode([])
+    }
+
+    const i18n = i18N_DETAILS;
+    if (!i18n?.language?.locale) {
+      fpi.setI18nDetails({
+        ...i18n,
+        language: {
+          ...i18n.language,
+          locale: "en",
+        },
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isRunningOnClient()) return;
+    if (!i18N_DETAILS || activeLocale === i18N_DETAILS?.language?.locale) return;
+    fpi.setI18nDetails({
+      ...i18N_DETAILS,
+      language: {
+        ...i18N_DETAILS.language,
+        locale: activeLocale || "en",
+      },
+    });
+    window.location.reload();
+  }, [activeLocale, i18N_DETAILS]);
+
+  useEffect(() => {
     if (
       isEmptyOrNull(CART_ITEMS?.cart_items) &&
       location.pathname !== "/cart/bag/"
@@ -61,6 +106,9 @@ function Header({ fpi }) {
       };
       fpi.executeGQL(CART_COUNT, payload);
     }
+
+    const observers = [];
+
     if (isRunningOnClient()) {
       const header = document?.querySelector(".fdk-theme-header");
       if (header) {
@@ -71,17 +119,30 @@ function Header({ fpi }) {
           );
         });
         resizeObserver.observe(header);
-        return () => {
-          resizeObserver.disconnect();
-        };
+        observers.push(resizeObserver);
+      }
+
+      if (headerRef.current) {
+        const themeHeaderObserver = new ResizeObserver(() => {
+          fpi.custom.setValue(
+            `themeHeaderHeight`,
+            headerRef.current.getBoundingClientRect().height
+          );
+        });
+        themeHeaderObserver.observe(headerRef.current);
+        observers.push(themeHeaderObserver);
       }
     }
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
   useEffect(() => {
     if (isRunningOnClient()) {
-      setTimeout(() => {}, 1000);
+      setTimeout(() => { }, 1000);
       const cssVariables = {
         "--headerHeight": `${headerHeight}px`,
       };
@@ -149,6 +210,7 @@ function Header({ fpi }) {
       {!isHeaderHidden && (
         <div
           className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""}`}
+          ref={headerRef}
         >
           <header
             className={`${styles.header} ${globalConfig?.header_border ? styles.seperator : ""}`}
@@ -172,6 +234,7 @@ function Header({ fpi }) {
                   pincode={pincode}
                   deliveryMessage={deliveryMessage}
                   onDeliveryClick={handleLocationModalOpen}
+                  languageIscCode={languageIscCode}
                 />
               </div>
               <div className={styles.mobile}>
@@ -193,6 +256,8 @@ function Header({ fpi }) {
                     appInfo={appInfo}
                     globalConfig={globalConfig}
                     checkLogin={checkLogin}
+                    languageIscCode={languageIscCode}
+                    fpi={fpi}
                   />
                   <FDKLink
                     to="/"
@@ -201,7 +266,7 @@ function Header({ fpi }) {
                     <img
                       className={styles.logo}
                       src={getShopLogoMobile()}
-                      alt="name"
+                      alt={t("resource.refund_order.name_alt_text")}
                     />
                   </FDKLink>
                   <div className={styles.right}>
@@ -210,23 +275,26 @@ function Header({ fpi }) {
                     >
                       <Search globalConfig={globalConfig} fpi={fpi} />
                     </div>
-                    <div>
-                      <button
-                        type="button"
-                        className={`${styles.headerIcon} ${styles["right__icons--bag"]}`}
-                        onClick={() => checkLogin("cart")}
-                        aria-label={`${cartItemCount ?? 0} item in cart`}
-                      >
-                        <CartIcon
-                          className={`${styles.cart} ${styles.mobileIcon} ${styles.headerIcon}`}
-                        />
-                        {cartItemCount > 0 && (
-                          <span className={styles.cartCount}>
-                            {cartItemCount}
-                          </span>
-                        )}
-                      </button>
-                    </div>
+                    {!globalConfig?.disable_cart &&
+                      globalConfig?.button_options !== "none" && (
+                        <div>
+                          <button
+                            type="button"
+                            className={`${styles.headerIcon} ${styles["right__icons--bag"]}`}
+                            onClick={() => checkLogin("cart")}
+                            aria-label={`${cartItemCount ?? 0} ${t("resource.header.item_in_cart")}`}
+                          >
+                            <CartIcon
+                              className={`${styles.cart} ${styles.mobileIcon} ${styles.headerIcon}`}
+                            />
+                            {cartItemCount > 0 && (
+                              <span className={styles.cartCount}>
+                                {cartItemCount}
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      )}
                   </div>
                 </div>
                 {isHyperlocal && (
@@ -235,11 +303,11 @@ function Header({ fpi }) {
                     onClick={handleLocationModalOpen}
                   >
                     {isLoading ? (
-                      "Fetching..."
+                          t("resource.header.fetching")
                     ) : (
                       <>
                         <div className={styles.label}>
-                          {pincode ? deliveryMessage : "Enter a pincode"}
+                          {pincode ? deliveryMessage : t("resource.header.pin_code")}
                         </div>
                         {pincode && (
                           <div className={styles.pincode}>
@@ -256,13 +324,13 @@ function Header({ fpi }) {
               </div>
             </div>
             <div className={`${styles.mobile} ${styles.i18Wrapper}`}>
-              <I18Dropdown fpi={fpi}></I18Dropdown>
+              <I18Dropdown fpi={fpi} languageIscCode={languageIscCode}></I18Dropdown>
             </div>
           </header>
         </div>
       )}
       {isLocationModalOpen && (
-        <Suspense>
+        <Suspense fallback={<div />}>
           <LocationModal
             isOpen={isLocationModalOpen}
             pincode={pincode}

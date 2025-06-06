@@ -57,6 +57,14 @@ export const PLP_PRODUCTS = `query products(
       size
     }
     items {
+        action {
+          page {
+            params
+            type
+            query
+          }
+          type
+        }
         brand {
             name
         }

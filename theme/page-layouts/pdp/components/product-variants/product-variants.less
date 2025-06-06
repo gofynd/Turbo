@@ -51,7 +51,7 @@
       background: rgba(255, 255, 255, 0.4);
       position: absolute;
       top: 0;
-      left: 0;
+      inset-inline-start: 0;
       height: 100%;
       width: 100%;
       pointer-events: none;
@@ -64,8 +64,11 @@
       width: 24px;
       position: absolute;
       top: 50%;
-      left: 50%;
+      inset-inline-start: 50%;
       transform: translate(-50%, -50%);
+      [dir="rtl"] & {
+        transform: translate(50%, -50%);
+      }
       fill: @ButtonSecondary;
     }
   }
@@ -84,8 +87,11 @@
         height: 80px;
         width: 80px;
         bottom: 0;
-        border-left: 1px solid @ButtonSecondary;
+        border-inline-start: 1px solid @ButtonSecondary;
         transform: rotate(45deg);
+        [dir="rtl"] & {
+          transform: rotate(-45deg);
+        }
         transform-origin: bottom left;
       }
     }

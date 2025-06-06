@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { FDKLink } from "fdk-core/components";
 import FyImage from "../../../../components/core/fy-image/fy-image";
 import styles from "./product-variants.less";
 import { isRunningOnClient } from "../../../../helper/utils";
+import { FDKLink } from "fdk-core/components";
+import { useGlobalTranslation } from "fdk-core/utils";
 import CheckIcon from "../../../../assets/images/check.svg";
 
 function ProductVariants({
@@ -13,8 +14,9 @@ function ProductVariants({
   preventRedirect = false,
   setSlug,
 }) {
+  const { t } = useGlobalTranslation("translation");
   const isProductSet = product.is_set;
-  const getVariantSetText = () => (isProductSet ? "Size" : "Set");
+  const getVariantSetText = () => (isProductSet ? t("resource.common.size") : t("resource.common.set"));
   const getProductLink = (item) => {
     return `/product/${item.slug}`;
   };
@@ -29,8 +31,7 @@ function ProductVariants({
   const isVariantSelected = (item) => {
     if (currentSlug) {
       return currentSlug?.includes(item.slug);
-    }
-    if (isRunningOnClient()) {
+    } else if (isRunningOnClient()) {
       return window?.location?.pathname.includes(item.slug);
     }
   };
@@ -46,9 +47,8 @@ function ProductVariants({
       selectedValue = selectedVariant?.value;
     }
 
-    return `${item.header ? `${item.header}: ` : ""}${
-      selectedValue ? `${selectedValue} (selected)` : ""
-    }`;
+    return `${item.header ? `${item.header}: ` : ""}${selectedValue ? `${selectedValue} (${t("resource.common.selected")})` : ""
+      }`;
   };
 
   return (
@@ -60,13 +60,13 @@ function ProductVariants({
               item?.items.map((variant, index) =>
                 isProductSet !== variant.value ? (
                   <div key={variant.slug + index}>
-                    Interested in {getVariantSetText()}?
+                    {t("resource.product.interested_in")} {getVariantSetText()}?
                     <button
                       type="button"
                       className={styles.uktLinks}
                       onClick={() => getProductLink(variant)}
                     >
-                      Pick {getVariantSetText()}
+                      {t("resource.facets.pick")} {getVariantSetText()}
                     </button>
                   </div>
                 ) : null
@@ -83,9 +83,8 @@ function ProductVariants({
                     {item?.items.map((variant, index) => (
                       <div
                         key={variant.slug + index}
-                        className={`${styles.variantItemImage} ${
-                          isVariantSelected(variant) ? styles.selected : ""
-                        } ${!variant.is_available ? styles.unavailable : ""}`}
+                        className={`${styles.variantItemImage} ${isVariantSelected(variant) ? styles.selected : ""
+                          } ${!variant.is_available ? styles.unavailable : ""}`}
                       >
                         <FDKLink to={getProductLink(variant)}>
                           <FyImage
@@ -95,11 +94,10 @@ function ProductVariants({
                           />
                         </FDKLink>
                         <div
-                          className={`${
-                            isVariantSelected(variant)
-                              ? styles.selectedOverlay
-                              : styles.overlay
-                          }`}
+                          className={`${isVariantSelected(variant)
+                            ? styles.selectedOverlay
+                            : styles.overlay
+                            }`}
                         ></div>
                         <span>
                           <CheckIcon className={styles.selectedIcon} />
@@ -113,9 +111,8 @@ function ProductVariants({
                     {item?.items.map((variant) => (
                       <div
                         key={variant?.slug}
-                        className={`${styles.variantItemColor} ${
-                          isVariantSelected(variant) ? styles.selected : ""
-                        }`}
+                        className={`${styles.variantItemColor} ${isVariantSelected(variant) ? styles.selected : ""
+                          }`}
                       >
                         <FDKLink
                           to={getProductLink(variant)}
@@ -125,18 +122,15 @@ function ProductVariants({
                             style={{
                               background: `#${variant.color}`,
                             }}
-                            className={`${styles.color} ${
-                              isVariantSelected(variant) ? styles.selected : ""
-                            } ${
-                              !variant.is_available ? styles.unavailable : ""
-                            }`}
+                            className={`${styles.color} ${isVariantSelected(variant) ? styles.selected : ""
+                              } ${!variant.is_available ? styles.unavailable : ""
+                              }`}
                           >
                             <div
-                              className={`${
-                                isVariantSelected(variant)
-                                  ? styles.selectedOverlay
-                                  : styles.overlay
-                              }`}
+                              className={`${isVariantSelected(variant)
+                                ? styles.selectedOverlay
+                                : styles.overlay
+                                }`}
                             >
                               <span />
                             </div>
@@ -152,9 +146,8 @@ function ProductVariants({
                     {item?.items.map((variant, index) => (
                       <div
                         key={variant.slug + index}
-                        className={`${styles.variantItemText} b2 ${
-                          isVariantSelected(variant) ? styles.selected : ""
-                        } ${!variant.is_available ? styles.unavailable : ""}`}
+                        className={`${styles.variantItemText} b2 ${isVariantSelected(variant) ? styles.selected : ""
+                          } ${!variant.is_available ? styles.unavailable : ""}`}
                       >
                         {!preventRedirect ? (
                           <FDKLink to={getProductLink(variant)}>

@@ -5,6 +5,7 @@ import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import { getProductImgAspectRatio } from "../../../../helper/utils";
 import Viewer3D from "../viewer-3d/viewer-3d";
 import styles from "./mobile-slider.less";
+import { useGlobalTranslation } from "fdk-core/utils";
 import ReplayIcon from "../../../../assets/images/replay.svg";
 import MuteIcon from "../../../../assets/images/mute.svg";
 import UnmuteIcon from "../../../../assets/images/unmute.svg";
@@ -25,6 +26,7 @@ function MobileSlider({
   showShareIcon = true,
   sources = [],
 }) {
+  const { t } = useGlobalTranslation("translation");
   const settings = {
     dots: true,
     infinite: images?.length > 1,
@@ -128,6 +130,7 @@ function MobileSlider({
                 <FyImage
                   src={media?.url}
                   alt={media?.alt}
+                  isImageFill={globalConfig?.img_fill}
                   aspectRatio={getProductImgAspectRatio(globalConfig)}
                   sources={sources}
                   defer={i > 1}
@@ -156,7 +159,7 @@ function MobileSlider({
                         muted={isMute}
                         onClick={pauseVideo}
                         onEnded={onVideoEnd}
-                        // onLoadedData={videoLoaded(i)}
+                      // onLoadedData={videoLoaded(i)}
                       >
                         <source src={media?.url} type="video/mp4" />
                       </video>
@@ -199,7 +202,7 @@ function MobileSlider({
             )}
             {isCustomOrder && (
               <div className={`${styles.badge} ${styles.b4}`}>
-                Made to Order
+                {t("resource.product.made_to_order")}
               </div>
             )}
             <button

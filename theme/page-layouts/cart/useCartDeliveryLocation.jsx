@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
+import { useSearchParams } from "react-router-dom";
+import {
+  useGlobalStore,
+  useNavigate,
+  useGlobalTranslation,
+} from "fdk-core/utils";
 import { CART_DETAILS } from "../../queries/cartQuery";
 import { LOCALITY } from "../../queries/localityQuery";
 import { SELECT_ADDRESS } from "../../queries/checkoutQuery";
@@ -14,8 +18,8 @@ import useInternational from "../../components/header/useInternational";
 import { capitalize } from "../../helper/utils";
 
 const useCartDeliveryLocation = ({ fpi }) => {
+  const { t } = useGlobalTranslation("translation");
   const [searchParams] = useSearchParams();
-
   const navigate = useNavigate();
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
@@ -111,7 +115,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
           currency: countryInfo.currency.code,
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleCountrySearch = (event) => {
@@ -161,11 +165,11 @@ const useCartDeliveryLocation = ({ fpi }) => {
           return data;
         } else {
           showSnackbar(
-            res?.errors?.[0]?.message || "Pincode verification failed"
+            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure")
           );
           data.showError = true;
           data.errorMsg =
-            res?.errors?.[0]?.message || "Pincode verification failed";
+            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure");
           return data;
         }
       });
@@ -193,18 +197,9 @@ const useCartDeliveryLocation = ({ fpi }) => {
   }
   function gotoCheckout(id) {
     if (cart_items?.id && id) {
-      navigate({
-        pathname: "/cart/checkout",
-        search: `id=${cart_items?.id}&address_id=${id}`,
-        state: {
-          autoNaviagtedFromCart: true,
-          addrId: id,
-        },
-      });
+      navigate(`/cart/checkout?id=${cart_items?.id ?? ""}&address_id=${id ?? ""}`);
     } else {
-      navigate({
-        pathname: "/cart/bag",
-      });
+      navigate("/cart/bag");
     }
   }
 
@@ -251,21 +246,21 @@ const useCartDeliveryLocation = ({ fpi }) => {
   const selectedAddressString = useMemo(() => {
     if (selectedAddress) {
       return getFormattedAddress(selectedAddress);
-    }
-    if (defaultAddress?.id) {
+    } else if (defaultAddress?.id) {
       return getFormattedAddress(defaultAddress);
+    } else {
+      return "";
     }
-    return "";
   }, [selectedAddress, defaultAddress]);
 
   const personName = useMemo(() => {
     if (selectedAddress) {
       return selectedAddress.name;
-    }
-    if (defaultAddress?.id) {
+    } else if (defaultAddress?.id) {
       return defaultAddress.name;
+    } else {
+      return "";
     }
-    return "";
   }, [selectedAddress, defaultAddress]);
 
   const selectAddress = (id = "") => {
@@ -273,7 +268,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
       (item) => item?.id === selectedAddressId
     );
     if (!cart_items?.id) {
-      showSnackbar("Failed to select an address", "error");
+      showSnackbar(t("resource.common.address.address_selection_failure"), "error");
       return;
     }
     const cart_id = cart_items?.id;
@@ -297,7 +292,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
         setAddrError(null);
       } else {
         const errMsg =
-          res?.data?.selectAddress?.message || "Failed to select an address";
+          res?.data?.selectAddress?.message || t("resource.common.address.address_selection_failure");
         setAddrError({ id: addrId, message: errMsg });
         showSnackbar(errMsg, "error");
       }
@@ -325,7 +320,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
         });
       } else {
         showSnackbar(
-          res?.errors?.[0]?.message ?? "Failed to add an address",
+          res?.errors?.[0]?.message ?? t("resource.common.address.address_addition_failure"),
           "error"
         );
       }

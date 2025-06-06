@@ -1,8 +1,20 @@
+import { useEffect, useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { useGlobalStore } from "fdk-core/utils";
-import { useEffect, useState, useMemo } from "react";
 import { isRunningOnClient } from "../../helper/utils";
 import { useThemeConfig } from "../../helper/hooks";
+
+function filterActiveNavigation(navigation = []) {
+  return navigation.reduce((acc, item) => {
+    if (!item?.active) return acc;
+
+    const subNav = !!item?.sub_navigation?.length
+      ? filterActiveNavigation(item?.sub_navigation || [])
+      : item?.sub_navigation || [];
+    acc.push({ ...item, sub_navigation: subNav });
+    return acc;
+  }, []);
+}
 
 const useHeader = (fpi) => {
   const FOLLOWED_IDS = useGlobalStore(fpi.getters.FOLLOWED_LIST);
@@ -16,14 +28,21 @@ const useHeader = (fpi) => {
   const loggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
   const BUY_NOW = useGlobalStore(fpi.getters.BUY_NOW_CART_ITEMS);
   const { globalConfig } = useThemeConfig({ fpi });
-  const HeaderNavigation =
-    NAVIGATION?.items?.find((item) =>
-      item.orientation.landscape.includes("top")
-    )?.navigation || [];
-  const FooterNavigation =
-    NAVIGATION?.items?.find((item) =>
-      item.orientation.landscape.includes("bottom")
-    )?.navigation || [];
+  const HeaderNavigation = useMemo(() => {
+    const { navigation = [] } =
+      NAVIGATION?.items?.find((item) =>
+        item.orientation.landscape.includes("top")
+      ) || {};
+    return filterActiveNavigation(navigation);
+  }, [NAVIGATION]);
+
+  const FooterNavigation = useMemo(() => {
+    const { navigation = [] } =
+      NAVIGATION?.items?.find((item) =>
+        item.orientation.landscape.includes("bottom")
+      ) || {};
+    return filterActiveNavigation(navigation);
+  }, [NAVIGATION]);
 
   const [buyNowParam, setBuyNowParam] = useState(null);
   const location = useLocation();
@@ -47,9 +66,8 @@ const useHeader = (fpi) => {
   }, [CART_ITEMS, BUY_NOW, buyNowParam]);
 
   return {
-    HeaderNavigation: HeaderNavigation?.filter((f) => f?.active) || [],
-    // HeaderNavigation: navigation_data?.navigation,
-    FooterNavigation: FooterNavigation?.filter((f) => f?.active) || [],
+    HeaderNavigation,
+    FooterNavigation,
     cartItemCount,
     globalConfig,
     appInfo: CONFIGURATION.application,

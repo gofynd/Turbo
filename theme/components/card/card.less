@@ -22,13 +22,13 @@
     border: 1px solid @DividerStokes;
     position: absolute;
     bottom: 12px;
-    left: 12px;
-    right: 12px;
+    inset-inline-start: 12px;
+    inset-inline-end: 12px;
     @media @desktop {
       padding: 14px;
       bottom: 24px;
-      left: 43px;
-      right: 43px;
+      inset-inline-start: 43px;
+      inset-inline-end: 43px;
     }
     &:hover {
       background: @ThemeAccentL3;
@@ -40,16 +40,26 @@
       color: @TextBody;
     }
   }
+  &.COLLECTIONS {
+    .cardDesc {
+      &:hover {
+        background: @ThemeAccentL3;
+      }
+    }
+  }
   &.BRANDS {
     .cardDesc {
       justify-content: center;
       .column-gap(16px);
       border-radius: @ButtonRadius;
-      padding: 15px 27px 15px 15px;
+      padding-top: 15px;
+      padding-inline-end: 27px;
+      padding-bottom: 15px;
+      padding-inline-start: 15px;
       @media @desktop {
         bottom: 12px;
-        left: 12px;
-        right: 12px;
+        inset-inline-start: 12px;
+        inset-inline-end: 12px;
       }
       .title {
         // color: @TextHeading;
@@ -75,5 +85,10 @@
   }
   & > * {
     all: revert;
+  }
+}
+.fillImg {
+  img {
+    object-fit: cover;
   }
 }

@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { FDKLink } from "fdk-core/components";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/media-with-text.less";
-import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
+import { getProductImgAspectRatio } from "../helper/utils";
 import Hotspot from "../components/hotspot/product-hotspot";
 import { FEATURE_PRODUCT_DETAILS } from "../queries/featureProductQuery";
+import { useViewport } from "../helper/hooks";
+import { FDKLink } from "fdk-core/components";
+import placeholderDesktop from "../assets/images/placeholder/media-with-text-desktop.jpg";
+import placeholderMobile from "../assets/images/placeholder/media-with-text-mobile.jpg";
+import { MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT } from "../helper/constant";
 
 export function Component({ props, globalConfig, blocks, fpi }) {
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useViewport(0, 768);
   const [products, setProducts] = useState([]);
   const {
     image_desktop,
@@ -20,30 +24,18 @@ export function Component({ props, globalConfig, blocks, fpi }) {
     align_text_desktop,
     text_alignment,
     text_alignment_mobile,
+    padding_top,
+    padding_bottom,
   } = props;
 
-  // const customValues = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
-
-  const getMobileImage = () =>
-    image_mobile?.value !== ""
-      ? image_mobile?.value
-      : require("../assets/images/placeholder9x16.png");
-
-  const getDesktopImage = () =>
-    image_desktop?.value !== ""
-      ? image_desktop?.value
-      : require("../assets/images/placeholder16x9.png");
+  const getMobileImage = image_mobile?.value || placeholderMobile;
+  const getDesktopImage = image_desktop?.value || placeholderDesktop;
 
   const getImgSrcSet = () => {
     if (globalConfig?.img_hd) {
       return [
-        {
-          breakpoint: { min: 481 },
-        },
-        {
-          breakpoint: { max: 480 },
-          url: getMobileImage(),
-        },
+        { breakpoint: { min: 481 } },
+        { breakpoint: { max: 480 }, url: getMobileImage },
       ];
     }
     return [
@@ -53,9 +45,9 @@ export function Component({ props, globalConfig, blocks, fpi }) {
       { breakpoint: { min: 1080 }, width: 1472 },
       { breakpoint: { min: 900 }, width: 1236 },
       { breakpoint: { min: 720 }, width: 1530 },
-      { breakpoint: { max: 180 }, width: 450, url: getMobileImage() },
-      { breakpoint: { max: 360 }, width: 810, url: getMobileImage() },
-      { breakpoint: { max: 540 }, width: 1170, url: getMobileImage() },
+      { breakpoint: { max: 180 }, width: 450, url: getMobileImage },
+      { breakpoint: { max: 360 }, width: 810, url: getMobileImage },
+      { breakpoint: { max: 540 }, width: 1170, url: getMobileImage },
     ];
   };
   const getProductSlugs = () => {
@@ -113,107 +105,87 @@ export function Component({ props, globalConfig, blocks, fpi }) {
       mobile: blocks?.filter((block) => block?.type === "hotspot_mobile"),
     };
   };
-  useEffect(() => {
-    if (isRunningOnClient()) {
-      const localDetectMobileWidth = () =>
-        document?.getElementsByTagName("body")?.[0]?.getBoundingClientRect()
-          ?.width <= 768;
-
-      const handleResize = () => {
-        // setWindowWidth(window?.innerWidth);
-      };
-      setIsMobile(localDetectMobileWidth());
-
-      window?.addEventListener("resize", handleResize);
-
-      return () => {
-        window.removeEventListener("resize", handleResize);
-      };
-    }
-  }, []);
 
   const mapAlignment = !isMobile
     ? {
-        top_left: {
-          justifyContent: "unset",
-          alignItems: "flex-start",
-          textAlign: "left",
-        },
-        top_center: {
-          justifyContent: "unset",
-          alignItems: "center",
-          textAlign: "center",
-        },
-        top_right: {
-          justifyContent: "unset",
-          alignItems: "flex-end",
-          textAlign: "right",
-        },
-        center_center: {
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-        },
-        center_left: {
-          justifyContent: "center",
-          alignItems: "flex-start",
-          textAlign: "left",
-        },
-        center_right: {
-          justifyContent: "center",
-          alignItems: "flex-end",
-          textAlign: "right",
-        },
-        bottom_left: {
-          justifyContent: "flex-end",
-          alignItems: "flex-start",
-          textAlign: "left",
-        },
-        bottom_right: {
-          justifyContent: "flex-end",
-          alignItems: "flex-end",
-          textAlign: "right",
-        },
-        bottom_center: {
-          justifyContent: "flex-end",
-          alignItems: "center",
-          textAlign: "center",
-        },
-      }
+      top_start: {
+        justifyContent: "unset",
+        alignItems: "flex-start",
+        textAlign: "start",
+      },
+      top_center: {
+        justifyContent: "unset",
+        alignItems: "center",
+        textAlign: "center",
+      },
+      top_end: {
+        justifyContent: "unset",
+        alignItems: "flex-end",
+        textAlign: "end",
+      },
+      center_center: {
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+      },
+      center_start: {
+        justifyContent: "center",
+        alignItems: "flex-start",
+        textAlign: "start",
+      },
+      center_end: {
+        justifyContent: "center",
+        alignItems: "flex-end",
+        textAlign: "end",
+      },
+      bottom_start: {
+        justifyContent: "flex-end",
+        alignItems: "flex-start",
+        textAlign: "start",
+      },
+      bottom_end: {
+        justifyContent: "flex-end",
+        alignItems: "flex-end",
+        textAlign: "end",
+      },
+      bottom_center: {
+        justifyContent: "flex-end",
+        alignItems: "center",
+        textAlign: "center",
+      },
+    }
     : {
-        center: {
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-        },
-        left: {
-          justifyContent: "center",
-          alignItems: "flex-start",
-          textAlign: "left",
-        },
-        right: {
-          justifyContent: "center",
-          alignItems: "flex-end",
-          textAlign: "right",
-        },
-      };
+      center: {
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+      },
+      left: {
+        justifyContent: "center",
+        alignItems: "flex-start",
+        textAlign: "start",
+      },
+      right: {
+        justifyContent: "center",
+        alignItems: "flex-end",
+        textAlign: "end",
+      },
+    };
 
   const dynamicStyles = {
-    paddingTop: `16px`,
-    paddingBottom: `16px`,
+    paddingTop: `${padding_top?.value ?? 16}px`,
+    paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
   return (
-    <div
+    <section
       className={`${styles.media_text} ${align_text_desktop?.value && styles["media_text--invert"]}`}
       style={dynamicStyles}
     >
       <div className={styles["media_text__image-wrapper"]}>
         <FyImage
           customClass={styles.imageWrapper}
-          src={getDesktopImage()}
-          aspectRatio={314 / 229}
-          mobileAspectRatio={320 / 467}
+          src={getDesktopImage}
           sources={getImgSrcSet()}
           isFixedAspectRatio={false}
         />
@@ -223,7 +195,10 @@ export function Component({ props, globalConfig, blocks, fpi }) {
               className={styles["hotspot--desktop"]}
               key={index}
               hotspot={hotspot}
-              product={getFormattedProducts()?.[hotspot?.props?.product?.value]}
+              product={
+                getFormattedProducts()?.[hotspot?.props?.product?.value] ??
+                MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT
+              }
               aspectRatio={getProductImgAspectRatio(globalConfig)}
             />
           ))}
@@ -234,12 +209,14 @@ export function Component({ props, globalConfig, blocks, fpi }) {
               key={index}
               hotspot={hotspot}
               isMobile={isMobile}
-              product={getFormattedProducts()?.[hotspot?.props?.product?.value]}
+              product={
+                getFormattedProducts()?.[hotspot?.props?.product?.value] ??
+                MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT
+              }
               aspectRatio={getProductImgAspectRatio(globalConfig)}
             />
           ))}
       </div>
-
       <div
         className={styles.media_text__info}
         style={
@@ -249,34 +226,34 @@ export function Component({ props, globalConfig, blocks, fpi }) {
         }
       >
         {title?.value && (
-          <h2 className={`${styles.media_text__heading} fontHeader`}>
+          <h2 className={`fx-title ${styles.media_text__heading} fontHeader`}>
             {title?.value}
           </h2>
         )}
         {description?.value && (
-          <p className={`${styles.media_text__description} fontBody`}>
+          <p className={`fx-description ${styles.media_text__description}`}>
             {description?.value}
           </p>
         )}
         {button_text?.value && (
           <FDKLink
-            className={`${styles.media_text__cta} btnSecondary fontBody`}
+            className={`fx-button ${styles.media_text__cta} btnSecondary`}
             to={banner_link?.value}
           >
             {button_text?.value}
           </FDKLink>
         )}
       </div>
-    </div>
+    </section>
   );
 }
 export const settings = {
-  label: "Media with Text",
+  label: "t:resource.sections.media_with_text.media_with_text",
   props: [
     {
       type: "image_picker",
       id: "image_desktop",
-      label: "Desktop Image",
+      label: "t:resource.common.desktop_image",
       default: "",
       options: {
         aspect_ratio: "314:229",
@@ -285,7 +262,7 @@ export const settings = {
     {
       type: "image_picker",
       id: "image_mobile",
-      label: "mobile Image",
+      label: "t:resource.sections.media_with_text.mobile_image",
       default: "",
       options: {
         aspect_ratio: "320:467",
@@ -296,45 +273,45 @@ export const settings = {
       type: "select",
       options: [
         {
-          value: "top_left",
-          text: "Top Left",
+          value: "top_start",
+          text: "t:resource.sections.media_with_text.top_start",
         },
         {
           value: "top_center",
-          text: "Top Center",
+          text: "t:resource.sections.media_with_text.top_center",
         },
         {
-          value: "top_right",
-          text: "Top Right",
+          value: "top_end",
+          text: "t:resource.sections.media_with_text.top_end",
         },
         {
           value: "center_center",
-          text: "Center Center",
+          text: "t:resource.sections.media_with_text.center_center",
         },
         {
-          value: "center_left",
-          text: "Center Left",
+          value: "center_start",
+          text: "t:resource.sections.media_with_text.center_start",
         },
         {
-          value: "center_right",
-          text: "Center Right",
+          value: "center_end",
+          text: "t:resource.sections.media_with_text.center_end",
         },
         {
-          value: "bottom_left",
-          text: "Bottom Left",
+          value: "bottom_start",
+          text: "t:resource.sections.media_with_text.bottom_start",
         },
         {
-          value: "bottom_right",
-          text: "Bottom Right",
+          value: "bottom_end",
+          text: "t:resource.sections.media_with_text.bottom_end",
         },
         {
           value: "bottom_center",
-          text: "Bottom Center",
+          text: "t:resource.sections.media_with_text.bottom_center",
         },
       ],
-      default: "center_left",
-      label: "Text Alignment (Desktop)",
-      info: "Set text alignment for desktop",
+      default: "center_start",
+      label: "t:resource.common.text_alignment_desktop",
+      info: "t:resource.sections.media_with_text.text_align_desktop",
     },
     {
       id: "text_alignment_mobile",
@@ -342,58 +319,79 @@ export const settings = {
       options: [
         {
           value: "center",
-          text: "Center",
+          text: "t:resource.common.center",
         },
         {
           value: "left",
-          text: "Left",
+          text: "t:resource.common.start",
         },
         {
           value: "right",
-          text: "Right",
+          text: "t:resource.common.end",
         },
       ],
       default: "left",
-      label: "Text Alignment (Mobile)",
-      info: "Set text alignment for mobile devices",
+      label: "t:resource.common.text_alignment_mobile",
+      info: "t:resource.sections.media_with_text.text_align_mobile",
     },
-
     {
       type: "url",
       id: "banner_link",
       default: "",
-      label: "Redirect Link",
+      label: "t:resource.common.redirect_link",
     },
     {
       type: "text",
       id: "title",
       default: "",
-      label: "Heading",
+      label: "t:resource.common.heading",
     },
     {
       type: "textarea",
       id: "description",
       default: "",
-      label: "Description",
+      label: "t:resource.common.description",
     },
     {
       type: "text",
       id: "button_text",
       default: "",
-      label: "Button Text",
+      label: "t:resource.common.button_text",
     },
     {
       type: "checkbox",
       id: "align_text_desktop",
       default: false,
-      label: "Invert Section",
-      info: "Reverse the section on desktop",
+      label: "t:resource.sections.media_with_text.invert_section",
+      info: "t:resource.sections.media_with_text.reverse_section_desktop",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.top_padding",
+      default: 16,
+      info: "t:resource.sections.categories.top_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
   ],
   blocks: [
     {
       type: "hotspot_desktop",
-      name: "Hotspot Desktop",
+      name: "t:resource.common.hotspot_desktop",
       props: [
         {
           type: "range",
@@ -402,7 +400,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Vertical Position",
+          label: "t:resource.common.vertical_position",
           default: 50,
         },
         {
@@ -412,21 +410,21 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Horizontal Position",
+          label: "t:resource.common.horizontal_position",
           default: 50,
         },
         {
           type: "product",
-          name: "Product",
+          name: "t:resource.common.product",
           id: "product",
-          label: "Select a Product",
-          info: "Product Item to be displayed",
+          label: "t:resource.common.select_a_product",
+          info: "t:resource.common.product_item_display",
         },
       ],
     },
     {
       type: "hotspot_mobile",
-      name: "Hotspot Mobile",
+      name: "t:resource.common.hotspot_mobile",
       props: [
         {
           type: "range",
@@ -435,7 +433,7 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Vertical Position",
+          label: "t:resource.common.vertical_position",
           default: 50,
         },
         {
@@ -445,15 +443,15 @@ export const settings = {
           max: 100,
           step: 1,
           unit: "%",
-          label: "Horizontal Position",
+          label: "t:resource.common.horizontal_position",
           default: 50,
         },
         {
           type: "product",
-          name: "Product",
+          name: "t:resource.common.product",
           id: "product",
-          label: "Select a Product",
-          info: "Product Item to be displayed",
+          label: "t:resource.common.select_a_product",
+          info: "t:resource.common.product_item_display",
         },
       ],
     },

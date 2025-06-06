@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import OutsideClickHandler from "react-outside-click-handler";
 import styles from "./styles/dropdown.less";
+import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 import RadioIcon from "../../assets/images/radio";
 import ArrowDropdownIcon from "../../assets/images/arrow-dropdown-black.svg";
 
 function Dropdown({ type, selectedOption, dropdownData }) {
+  const { t } = useGlobalTranslation("translation");
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,14 +17,11 @@ function Dropdown({ type, selectedOption, dropdownData }) {
   const replaceQueryParam = (key, value) => {
     const querParams = new URLSearchParams(location.search);
     querParams.set(key, value);
-    navigate({
-      pathname: "/profile/orders",
-      search: querParams.toString(),
-    });
+    navigate("/profile/orders" + (querParams?.toString() ? `?${querParams.toString()}` : ""));
     close();
     getOrderDataWithFilterQuery();
   };
-  const getOrderDataWithFilterQuery = () => {};
+  const getOrderDataWithFilterQuery = () => { };
   const replaceQuery = (option) => {
     switch (type) {
       case "time": {
@@ -43,14 +42,14 @@ function Dropdown({ type, selectedOption, dropdownData }) {
   return (
     <OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
       <div className={`${styles.selected}`} onClick={openDropdown}>
-        {selectedOption}
+      {selectedOption?.startsWith(".resource") ? t(selectedOption) : selectedOption}
         <ArrowDropdownIcon onBlur={close} />
         {isOpen && (
           <ul className={`${styles.menu}`}>
             {dropdownData.map((option, index) => (
               <li key={index} onClick={() => replaceQuery(option)}>
                 <RadioIcon checked={option.is_selected} />
-                <span>{option.display}</span>
+                <span>{option?.display?.startsWith('resource.') ? t(option.display) : option.display}</span>
               </li>
             ))}
           </ul>

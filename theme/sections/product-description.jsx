@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { useGlobalStore, useFPI } from "fdk-core/utils";
+import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
 import { FDKLink, BlockRenderer } from "fdk-core/components";
 import { useParams, useLocation } from "react-router-dom";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -25,6 +25,7 @@ import {
   isEmptyOrNull,
   isRunningOnClient,
   currencyFormat,
+  formatLocale,
 } from "../helper/utils";
 import { useSnackbar, useViewport } from "../helper/hooks";
 import styles from "../styles/sections/product-description.less";
@@ -42,6 +43,13 @@ import ScaleIcon from "../assets/images/scale.svg";
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
+  // const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
+  // const locale = language?.locale;
+
+  const i18nDetails = useGlobalStore(fpi?.getters?.i18N_DETAILS) || {};
+  const locale = i18nDetails?.language?.locale || "en";
+  const countryCode = i18nDetails?.countryCode || "IN";
+  const { t } = useGlobalTranslation("translation");
   const {
     icon_color,
     variant_position,
@@ -55,7 +63,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const params = useParams();
   const location = useLocation();
 
-  const isPDP = /^\/product\/[^/]+\/?$/.test(location.pathname);
+  const isPDP = /^(?:\/[a-zA-Z-]+)?\/product\/[^/]+\/?$/i.test(
+    location.pathname
+  );
   const slug = isPDP ? params?.slug : product?.value;
 
   const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -225,27 +235,45 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const getProductPrice = (key) => {
     if (selectedSize && !isEmptyOrNull(productPriceBySlug.price)) {
       if (productPriceBySlug?.set) {
-        return currencyFormat(productPriceBySlug?.price_per_piece[key]) || "";
+        return (
+          currencyFormat(
+            productPriceBySlug?.price_per_piece[key],
+            "",
+            formatLocale(locale, countryCode, true)
+          ) || ""
+        );
       }
       const price = productPriceBySlug?.price || "";
-      return currencyFormat(price?.[key], price?.currency_symbol) || "";
+      return (
+        currencyFormat(
+          price?.[key],
+          price?.currency_symbol,
+          formatLocale(locale, countryCode, true)
+        ) || ""
+      );
     }
     if (selectedSize && priceDataDefault) {
       return (
         currencyFormat(
           priceDataDefault?.[key]?.min,
-          priceDataDefault?.[key]?.currency_symbol
+          priceDataDefault?.[key]?.currency_symbol,
+          formatLocale(locale, countryCode, true)
         ) || ""
       );
     }
     if (priceDataDefault) {
       return priceDataDefault?.[key]?.min !== priceDataDefault?.[key]?.max
         ? `${priceDataDefault?.[key]?.currency_symbol || ""} ${
-            currencyFormat(priceDataDefault?.[key]?.min) || ""
-          } - ${currencyFormat(priceDataDefault?.[key]?.max) || ""}`
+            currencyFormat(
+              priceDataDefault?.[key]?.min,
+              "",
+              formatLocale(locale, countryCode, true)
+            ) || ""
+          } - ${currencyFormat(priceDataDefault?.[key]?.max, "", formatLocale(locale, countryCode, true)) || ""}`
         : currencyFormat(
             priceDataDefault?.[key]?.max,
-            priceDataDefault?.[key]?.currency_symbol
+            priceDataDefault?.[key]?.currency_symbol,
+            formatLocale(locale, countryCode, true)
           ) || "";
     }
   };
@@ -312,8 +340,8 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     if (navigator.share && isMobile) {
       try {
         await navigator.share({
-          title: "Amazing Product",
-          text: `Check out this amazing product on ${application?.name}`,
+          title: t("resource.product.amazing_product"),
+          text: `${t("resource.section.product.check_out_amazing_product_on")} ${application?.name}`,
           url: window?.location?.href,
         });
       } catch (error) {
@@ -339,13 +367,19 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     if (!isMto) {
       if (totalQuantity > maxCartQuantity) {
         totalQuantity = maxCartQuantity;
-        showSnackbar(`Maximum quantity is ${maxCartQuantity}.`, "error");
+        showSnackbar(
+          `${t("resource.product.max_quantity")} ${maxCartQuantity}.`,
+          "error"
+        );
       }
 
       if (totalQuantity < minCartQuantity) {
         if (operation === "edit_item") {
           totalQuantity = minCartQuantity;
-          showSnackbar(`Minimum quantity is ${minCartQuantity}.`, "error");
+          showSnackbar(
+            `${t("resource.product.min_quantity")} ${minCartQuantity}.`,
+            "error"
+          );
         } else if (itemDetails?.quantity > minCartQuantity) {
           totalQuantity = minCartQuantity;
         } else {
@@ -396,7 +430,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   }
 
   if (isProductNotFound) {
-    return <EmptyState title="No product found" />;
+    return <EmptyState title={t("resource.common.no_product_found")} />;
   }
 
   return (
@@ -462,7 +496,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                 <ShareItem
                                   setShowSocialLinks={setShowSocialLinks}
                                   handleShare={() => handleShare()}
-                                  description={`Check out this amazing product on ${application?.name}`}
+                                  description={`${t("resource.section.product.check_out_amazing_product_on")} ${application?.name}`}
                                 />
                               )}
                             </>
@@ -485,7 +519,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                         className={`${styles.mrpLabel} ${styles["mrpLabel--effective"]}`}
                                         style={{ marginLeft: 0 }}
                                       >
-                                        MRP:
+                                        {t("resource.common.mrp")}:
                                       </span>
                                     )}
                                   <h4
@@ -503,7 +537,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                         <span
                                           className={`${styles.mrpLabel} ${styles["mrpLabel--marked"]}`}
                                         >
-                                          MRP:
+                                          {t("resource.common.mrp")}:
                                         </span>
                                       )}
                                     {getProductPrice("effective") !==
@@ -591,7 +625,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                   className={`${styles.storeSeller} captionNormal`}
                                 >
                                   <span className={styles.soldByLabel}>
-                                    Sold by :
+                                    {t("resource.common.sold_by")} :
                                   </span>
                                   <div
                                     // v-if="showSellerStoreLabel"
@@ -607,7 +641,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                           className={`captionSemiBold ${styles.otherSellers}`}
                                         >
                                           &nbsp;&&nbsp;
-                                          {`${soldBy?.count - 1} Other${soldBy?.count > 2 ? "s" : ""}`}
+                                          {`${soldBy?.count - 1} ${t(productPriceBySlug?.seller?.count > 1 ? "resource.common.other_plural" : "resource.common.other")}`}
                                         </span>
                                         <ArrowDownIcon
                                           className={styles.dropdownArrow}
@@ -657,7 +691,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                       <p
                                         className={`b2 ${styles.sizeSelection__label}`}
                                       >
-                                        <span>Size :</span>
+                                        <span>
+                                          {t("resource.common.size")} :
+                                        </span>
                                       </p>
 
                                       <div
@@ -741,13 +777,17 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                           className={`${styles.buttonFont} ${styles.selectedSize}`}
                                           title={
                                             selectedSize
-                                              ? `Size : ${selectedSize}`
-                                              : "SELECT SIZE"
+                                              ? `${t("resource.common.size")} : ${selectedSize}`
+                                              : t(
+                                                  "resource.common.select_size_caps"
+                                                )
                                           }
                                         >
                                           {selectedSize
-                                            ? `Size : ${selectedSize}`
-                                            : "SELECT SIZE"}
+                                            ? `${t("resource.common.size")}  : ${selectedSize}`
+                                            : t(
+                                                "resource.common.select_size_caps"
+                                              )}
                                         </p>
                                         <ArrowDownIcon
                                           className={`${styles.dropdownArrow} ${
@@ -863,7 +903,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                         disabled={isLoadingCart}
                                       >
                                         <CartIcon className={styles.cartIcon} />
-                                        ADD TO CART
+                                        {t("resource.common.add_to_cart")}
                                       </button>
                                     )}
                                   </>
@@ -874,7 +914,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                     disabled
                                     className={`${styles.button} btnPrimary ${styles.notAvailable} ${styles.fontBody}`}
                                   >
-                                    PRODUCT NOT AVAILABLE
+                                    {t("resource.common.product_not_available")}
                                   </button>
                                 )}
                               </div>
@@ -909,7 +949,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                           />
                                         }
                                       >
-                                        BUY NOW
+                                        {t("resource.common.buy_now_caps")}
                                       </FyButton>
                                     )}
                                   </div>
@@ -940,7 +980,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                         />
                                       }
                                     >
-                                      BUY NOW
+                                      {t("resource.common.buy_now_caps")}
                                     </FyButton>
                                   )}
                                 </div>
@@ -948,7 +988,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                           </div>
                         </>
                       );
-
+//
                     case "size_guide":
                       return (
                         <>
@@ -959,7 +999,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                 onClick={() => setShowSizeGuide(true)}
                                 className={`${styles["product__size--guide"]} ${styles.buttonFont} ${styles.fontBody}`}
                               >
-                                <span>SIZE GUIDE</span>
+                                <span>{t("resource.common.size_guide")}</span>
                                 <ScaleIcon className={styles.scaleIcon} />
                               </button>
                             </div>
@@ -979,7 +1019,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                             >
                               <button
                                 type="button"
-                                className={`${styles.button} btnPrimary ${styles.buyNow} ${styles.fontBody}`}
+                                className={`${styles.button} btnPrimary ${styles.customBtnStyle} ${styles.fontBody}`}
                               >
                                 {getBlockConfigValue(
                                   block,
@@ -1067,7 +1107,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                 {productPriceBySlug?.return_config
                                   ?.returnable && (
                                   <li className={styles.b2}>
-                                    {`${productPriceBySlug?.return_config?.time} ${productPriceBySlug?.return_config?.unit} return`}
+                                    {`${productPriceBySlug?.return_config?.time} ${productPriceBySlug?.return_config?.unit} ${t(
+                                      "resource.facets.return"
+                                    )}`}
                                   </li>
                                 )}
                                 {/* v-else-if="returnConfig.returnable === false"  */}
@@ -1075,7 +1117,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                   ?.returnable &&
                                   selectedSize && (
                                     <li className={styles.b2}>
-                                      No return available on this product
+                                      {t(
+                                        "resource.product.no_return_available_message"
+                                      )}
                                     </li>
                                   )}
                               </>
@@ -1084,14 +1128,15 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                               getManufacturingTime() &&
                               selectedSize && (
                                 <li className={styles.b2}>
-                                  {`Shipping within ${productDetails?.custom_order?.manufacturing_time} ${productDetails?.custom_order?.manufacturing_time_unit}`}
+                                  {`${t("resource.product.shipping_within")} ${productDetails?.custom_order?.manufacturing_time} ${productDetails?.custom_order?.manufacturing_time_unit}`}
                                 </li>
                               )}
                             {/*  */}
                             {getBlockConfigValue(block, "item_code") &&
                               productDetails?.item_code && (
                                 <li className={styles.b2}>
-                                  Item code : {productDetails?.item_code}
+                                  {t("resource.product.item_code")} :{" "}
+                                  {productDetails?.item_code}
                                 </li>
                               )}
                           </ul>
@@ -1105,7 +1150,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                       return <BlockRenderer block={block} />;
 
                     default:
-                      return <div>Invalid block</div>;
+                      return <div>{t("resource.common.invalid_block")}</div>;
                   }
                 })}
 
@@ -1177,6 +1222,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
             addProductForCheckout={addProductForCheckout}
             onSizeSelection={onSizeSelection}
             productPriceBySlug={productPriceBySlug}
+            mandatoryPincode={props?.mandatory_pincode?.value}
             isSizeGuideAvailable={blockProps.size_guide && isSizeGuideAvailable}
             isMto={isMto}
             deliveryInfoProps={{
@@ -1225,72 +1271,79 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 }
 
 export const settings = {
-  label: "Product Description",
+  label: "t:resource.sections.product_description.product_description",
   props: [
     {
       type: "product",
-      name: "Product",
+      name: "t:resource.common.product",
       id: "product",
-      label: "Select a Product",
-      info: "This config works on all pages except the product description page",
+      label: "t:resource.common.select_a_product",
+      info: "t:resource.common.product_item_display",
     },
     {
       type: "checkbox",
       id: "enable_buy_now",
-      label: "Enable Buy now",
-      info: "Enable buy now feature",
+      label: "t:resource.sections.product_description.enable_buy_now",
+      info: "t:resource.sections.product_description.enable_buy_now_feature",
       default: false,
     },
     {
       type: "checkbox",
       id: "product_details_bullets",
-      label: "Show Bullets in Product Details",
+      label:
+        "t:resource.sections.product_description.show_bullets_in_product_details",
       default: true,
     },
     {
       type: "color",
       id: "icon_color",
-      label: "Play video icon color",
+      label: "t:resource.sections.product_description.play_video_icon_color",
       default: "#D6D6D6",
     },
     {
       type: "checkbox",
       id: "mandatory_pincode",
-      label: "Mandatory Delivery check",
+      label: "t:resource.common.mandatory_delivery_check",
       default: true,
     },
     {
       type: "radio",
       id: "variant_position",
-      label: "Product Detail Position",
+      label: "t:resource.sections.product_description.product_detail_postion",
       default: "accordion",
       options: [
-        { value: "accordion", text: "Accordion style" },
-        { value: "tabs", text: "Tab style" },
+        {
+          value: "accordion",
+          text: "t:resource.sections.product_description.accordion_style",
+        },
+        {
+          value: "tabs",
+          text: "t:resource.sections.product_description.tab_style",
+        },
       ],
     },
     {
       type: "checkbox",
       id: "show_products_breadcrumb",
-      label: "Show Products breadcrumb",
+      label: "t:resource.sections.product_description.show_products_breadcrumb",
       default: true,
     },
     {
       type: "checkbox",
       id: "show_category_breadcrumb",
-      label: "Show Category breadcrumb",
+      label: "t:resource.sections.product_description.show_category_breadcrumb",
       default: true,
     },
     {
       type: "checkbox",
       id: "show_brand_breadcrumb",
-      label: "Show Brand breadcrumb",
+      label: "t:resource.sections.product_description.show_brand_breadcrumb",
       default: true,
     },
     {
       type: "checkbox",
       id: "first_accordian_open",
-      label: "First Accordian Open",
+      label: "t:resource.sections.product_description.first_accordian_open",
       default: true,
     },
     {
@@ -1298,14 +1351,6 @@ export const settings = {
       label: "Image size for Tablet/Desktop",
       type: "select",
       options: [
-        {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
         {
           value: "700",
           text: "700px",
@@ -1321,6 +1366,18 @@ export const settings = {
         {
           value: "1300",
           text: "1300px",
+        },
+        {
+          value: "1500",
+          text: "1500px",
+        },
+        {
+          value: "1700",
+          text: "1700px",
+        },
+        {
+          value: "2000",
+          text: "2000px",
         },
       ],
       default: "700",
@@ -1353,105 +1410,118 @@ export const settings = {
   blocks: [
     {
       type: "product_name",
-      name: "Product Name",
+      name: "t:resource.sections.product_description.product_name",
       props: [
         {
           type: "checkbox",
           id: "show_brand",
-          label: "Display Brand name",
+          label: "t:resource.sections.product_description.display_brand_name",
           default: true,
         },
       ],
     },
     {
       type: "product_price",
-      name: "Product Price",
+      name: "t:resource.sections.product_description.product_price",
       props: [
         {
           type: "checkbox",
           id: "mrp_label",
-          label: "Display MRP label text",
+          label:
+            "t:resource.sections.product_description.display_mrp_label_text",
           default: true,
         },
       ],
     },
     {
       type: "product_tax_label",
-      name: "Product Tax Label",
+      name: "t:resource.sections.product_description.product_tax_label",
       props: [
         {
           type: "text",
           id: "tax_label",
-          label: "Price tax label text",
-          default: "Price inclusive of all tax",
+          label: "t:resource.common.price_tax_label_text",
+          default: "t:resource.default_values.tax_label",
         },
       ],
     },
-    { type: "short_description", name: "Short Description", props: [] },
-    { type: "product_variants", name: "Product Variants", props: [] },
+    {
+      type: "short_description",
+      name: "t:resource.sections.product_description.short_description",
+      props: [],
+    },
+    {
+      type: "product_variants",
+      name: "t:resource.sections.product_description.product_variants",
+      props: [],
+    },
     {
       type: "seller_details",
-      name: "Seller Details",
+      name: "t:resource.sections.product_description.seller_details",
       props: [
         {
           type: "checkbox",
           id: "show_seller",
-          label: "Show Seller",
+          label: "t:resource.common.show_seller",
           default: true,
         },
       ],
     },
     {
       type: "size_wrapper",
-      name: "Size Container with Action Buttons",
+      name: "t:resource.sections.product_description.size_container_with_action_buttons",
       props: [
         {
           type: "checkbox",
           id: "hide_single_size",
-          label: "Hide single size",
+          label: "t:resource.common.hide_single_size",
           default: false,
         },
         {
           type: "checkbox",
           id: "preselect_size",
-          label: "Preselect size",
-          info: "Applicable only for multiple-size products",
+          label: "t:resource.common.preselect_size",
+          info: "t:resource.common.applicable_for_multiple_size_products",
           default: true,
         },
         {
           type: "radio",
           id: "size_selection_style",
-          label: "Size selection style",
+          label: "t:resource.common.size_selection_style",
           default: "dropdown",
           options: [
-            { value: "dropdown", text: "Dropdown style" },
-            { value: "block", text: "Block style" },
+            { value: "dropdown", text: "t:resource.common.dropdown_style" },
+            { value: "block", text: "t:resource.common.block_style" },
           ],
         },
       ],
     },
-    { type: "size_guide", name: "Size Guide", props: [] },
+    {
+      type: "size_guide",
+      name: "t:resource.sections.product_description.size_guide",
+      props: [],
+    },
     {
       type: "custom_button",
-      name: "Custom Button",
+      name: "t:resource.common.custom_button",
       props: [
         {
           type: "text",
           id: "custom_button_text",
-          label: "Custom Button text",
-          default: "Enquire now",
-          info: "Applicable for PDP Section",
+          label: "t:resource.common.custom_button_text",
+          default: "t:resource.default_values.enquire_now",
+          info: "t:resource.sections.product_description.applicable_for_pdp_section",
         },
         {
           type: "url",
           id: "custom_button_link",
-          label: "Custom Button link",
+          label: "t:resource.common.custom_button_link",
           default: "",
         },
         {
           type: "image_picker",
           id: "custom_button_icon",
-          label: "Custom Button Icon",
+          label: "t:resource.common.custom_button_icon",
           default: "",
           options: { aspect_ratio: "1:1", aspect_ratio_strict_check: true },
         },
@@ -1459,135 +1529,171 @@ export const settings = {
     },
     {
       type: "pincode",
-      name: "Pincode",
+      name: "t:resource.sections.product_description.pincode",
       props: [
         {
           type: "checkbox",
           id: "show_logo",
-          label: "Show brand logo",
+          label: "t:resource.sections.product_description.show_brand_logo",
           default: true,
-          info: "The pincode section will show the brand logo and name",
+          info: "t:resource.sections.product_description.show_brand_logo_name_in_pincode_section",
         },
       ],
     },
-    { type: "add_to_compare", name: "Add to Compare", props: [] },
+    {
+      type: "add_to_compare",
+      name: "t:resource.sections.product_description.add_to_compare",
+      props: [],
+    },
     {
       type: "offers",
-      name: "Offers",
+      name: "t:resource.sections.product_description.offers",
       props: [
         {
           type: "checkbox",
           id: "show_offers",
-          label: "Show Offers",
+          label: "t:resource.sections.product_description.show_offers",
           default: true,
         },
       ],
     },
     {
       type: "prod_meta",
-      name: "Prod Meta",
+      name: "t:resource.sections.product_description.prod_meta",
       props: [
-        { type: "checkbox", id: "return", label: "Return", default: true },
+        {
+          type: "checkbox",
+          id: "return",
+          label: "t:resource.sections.product_description.return",
+          default: true,
+        },
         {
           type: "checkbox",
           id: "item_code",
-          label: "Show Item code",
+          label: "t:resource.sections.product_description.show_item_code",
           default: true,
         },
       ],
     },
     {
       type: "trust_markers",
-      name: "Trust Markers",
+      name: "t:resource.sections.product_description.trust_markers",
       props: [
         {
           type: "image_picker",
           id: "badge_logo_1",
-          label: "Badge logo 1",
+          label: "t:resource.sections.product_description.badge_logo_1",
           default: "",
           options: { aspect_ratio: "1:1", aspect_ratio_strict_check: true },
         },
         {
           type: "text",
           id: "badge_label_1",
-          label: "Badge label 1",
+          label: "t:resource.sections.product_description.badge_label_1",
           default: "",
         },
-        { type: "url", id: "badge_url_1", label: "Badge URL 1", default: "" },
+        {
+          type: "url",
+          id: "badge_url_1",
+          label: "t:resource.sections.product_description.badge_url_1",
+          default: "",
+        },
         {
           type: "image_picker",
           id: "badge_logo_2",
-          label: "Badge logo 2",
+          label: "t:resource.sections.product_description.badge_logo_2",
           default: "",
           options: { aspect_ratio: "1:1", aspect_ratio_strict_check: true },
         },
         {
           type: "text",
           id: "badge_label_2",
-          label: "Badge label 2",
+          label: "t:resource.sections.product_description.badge_label_2",
           default: "",
         },
-        { type: "url", id: "badge_url_2", label: "Badge URL 2", default: "" },
+        {
+          type: "url",
+          id: "badge_url_2",
+          label: "t:resource.sections.product_description.badge_url_2",
+          default: "",
+        },
         {
           type: "image_picker",
           id: "badge_logo_3",
-          label: "Badge logo 3",
+          label: "t:resource.sections.product_description.badge_logo_3",
           default: "",
           options: { aspect_ratio: "1:1", aspect_ratio_strict_check: true },
         },
         {
           type: "text",
           id: "badge_label_3",
-          label: "Badge label 3",
+          label: "t:resource.sections.product_description.badge_label_3",
           default: "",
         },
-        { type: "url", id: "badge_url_3", label: "Badge URL 3", default: "" },
+        {
+          type: "url",
+          id: "badge_url_3",
+          label: "t:resource.sections.product_description.badge_url_3",
+          default: "",
+        },
         {
           type: "image_picker",
           id: "badge_logo_4",
-          label: "Badge logo 4",
+          label: "t:resource.sections.product_description.badge_logo_4",
           default: "",
           options: { aspect_ratio: "1:1", aspect_ratio_strict_check: true },
         },
         {
           type: "text",
           id: "badge_label_4",
-          label: "Badge label 4",
+          label: "t:resource.sections.product_description.badge_label_4",
           default: "",
         },
-        { type: "url", id: "badge_url_4", label: "Badge URL 4", default: "" },
+        {
+          type: "url",
+          id: "badge_url_4",
+          label: "t:resource.sections.product_description.badge_url_4",
+          default: "",
+        },
         {
           type: "image_picker",
           id: "badge_logo_5",
-          label: "Badge logo 5",
+          label: "t:resource.sections.product_description.badge_logo_5",
           default: "",
           options: { aspect_ratio: "1:1", aspect_ratio_strict_check: true },
         },
         {
           type: "text",
           id: "badge_label_5",
-          label: "Badge label 5",
+          label: "t:resource.sections.product_description.badge_label_5",
           default: "",
         },
-        { type: "url", id: "badge_url_5", label: "Badge URL 5", default: "" },
+        {
+          type: "url",
+          id: "badge_url_5",
+          label: "t:resource.sections.product_description.badge_url_5",
+          default: "",
+        },
       ],
     },
   ],
   preset: {
     blocks: [
-      { name: "Product Name" },
-      { name: "Product Price" },
-      { name: "Product Tax Label" },
-      { name: "Short Description" },
-      { name: "Seller Details" },
-      { name: "Size Guide" },
-      { name: "Custom Button" },
-      { name: "Pincode" },
-      { name: "Product Variants" },
-      { name: "Add to Compare" },
-      { name: "Offers" },
-      { name: "Prod Meta" },
-      { name: "Size Container with Action Buttons" },
+      { name: "t:resource.sections.product_description.product_name" },
+      { name: "t:resource.sections.product_description.product_price" },
+      { name: "t:resource.sections.product_description.product_tax_label" },
+      { name: "t:resource.sections.product_description.short_description" },
+      { name: "t:resource.sections.product_description.product_variants" },
+      { name: "t:resource.sections.product_description.seller_details" },
+      { name: "t:resource.sections.product_description.size_guide" },
+      { name: "t:resource.common.custom_button" },
+      { name: "t:resource.sections.product_description.pincode" },
+      { name: "t:resource.sections.product_description.add_to_compare" },
+      { name: "t:resource.sections.product_description.offers" },
+      { name: "t:resource.sections.product_description.prod_meta" },
+      {
+        name: "t:resource.sections.product_description.size_container_with_action_buttons",
+      },
     ],
   },
 };
@@ -1603,7 +1709,11 @@ Component.serverFetch = async ({ fpi, router, props }) => {
     fpi.custom.setValue("isProductNotFound", false);
 
     return fpi.executeGQL(GET_PRODUCT_DETAILS, values).then((result) => {
-      if (result.errors && result.errors.length) {
+      if (
+        result?.data?.product == null ||
+        (typeof result?.data?.product === "object" &&
+          Object.keys(result.data.product).length === 0)
+      ) {
         fpi.custom.setValue("isProductNotFound", true);
       } else {
         fpi.custom.setValue(

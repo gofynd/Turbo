@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useAccounts } from "../../helper/hooks";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 const useForgetPassword = ({ fpi }) => {
+  const { t } = useGlobalTranslation("translation");
   const [isFormSubmitSuccess, setIsFormSubmitSuccess] = useState(false);
   const [error, setError] = useState(null);
 
@@ -17,7 +19,7 @@ const useForgetPassword = ({ fpi }) => {
         setIsFormSubmitSuccess(false);
         setError({
           message:
-            err?.details?.error || err?.message || "Something went wrong",
+            err?.details?.error || err?.message || t("resource.common.error_message"),
         });
       });
   };

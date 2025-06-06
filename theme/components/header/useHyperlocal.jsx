@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import {
   useThemeConfig,
   useToggleState,
@@ -8,8 +8,10 @@ import {
   useGoogleMapConfig,
 } from "../../helper/hooks";
 import { LOCALITY, DELIVERY_PROMISE } from "../../queries/logisticsQuery";
+import { isRunningOnClient } from "../../helper/utils";
 
 const useHyperlocal = (fpi) => {
+  const { t } = useGlobalTranslation("translation");
   const location = useLocation();
   const { globalConfig } = useThemeConfig({ fpi });
   const { mapApiKey } = useGoogleMapConfig({ fpi });
@@ -40,7 +42,7 @@ const useHyperlocal = (fpi) => {
 
   const deliveryMessage = useMemo(() => {
     if (servicibilityError) {
-      return "Product not serviceable";
+      return t("resource.header.product_not_serviceable");
     }
     if (!deliveryPromise?.min) {
       return "";
@@ -75,9 +77,10 @@ const useHyperlocal = (fpi) => {
   };
 
   const handleCurrentLocClick = () => {
+    if (!isRunningOnClient()) return;
     if (!navigator || !("geolocation" in navigator)) {
       setServicibilityError({
-        message: "Location access failed. Enter pincode manually",
+        message: t("resource.header.location_access_failed"),
       });
       return;
     }
@@ -99,7 +102,7 @@ const useHyperlocal = (fpi) => {
           const data = await response.json();
           if (!data.results.length) {
             setServicibilityError({
-              message: "Location access failed. Enter pincode manually",
+              message: t("resource.header.location_access_failed"),
             });
           }
           if (data.results.length > 0) {
@@ -119,13 +122,13 @@ const useHyperlocal = (fpi) => {
           }
         } catch (error) {
           setServicibilityError({
-            message: "Location access failed. Enter pincode manually",
+            message: t("resource.header.location_access_failed"),
           });
         }
       },
       (err) => {
         setServicibilityError({
-          message: "Location access failed. Enter pincode manually",
+          message: t("resource.header.location_access_failed"),
         });
       }
     );
@@ -141,13 +144,15 @@ const useHyperlocal = (fpi) => {
           })
           .catch((error) => {
             setServicibilityError({
-              message: error?.message || "Something went wrong",
+              message:
+                error?.message ||
+                t("resource.common.error_message"),
             });
           });
       }
     } catch (error) {
       setServicibilityError({
-        message: error?.message || "Something went wrong",
+        message: error?.message || t("resource.common.error_message"),
       });
     }
   };
@@ -166,7 +171,9 @@ const useHyperlocal = (fpi) => {
         })
         .catch((error) => {
           setServicibilityError({
-            message: error?.message || "Something went wrong",
+            message:
+              error?.message ||
+              t("resource.common.error_message"),
           });
         })
         .finally(() => {
@@ -179,13 +186,13 @@ const useHyperlocal = (fpi) => {
 
   return {
     isHyperlocal: useMemo(() => {
-      const regexPattern =
-        /^(\/cart\/checkout|\/profile\/orders(\/shipment\/\w+)?)$/;
+      if (!isRunningOnClient()) return false;
+      const regexPattern = /^(\/cart\/checkout|\/profile\/orders(\/shipment\/\w+)?)$/;
       if (regexPattern.test(location.pathname)) {
         return false;
       }
       return isHyperlocal;
-    }, [location.pathname, isHyperlocal]),
+    }, [location?.pathname, isHyperlocal]),
     isLoading: isPromiseLoading,
     pincode: locationDetails?.pincode,
     deliveryMessage,

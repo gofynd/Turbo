@@ -3,10 +3,10 @@
 .share-popup-overlay {
   position: absolute;
   top: 45px;
-  right: 0px;
+  inset-inline-end: 0px;
   .upArrow {
     position: absolute;
-    right: 8px;
+    inset-inline-end: 8px;
     top: -14px;
     @media @tablet {
       display: none;
@@ -17,7 +17,7 @@
     width: 100%;
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
-    left: 0;
+    inset-inline-start: 0;
     top: 0;
     z-index: 99;
   }
@@ -27,7 +27,7 @@
   width: 100%;
   position: fixed;
   top: 0;
-  left: 0;
+  inset-inline-start: 0;
 }
 
 .share-popup {
@@ -42,13 +42,14 @@
   }
   @media @tablet {
     top: 44px;
-    right: 0;
+    inset-inline-end: 0;
   }
   z-index: 2;
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 16px;
+  position: relative;
   .icons {
     display: flex;
     justify-content: space-between;
@@ -74,7 +75,7 @@
     position: fixed;
     bottom: 0;
     top: unset;
-    left: 0;
+    inset-inline-start: 0;
     width: 100%;
     z-index: 6;
     padding-bottom: 32px;
@@ -136,7 +137,7 @@
       &.white-btn {
         color: @ButtonPrimary;
         background: @color-white;
-        border: 1px solid @color-black;
+        border: 1px solid #000;
       }
     }
   }

@@ -10,10 +10,11 @@ import EmptyState from "../components/empty-state/empty-state";
 import InfiniteLoader from "../components/infinite-loader/infinite-loader";
 import ScrollToTop from "../components/scroll-to-top/scroll-to-top";
 import { COLLECTIONS } from "../queries/collectionsQuery";
-import { useFPI } from "fdk-core/utils";
+import { useFPI, useGlobalTranslation } from "fdk-core/utils";
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
+  const { t } = useGlobalTranslation("translation");
 
   const { collections, isLoading, pageData, fetchCollection } =
     useCollections(fpi);
@@ -29,7 +30,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   }, []);
 
   if (!isLoading && !collections?.length) {
-    return <EmptyState title="No collection found" />;
+    return <EmptyState title={t("resource.collections.empty_state")} />;
   }
 
   const showBackToTop = typeof back_top === "boolean" ? back_top : true;
@@ -44,9 +45,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
         <>
           <div className={`${styles.collections__breadcrumbs} captionNormal`}>
             <span>
-              <FDKLink to="/">Home</FDKLink>&nbsp; / &nbsp;
+              <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>&nbsp; / &nbsp;
             </span>
-            <span className={styles.active}>Collections</span>
+            <span className={styles.active}>{t("resource.common.breadcrumb.collections")}</span>
           </div>
           <div>
             {title && (
@@ -86,35 +87,35 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 }
 
 export const settings = {
-  label: "All Collections",
+  label: "t:resource.sections.collections_listing.all_collections",
   props: [
     {
       type: "text",
       id: "title",
       default: "",
-      info: "Set the heading text for the collections page",
-      label: "Heading",
+      info: "t:resource.sections.collections_listing.heading_info",
+      label: "t:resource.common.heading",
     },
     {
       type: "textarea",
       id: "description",
       default: "",
-      info: "Add a description for the collections page",
-      label: "Description",
+      info: "t:resource.sections.collections_listing.description_info",
+      label: "t:resource.common.description",
     },
     {
       type: "checkbox",
       id: "back_top",
-      label: "Back to Top button",
-      info: "Enable a 'Back to Top' button to help users quickly return to the top of the page",
+      label: "t:resource.sections.categories.back_top",
+      info: "t:resource.sections.brand_landing.back_to_top_info",
       default: true,
     },
     {
       type: "checkbox",
       id: "img_fill",
       default: false,
-      label: "Fit image to the container",
-      info: "If the image aspect ratio is different from the container, the image will be clipped to fit the container. The aspect ratio of the image will be maintained",
+      label: "t:resource.common.fit_image_to_container",
+      info: "t:resource.common.clip_image_to_fit_container",
     },
   ],
 };
@@ -123,7 +124,7 @@ Component.serverFetch = async ({ fpi, props }) => {
   try {
     const payload = {
       pageNo: 1,
-      pageSize: 12,
+      pageSize: 20,
     };
     await fpi.executeGQL(COLLECTIONS, payload).then((res) => {
       return res;

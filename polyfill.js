@@ -21,6 +21,8 @@ if (!isRunningOnClient()) {
   // Polyfill for Response object if it doesn't exist
   if (!globalThis.Response) {
     globalThis.Response = class Response {
+      constructor() {}
+
       // Static method to simulate Response.error()
       static error() {
         return {};

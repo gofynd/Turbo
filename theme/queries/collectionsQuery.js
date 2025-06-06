@@ -411,6 +411,14 @@ export const FEATURED_COLLECTION = `query Collection($slug: String!, $first:Int,
           type
           url
         }
+        action {
+          page {
+            params
+            query
+            type
+          }
+          type
+        }
         teaser_tag
         sellable
         discount

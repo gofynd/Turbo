@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import {
   FETCH_FOLLOWED_PRODUCTS,
   FOLLOWED_PRODUCTS_IDS,
@@ -12,6 +12,7 @@ import useAddToCartModal from "../plp/useAddToCartModal";
 import useInternational from "../../components/header/useInternational";
 
 const useWishlistPage = ({ fpi }) => {
+  const { t } = useGlobalTranslation("translation");
   const followedlList = useGlobalStore(fpi.getters.FOLLOWED_LIST);
   const [wishListData, setWishListData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,7 @@ const useWishlistPage = ({ fpi }) => {
 
   const {
     show_add_to_cart = true,
+    card_cta_text = t("resource.common.add_to_cart"),
     mandatory_pincode = false,
     hide_single_size = false,
     preselect_size = false,
@@ -45,7 +47,7 @@ const useWishlistPage = ({ fpi }) => {
   });
 
   const breadcrumb = useMemo(
-    () => [{ label: "Home", link: "/" }, { label: "Wishlist" }],
+    () => [{ label: t("resource.common.breadcrumb.home"), link: "/" }, { label: t("resource.common.breadcrumb.wishlist") }],
     []
   );
 
@@ -104,9 +106,9 @@ const useWishlistPage = ({ fpi }) => {
 
   const EmptyStateComponent = () => (
     <EmptyState
-      title="You do not have any product added to wishlist"
-      description="Add products to wishilst"
-      btnTitle="CONTINUE SHOPPING"
+      title={t("resource.wishlist.no_product_in_wishlist")}
+      description={t("resource.wishlist.add_products_to_wishlist")}
+      btnTitle={t("resource.common.continue_shopping")}
     />
   );
 
@@ -143,7 +145,7 @@ const useWishlistPage = ({ fpi }) => {
     loading,
     breadcrumb,
     productList: wishListData?.items,
-    title: "Wishlist",
+    title: t("resource.common.breadcrumb.wishlist"),
     totalCount: followedlList?.page?.item_total || 0,
     isImageFill: globalConfig?.img_fill,
     imageBackgroundColor: globalConfig?.img_container_bg,
@@ -164,6 +166,7 @@ const useWishlistPage = ({ fpi }) => {
     addToCartModalProps,
     showAddToCart:
       !isInternational && show_add_to_cart && !globalConfig?.disable_cart,
+    actionButtonText: card_cta_text,
     globalConfig,
   };
 };

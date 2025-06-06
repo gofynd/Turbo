@@ -19,6 +19,9 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     mobile_layout: { value: mobileLayout } = {},
     item_count_mobile = {},
     card_radius: { value: cardRadius } = {},
+    padding_top: { value: paddingTop = 16 } = {},
+    padding_bottom: { value: paddingBottom = 16 } = {},
+    in_new_tab = { value: false },
   } = props;
 
   const itemCount = Number(item_count?.value ?? 5);
@@ -47,61 +50,69 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     ];
   }, [globalConfig?.img_hd, itemCount, itemCountMobile]);
 
+  const dynamicStyles = {
+    paddingTop: `${paddingTop}px`,
+    paddingBottom: `${paddingBottom}px`,
+    maxWidth: "100vw",
+    "--bd-radius": `${(cardRadius || 0) / 2}%`,
+  };
+
   return (
-    <div
-      style={{
-        paddingTop: "16px",
-        maxWidth: "100vw",
-        paddingBottom: `16px`,
-        "--bd-radius": `${(cardRadius || 0) / 2}%`,
-      }}
-    >
-      <div>
-        <div className={styles.titleBlock}>
-          {title && (
-            <h2 className={`${styles.sectionHeading} fontHeader`}>{title}</h2>
-          )}
-          {description && (
-            <p className={`${styles.description} b2`}>{description}</p>
-          )}
-        </div>
-        {isHorizontalView && (
-          <HorizontalLayout
-            items={galleryItems}
-            globalConfig={globalConfig}
-            colCount={itemCount}
-            colCountMobile={itemCountMobile}
-            sources={getImgSrcSet}
-            autoplay={autoplay}
-            autoplaySpeed={playSlides * 1000}
-            desktopLayout={desktopLayout}
-            mobileLayout={mobileLayout}
-          />
+    <section style={dynamicStyles}>
+      <div className={`fx-title-block ${styles.titleBlock}`}>
+        {title && (
+          <h2 className={`fx-title ${styles.sectionHeading} fontHeader`}>
+            {title}
+          </h2>
         )}
-        {isStackView && (
-          <StackLayout
-            items={galleryItems}
-            globalConfig={globalConfig}
-            colCount={itemCount}
-            colCountMobile={itemCountMobile}
-            sources={getImgSrcSet}
-            desktopLayout={desktopLayout}
-            mobileLayout={mobileLayout}
-          />
+        {description && (
+          <p className={`fx-description ${styles.description} b2`}>
+            {description}
+          </p>
         )}
       </div>
-    </div>
+      {isHorizontalView && (
+        <HorizontalLayout
+          className={`${desktopLayout === "grid" ? styles.hideOnDesktop : ""} ${
+            mobileLayout === "grid" ? styles.hideOnTablet : ""
+          }`}
+          items={galleryItems}
+          globalConfig={globalConfig}
+          colCount={itemCount}
+          colCountMobile={itemCountMobile}
+          sources={getImgSrcSet}
+          autoplay={autoplay}
+          autoplaySpeed={playSlides * 1000}
+          in_new_tab={in_new_tab}
+        />
+      )}
+      {isStackView && (
+        <StackLayout
+          className={`${
+            desktopLayout === "horizontal" ? styles.hideOnDesktop : ""
+          } ${mobileLayout === "horizontal" ? styles.hideOnTablet : ""}`}
+          items={galleryItems}
+          globalConfig={globalConfig}
+          colCount={itemCount}
+          colCountMobile={itemCountMobile}
+          sources={getImgSrcSet}
+          desktopLayout={desktopLayout}
+          mobileLayout={mobileLayout}
+          in_new_tab={in_new_tab}
+        />
+      )}
+    </section>
   );
 }
 
 const StackLayout = ({
+  className,
   items,
   globalConfig,
   colCount,
   colCountMobile,
   sources,
-  desktopLayout,
-  mobileLayout,
+  in_new_tab,
 }) => {
   const dynamicStyles = {
     "--item-count": `${colCount}`,
@@ -109,17 +120,13 @@ const StackLayout = ({
   };
 
   return (
-    <div
-      className={`${styles.imageGrid} ${
-        desktopLayout === "grid" ? styles.desktopVisible : styles.desktopHidden
-      } ${
-        mobileLayout === "grid" ? styles.mobileVisible : styles.mobileHidden
-      }`}
-      style={dynamicStyles}
-    >
+    <div className={`${styles.imageGrid} ${className}`} style={dynamicStyles}>
       {items.map(({ props: block }, index) => (
         <div key={index}>
-          <FDKLink to={block?.link?.value || ""}>
+          <FDKLink
+            to={block?.link?.value || ""}
+            target={in_new_tab?.value ? "_blank" : "_self"}
+          >
             <FyImage
               customClass={styles.imageGallery}
               src={block?.image?.value || placeholderImage}
@@ -135,6 +142,7 @@ const StackLayout = ({
 };
 
 const HorizontalLayout = ({
+  className,
   items,
   globalConfig,
   colCount,
@@ -142,8 +150,7 @@ const HorizontalLayout = ({
   sources,
   autoplay,
   autoplaySpeed,
-  desktopLayout,
-  mobileLayout,
+  in_new_tab,
 }) => {
   const config = useMemo(
     () => ({
@@ -176,7 +183,7 @@ const HorizontalLayout = ({
         },
       ],
     }),
-    [colCount, colCountMobile, autoplay, autoplaySpeed]
+    [items.length, colCount, autoplay, autoplaySpeed]
   );
   const configMobile = useMemo(
     () => ({
@@ -189,7 +196,7 @@ const HorizontalLayout = ({
       autoplay,
       autoplaySpeed,
       cssEase: "linear",
-      centerMode: false,
+      centerMode: true,
       centerPadding: "25px",
       swipe: true,
       swipeToSlide: false,
@@ -200,32 +207,24 @@ const HorizontalLayout = ({
       nextArrow: <SliderRightIcon />,
       prevArrow: <SliderLeftIcon />,
     }),
-    [colCount, colCountMobile, autoplay, autoplaySpeed]
+    [items?.length, colCountMobile, autoplay, autoplaySpeed]
   );
 
   return (
     <div
-      className={`${styles.slideWrap} ${
-        desktopLayout === "horizontal"
-          ? styles.desktopVisible
-          : styles.desktopHidden
-      } ${
-        mobileLayout === "horizontal"
-          ? styles.mobileVisible
-          : styles.mobileHidden
-      }`}
+      className={`${styles.imageSlider} ${items?.length <= colCountMobile ? styles.mobileItemLess : ""} ${className}`}
       style={{
         "--slick-dots": `${Math.ceil(items?.length / colCount) * 22 + 10}px`,
         maxWidth: "100vw",
       }}
     >
-      <Slider
-        {...config}
-        className={`${items?.length / colCount === 0 || items?.length < colCount ? "no-nav" : ""} ${styles.customSlider}  ${styles.hideOnMobile}`}
-      >
+      <Slider {...config} className={styles.hideOnMobile}>
         {items.map(({ props: block }, index) => (
-          <div key={index} className={styles.sliderView}>
-            <FDKLink to={block?.link?.value || ""}>
+          <div key={index} className={styles.sliderItem}>
+            <FDKLink
+              to={block?.link?.value || ""}
+              target={in_new_tab?.value ? "_blank" : "_self"}
+            >
               <FyImage
                 customClass={styles.imageGallery}
                 src={block?.image?.value || placeholderImage}
@@ -237,13 +236,13 @@ const HorizontalLayout = ({
           </div>
         ))}
       </Slider>
-      <Slider
-        {...configMobile}
-        className={`${items?.length / colCount === 0 || items?.length < colCount ? "no-nav" : ""} ${styles.customSlider} ${styles.hideOnDesktop}`}
-      >
+      <Slider {...configMobile} className={styles.showOnMobile}>
         {items.map(({ props: block }, index) => (
-          <div key={index} className={styles.sliderView}>
-            <FDKLink to={block?.link?.value || ""}>
+          <div key={index} className={styles.sliderItem}>
+            <FDKLink
+              to={block?.link?.value || ""}
+              target={in_new_tab?.value ? "_blank" : "_self"}
+            >
               <FyImage
                 customClass={styles.imageGallery}
                 src={block?.image?.value || placeholderImage}
@@ -260,20 +259,19 @@ const HorizontalLayout = ({
 };
 
 export const settings = {
-  label: "Image Gallery",
+  label: "t:resource.sections.image_gallery.image_gallery",
   props: [
     {
       type: "text",
       id: "title",
-      default: "Customize Your Style",
-      label: "Heading",
+      default: "t:resource.default_values.image_gallery_title",
+      label: "t:resource.common.heading",
     },
     {
       type: "text",
       id: "description",
-      default:
-        "This flexible gallery lets you highlight key products and promotions, guiding customers to the right places.",
-      label: "Description",
+      default: "t:resource.default_values.image_gallery_description",
+      label: "t:resource.common.description",
     },
     {
       type: "range",
@@ -282,7 +280,7 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "%",
-      label: "Card Radius",
+      label: "t:resource.sections.image_gallery.card_radius",
       default: 0,
     },
     {
@@ -291,16 +289,16 @@ export const settings = {
       options: [
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal scroll",
+          text: "t:resource.common.horizontal_scroll",
         },
       ],
       default: "horizontal",
-      label: "Desktop Layout",
-      info: "Items per row should be less than number of blocks to show horizontal scroll",
+      label: "t:resource.common.desktop_layout",
+      info: "t:resource.sections.image_gallery.items_per_row_limit_for_scroll",
     },
     {
       type: "range",
@@ -309,7 +307,7 @@ export const settings = {
       max: 10,
       step: 1,
       unit: "",
-      label: "Items per row (Desktop)",
+      label: "t:resource.sections.image_gallery.items_per_row_desktop",
       default: 5,
     },
     {
@@ -318,16 +316,16 @@ export const settings = {
       options: [
         {
           value: "grid",
-          text: "Stack",
+          text: "t:resource.common.stack",
         },
         {
           value: "horizontal",
-          text: "Horizontal scroll ",
+          text: "t:resource.common.horizontal_scroll",
         },
       ],
       default: "grid",
-      label: "Mobile Layout",
-      info: "Alignment of content",
+      label: "t:resource.common.mobile_layout",
+      info: "t:resource.common.alignment_of_content",
     },
     {
       type: "range",
@@ -336,14 +334,21 @@ export const settings = {
       max: 5,
       step: 1,
       unit: "",
-      label: "Items per row (Mobile)",
+      label: "t:resource.sections.image_gallery.items_per_row_mobile",
       default: 2,
     },
     {
       type: "checkbox",
       id: "autoplay",
       default: false,
-      label: "Auto Play Slides",
+      label: "t:resource.common.auto_play_slides",
+    },
+    {
+      type: "checkbox",
+      id: "in_new_tab",
+      label: "t:resource.common.open_product_in_new_tab",
+      default: true,
+      info: "t:resource.common.open_product_in_new_tab_desktop",
     },
     {
       type: "range",
@@ -352,19 +357,41 @@ export const settings = {
       max: 10,
       step: 1,
       unit: "sec",
-      label: "Change slides every",
+      label: "t:resource.common.change_slides_every",
       default: 3,
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.top_padding",
+      default: 16,
+      info: "t:resource.sections.categories.top_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
   ],
   blocks: [
     {
-      name: "Image card",
+      name: "t:resource.common.image_card",
       type: "gallery",
       props: [
         {
           type: "image_picker",
           id: "image",
-          label: "Image",
+          label: "t:resource.common.image",
           default: "",
           options: {
             aspect_ratio: "1:1",
@@ -373,9 +400,9 @@ export const settings = {
         {
           type: "url",
           id: "link",
-          label: "Redirect",
+          label: "t:resource.common.redirect",
           default: "",
-          info: "Search Link Type",
+          info: "t:resource.sections.image_gallery.search_link_type"
         },
       ],
     },
@@ -383,7 +410,7 @@ export const settings = {
   preset: {
     blocks: [
       {
-        name: "Image card",
+        name: "t:resource.common.image_card",
         props: {
           image: {
             type: "image_picker",
@@ -394,7 +421,7 @@ export const settings = {
         },
       },
       {
-        name: "Image card",
+        name: "t:resource.common.image_card",
         props: {
           image: {
             type: "image_picker",
@@ -405,7 +432,7 @@ export const settings = {
         },
       },
       {
-        name: "Image card",
+        name: "t:resource.common.image_card",
         props: {
           image: {
             type: "image_picker",
@@ -416,7 +443,7 @@ export const settings = {
         },
       },
       {
-        name: "Image card",
+        name: "t:resource.common.image_card",
         props: {
           image: {
             type: "image_picker",

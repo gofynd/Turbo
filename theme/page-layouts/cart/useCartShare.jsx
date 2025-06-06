@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useSnackbar } from "../../helper/hooks";
 import { copyToClipboard } from "../../helper/utils";
 import { GET_CART_SHARE_LINK, GET_URL_QR_CODE } from "../../queries/cartQuery";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 const useCartShare = ({ fpi, cartData }) => {
+  const { t } = useGlobalTranslation("translation");
   const [isShareLoading, setIsShareLoading] = useState(true);
   const [shareLink, setShareLink] = useState("");
   const [qrCode, setQrCode] = useState("");
@@ -36,7 +38,7 @@ const useCartShare = ({ fpi, cartData }) => {
   const onCopyToClipboardClick = (e) => {
     e.stopPropagation();
     copyToClipboard(shareLink);
-    showSnackbar("Link Copied to Clipboard", "success");
+    showSnackbar(t("resource.cart.link_copied"), "success");
   };
 
   const onFacebookShareClick = (e) => {
