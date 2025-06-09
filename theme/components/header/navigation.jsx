@@ -444,7 +444,7 @@ function Navigation({
                     {convertActionToUrl(nav?.action) ? (
                       <FDKLink
                         className={styles.navLink}
-                        to={nav?.action}
+                        action={nav?.action}
                         onClick={() => {
                           goBack("l1");
                           closeSidebarNav();
