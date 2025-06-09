@@ -842,7 +842,7 @@ const ProductCardItem = ({
 
   return (
     <div className={className}>
-      <FDKLink to={product?.slug ? `/product/${product?.slug} ` : ""}>
+      <FDKLink action={product?.action || ""}>
         <ProductCard
           product={product}
           listingPrice={listingPrice}
