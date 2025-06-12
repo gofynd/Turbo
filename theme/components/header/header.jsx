@@ -8,7 +8,7 @@ import {
   useGlobalTranslation,
 } from "fdk-core/utils";
 import { CART_COUNT } from "../../queries/headerQuery";
-import { isRunningOnClient, isEmptyOrNull } from "../../helper/utils";
+import { isRunningOnClient, isEmptyOrNull, isLocalePresent, getDefaultLocale } from "../../helper/utils";
 import Search from "./search";
 import HeaderDesktop from "./desktop-header";
 import Navigation from "./navigation";
@@ -82,16 +82,21 @@ function Header({ fpi }) {
 
   useEffect(() => {
     if (!isRunningOnClient()) return;
-    if (!i18N_DETAILS || activeLocale === i18N_DETAILS?.language?.locale) return;
+    
+    const currentLocale = i18N_DETAILS?.language?.locale;
+    const validLocale = isLocalePresent(activeLocale, supportedLanguages?.items) ? activeLocale : getDefaultLocale(supportedLanguages?.items);
+  
+    if (!i18N_DETAILS || currentLocale === validLocale) return;
+
     fpi.setI18nDetails({
       ...i18N_DETAILS,
       language: {
         ...i18N_DETAILS.language,
-        locale: activeLocale || "en",
+        locale: validLocale || "en",
       },
     });
     window.location.reload();
-  }, [activeLocale, i18N_DETAILS]);
+  }, [activeLocale, i18N_DETAILS, supportedLanguages]);
 
   useEffect(() => {
     if (

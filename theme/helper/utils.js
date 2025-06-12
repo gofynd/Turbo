@@ -330,6 +330,15 @@ export const getValidLocales = (languagesList) => {
   return languagesList.map((lang) => lang.locale);
 };
 
+const isValidLocale = (tag) => {
+  try {
+    new Intl.Locale(tag);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const formatLocale = (locale, countryCode, isCurrencyLocale = false) => {
   if ((locale === "en" || !locale) && isCurrencyLocale) {
     return DEFAULT_CURRENCY_LOCALE;
@@ -337,10 +346,8 @@ export const formatLocale = (locale, countryCode, isCurrencyLocale = false) => {
   if (locale === "en" || !locale) {
     return DEFAULT_UTC_LOCALE;
   }
-  if (locale.includes("-")) {
-    return locale;
-  }
-  return `${locale}${countryCode ? "-" + countryCode : ""}`;
+  const finalLocale = locale.includes("-") ? locale : `${locale}${countryCode ? "-" + countryCode : ""}`;
+  return isValidLocale(finalLocale) ? finalLocale : DEFAULT_UTC_LOCALE;
 };
 
 export const getDirectionAdaptiveValue = (cssProperty, value) => {
@@ -433,4 +440,13 @@ export function getLocalizedRedirectUrl(path = "", currentLocale) {
   }
 
   return normalizedPath;
+}
+
+export function getDefaultLocale(locales) {
+  const defaultLocaleObj = locales.find(item => item.is_default === true);
+  return defaultLocaleObj ? defaultLocaleObj.locale : null;
+}
+
+export function isLocalePresent(locale, localesArray = []) {
+  return localesArray.some(item => item.locale === locale);
 }
