@@ -554,61 +554,36 @@ export const SHIPMENT_REASONS = `query shipment(
                 display_name
                 id
                 qc_type
-                question_set {
-                  display_name
-                  id
-                }
                 meta {
                     show_text_area
-                    remark_required
                 }
                 reasons {
                     display_name
                     id
                     qc_type
-                    question_set {
-                      display_name
-                      id
-                    }
                     meta {
                         show_text_area
-                        remark_required
                     }
                     reasons {
                         display_name
                         id
                         qc_type
-                        question_set {
-                          display_name
-                          id
-                        }
                         meta {
                             show_text_area
-                            remark_required
                         }
                         reasons {
                             display_name
                             id
                             qc_type
-                            question_set {
-                              display_name
-                              id
-                            }
                             meta {
                                 show_text_area
-                                remark_required
                             }
                             reasons {
                                 display_name
                                 id
                                 qc_type
-                                question_set {
-                                  display_name
-                                  id
-                                }
                                 meta {
                                     show_text_area
-                                    remark_required
                                 }
                             }
                         }

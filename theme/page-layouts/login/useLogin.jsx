@@ -14,7 +14,7 @@ const useLogin = ({ fpi }) => {
   const platformData = useGlobalStore(fpi.getters.PLATFORM_DATA);
   const appFeatures = useGlobalStore(fpi.getters.APP_FEATURES);
 
-  const { handleLoginWithOtp, getOtpLoading, ...restOtp } = useLoginOtp({
+  const { handleLoginWithOtp, ...restOtp } = useLoginOtp({
     fpi,
     isLoginToggle: isPasswordToggle,
   });
@@ -92,7 +92,6 @@ const useLogin = ({ fpi }) => {
     isForgotPassword: platformData?.forgot_password,
     ...restOtp,
     ...restPassword,
-    getOtpLoading,
     onLoginToggleClick: handleLoginModeToggle,
     onRegisterButtonClick: handleRegisterClick,
     onLoginFormSubmit: handleLoginFormSubmit,

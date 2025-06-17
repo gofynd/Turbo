@@ -209,14 +209,8 @@ function ProfileShipmentUpdatePage({ fpi }) {
     toggelAccordian(+idx + 1, "open");
   };
 
-    const onOtherReason = (event, i) => {
-      setSelectedReason((prev) => ({
-        ...prev,
-        [i]: {
-          ...prev[i],
-          reason_other_text: event,
-        },
-      }));
+  const onOtherReason = (event, i) => {
+    setReasonOtherText(event);
   };
   const beneficiaryError = () => {
     return refundDetails?.user_beneficiaries_detail?.beneficiaries?.length > 0
@@ -247,11 +241,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
     }
     return select;
   };
-   const buttondisable = useMemo(() => {
-    const currentReason = selectedReason[selectLast()];
-    if (currentReason?.meta?.remark_required && !currentReason?.reason_other_text?.trim()) {
-       return true;
-   }
+  const buttondisable = useMemo(() => {
     return shipmentDetails?.can_cancel
       ? !(selectLast() && !selectedReason[selectLast()].reasons?.length > 0)
       : !(
@@ -260,7 +250,6 @@ function ProfileShipmentUpdatePage({ fpi }) {
         (showimg() ? imageList.length > 0 : true)
       );
   }, [shipmentDetails, selectedReason, imageList]);
-
   const getUpdatedBagsList = () => {
     const arrBags = [];
 
@@ -315,7 +304,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
         order_id: shipmentDetails?.order_id,
         products: getProducts,
         selected_reason: { ...reason[selectLast()] },
-        //other_reason_text: extraComment,
+        other_reason_text: extraComment,
       };
     } else {
       return {
@@ -334,7 +323,6 @@ function ProfileShipmentUpdatePage({ fpi }) {
                           meta: {
                             return_qc_json: {
                               images: cdn_urls,
-                              return_reason:{ ...reason[selectLast()] }
                             },
                           },
                         },
@@ -365,7 +353,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
         shimpment_id: shipmentDetails?.shipment_id,
         order_id: shipmentDetails?.order_id,
         selected_reason: { ...reason[selectLast()] },
-        //other_reason_text: extraComment,
+        other_reason_text: extraComment,
         beneficiary_id: refundDetails?.user_beneficiaries_detail
           ?.show_beneficiary_details
           ? selectedBeneficary?.beneficiary_id
@@ -787,7 +775,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                 </div>
               )}
               {/* <div className={`${styles.divider}`}></div> */}
-              {/* <div className={`${styles.textarea}`}>
+              <div className={`${styles.textarea}`}>
                 <div>
                   {t("resource.common.comments")} <span>({t("resource.common.optional")})</span>
                 </div>
@@ -798,7 +786,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                     setExtraComment(e.target.value.slice(0, 1000))
                   }
                 ></textarea>
-              </div> */}
+              </div>
 
               <div className={`${styles.updateBtns}`}>
                 <button

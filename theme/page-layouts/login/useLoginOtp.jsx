@@ -11,7 +11,6 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
   const [isFormSubmitSuccess, setIsFormSubmitSuccess] = useState(false);
   const [sendOtpResponse, setSendOtpResponse] = useState({});
   const [otpError, setOtpError] = useState(null);
-  const [getOtpLoading, setGetOtpLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const resendTimerRef = useRef(null);
@@ -41,7 +40,6 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
       mobile: phone.mobile,
       countryCode: phone.countryCode,
     };
-    setGetOtpLoading(true);
     sendOtp(payload)
       .then((response) => {
         if (response?.success) {
@@ -54,9 +52,6 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
       })
       .catch((err) => {
         setIsFormSubmitSuccess(false);
-      })
-      .finally(() => {
-        setGetOtpLoading(false);
       });
   };
   const verifyOtp = ({ mobileOtp }) => {
@@ -69,16 +64,12 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
       isRedirection: true,
     };
     signInWithOtp(payload)
-      .then((res) => {})
+      .then((res) => { })
       .catch((err) => {
         if (err?.details?.meta?.is_deleted) {
-          navigate(
-            "/auth/account-locked" + (location.search ? location.search : "")
-          );
+          navigate("/auth/account-locked" + (location.search ? location.search : ""));
         }
-        setOtpError({
-          message: err?.message || t("resource.common.error_message"),
-        });
+        setOtpError({ message: err?.message || t("resource.common.error_message") });
       });
   };
   const handleResendOtp = ({ phone }) => {
@@ -123,7 +114,6 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
     onOtpSubmit: verifyOtp,
     onResendOtpClick: handleResendOtp,
     handleLoginWithOtp,
-    getOtpLoading,
   };
 };
 
