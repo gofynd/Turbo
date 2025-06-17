@@ -12,11 +12,10 @@ import { getConfigFromProps } from "../helper/utils";
 
 function Component({ props = {} }) {
   const fpi = useFPI();
-  const { contactInfo, supportInfo } = useHeader(fpi);
+  const { contactInfo, supportInfo, appInfo } = useHeader(fpi);
   const { t } = useGlobalTranslation("translation");
 
   const pageConfig = getConfigFromProps(props);
-
   const { showSnackbar } = useSnackbar();
 
   const handleSubmitForm = (data) => {
@@ -64,9 +63,13 @@ function Component({ props = {} }) {
         .catch(() => showSnackbar(t("resource.common.error_message"), "error"));
     } catch (error) {
       console.error("Error submitting form:", error);
-      showSnackbar(t("resource.common.error_occurred_submitting_form"), "error");
+      showSnackbar(
+        t("resource.common.error_occurred_submitting_form"),
+        "error"
+      );
     }
   };
+  console.log(pageConfig, "pageConfig");
 
   return (
     <ContactPage
@@ -75,6 +78,7 @@ function Component({ props = {} }) {
       handleSubmitForm={handleSubmitForm}
       pageConfig={pageConfig}
       SocailMedia={SocailMedia}
+      appInfo={appInfo}
     />
   );
 }
@@ -100,6 +104,23 @@ export const settings = {
       info: "t:resource.sections.contact_us.banner_alignment_info",
     },
     {
+      id: "align_description",
+      type: "select",
+      options: [
+        {
+          value: "below_header",
+          text: "t:resource.sections.contact_us.below_header",
+        },
+        {
+          value: "above_footer",
+          text: "t:resource.sections.contact_us.above_footer",
+        },
+      ],
+      default: "below_header",
+      label: "t:resource.sections.contact_us.description_alignment",
+      info: "t:resource.sections.contact_us.description_alignment_info",
+    },
+    {
       type: "image_picker",
       id: "image_desktop",
       label: "t:resource.sections.contact_us.upload_banner",
@@ -119,6 +140,13 @@ export const settings = {
       unit: "%",
       label: "t:resource.sections.contact_us.overlay_banner_opacity",
       default: 20,
+    },
+    {
+      type: "checkbox",
+      id: "show_description",
+      default: true,
+      label: "t:resource.sections.contact_us.description",
+      info: "t:resource.sections.contact_us.show_description",
     },
     {
       type: "checkbox",

@@ -351,11 +351,13 @@
           "settings": {
             "props": {
               "align_image": "right",
+              "align_description":"below_header",
               "show_address": true,
               "show_phone": true,
               "show_email": true,
               "show_icons": true,
-              "show_working_hours": true
+              "show_working_hours": true,
+              "show_description":true
             }
           }
         }
