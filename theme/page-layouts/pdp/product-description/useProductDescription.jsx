@@ -73,13 +73,13 @@ const useProductDescription = ({ fpi, slug, props }) => {
   //   productDetailsLoading ||
   //   productPriceBySlugLoading ||
   //   false;
-  
+
   useEffect(() => {
-    if (slug && productPriceBySlug?.store?.uid) {
+    if (slug && product_price_by_slug?.store?.uid) {
       const values = {
         slug,
-        storeIdInt: productPriceBySlug?.store?.uid,
-        storeIdString: productPriceBySlug?.store?.uid?.toString(),
+        storeIdInt: product_price_by_slug?.store?.uid,
+        storeIdString: product_price_by_slug?.store?.uid?.toString(),
       };
       fpi.executeGQL(GET_PRODUCT_PROMOTIONS, values).then((res) => {
         setOffers({
@@ -88,7 +88,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
         });
       });
     }
-  }, [slug, productPriceBySlug?.store?.uid]);
+  }, [slug, product_price_by_slug?.store?.uid]);
 
   useEffect(() => {
     if (slug && (!isPdpSsrFetched || slug !== PRODUCT?.product_details?.slug)) {
@@ -148,7 +148,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
       if (isEmptyOrNull(res.data.productPrice) && isValidDeliveryLocation) {
         setPincodeErrorMessage(
           res?.errors?.[0]?.message ||
-          t("resource.product.product_not_serviceable")
+            t("resource.product.product_not_serviceable")
         );
       } else {
         setSelectPincodeError(false);
@@ -220,7 +220,8 @@ const useProductDescription = ({ fpi, slug, props }) => {
       .then(({ data, errors }) => {
         if (errors) {
           setPincodeErrorMessage(
-            errors?.[0]?.message || t("resource.common.address.pincode_verification_failure")
+            errors?.[0]?.message ||
+              t("resource.common.address.pincode_verification_failure")
           );
         }
         if (data?.locality && postCode === locationPincode) {
@@ -276,10 +277,16 @@ const useProductDescription = ({ fpi, slug, props }) => {
         setSelectPincodeError(true);
         setPincodeErrorMessage("");
         showSnackbar(
-          t("resource.product.before_cart_validate_pincode", { displayName: pincodeInput.displayName }), "error"
+          t("resource.product.before_cart_validate_pincode", {
+            displayName: pincodeInput.displayName,
+          }),
+          "error"
         );
       } else {
-        showSnackbar(t("resource.product.select_valid_delivery_location"), "error");
+        showSnackbar(
+          t("resource.product.select_valid_delivery_location"),
+          "error"
+        );
         fpi.custom.setValue("isI18ModalOpen", true);
       }
       return;
@@ -316,7 +323,8 @@ const useProductDescription = ({ fpi, slug, props }) => {
             fetchCartDetails(fpi);
           }
           showSnackbar(
-            outRes?.data?.addItemsToCart?.message || t("resource.common.add_to_cart_success"),
+            outRes?.data?.addItemsToCart?.message ||
+              t("resource.common.add_to_cart_success"),
             "success"
           );
           if (buyNow) {
@@ -327,7 +335,8 @@ const useProductDescription = ({ fpi, slug, props }) => {
           // });
         } else {
           showSnackbar(
-            outRes?.data?.addItemsToCart?.message || t("resource.common.add_cart_failure"),
+            outRes?.data?.addItemsToCart?.message ||
+              t("resource.common.add_cart_failure"),
             "error"
           );
         }
