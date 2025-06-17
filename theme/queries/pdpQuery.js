@@ -798,3 +798,205 @@ export const PRODUCT_SELLERS = `query productSellers(
     }
   }
 }`;
+
+export const FULFILLMENT_OPTIONS = `query ProductsPriceWithFulfillmentOption(
+  $slug: String!
+  $size: String!
+  $storeId: Int
+  $pincode: String
+) {
+  productsPriceWithFulfillmentOption(
+    slug: $slug
+    size: $size
+    storeId: $storeId
+    pincode: $pincode
+  ) {
+    items {
+      article_id
+      article_assignment {
+        level
+        strategy
+      }
+      delivery_promise {
+        max
+        min
+      }
+      discount
+      discount_meta {
+        end
+        start
+        start_timer_in_minutes
+        timer
+      }
+      grouped_attributes {
+        title
+        details {
+          key
+          type
+          value
+        }
+      }
+      is_cod
+      is_gift
+      item_type
+      long_lat
+      marketplace_attributes {
+        title
+        details {
+          key
+          type
+          value
+        }
+      }
+      pincode
+      postal_code
+      price {
+        currency_code
+        currency_symbol
+        effective
+        marked
+        selling
+      }
+      price_per_piece {
+        currency_code
+        currency_symbol
+        effective
+        marked
+        selling
+      }
+      price_per_unit {
+        currency_code
+        currency_symbol
+        price
+        unit
+      }
+      quantity
+      return_config {
+        returnable
+        time
+        unit
+      }
+      seller {
+        count
+        name
+        uid
+      }
+      seller_count
+      set {
+        quantity
+        size_distribution {
+          sizes {
+            pieces
+            size
+          }
+        }
+      }
+      special_badge
+      store {
+        uid
+        name
+        count
+        code
+        long_lat
+        address {
+          address1
+          address2
+          city
+          country
+          landmark
+          latitude
+          longitude
+          pincode
+          postal_code
+          state
+          country_code
+          address_meta
+          lat_long {
+            coordinates
+            type
+          }
+        }
+      }
+      strategy_wise_listing {
+        distance
+        pincode
+        postal_code
+        quantity
+        tat
+      }
+      trader
+      is_serviceable
+      tags
+      _custom_json
+      inventory_updated_on
+      fulfillment_option {
+        name
+        slug
+        type
+        is_default
+      }
+    }
+  }
+}`;
+
+export const GET_PRODUCT_PROMOTIONS = `query($slug: String!, $storeIdString: String!, $storeIdInt: Int!)  {
+  promotions(slug: $slug, storeId: $storeIdInt, pageSize: 30) {
+    available_promotions {
+      buy_rules
+      description
+      discount_rules
+      id
+      offer_text
+      promotion_group
+      promotion_name
+      valid_till
+      free_gift_items {
+        item_brand_name
+        item_id
+        item_images_url
+        item_name
+        item_price_details {
+          currency
+          marked {
+              min
+              max
+          }
+          effective {
+              min
+              max
+          }
+        }
+        item_slug
+      }
+    }
+  }
+  coupons(productSlug : $slug, storeId: $storeIdString) {
+    available_coupon_list {
+      coupon_amount
+      coupon_applicable_message
+      coupon_code
+      coupon_type
+      coupon_value
+      description
+      end_date
+      expires_on
+      is_applicable
+      is_applied
+      is_bank_offer
+      max_discount_value
+      message
+      minimum_cart_value
+      offer_text
+      start_date
+      sub_title
+      title
+    }
+    page {
+      current
+      has_next
+      has_previous
+      total
+      total_item_count
+    }
+  }
+}`;

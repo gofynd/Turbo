@@ -428,6 +428,8 @@
         "product_description": "Product Description",
         "enable_buy_now": "Enable Buy now",
         "enable_buy_now_feature": "Enable buy now feature",
+        "zoom_in": "Zoom product image",
+        "zoom_in_info": "Zoom product image on cursor hover",
         "show_bullets_in_product_details": "Show Bullets in Product Details",
         "play_video_icon_color": "Play video icon color",
         "product_detail_postion": "Product Detail Postion",

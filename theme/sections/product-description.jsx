@@ -57,6 +57,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     enable_buy_now,
     img_resize,
     img_resize_mobile,
+    zoom_in,
   } = props;
 
   const addToCartBtnRef = useRef(null);
@@ -200,6 +201,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const [sidebarActiveTab, setSidebarActiveTab] = useState("coupons");
   const [errMessage, setErrorMessage] = useState("");
   const [showSocialLinks, setShowSocialLinks] = useState(false);
+  const [zoomData, setZoomData] = useState({
+    show: false,
+    imageSrc: "",
+    offsetX: 0,
+    offsetY: 0,
+  });
   const isMobile = useViewport(0, 768);
   const {
     media,
@@ -425,6 +432,43 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     }
   };
 
+  const onMouseLeave = () => {
+    setZoomData((prev) => ({ ...prev, show: false }));
+  };
+
+  const onMouseMove = (event) => {
+    const zoomWrapper = event.currentTarget; // This is the image-zoom-wrapper
+    const imageBox = zoomWrapper.querySelector(".fx-image"); // The image-box inside image-zoom-wrapper
+
+    // Check if the hover event is happening directly on the image-box
+    if (event.target === imageBox) {
+      // const imageElement = imageBox.querySelector('img');
+      if (imageBox && imageBox.src) {
+        const { left, top, width, height } = imageBox.getBoundingClientRect();
+        const x = ((event.clientX - left) / width) * 100;
+        const y = ((event.clientY - top) / height) * 100;
+
+        // Set zoom data
+        setZoomData({
+          show: true,
+          imageSrc: imageBox.src,
+          offsetX: x,
+          offsetY: y,
+        });
+      }
+    } else {
+      // If the hover event is not on the image-box, hide the zoom
+      setZoomData((prev) => ({ ...prev, show: false }));
+    }
+  };
+
+  const zoomStyles = useMemo(() => {
+    return {
+      "transform-origin": `${zoomData?.offsetX}% ${zoomData?.offsetY}%`,
+      transform: "scale(2)", // Adjust scale as needed
+    };
+  }, [zoomData?.offsetX, zoomData?.offsetY]);
+
   if (isRunningOnClient() && isPageLoading) {
     return <Shimmer />;
   }
@@ -445,22 +489,35 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
           <div className={styles.left}>
             {media?.length > 0 && (
               <div className={styles.imgWrap}>
-                <PdpImageGallery
-                  key={slug}
-                  images={media}
-                  iconColor={icon_color?.value || ""}
-                  globalConfig={globalConfig}
-                  followed={followed}
-                  imgSources={imgSources}
-                  removeFromWishlist={removeFromWishlist}
-                  addToWishList={addToWishList}
-                  isCustomOrder={isMto}
-                  handleShare={() => handleShare()}
-                />
+                <div onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
+                  <PdpImageGallery
+                    key={slug}
+                    images={media}
+                    iconColor={icon_color?.value || ""}
+                    globalConfig={globalConfig}
+                    followed={followed}
+                    imgSources={imgSources}
+                    removeFromWishlist={removeFromWishlist}
+                    addToWishList={addToWishList}
+                    isCustomOrder={isMto}
+                    handleShare={() => handleShare()}
+                  />
+                </div>
               </div>
             )}
           </div>
           <div className={styles.right}>
+            {zoom_in?.value && zoomData?.show && (
+              <div className={styles.zoomContainer}>
+                <img
+                  alt={zoomData.imageAlt}
+                  src={zoomData.imageSrc}
+                  className={styles.zoomedImage}
+                  style={zoomStyles}
+                />
+              </div>
+            )}
+
             <div className={styles.product}>
               <BreadCrumb
                 productData={productDetails}
@@ -1279,6 +1336,13 @@ export const settings = {
       id: "product",
       label: "t:resource.common.select_a_product",
       info: "t:resource.common.product_item_display",
+    },
+    {
+      type: "checkbox",
+      id: "zoom_in",
+      label: "t:resource.sections.product_description.zoom_in",
+      info: "t:resource.sections.product_description.zoom_in_info",
+      default: false,
     },
     {
       type: "checkbox",

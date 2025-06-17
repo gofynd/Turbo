@@ -121,6 +121,24 @@
       box-sizing: border-box;
       position: relative;
 
+      .zoomContainer {
+        position: absolute;
+        top: 0;
+        transform: translateX(20px);
+        width: 400px;
+        height: 600px;
+        overflow: hidden;
+        z-index: 1;
+        left: -30px;
+
+        .zoomedImage {
+          width: 100%;
+          height: 100%;
+          transition: transform 0.4s ease;
+          transform: scale(2); /* Control the zoom level */
+        }
+      }
+
       @media @tablet {
         width: 100%;
         box-sizing: border-box;
@@ -498,7 +516,7 @@
       justify-content: space-between;
       border-radius: @ButtonRadius;
       @media @tablet {
-          padding: 12px;
+        padding: 12px;
       }
       padding: 18px 12px;
     }
@@ -582,94 +600,125 @@
 
 .customBtn {
   margin: 24px 0;
-  .customBtnStyle{
+  .customBtnStyle {
     margin-top: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 0.8px solid transparent;
-    
-      svg>path {
-        fill: @ButtonSecondary;
-      }
-    
-      &__icon {
-        width: 16px;
-        height: 16px;
-        margin-right: 4px;
-      }
-    
-      @media @tablet {
-        margin-top: 8px !important;
-      }
-    
-      .customIcon {
-        width: 16px;
-        height: 16px;
-        margin-right: 4px;
-      }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.8px solid transparent;
+
+    svg > path {
+      fill: @ButtonSecondary;
+    }
+
+    &__icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+
+    @media @tablet {
+      margin-top: 8px !important;
+    }
+
+    .customIcon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
   }
 }
 
 .customBtn {
   margin: 24px 0;
-  .customBtnStyle{
+  .customBtnStyle {
     margin-top: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 0.8px solid transparent;
-    
-      svg>path {
-        fill: @ButtonSecondary;
-      }
-    
-      &__icon {
-        width: 16px;
-        height: 16px;
-        margin-right: 4px;
-      }
-    
-      @media @tablet {
-        margin-top: 8px !important;
-      }
-    
-      .customIcon {
-        width: 16px;
-        height: 16px;
-        margin-right: 4px;
-      }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.8px solid transparent;
+
+    svg > path {
+      fill: @ButtonSecondary;
+    }
+
+    &__icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+
+    @media @tablet {
+      margin-top: 8px !important;
+    }
+
+    .customIcon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
   }
 }
 
 .customBtn {
   margin: 24px 0;
-  .customBtnStyle{
+  .customBtnStyle {
     margin-top: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 0.8px solid transparent;
-    
-      svg>path {
-        fill: @ButtonSecondary;
-      }
-    
-      &__icon {
-        width: 16px;
-        height: 16px;
-        margin-right: 4px;
-      }
-    
-      @media @tablet {
-        margin-top: 8px !important;
-      }
-    
-      .customIcon {
-        width: 16px;
-        height: 16px;
-        margin-right: 4px;
-      }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.8px solid transparent;
+
+    svg > path {
+      fill: @ButtonSecondary;
+    }
+
+    &__icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+
+    @media @tablet {
+      margin-top: 8px !important;
+    }
+
+    .customIcon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+  }
+}
+
+.customBtn {
+  margin: 24px 0;
+  .customBtnStyle {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.8px solid transparent;
+
+    svg > path {
+      fill: @ButtonSecondary;
+    }
+
+    &__icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+
+    @media @tablet {
+      margin-top: 8px !important;
+    }
+
+    .customIcon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
   }
 }
 
@@ -754,8 +803,8 @@
     align-items: center;
     min-height: 15px;
     @media @tablet {
-        margin-bottom: 12px;
-      }
+      margin-bottom: 12px;
+    }
 
     .soldByLabel {
       white-space: nowrap;
@@ -889,7 +938,6 @@
 .fade-leave-active {
   transition: all 0.3s;
 }
-
 
 .stickyAddToCart {
   position: fixed;

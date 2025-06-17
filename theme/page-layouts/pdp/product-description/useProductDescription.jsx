@@ -4,6 +4,7 @@ import {
   ADD_TO_CART,
   CHECK_PINCODE,
   GET_PRODUCT_DETAILS,
+  GET_PRODUCT_PROMOTIONS,
   OFFERS,
   PRODUCT_SIZE_PRICE,
   PRODUCT_SELLERS,
@@ -51,8 +52,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentSize, setCurrentSize] = useState(null);
   const [followed, setFollowed] = useState(false);
-  const [coupons, setCoupons] = useState([]);
-  const [promotions, setPromotions] = useState([]);
+  const [offers, setOffers] = useState({});
   const [allStoresInfo, setAllStoresInfo] = useState({});
   const [selectPincodeError, setSelectPincodeError] = useState(false);
   const [pincodeErrorMessage, setPincodeErrorMessage] = useState("");
@@ -74,6 +74,22 @@ const useProductDescription = ({ fpi, slug, props }) => {
   //   productPriceBySlugLoading ||
   //   false;
   
+  useEffect(() => {
+    if (slug && productPriceBySlug?.store?.uid) {
+      const values = {
+        slug,
+        storeIdInt: productPriceBySlug?.store?.uid,
+        storeIdString: productPriceBySlug?.store?.uid?.toString(),
+      };
+      fpi.executeGQL(GET_PRODUCT_PROMOTIONS, values).then((res) => {
+        setOffers({
+          coupons: res.data?.coupons?.available_coupon_list || [],
+          promotions: res.data?.promotions?.available_promotions || [],
+        });
+      });
+    }
+  }, [slug, productPriceBySlug?.store?.uid]);
+
   useEffect(() => {
     if (slug && (!isPdpSsrFetched || slug !== PRODUCT?.product_details?.slug)) {
       setIsLoading(true);
@@ -335,8 +351,8 @@ const useProductDescription = ({ fpi, slug, props }) => {
     currentImageIndex,
     currentSize,
     pincode: locationPincode,
-    coupons: COUPONS?.available_coupon_list || [],
-    promotions: productPromotions?.available_promotions || [],
+    coupons: offers?.coupons || [],
+    promotions: offers?.promotions || [],
     isLoading,
     isPageLoading,
     isLoadingPriceBySize,
