@@ -435,6 +435,22 @@ img::selection {
   height: 100%;
 }
 
+.testimonial-slider {
+  .slick-next {
+    right: 10px !important;
+    inset-inline-start: unset !important;
+  }
+  .slick-prev {
+    left: -20px !important;
+  }
+
+  .slick-prev::before,
+  .slick-next::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+
 // Override slick slider style
 .slick-slider {
   &:has(.slick-dots) {

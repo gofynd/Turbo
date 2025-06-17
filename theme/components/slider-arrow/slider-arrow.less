@@ -1,0 +1,44 @@
+@import "../../styles/main.less";
+
+/* Shared arrow style */
+.slickArrow {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--dividerStokes, #d4d1d1);
+    background: var(--themeAccentL5, #fff);
+    box-shadow: 0 4px 16px 0 var(--dividerStokes, #d4d1d1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    cursor: pointer;
+    svg {
+        display: block;
+    }
+
+    &:hover {
+        box-shadow: 0 6px 20px 0 var(--dividerStokes, #c0bebe);
+        background: var(--themeAccentL4, #f8f8f8);
+    }
+}
+
+.slick-prev.slickArrow {
+    left: 0px !important;
+    inset-inline-start: unset;
+}
+
+.slick-next.slickArrow {
+    right: 0px !important;
+    inset-inline-start: unset;
+}
+
+/* Hide on mobile if required */
+@media (max-width: 768px) {
+    .slickArrow {
+        display: none !important;
+    }
+}

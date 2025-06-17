@@ -4,8 +4,7 @@ import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/testimonials.less";
 import { useWindowWidth } from "../helper/hooks";
-import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
-import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
+import { SliderNextArrow,SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
 import { useGlobalTranslation } from "fdk-core/utils";
 
 export function Component({ props, globalConfig, blocks, preset }) {
@@ -34,7 +33,7 @@ export function Component({ props, globalConfig, blocks, preset }) {
 
   const slickSetting = () => {
     return {
-      dots: testimonialsList.length > 2,
+      dots: false,
       arrows: testimonialsList.length > 2,
       focusOnSelect: true,
       infinite: testimonialsList.length > 2,
@@ -45,8 +44,8 @@ export function Component({ props, globalConfig, blocks, preset }) {
       autoplaySpeed: Number(slide_interval?.value) * 1000,
       centerMode: testimonialsList.length > 2,
       centerPadding: testimonialsList.length > 2 ? "75px" : "0px",
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+       nextArrow: <SliderNextArrow />,
+      prevArrow: <SliderPrevArrow />,
       responsive: [
         {
           breakpoint: 1023,
@@ -79,8 +78,8 @@ export function Component({ props, globalConfig, blocks, preset }) {
       autoplaySpeed: Number(slide_interval?.value) * 1000,
       centerMode: testimonialsList.length > 1,
       centerPadding: "50px",
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+      nextArrow: <SliderNextArrow />,
+      prevArrow: <SliderPrevArrow />,
     };
   };
 
@@ -96,7 +95,7 @@ export function Component({ props, globalConfig, blocks, preset }) {
       </h2>
 
       <div
-        className={`${styles.testimonialSlider} 
+        className={`testimonial-slider ${styles.testimonialSlider} 
           ${testimonialsList?.length === 1 ? styles.oneItem : ""}  
           ${testimonialsList?.length === 2 ? styles.twoItem : ""}
         `}

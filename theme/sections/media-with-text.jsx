@@ -292,6 +292,14 @@ export const settings = {
           value: "center_start",
           text: "t:resource.sections.media_with_text.center_start",
         },
+         {
+          value: "center_left",
+          text: "t:resource.sections.media_with_text.center_left",
+        },
+        {
+          value: "center_right",
+          text: "t:resource.sections.media_with_text.center_right",
+        },
         {
           value: "center_end",
           text: "t:resource.sections.media_with_text.center_end",

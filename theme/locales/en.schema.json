@@ -330,6 +330,8 @@
         "center_end": "Center-End",
         "center_center": "Center-Center",
         "center_start": "Center-Start",
+        "center_left": "Center-Left",
+        "center_right": "Center-Right",
         "top_end": "Top-End",
         "top_center": "Top-Center",
         "top_start": "Top-Start",

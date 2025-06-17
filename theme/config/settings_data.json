@@ -417,7 +417,7 @@
               },
               "text_placement_desktop": {
                 "type": "select",
-                "value": "top_start"
+                "value": "top_center"
               },
               "text_alignment_desktop": {
                 "type": "select",
@@ -428,7 +428,7 @@
                 "value": ""
               },
               "text_placement_mobile": {
-                "value": "top_start",
+                "value": "top_center",
                 "type": "select"
               },
               "text_alignment_mobile": {
