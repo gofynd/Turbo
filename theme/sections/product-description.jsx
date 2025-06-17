@@ -488,7 +488,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                             <>
                               <span
                                 className={styles.shareIcon}
-                                onClick={() => handleShare()}
+                                onClick={() => setShowSocialLinks(true)}
                               >
                                 <ShareDesktopIcon />
                               </span>

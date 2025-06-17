@@ -1,34 +1,63 @@
-import React, { useState } from "react";
+import React from "react";
 import { FDKLink } from "fdk-core/components";
 import styles from "./share-item.less";
 import { copyToClipboard } from "../../helper/utils";
+import { useSnackbar } from "../../helper/hooks";
 import PolygonIcon from "../../assets/images/polygon.svg";
 import CloseIcon from "../../assets/images/close.svg";
 import WhatsappShareIcon from "../../assets/images/wattsapp-share.svg";
 import TwitterShareIcon from "../../assets/images/twitter-share.svg";
 import FacebookShareIcon from "../../assets/images/facebook-share.svg";
+import ContentCopy from "../../assets/images/content-copy.svg";
+import MoreVertical from "../../assets/images/more-vertical.svg";
+import CopyLink from "../../assets/images/copy-link.svg";
 import { useGlobalTranslation } from "fdk-core/utils";
 
-function ShareItom({ setShowSocialLinks, description }) {
+function ShareItem({ setShowSocialLinks, description, handleShare }) {
   const { t } = useGlobalTranslation("translation");
-  const [btnText, setBtnText] = useState(
-    t("resource.common.copy_link")
-  );
-
-  const encodedDescription = encodeURIComponent(
-    description
-  );
   const encodedUrl = encodeURIComponent(window?.location?.href);
+  const { showSnackbar } = useSnackbar();
+  const encodedDescription = encodeURIComponent(description);
+  const shareUrl = window?.location?.href;
 
-  const handleCopyToClipboard = (event) => {
-    event.stopPropagation();
-    const url = window.location.href;
-    copyToClipboard(url);
-    setBtnText(t("resource.common.copied"));
-    setTimeout(() => {
-      setBtnText(t("resource.common.copy_link"));
-    }, 5000);
+  const handleCopyToClipboard = (e) => {
+    e.stopPropagation();
+    copyToClipboard(shareUrl);
+    showSnackbar(t("resource.common.copy_link"), "success");
   };
+
+  const shareOptions = [
+    {
+      name: `${t("resource.common.copy_link")}`,
+      icon: (
+        <>
+          <ContentCopy className={styles.desktopCopyIcon} />
+          <CopyLink className={styles.mobileCopyIcon} />
+        </>
+      ),
+      onClick: handleCopyToClipboard,
+    },
+    {
+      name: "Facebook",
+      icon: <FacebookShareIcon />,
+      link: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+    },
+    {
+      name: "X",
+      icon: <TwitterShareIcon />,
+      link: `https://twitter.com/share?url=${encodedUrl}&text=${encodedDescription}`,
+    },
+    {
+      name: "WhatsApp",
+      icon: <WhatsappShareIcon />,
+      link: `https://wa.me/?text=${encodedDescription} ${encodedUrl}`,
+    },
+    {
+      name: "More Apps",
+      icon: <MoreVertical />,
+      onClick: handleShare,
+    },
+  ];
 
   return (
     <>
@@ -39,11 +68,19 @@ function ShareItom({ setShowSocialLinks, description }) {
           e.preventDefault();
           setShowSocialLinks(false);
         }}
-      ></div>
+      />
+
       <div className={styles["share-popup-overlay"]}>
         <span className={styles.upArrow}>
-          <PolygonIcon />
+          <FDKLink
+            to={`https://wa.me/?text=${encodedDescription} ${encodedUrl}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <PolygonIcon className={styles.PolygonIcon} />
+          </FDKLink>
         </span>
+
         <div
           className={styles["share-popup"]}
           onClick={(e) => e.stopPropagation()}
@@ -57,45 +94,36 @@ function ShareItom({ setShowSocialLinks, description }) {
               <CloseIcon />
             </span>
           </div>
-          <div className={styles.icons}>
-            {/* <div className="social-links"> */}
-            <span>
-              <FDKLink
-                to={`https://wa.me/?text=${encodedDescription} ${encodedUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <WhatsappShareIcon />
-              </FDKLink>
-            </span>
-            <span>
-              <FDKLink
-                to={`https://twitter.com/share?url=${encodedUrl}&text=${encodedDescription}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <TwitterShareIcon />
-              </FDKLink>
-            </span>
 
-            <span>
-              <FDKLink
-                to={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
+          <div className={styles.icons}>
+            {shareOptions.map((option, index) => (
+              <div
+                key={index}
+                className={`${styles.iconWrapper} ${
+                  option.name === "More Apps" ? styles.moreApp : ""
+                }`}
+                onClick={option.onClick}
               >
-                <FacebookShareIcon />
-              </FDKLink>
-            </span>
-          </div>
-          <div className={styles["copy-input"]}>
-            <input type="text" value={window?.location?.href} readOnly />
-            <button
-              onClick={handleCopyToClipboard}
-              className={`${btnText === "Copied" ? styles["white-btn"] : ""}`}
-            >
-              {btnText}
-            </button>
+                <span
+                  className={`${styles.iconContainer} ${
+                    option.onClick ? styles.circleIconContainer : ""
+                  }`}
+                >
+                  {option.link ? (
+                    <FDKLink
+                      to={option.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {option.icon}
+                    </FDKLink>
+                  ) : (
+                    option.icon
+                  )}
+                </span>
+                <span className={styles.iconName}>{option.name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -103,4 +131,4 @@ function ShareItom({ setShowSocialLinks, description }) {
   );
 }
 
-export default ShareItom;
+export default ShareItem;

@@ -2,22 +2,27 @@
 
 .share-popup-overlay {
   position: absolute;
-  top: 45px;
-  inset-inline-end: 0px;
+  top: 65px;
+  right: 0px;
+  box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.09);
+  @media @tablet {
+    top: 100px;
+    right: 24px;
+  }
   .upArrow {
     position: absolute;
-    inset-inline-end: 8px;
-    top: -14px;
-    @media @tablet {
+    right: -10px;
+    top: -19px;
+    @media @mobile {
       display: none;
     }
   }
-  @media @tablet {
+  @media @mobile {
     position: fixed;
     width: 100%;
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
-    inset-inline-start: 0;
+    left: 0;
     top: 0;
     z-index: 99;
   }
@@ -27,76 +32,126 @@
   width: 100%;
   position: fixed;
   top: 0;
-  inset-inline-start: 0;
+  left: 0;
 }
 
 .share-popup {
-  @media @tablet {
-    width: 340px;
-    border: 1px solid @ThemeAccentD3;
-  }
   box-shadow: 0px 4px 10px 0px #0000001a;
   background-color: @color-white;
-  @media @desktop {
+  @media @mobile-up {
     border-radius: 4px;
   }
-  @media @tablet {
+
+  @media @mobile {
     top: 44px;
-    inset-inline-end: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    width: 340px;
+    border: 1px solid @ThemeAccentD3;
+    border-radius: 8px 8px 0 0 !important;
   }
   z-index: 2;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
   padding: 16px;
   position: relative;
+
   .icons {
     display: flex;
     justify-content: space-between;
-    flex-direction: column;
-    @media @tablet {
-      padding: unset;
-      gap: 20px;
-      justify-content: center;
-      flex-direction: row;
+    gap: 8px;
+    @media @mobile {
+      padding: 16px 16px 0 16px !important;
     }
-    span {
+
+    .iconWrapper {
       display: flex;
       align-items: center;
-      padding: 8px;
+      justify-content: center;
+      flex-direction: column;
       gap: 8px;
-      a {
+      width: 60px;
+      min-width: 60px;
+      cursor: pointer;
+      &.moreApp {
+        @media @desktop {
+          display: none;
+        }
+      }
+
+      .desktopCopyIcon {
+        display: block;
+        @media @mobile {
+          display: none;
+        }
+      }
+      
+      .mobileCopyIcon {
+        display: none;
+        @media @mobile {
+          display: block;
+        }
+      }
+      .circleIconContainer {
+        padding: 3.9px;
+        border-radius: 84.24px;
+        background: var(--Theme-Background, #f3f3ed);
+      }
+
+      .iconContainer {
+        display: flex;
+        align-items: center;
         width: 24px;
         height: 24px;
       }
+
+      .iconName {
+        color: var(--Text-Secondary-Text, #9c9c9c);
+        text-align: center;
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: -0.24px;
+      }
+    }
+    @media @mobile {
+      padding: unset;
+      gap: 16px;
+      flex-wrap: wrap;
+      flex-direction: row;
+      padding: 16px 16px 0 16px;
     }
   }
-  @media @tablet {
+  @media @mobile {
     position: fixed;
     bottom: 0;
     top: unset;
-    inset-inline-start: 0;
+    left: 0;
     width: 100%;
     z-index: 6;
-    padding-bottom: 32px;
+    padding-bottom: 24px;
     border: 0;
-    gap: 16px;
   }
   .popup-title {
     display: none;
+    border-bottom: 1px solid var(--Overlay-Popup-Divider-Stroke, #e0e0e0);
+    background: var(--overlay-popup-dividers-dialog-background, #fff);
     color: @ThemeAccentD5;
-    @media @tablet {
-      display: flex;
-    }
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
+
+    @media @mobile {
+      display: flex;
+      padding: 12px 16px;
+      border-radius: 16px 16px 0 0;
+    }
     .close-icon {
       width: 24px;
       height: 24px;
       display: none;
       cursor: pointer;
-      @media @tablet {
+      @media @mobile {
         display: inline-block;
       }
     }
@@ -107,7 +162,7 @@
     width: 100%;
     padding-top: 16px;
 
-    @media @tablet {
+    @media @mobile {
       display: flex;
       padding-top: 0px;
     }
@@ -118,7 +173,7 @@
       background-color: @ThemeAccentD1;
       color: @ThemeAccentD5;
       border: 0;
-      @media @tablet {
+      @media @mobile {
         font-size: 12px;
       }
     }
@@ -127,7 +182,7 @@
       height: 41px;
       padding: 12px;
       font-weight: 600;
-      @media @tablet {
+      @media @mobile {
         font-size: 12px;
       }
       color: @color-white;
