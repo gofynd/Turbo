@@ -507,7 +507,10 @@ function ProfileShipmentUpdatePage({ fpi }) {
     // if (updateBags.length === 0) {
     //   return showUpdateErrorText("No Items to return");
     // } else
-    if (reason[0]?.display_name === "Others" && reasonOtherText.length <= 0) {
+    if (
+      reason[0]?.display_name === "Others" &&
+      reason[0]?.reason_other_text?.length <= 0
+    ) {
       return showUpdateErrorText(
         t("resource.profile.write_reason_for_cancellation")
       );
