@@ -1,31 +1,39 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useGlobalStore, useNavigate } from "fdk-core/utils";
+import { useEffect, useState, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useGlobalStore } from "fdk-core/utils";
 import { FAQ_CATEGORIES, FAQS_BY_CATEGORY } from "../../queries/faqQuery";
+import { isRunningOnClient } from "../../helper/utils";
 
 const useFaq = ({ fpi }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const [activeFaqCat, setActiveFaqCat] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const slug = searchParams.get("category");
+  const isClient = useMemo(() => isRunningOnClient(), []);
+  const location = isClient ? useLocation() : null;
+  const navigate = isClient ? useNavigate() : null;
+  const customValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
+  const searchParams = isClient ? new URLSearchParams(location.search) : null;
+  const [activeFaqCat, setActiveFaqCat] = useState(
+    customValue["activeFaqCategories"]
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const slug = isClient ? searchParams.get("category") : null;
   const [isFaqCateoryLoading, setIsFaqCateoryLoading] = useState(false);
-  const [faqs, setFaqs] = useState(null);
 
   const { categories: faqCategories } =
     useGlobalStore(fpi?.getters?.FAQ_CATEGORIES) ?? {};
   const FAQS = useGlobalStore(fpi?.getters?.FAQS) ?? {};
-
+  const [faqs, setFaqs] = useState(FAQS?.faqs);
   useEffect(() => {
-    setIsLoading(true);
-    fpi.executeGQL(FAQ_CATEGORIES).then(() => {
-      setIsLoading(false);
-    });
+    if (isClient && !customValue["activeFaqCategories"]) {
+      setIsLoading(true);
+      fpi.executeGQL(FAQ_CATEGORIES).then((res) => {
+        setIsLoading(false);
+      });
+    }
   }, []);
 
   useEffect(() => {
-    setFaqs(FAQS.faqs);
+    if (isClient) {
+      setFaqs(FAQS.faqs);
+    }
   }, [FAQS.faqs]);
 
   const defaultFaqCategory = () => {
@@ -42,20 +50,22 @@ const useFaq = ({ fpi }) => {
   };
 
   useEffect(() => {
-    if (!slug) {
-      defaultFaqCategory();
+    if (isClient) {
+      if (!slug && !customValue["activeFaqCategories"]) {
+        defaultFaqCategory();
+      }
     }
   }, [faqCategories]);
 
   useEffect(() => {
-    if (slug) {
+    if (slug && isClient && activeFaqCat?.slug !== slug) {
       setIsFaqCateoryLoading(true);
       setActiveFaqCat(faqCategories?.find((i) => i.slug === slug) ?? null);
       fpi.executeGQL(FAQS_BY_CATEGORY, { slug }).then(() => {
         setIsFaqCateoryLoading(false);
       });
     }
-  }, [location.search, faqCategories]);
+  }, [slug, faqCategories]);
 
   const updateSearchParams = ({ key = "category", value, action }) => {
     if (action === "delete") {
@@ -75,7 +85,7 @@ const useFaq = ({ fpi }) => {
     faqs,
     setFaqs,
     updateSearchParams,
-    hasCatQuery: !!searchParams.get("category"),
+    hasCatQuery: !!slug,
     isLoading: isLoading || isFaqCateoryLoading,
     defaultFaqCategory,
   };
