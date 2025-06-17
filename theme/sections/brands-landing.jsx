@@ -29,9 +29,12 @@ export function Component({ props }) {
     <div className={`${styles.brands} basePageContainer margin0auto fontBody`}>
       <div className={`${styles.brands__breadcrumbs} captionNormal`}>
         <span>
-          <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>&nbsp; / &nbsp;
+          <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>&nbsp;
+          / &nbsp;
         </span>
-        <span className={styles.active}>{t("resource.common.breadcrumb.brands")}</span>
+        <span className={styles.active}>
+          {t("resource.common.breadcrumb.brands")}
+        </span>
       </div>
       <div>
         {title && (
@@ -54,7 +57,7 @@ export function Component({ props }) {
               cardType="BRANDS"
               showOnlyLogo={!!logo_only}
               globalConfig={globalConfig}
-              img_fill={img_fill}
+              isImageFill={img_fill}
             />
           </InfiniteLoader>
           {pageData?.has_next && !infinite_scroll && (
@@ -101,7 +104,7 @@ export const settings = {
     {
       type: "checkbox",
       id: "img_fill",
-      default: true,
+      default: false,
       label: "t:resource.common.fit_image_to_container",
       info: "t:resource.common.clip_image_to_fit_container",
     },
