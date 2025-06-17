@@ -163,7 +163,7 @@ export function Component({ props, globalConfig }) {
       speed: 300,
       slidesToShow: itemCountMobile,
       slidesToScroll: 1,
-      swipeToSlide: false,
+      swipeToSlide: true,
       swipe: true,
       autoplay: false,
       infinite: imagesForScrollView?.length > itemCountMobile,
@@ -172,8 +172,8 @@ export function Component({ props, globalConfig }) {
       prevArrow: <SliderLeftIcon />,
       centerMode: imagesForScrollView?.length > itemCountMobile,
       centerPadding: "25px",
-      touchThreshold: 80,
-      draggable: false,
+      touchThreshold: 5,
+      draggable: true,
       touchMove: true,
     };
   }, [itemCountMobile, imagesForScrollView?.length]);
