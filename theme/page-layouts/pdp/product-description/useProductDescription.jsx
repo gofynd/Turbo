@@ -205,7 +205,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
     fpi.executeGQL(REMOVE_WISHLIST, values).then((OutRes) => {
       if (OutRes?.data?.unfollowById?.message) {
         fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, null).then((res) => {
-          showSnackbar(t("resource.common.wishlist_add_success"), "success");
+          showSnackbar(t("resource.common.wishlist_remove_success"), "success");
         });
       }
     });
