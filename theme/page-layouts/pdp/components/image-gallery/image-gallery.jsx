@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import PicZoom from "../pic-zoom/pic-zoom";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import { getProductImgAspectRatio, isRunningOnClient } from "../../../../helper/utils";
+import {
+  getProductImgAspectRatio,
+  isRunningOnClient,
+} from "../../../../helper/utils";
 import styles from "./image-gallery.less";
 import MobileSlider from "../mobile-slider/mobile-slider";
 import VideoPlayIcon from "../../../../assets/images/video-play.svg";
@@ -258,6 +261,7 @@ function PdpImageGallery({
             globalConfig={globalConfig}
             closeGallery={() => setEnableLightBox(false)}
             currentIndex={currentImageIndex}
+            imgSources={imgSources}
           />
         </Suspense>
       )}

@@ -9,9 +9,7 @@ import {
   isRunningOnClient,
 } from "../../../../helper/utils";
 import Viewer3D from "../viewer-3d/viewer-3d";
-import {
-  useGlobalTranslation
-} from "fdk-core/utils";
+import { useGlobalTranslation } from "fdk-core/utils";
 import CloseIcon from "../../../../assets/images/close.svg";
 import ReplayIcon from "../../../../assets/images/replay.svg";
 import MuteIcon from "../../../../assets/images/mute.svg";
@@ -43,6 +41,7 @@ function LightboxImage({
   toggleResumeVideo,
   currentIndex,
   closeGallery,
+  imgSources = [],
 }) {
   const { t } = useGlobalTranslation("translation");
   const [select, setSelect] = useState(startAt);
@@ -249,7 +248,7 @@ function LightboxImage({
           <div
             className={styles.lbFigure}
             onClick={(e) => e.stopPropagation()}
-          // ref={containerRef}
+            // ref={containerRef}
           >
             <div className={styles.mediaWrapper}>
               {images[select].type === "image" && (
@@ -257,7 +256,7 @@ function LightboxImage({
                   src={images[select]?.url}
                   alt={images[select]?.alt}
                   customClass={`${styles.lbModalMedia} ${styles.lbModalImage}`}
-                  sources={[]}
+                  sources={imgSources}
                   aspectRatio={getProductImgAspectRatio(globalConfig)}
                   globalConfig={globalConfig}
                   isImageFill={globalConfig?.img_fill}
@@ -326,8 +325,9 @@ function LightboxImage({
               {images.length > 1 && (
                 <button
                   type="button"
-                  className={`${styles.lbArrow} ${styles.lbLeft} ${select === 0 ? styles.disableArrow : ""
-                    }`}
+                  className={`${styles.lbArrow} ${styles.lbLeft} ${
+                    select === 0 ? styles.disableArrow : ""
+                  }`}
                   title={t("resource.product.previous_text")}
                   onClick={previousImage}
                   disabled={select === 0}
@@ -342,8 +342,9 @@ function LightboxImage({
               {images.length > 1 && (
                 <button
                   type="button"
-                  className={`${styles.lbArrow} ${styles.lbRight} ${select === images.length - 1 ? styles.disableArrow : ""
-                    }`}
+                  className={`${styles.lbArrow} ${styles.lbRight} ${
+                    select === images.length - 1 ? styles.disableArrow : ""
+                  }`}
                   title={nextText || t("resource.facets.next")}
                   onClick={nextImage}
                   disabled={select === images.length - 1}
@@ -357,7 +358,7 @@ function LightboxImage({
 
               <div
                 className={styles.lbThumbnailWrapper}
-              // style={`--icon-color: ${iconColor}`}
+                // style={`--icon-color: ${iconColor}`}
               >
                 {showThumbs && (
                   <div className={styles.lbThumbnail}>
@@ -395,19 +396,21 @@ function LightboxImage({
                                 alt={image?.alt}
                                 src={getImageURL(image?.url)}
                                 className={`${styles.lbModalVideoThumbnail}
-                          ${select === index
-                                    ? `${styles["lbModalVideoThumbnail-active"]}`
-                                    : ""
-                                  }`}
+                          ${
+                            select === index
+                              ? `${styles["lbModalVideoThumbnail-active"]}`
+                              : ""
+                          }`}
                               />
                             ) : (
                               <video
                                 src={image?.url}
                                 className={`${styles.lbModalVideoThumbnail}
-                          ${select === index
-                                    ? `${styles["lbModalVideoThumbnail-active"]}`
-                                    : ""
-                                  }`}
+                          ${
+                            select === index
+                              ? `${styles["lbModalVideoThumbnail-active"]}`
+                              : ""
+                          }`}
                               />
                             )}
                             {/* <SvgWrapper
@@ -418,10 +421,11 @@ function LightboxImage({
                         )}
                         {image.type === "3d_model" && (
                           <div
-                            className={`${styles.modelThumbnail} ${select === index
-                              ? styles["lbModalThumbnail-active"]
-                              : ""
-                              }`}
+                            className={`${styles.modelThumbnail} ${
+                              select === index
+                                ? styles["lbModalThumbnail-active"]
+                                : ""
+                            }`}
                           >
                             <ThreeDIcon className={styles.modelIcon} />
                           </div>
