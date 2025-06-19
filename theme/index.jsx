@@ -166,5 +166,7 @@ export default async ({
       import(/* webpackChunkName:"getAboutUs" */ "./pages/about-us"),
     getLocateUs: () =>
       import(/* webpackChunkName:"getLocateUs" */ "./pages/locate-us"),
+    getPaymentLink: () =>
+      import(/* webpackChunkName:"getPaymentLink" */ "./pages/payment-link"),
   };
 };

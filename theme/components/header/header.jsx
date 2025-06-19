@@ -8,7 +8,12 @@ import {
   useGlobalTranslation,
 } from "fdk-core/utils";
 import { CART_COUNT } from "../../queries/headerQuery";
-import { isRunningOnClient, isEmptyOrNull, isLocalePresent, getDefaultLocale } from "../../helper/utils";
+import {
+  isRunningOnClient,
+  isEmptyOrNull,
+  isLocalePresent,
+  getDefaultLocale,
+} from "../../helper/utils";
 import Search from "./search";
 import HeaderDesktop from "./desktop-header";
 import Navigation from "./navigation";
@@ -24,7 +29,8 @@ import { LANGUAGES } from "../../queries/languageQuery";
 import I18Dropdown from "./i18n-dropdown";
 
 const LocationModal = React.lazy(
-  () => import("@gofynd/theme-template/components/location-modal/location-modal")
+  () =>
+    import("@gofynd/theme-template/components/location-modal/location-modal")
 );
 
 function Header({ fpi }) {
@@ -44,6 +50,7 @@ function Header({ fpi }) {
     loggedIn,
   } = useHeader(fpi);
   const { openLogin } = useAccounts({ fpi });
+  const shouldHide = location.pathname.startsWith("/payment/link/");
   const { activeLocale } = useLocale();
   const i18N_DETAILS = useGlobalStore(fpi.getters.i18N_DETAILS);
   const { supportedLanguages } = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
@@ -65,7 +72,7 @@ function Header({ fpi }) {
     if (supportedLanguages?.items?.length > 0) {
       setLanguageIscCode(supportedLanguages?.items);
     } else {
-      setLanguageIscCode([])
+      setLanguageIscCode([]);
     }
 
     const i18n = i18N_DETAILS;
@@ -82,10 +89,12 @@ function Header({ fpi }) {
 
   useEffect(() => {
     if (!isRunningOnClient()) return;
-    
+
     const currentLocale = i18N_DETAILS?.language?.locale;
-    const validLocale = isLocalePresent(activeLocale, supportedLanguages?.items) ? activeLocale : getDefaultLocale(supportedLanguages?.items);
-  
+    const validLocale = isLocalePresent(activeLocale, supportedLanguages?.items)
+      ? activeLocale
+      : getDefaultLocale(supportedLanguages?.items);
+
     if (!i18N_DETAILS || currentLocale === validLocale) return;
 
     fpi.setI18nDetails({
@@ -147,7 +156,7 @@ function Header({ fpi }) {
 
   useEffect(() => {
     if (isRunningOnClient()) {
-      setTimeout(() => { }, 1000);
+      setTimeout(() => {}, 1000);
       const cssVariables = {
         "--headerHeight": `${headerHeight}px`,
       };
@@ -212,7 +221,7 @@ function Header({ fpi }) {
 
   return (
     <>
-      {!isHeaderHidden && (
+      {!isHeaderHidden && !shouldHide && (
         <div
           className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""}`}
           ref={headerRef}
@@ -308,11 +317,13 @@ function Header({ fpi }) {
                     onClick={handleLocationModalOpen}
                   >
                     {isLoading ? (
-                          t("resource.header.fetching")
+                      t("resource.header.fetching")
                     ) : (
                       <>
                         <div className={styles.label}>
-                          {pincode ? deliveryMessage : t("resource.header.pin_code")}
+                          {pincode
+                            ? deliveryMessage
+                            : t("resource.header.pin_code")}
                         </div>
                         {pincode && (
                           <div className={styles.pincode}>
@@ -329,12 +340,15 @@ function Header({ fpi }) {
               </div>
             </div>
             <div className={`${styles.mobile} ${styles.i18Wrapper}`}>
-              <I18Dropdown fpi={fpi} languageIscCode={languageIscCode}></I18Dropdown>
+              <I18Dropdown
+                fpi={fpi}
+                languageIscCode={languageIscCode}
+              ></I18Dropdown>
             </div>
           </header>
         </div>
       )}
-      {isLocationModalOpen && (
+      {isLocationModalOpen && !shouldHide && (
         <Suspense fallback={<div />}>
           <LocationModal
             isOpen={isLocationModalOpen}

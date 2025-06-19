@@ -47,11 +47,14 @@
       "verify_mobile": "Verify Mobile",
       "please_enter_a_valid_password": "Please enter a valid password",
       "password_didnt_match_try_again": "Password didn’t match. Try again",
-      "continue_shopping_caps":"CONTINUE SHOPPING",
+      "continue_shopping_caps": "CONTINUE SHOPPING",
       "terms_and_condition": "To continue, please accept our Terms of Service & Privacy Policy",
       "terms_and_privacy": "Accept Terms and Privacy Policy"
-   },
+    },
     "common": {
+      "fynd": "Fynd",
+      "fynd_trusted_gateway": "Fynd Trusted Gateway",
+      "amount": "AMOUNT",
       "delivery_custom_fees_notice": "Local taxes, duties or custom clearance fees may apply on delivery",
       "password_reset_successful": "Password reset successful",
       "saved": "Saved",
@@ -318,6 +321,14 @@
     },
     "categories": {
       "empty_state": "No category found"
+    },
+    "payment_link": {
+      "expired_text": "Payment Link Expired",
+      "expired_description": "Sorry, your payment link has expired. Please request a new link to proceed with your payment.",
+      "loading_text": "Loading the payment page, please hold on...",
+      "loading_sub_text": "This will only take a few seconds",
+      "success_text": "Payment Successful",
+      "order_id": "Order ID"
     },
     "collections": {
       "empty_state": "No collection found"

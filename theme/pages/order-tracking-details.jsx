@@ -7,7 +7,7 @@ import OrderTrack from "@gofynd/theme-template/pages/order/order-tracking-detail
 import "@gofynd/theme-template/pages/order/order-tracking-details/order-tracking-details.css";
 
 function OrderTrackingDetails({ fpi }) {
-  const { isLoading, orderShipments } = useOrdersListing(fpi);
+  const { isLoading, orderShipments, linkOrderDetails } = useOrdersListing(fpi);
   const { invoiceDetails } = useShipmentDetails(fpi);
   const params = useParams();
   const [selectedShipmentBag, setSelectedShipmentBag] =
@@ -46,6 +46,7 @@ function OrderTrackingDetails({ fpi }) {
       getShipmentDetails={getShipmentDetails}
       selectedShipment={selectedShipmentBag}
       isShipmentLoading={isShipmentLoading}
+      linkOrderDetails={linkOrderDetails}
     ></OrderTrack>
   );
 }

@@ -18,7 +18,7 @@ const useOrdersListing = (fpi) => {
   const [orders, setOrders] = useState({});
   const [orderShipments, setOrderShipments] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-
+  const [linkOrderDetails, setLinkOrderDetails] = useState("");
   const getDateRange = function (days) {
     const fromDate = dayjs().subtract(days, "days").format("MM-DD-YYYY");
     const toDate = dayjs().add(1, "days").format("MM-DD-YYYY");
@@ -39,6 +39,13 @@ const useOrdersListing = (fpi) => {
           .executeGQL(ORDER_BY_ID, values)
           .then((res) => {
             setOrderShipments(res?.data?.order || {});
+            setLinkOrderDetails({
+              amount:
+                res?.data?.order?.breakup_values?.[
+                  res?.data?.order?.breakup_values?.length - 1
+                ],
+              orderId: params?.orderId,
+            });
           })
           .finally(() => {
             setIsLoading(false);
@@ -99,14 +106,16 @@ const useOrdersListing = (fpi) => {
       if (outRes?.data?.addItemsToCart?.success) {
         fpi.executeGQL(CART_ITEMS_COUNT, null).then((res) => {
           showSnackbar(
-            outRes?.data?.addItemsToCart?.message || t("resource.common.add_to_cart_success"),
+            outRes?.data?.addItemsToCart?.message ||
+              t("resource.common.add_to_cart_success"),
             "success"
           );
         });
         fetchCartDetails(fpi);
       } else {
         showSnackbar(
-          outRes?.data?.addItemsToCart?.message || t("resource.common.add_cart_failure"),
+          outRes?.data?.addItemsToCart?.message ||
+            t("resource.common.add_cart_failure"),
           "error"
         );
       }
@@ -119,6 +128,7 @@ const useOrdersListing = (fpi) => {
     pageConfig,
     globalConfig,
     handelBuyAgain,
+    linkOrderDetails,
   };
 };
 

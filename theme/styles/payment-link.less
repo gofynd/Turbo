@@ -1,0 +1,135 @@
+@import "../styles/main.less";
+
+.mainContainer {
+  max-width: 840px;
+  margin: 0 auto;
+  margin-top: 40px;
+  @media @mobile {
+    margin-top: 16px;
+  }
+}
+.logoHeader {
+  flex-direction: row !important;
+  gap: 16px !important;
+  @media @mobile {
+    gap: 12px !important;
+  }
+}
+.paymentHeader {
+  display: flex;
+  padding: 24px;
+  margin-bottom: 16px;
+  @media @mobile {
+    margin-bottom: 8px;
+    border-radius: unset;
+  }
+  border-radius: 8px;
+  @media @tablet {
+    padding: 16px;
+  }
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  @media @mobile {
+    gap: 12px;
+  }
+  background: @PageBackground;
+  .timerBox {
+    display: flex;
+    padding: 8px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    border-radius: 40px;
+    background: @SuccessBackground;
+    span {
+      color: @SuccessText;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 140%;
+      min-width: 39px;
+      height: 17px;
+    }
+  }
+  img {
+    width: 60px;
+    height: 60px;
+    @media @mobile {
+      width: 54px;
+      height: 54px;
+    }
+    background-color: @HighlightColor;
+  }
+  .box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    align-self: stretch;
+  }
+  .textWidth {
+    flex: 1 0 0;
+  }
+  .text {
+    color: @TextHeading;
+    font-size: 14px;
+    @media @desktop {
+      font-size: 16px;
+    }
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 19.6px */
+  }
+  .orderId {
+    font-weight: 600;
+  }
+  img {
+    display: flex;
+    padding: 12px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  .logoTextContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 4px;
+    flex: 1 0 0;
+    align-self: stretch;
+    color: @TextBody;
+    .gatewayContainer {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      align-self: stretch;
+    }
+    p {
+      color: @TextHeading;
+      @media @desktop {
+        font-size: 24px;
+        font-weight: 700;
+      }
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 140%; /* 19.6px */
+    }
+    .headerChildText {
+      @media @desktop {
+        font-size: 14px;
+      }
+      font-size: 12px;
+      font-weight: 400;
+      color: @TextBody;
+    }
+  }
+}
+.borderTopUnset {
+  @media @mobile {
+    border-top: unset !important;
+  }
+}
