@@ -465,6 +465,7 @@ function OtpValidationForm({
   onResendClick,
   customerPhone,
 }) {
+  const { t } = useGlobalTranslation("translation");
   const {
     handleSubmit,
     register,
