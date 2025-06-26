@@ -18,8 +18,8 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
   const [touched, setTouched] = useState(false);
 
   const values = {
-    in: "inch",
-    cm: "cm",
+    in: t("resource.product.inch"),
+    cm: t("resource.product.cm"),
   };
 
   const headers = Object.entries(productMeta?.size_chart?.headers ?? {}).filter(

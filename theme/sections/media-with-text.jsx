@@ -292,13 +292,13 @@ export const settings = {
           value: "center_start",
           text: "t:resource.sections.media_with_text.center_start",
         },
-         {
+        {
           value: "center_left",
-          text: "t:resource.sections.media_with_text.center_left",
+          text: "t:resource.sections.hero_image.center_left",
         },
         {
           value: "center_right",
-          text: "t:resource.sections.media_with_text.center_right",
+          text: "t:resource.sections.hero_image.center_right",
         },
         {
           value: "center_end",

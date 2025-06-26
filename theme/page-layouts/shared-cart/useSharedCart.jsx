@@ -84,12 +84,12 @@ const useSharedCart = (fpi) => {
       fpi.executeGQL(UPDATE_CART_WITH_SHARED_ITEMS, payload).then((res) => {
         if (res?.errors) {
           showSnackbar(
-            res?.errors?.message || t('resource.cart.failed_to_action_cart', { action: action }),
+            res?.errors?.message || t('resource.cart.failed_to_action_cart', { action: t(`resource.cart.${action}`)}),
             "error"
           );
         } else {
           showSnackbar(
-            successInfo ?? t('resource.cart.cart_action_successful', { action: action }),
+            successInfo ?? t('resource.cart.cart_action_successful', { action: t(`resource.cart.${action}`)}),
             "success"
           );
           navigate("/cart/bag/");

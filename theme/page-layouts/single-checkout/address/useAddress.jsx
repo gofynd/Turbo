@@ -11,7 +11,7 @@ import {
   SELECT_ADDRESS,
 } from "../../../queries/checkoutQuery";
 import { LOCALITY } from "../../../queries/logisticsQuery";
-import { capitalize } from "../../../helper/utils";
+import { capitalize, translateDynamicLabel } from "../../../helper/utils";
 import useInternational from "../../../components/header/useInternational";
 import { useAddressFormSchema, useSnackbar } from "../../../helper/hooks";
 
@@ -389,7 +389,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         setInvalidAddressError({
           id: id.length ? id : findAddress?.id,
           message:
-            res?.data?.selectAddress?.message || res?.errors?.[0]?.message,
+          translateDynamicLabel(res?.data?.selectAddress?.message, t) || res?.errors?.[0]?.message,
         });
       }
     });

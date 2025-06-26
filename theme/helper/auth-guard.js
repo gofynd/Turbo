@@ -22,8 +22,10 @@ export async function isLoggedIn({ fpi, store }) {
 export async function loginGuard({ fpi, store }) {
   try {
     const loggedIn = await isLoggedIn({ fpi, store });
+    const locale = fpi?.store?.getState?.()?.custom?.i18nDetailsKey?.language?.locale; 
     if (loggedIn && isRunningOnClient()) {
-      window.location.href = "/";
+      const path = locale && locale !== "en" ? `/${locale}` : "/";
+      window.location.href = path;
       return false;
     }
     return true;

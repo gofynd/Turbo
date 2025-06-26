@@ -3,6 +3,7 @@ import { useAccounts } from "../../helper/hooks";
 import { useLocation } from "react-router-dom";
 import useInternational from "../../components/header/useInternational";
 import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
+import { translateDynamicLabel } from "../../helper/utils";
 
 const useLoginOtp = ({ fpi, isLoginToggle }) => {
   const { t } = useGlobalTranslation("translation");
@@ -76,9 +77,7 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
             "/auth/account-locked" + (location.search ? location.search : "")
           );
         }
-        setOtpError({
-          message: err?.message || t("resource.common.error_message"),
-        });
+        setOtpError({ message: translateDynamicLabel(err?.message, t) || t("resource.common.error_message") });
       });
   };
   const handleResendOtp = ({ phone }) => {

@@ -5,6 +5,7 @@ import { LOCALITY } from "../../queries/logisticsQuery";
 import {
   capitalize,
   createLocalitiesPayload,
+  translateDynamicLabel,
 } from "../utils";
 import { useSnackbar } from "./hooks";
 
@@ -31,7 +32,7 @@ export const useAddressFormSchema = ({
     if (slug === "phone") {
       result.validate = (value) => {
         if (required && !value?.mobile?.trim()) {
-          return `${display_name} ${t("resource.common.address.is_required")}`;
+          return `${translateDynamicLabel(display_name, t)} ${t("resource.common.address.is_required")}`;
         }
         if (!value || !value.isValidNumber) {
           return t("resource.common.address.invalid_phone_number");
@@ -52,7 +53,7 @@ export const useAddressFormSchema = ({
 
     result.validate = (value) => {
       if (required && !value?.trim()) {
-        return `${display_name} ${t("resource.common.address.is_required")}`;
+        return `${translateDynamicLabel(display_name, t)} ${t("resource.common.address.is_required")}`;
       }
 
       if (

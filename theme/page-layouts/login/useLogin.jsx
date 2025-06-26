@@ -60,7 +60,7 @@ const useLogin = ({ fpi }) => {
 
   const handleRegisterClick = () => {
     const pathname = isRunningOnClient() ? location.pathname : "";
-    if (pathname === "/auth/login") {
+    if (pathname?.includes("/auth/login")) {
       openRegister();
     }
   };

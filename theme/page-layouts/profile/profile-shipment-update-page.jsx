@@ -69,15 +69,15 @@ function ProfileShipmentUpdatePage({ fpi }) {
     if (shipmentDetails) {
       if (shipmentDetails?.can_cancel) {
         if (cancelBtn === "cancelBtn") {
-          return "Cancel";
+          return t("resource.facets.cancel");
         } else {
-          return "Cancel Request";
+          return t("resource.profile.cancel_request");
         }
       } else if (shipmentDetails?.can_return) {
         if (cancelBtn === "cancelBtn") {
-          return "Return";
+          return t("resource.facets.return");
         } else {
-          return "Return Request";
+          return t("resource.profile.return_request");;
         }
       }
       return "";
@@ -633,8 +633,8 @@ function ProfileShipmentUpdatePage({ fpi }) {
                         customClassName={`${styles.headerWidth} ${styles.unsetPadding}`}
                         title={
                           i === 0
-                            ? `Reason for ${updateType()?.toLowerCase()}`
-                            : "More Details"
+                            ? `${t("resource.profile.reason_for")} ${updateType()?.toLowerCase()}`
+                            : t("resource.profile.more_details")
                         }
                       ></OrdersHeader>
                       {item?.length > 1 && (

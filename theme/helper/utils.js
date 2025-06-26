@@ -442,6 +442,20 @@ export function getLocalizedRedirectUrl(path = "", currentLocale) {
   return normalizedPath;
 }
 
+export function translateDynamicLabel(input, t) {
+  const safeInput = input
+    .toLowerCase()
+    .replace(/\//g, '_') // replace slashes with underscores
+    .replace(/[^a-z0-9_\s]/g, '') // remove special characters except underscores and spaces
+    .trim()
+    .replace(/\s+/g, '_'); // replace spaces with underscores
+
+  const translationKey = `resource.dynamic_label.${safeInput}`;
+  const translated = t(translationKey);
+
+  return translated.split('.').pop() === safeInput ? input : translated;
+}
+
 export function getDefaultLocale(locales) {
   const defaultLocaleObj = locales.find(item => item.is_default === true);
   return defaultLocaleObj ? defaultLocaleObj.locale : null;
@@ -449,4 +463,29 @@ export function getDefaultLocale(locales) {
 
 export function isLocalePresent(locale, localesArray = []) {
   return localesArray.some(item => item.locale === locale);
+}
+
+export function addLocaleToShareCartUrl(url, locale, supportedLocales) {
+  try {
+    // Extract valid locale codes from supportedLocales.items
+    const validLocaleCodes = (supportedLocales?.items || []).map(item => item.locale);
+    
+    if (!locale || locale === "en" || !validLocaleCodes.includes(locale)) return url;
+
+    const parsedUrl = new URL(url);
+    const pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
+
+    // Replace the locale if one is already present
+    if (validLocaleCodes.includes(pathSegments[0])) {
+      pathSegments[0] = locale;
+    } else {
+      pathSegments.unshift(locale);
+    }
+
+    parsedUrl.pathname = '/' + pathSegments.join('/');
+    return parsedUrl.toString();
+  } catch (e) {
+    console.error('Invalid URL:', e);
+    return url;
+  }
 }

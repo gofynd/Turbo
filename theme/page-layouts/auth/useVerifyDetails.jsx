@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useAccounts } from "../../helper/hooks";
 import { useGlobalTranslation } from "fdk-core/utils";
+import { translateDynamicLabel } from "../../helper/utils";
 
 const useVerifyDetails = ({ fpi, verifyBothData }) => {
   const { t } = useGlobalTranslation("translation");
@@ -143,7 +144,7 @@ const useVerifyDetails = ({ fpi, verifyBothData }) => {
       .catch((err) => {
         setIsValidEmailOtp(false);
         setEmailFormError({
-          message: err?.message || t("resource.common.error_message"),
+          message: translateDynamicLabel(err?.message, t) || t("resource.common.error_message"),
         });
       });
   };

@@ -7,6 +7,7 @@ import { fetchCartDetails } from "../cart/useCart";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import dayjs from "dayjs";
 import { useSnackbar, useThemeConfig } from "../../helper/hooks";
+import { translateDynamicLabel } from "../../helper/utils";
 
 const useOrdersListing = (fpi) => {
   const { t } = useGlobalTranslation("translation");
@@ -106,7 +107,7 @@ const useOrdersListing = (fpi) => {
       if (outRes?.data?.addItemsToCart?.success) {
         fpi.executeGQL(CART_ITEMS_COUNT, null).then((res) => {
           showSnackbar(
-            outRes?.data?.addItemsToCart?.message ||
+            translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
               t("resource.common.add_to_cart_success"),
             "success"
           );
@@ -114,8 +115,7 @@ const useOrdersListing = (fpi) => {
         fetchCartDetails(fpi);
       } else {
         showSnackbar(
-          outRes?.data?.addItemsToCart?.message ||
-            t("resource.common.add_cart_failure"),
+          translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) || t("resource.common.add_cart_failure"),
           "error"
         );
       }

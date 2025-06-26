@@ -5,6 +5,7 @@ import styles from "./styles/dropdown.less";
 import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 import RadioIcon from "../../assets/images/radio";
 import ArrowDropdownIcon from "../../assets/images/arrow-dropdown-black.svg";
+import { translateDynamicLabel } from "../../helper/utils";
 
 function Dropdown({ type, selectedOption, dropdownData }) {
   const { t } = useGlobalTranslation("translation");
@@ -42,14 +43,14 @@ function Dropdown({ type, selectedOption, dropdownData }) {
   return (
     <OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
       <div className={`${styles.selected}`} onClick={openDropdown}>
-      {selectedOption?.startsWith(".resource") ? t(selectedOption) : selectedOption}
+      {translateDynamicLabel(selectedOption, t)}
         <ArrowDropdownIcon onBlur={close} />
         {isOpen && (
           <ul className={`${styles.menu}`}>
             {dropdownData.map((option, index) => (
               <li key={index} onClick={() => replaceQuery(option)}>
                 <RadioIcon checked={option.is_selected} />
-                <span>{option?.display?.startsWith('resource.') ? t(option.display) : option.display}</span>
+                <span>{translateDynamicLabel(option?.display, t)}</span>
               </li>
             ))}
           </ul>

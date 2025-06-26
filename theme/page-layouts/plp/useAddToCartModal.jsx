@@ -10,7 +10,7 @@ import { LOCALITY } from "../../queries/logisticsQuery";
 import { ADD_TO_CART } from "../../queries/pdpQuery";
 import useCart, { fetchCartDetails } from "../cart/useCart";
 import { useSnackbar, useHyperlocalTat } from "../../helper/hooks";
-import { isEmptyOrNull } from "../../helper/utils";
+import { isEmptyOrNull, translateDynamicLabel } from "../../helper/utils";
 
 const useAddToCartModal = ({ fpi, pageConfig }) => {
   const { t } = useGlobalTranslation("translation");
@@ -289,7 +289,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
           if (outRes?.data?.addItemsToCart?.success) {
             if (!buyNow) fetchCartDetails(fpi);
             showSnackbar(
-              outRes?.data?.addItemsToCart?.message || t("resource.common.add_to_cart_success"),
+              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) || t("resource.common.add_to_cart_success"),
               "success"
             );
             if (buyNow) {
@@ -299,7 +299,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
             }
           } else {
             showSnackbar(
-              outRes?.data?.addItemsToCart?.message || t("resource.common.add_cart_failure"),
+              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) || t("resource.common.add_cart_failure"),
               "error"
             );
           }

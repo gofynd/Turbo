@@ -15,7 +15,7 @@ import {
   usePincodeInput,
 } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
-import { capitalize } from "../../helper/utils";
+import { capitalize, translateDynamicLabel } from "../../helper/utils";
 
 const useCartDeliveryLocation = ({ fpi }) => {
   const { t } = useGlobalTranslation("translation");
@@ -294,7 +294,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
         const errMsg =
           res?.data?.selectAddress?.message || t("resource.common.address.address_selection_failure");
         setAddrError({ id: addrId, message: errMsg });
-        showSnackbar(errMsg, "error");
+        showSnackbar(translateDynamicLabel(errMsg, t), "error");
       }
     });
   };

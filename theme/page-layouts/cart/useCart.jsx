@@ -13,6 +13,7 @@ import {
   useNavigate,
   useGlobalTranslation,
 } from "fdk-core/utils";
+import { translateDynamicLabel } from "../../helper/utils";
 
 export function fetchCartDetails(fpi, payload = {}) {
   const defaultPayload = {
@@ -159,14 +160,14 @@ const useCart = (fpi, isActive = true) => {
           if (res?.data?.updateCart?.success) {
             if (!moveToWishList) {
               showSnackbar(
-                res?.data?.updateCart?.message || t("resource.cart.cart_update_success"),
+                translateDynamicLabel(res?.data?.updateCart?.message, t) || t("resource.cart.cart_update_success"),
                 "success"
               );
             }
             await fetchCartDetails(fpi, { buyNow }); // Wait for fetchCartDetails to complete
           } else if (!isSizeUpdate) {
             showSnackbar(
-              res?.data?.updateCart?.message || t("resource.cart.cart_update_success"),
+              translateDynamicLabel(res?.data?.updateCart?.message, t) || t("resource.cart.cart_update_success"),
               "error"
             );
           }

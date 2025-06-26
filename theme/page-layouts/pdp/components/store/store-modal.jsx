@@ -7,6 +7,7 @@ import { useGlobalTranslation } from "fdk-core/utils";
 import Loader from "../../../../components/loader/loader";
 import CloseIcon from "../../../../assets/images/close.svg";
 import ArrowDownIcon from "../../../../assets/images/arrow-down.svg";
+import { translateDynamicLabel } from "../../../../helper/utils";
 
 function StoreModal({
   isOpen,
@@ -89,7 +90,7 @@ function StoreModal({
                       className={`b1 ${styles.selectedOption}`}
                       title={activeSortOption}
                     >
-                      {activeSortOption}
+                      {translateDynamicLabel(activeSortOption, t)}
                     </p>
                     <ArrowDownIcon
                       className={`${styles.dropdownArrow} ${showSortDropdown ? styles.rotateArrow : ""}`}
@@ -106,7 +107,7 @@ function StoreModal({
                           }`}
                         onClick={() => selectionChange(opt.value)}
                       >
-                        {opt.name}
+                        {translateDynamicLabel(opt.name, t)}
                       </li>
                     ))}
                   </ul>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   convertUTCDateToLocalDate,
   formatLocale,
+  translateDynamicLabel,
 } from "../../../../helper/utils";
 import { useHyperlocalTat, useSyncedState } from "../../../../helper/hooks";
 import styles from "./delivery-info.less"; // Import the module CSS
@@ -204,7 +205,7 @@ function DeliveryInfo({
 
       {pincodeErrorMessage && (
         <div className={`captionNormal ${styles.error}`}>
-          {pincodeErrorMessage}
+          {translateDynamicLabel(pincodeErrorMessage, t)}
         </div>
       )}
     </div>

@@ -697,7 +697,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                         <span
                                           className={`captionSemiBold ${styles.otherSellers}`}
                                         >
-                                          &nbsp;&&nbsp;
+                                          &nbsp;{t("resource.auth.login.and_symbol")}&nbsp;
                                           {`${soldBy?.count - 1} ${t(productPriceBySlug?.seller?.count > 1 ? "resource.common.other_plural" : "resource.common.other")}`}
                                         </span>
                                         <ArrowDownIcon
@@ -1763,7 +1763,7 @@ export const settings = {
 };
 
 Component.serverFetch = async ({ fpi, router, props }) => {
-  const isPDP = /^\/product\/[^/]+\/?$/.test(router.pathname);
+  const isPDP = /^(?:\/[a-zA-Z-]+)?\/product\/[^/]+\/?$/i.test(router.pathname);
   const slug = isPDP ? router?.params?.slug : props?.product?.value;
 
   if (slug) {

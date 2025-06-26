@@ -26,7 +26,7 @@ const useRegister = ({ fpi }) => {
   const mobileLevel = platformData?.required_fields?.mobile?.level;
 
   const handleLoginClick = () => {
-    if (pathname === "/auth/register") {
+    if (pathname?.includes("/auth/register")) {
       openLogin({ redirect: false });
     }
   };

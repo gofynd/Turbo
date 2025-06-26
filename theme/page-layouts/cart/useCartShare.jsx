@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { useSnackbar } from "../../helper/hooks";
-import { copyToClipboard } from "../../helper/utils";
+import { addLocaleToShareCartUrl, copyToClipboard } from "../../helper/utils";
 import { GET_CART_SHARE_LINK, GET_URL_QR_CODE } from "../../queries/cartQuery";
-import { useGlobalTranslation } from "fdk-core/utils";
+import { useGlobalTranslation, useGlobalStore } from "fdk-core/utils";
+import { useParams } from "react-router-dom";
 
 const useCartShare = ({ fpi, cartData }) => {
+  const { locale } = useParams();
   const { t } = useGlobalTranslation("translation");
   const [isShareLoading, setIsShareLoading] = useState(true);
   const [shareLink, setShareLink] = useState("");
   const [qrCode, setQrCode] = useState("");
+  const { supportedLanguages } = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
 
   const { showSnackbar } = useSnackbar();
 
@@ -22,12 +25,12 @@ const useCartShare = ({ fpi, cartData }) => {
     fpi.executeGQL(GET_CART_SHARE_LINK, payload).then((res) => {
       if (res?.data?.getCartShareLink?.share_url) {
         const qrPayload = {
-          url: res?.data?.getCartShareLink?.share_url,
+          url: addLocaleToShareCartUrl(res?.data?.getCartShareLink?.share_url, locale, supportedLanguages),
         };
         fpi.executeGQL(GET_URL_QR_CODE, qrPayload).then((qrRes) => {
           if (qrRes?.data?.getUrlQRCode?.svg) {
             setQrCode(qrRes?.data?.getUrlQRCode?.svg);
-            setShareLink(res?.data?.getCartShareLink?.share_url);
+            setShareLink(addLocaleToShareCartUrl(res?.data?.getCartShareLink?.share_url, locale, supportedLanguages));
           }
           setIsShareLoading(false);
         });

@@ -33,7 +33,7 @@ function StoreItem({
 
     if (!min) return false;
 
-    const dateFormatter = new Intl.DateTimeFormat(undefined, options);
+    const dateFormatter = new Intl.DateTimeFormat(locale || undefined, options);
     const minDate = dateFormatter.format(new Date(min));
     const maxDate = dateFormatter.format(new Date(max));
 

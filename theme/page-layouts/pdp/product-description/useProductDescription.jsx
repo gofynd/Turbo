@@ -18,7 +18,7 @@ import {
 } from "../../../queries/wishlistQuery";
 import { useSnackbar, usePincodeInput } from "../../../helper/hooks";
 import { LOCALITY } from "../../../queries/logisticsQuery";
-import { isEmptyOrNull } from "../../../helper/utils";
+import { isEmptyOrNull, translateDynamicLabel } from "../../../helper/utils";
 import { fetchCartDetails } from "../../cart/useCart";
 import {
   useGlobalStore,
@@ -147,8 +147,8 @@ const useProductDescription = ({ fpi, slug, props }) => {
       setIsLoadingPriceBySize(false);
       if (isEmptyOrNull(res.data.productPrice) && isValidDeliveryLocation) {
         setPincodeErrorMessage(
-          res?.errors?.[0]?.message ||
-            t("resource.product.product_not_serviceable")
+          translateDynamicLabel(res?.errors?.[0]?.message, t) ||
+          t("resource.product.product_not_serviceable")
         );
       } else {
         setSelectPincodeError(false);
@@ -323,8 +323,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
             fetchCartDetails(fpi);
           }
           showSnackbar(
-            outRes?.data?.addItemsToCart?.message ||
-              t("resource.common.add_to_cart_success"),
+            translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) || t("resource.common.add_to_cart_success"),
             "success"
           );
           if (buyNow) {
@@ -335,8 +334,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
           // });
         } else {
           showSnackbar(
-            outRes?.data?.addItemsToCart?.message ||
-              t("resource.common.add_cart_failure"),
+            translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) || t("resource.common.add_cart_failure"),
             "error"
           );
         }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAccounts } from "../../helper/hooks";
 import { useGlobalTranslation } from "fdk-core/utils";
+import { translateDynamicLabel } from "../../helper/utils";
 
 const useForgetPassword = ({ fpi }) => {
   const { t } = useGlobalTranslation("translation");
@@ -19,7 +20,7 @@ const useForgetPassword = ({ fpi }) => {
         setIsFormSubmitSuccess(false);
         setError({
           message:
-            err?.details?.error || err?.message || t("resource.common.error_message"),
+          translateDynamicLabel(err?.details?.error, t) || err?.message || t("resource.common.error_message"),
         });
       });
   };

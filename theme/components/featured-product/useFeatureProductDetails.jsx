@@ -13,6 +13,7 @@ import {
 } from "fdk-core/utils";
 import { useSnackbar } from "../../helper/hooks";
 import { fetchCartDetails } from "../../page-layouts/cart/useCart";
+import { translateDynamicLabel } from "../../helper/utils";
 
 const useFeatureProductDetails = ({
   fpi,
@@ -87,7 +88,7 @@ const useFeatureProductDetails = ({
     return fpi.executeGQL(ADD_TO_CART, payload).then((outRes) => {
       if (outRes?.data?.addItemsToCart?.success) {
         showSnackbar(
-          outRes?.data?.addItemsToCart?.message ||
+          translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
           t("resource.common.add_to_cart_success"),
           "success"
         );
@@ -99,7 +100,7 @@ const useFeatureProductDetails = ({
         fetchCartDetails(fpi, { buyNow });
       } else {
         showSnackbar(
-          outRes?.data?.addItemsToCart?.message ||
+          translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
           t("resource.common.add_cart_failure"),
           "error"
         );
