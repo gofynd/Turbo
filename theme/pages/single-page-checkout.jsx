@@ -54,19 +54,24 @@ function SingleCheckoutPage({ fpi }) {
       includeAllItems: true,
       includeBreakup: true,
     };
-    fpi.executeGQL(CHECKOUT_LANDING, payload).finally(() => {
-      setIsApiLoading(false);
-    });
-    const paymentPayload = {
-      pincode: localStorage?.getItem("pincode") || "",
-      cartId: cart_id,
-      checkoutMode: "self",
-      amount: (getTotalValue() || 0.0) * 100,
-      //amount: (shipments?.breakup_values?.raw?.total || 0.1) * 100,
+    const fetchCheckoutData = async () => {
+      const res = await fpi
+        .executeGQL(CHECKOUT_LANDING, payload)
+        .finally(() => {
+          setIsApiLoading(false);
+        });
+      const paymentPayload = {
+        pincode: localStorage?.getItem("pincode") || "",
+        cartId: cart_id,
+        checkoutMode: "self",
+        amount: (res?.data?.cart?.breakup_values?.raw?.total || 0.0) * 100,
+        //amount: (shipments?.breakup_values?.raw?.total || 0.1) * 100,
+      };
+      fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload).finally(() => {
+        setIsLoading(false);
+      });
     };
-    fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload).finally(() => {
-      setIsLoading(false);
-    });
+    fetchCheckoutData();
   }, [fpi, buy_now]);
 
   function showPaymentOptions() {
