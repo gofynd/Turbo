@@ -39,6 +39,7 @@ function SingleCheckoutPage({ fpi }) {
   const cartCoupon = useCartCoupon({ fpi, cartData: bagData });
   const cartComment = useCartComment({ fpi, cartData: bagData });
   const { setIsLoading, ...payment } = usePayment(fpi);
+  const { getTotalValue } = payment;
 
   const currencySymbol = useMemo(
     () => bagData?.currency?.symbol || "₹",
@@ -60,7 +61,8 @@ function SingleCheckoutPage({ fpi }) {
       pincode: localStorage?.getItem("pincode") || "",
       cartId: cart_id,
       checkoutMode: "self",
-      amount: (shipments?.breakup_values?.raw?.total || 0.1) * 100,
+      amount: (getTotalValue() || 0.0) * 100,
+      //amount: (shipments?.breakup_values?.raw?.total || 0.1) * 100,
     };
     fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload).finally(() => {
       setIsLoading(false);
@@ -73,7 +75,8 @@ function SingleCheckoutPage({ fpi }) {
       pincode: "",
       cartId: cart_id,
       checkoutMode: "self",
-      amount: (shipments?.breakup_values?.raw?.total || 0.1) * 100,
+      amount: (getTotalValue() || 0.0) * 100,
+      // amount: (shipments?.breakup_values?.raw?.total || 0.1) * 100,
     };
     fpi.executeGQL(PAYMENT_OPTIONS, payload).finally(() => {
       setIsLoading(false);
