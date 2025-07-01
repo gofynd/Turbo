@@ -316,6 +316,38 @@
       "info": "t:resource.settings_schema.cart_and_button_configuration.applies_to_product_pdp_featured_section"
     },
     {
+      "type": "header",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
+      "value": "Buy Button Configurations"
+    },
+    {
+      "type": "select",
+      "id": "button_options",
+      "label": "t:resource.settings_schema.cart_and_button_configuration.button_options",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
+      "default": "addtocart_buynow",
+      "info": "t:resource.settings_schema.cart_and_button_configuration.applicable_pdp_featured_product",
+      "options": [
+        {
+          "value": "addtocart_buynow",
+          "text": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart_buy_now"
+        },
+        {
+          "value": "addtocart",
+          "text": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart"
+        },
+        {
+          "value": "buynow",
+          "text": "t:resource.settings_schema.cart_and_button_configuration.buy_now"
+        },
+        {
+          "value": "none",
+          "text": "t:resource.settings_schema.cart_and_button_configuration.none"
+        }
+      ]
+    },
+   
+    {
       "type": "checkbox",
       "id": "show_quantity_control",
       "label": "t:resource.settings_schema.cart_and_button_configuration.show_quantity_control",
