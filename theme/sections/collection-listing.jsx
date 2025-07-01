@@ -14,8 +14,7 @@ import {
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const fpi = useFPI();
-  const params = useParams();
-  const slug = params?.slug || props?.collection?.value;
+  const slug = props?.collection?.value;
   const listingProps = useCollectionListing({ fpi, slug, props });
 
   const { seo } = listingProps;
@@ -77,16 +76,16 @@ export const settings = {
       options: [
         {
           value: "view_more",
-        text: "t:resource.common.view_more",
-      },
-      {
-        value: "infinite",
-        text: "t:resource.common.infinite_loading",
-      },
-      {
-        value: "pagination",
-        text: "t:resource.common.pagination",
-      },
+          text: "t:resource.common.view_more",
+        },
+        {
+          value: "infinite",
+          text: "t:resource.common.infinite_loading",
+        },
+        {
+          value: "pagination",
+          text: "t:resource.common.pagination",
+        },
       ],
       info: "t:resource.sections.collections_listing.loading_options_info",
       default: "pagination",
@@ -179,19 +178,20 @@ export const settings = {
       options: [
         {
           value: "2",
-      text: "t:resource.common.two_cards",
-      },
-      {
-        value: "1",
-        text: "t:resource.common.one_card",
-      },
+          text: "t:resource.common.two_cards",
+        },
+        {
+          value: "1",
+          text: "t:resource.common.one_card",
+        },
       ],
       default: "1",
       label: "t:resource.common.default_grid_layout_mobile",
     },
     {
       id: "img_resize",
-      label: "t:resource.sections.products_listing.image_size_for_tablet_desktop",
+      label:
+        "t:resource.sections.products_listing.image_size_for_tablet_desktop",
       type: "select",
       options: [
         {
@@ -256,7 +256,8 @@ export const settings = {
       type: "text",
       id: "card_cta_text",
       label: "t:resource.common.button_text",
-      default: "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
+      default:
+        "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
     },
     {
       type: "checkbox",
@@ -366,7 +367,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
   }
 
   const payload = {
-    slug: router?.params?.slug,
+    slug: props?.collection?.value,
     search: filterQuery || undefined,
     sortOn: sortQuery || undefined,
     first: pageSize,
