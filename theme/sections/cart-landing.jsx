@@ -156,7 +156,7 @@ export function Component({ blocks }) {
                 const currentSize = singleItem?.split("_")[1];
                 return (
                   <ChipItem
-                    key={`${singleItemDetails?.product?.uid}_${singleItemDetails?.article?.store?.uid}`}
+                    key={`${singleItemDetails?.product?.uid}_${singleItemDetails?.article?.store?.uid}_${singleItemDetails?.article?.item_index}`}
                     isCartUpdating={isCartUpdating}
                     isDeliveryPromise={!globalConfig?.is_hyperlocal}
                     isSoldBy={false}

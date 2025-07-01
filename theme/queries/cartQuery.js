@@ -38,6 +38,7 @@ const CART_ITEMS = `items {
     size
     tags
     uid
+    item_index
     seller {
       name
       uid

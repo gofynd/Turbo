@@ -88,7 +88,7 @@ const useCart = (fpi, isActive = true) => {
       items.forEach((singleItem) => {
         if (singleItem?.key) {
           cartItemsObj[
-            `${singleItem?.key}_${singleItem?.article?.store?.uid}`
+            `${singleItem?.key}_${singleItem?.article?.store?.uid}_${singleItem?.article?.item_index}`
           ] = singleItem;
         }
       });
