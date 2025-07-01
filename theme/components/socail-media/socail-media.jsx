@@ -11,6 +11,7 @@ import SocailYoutube from "../../assets/images/socail-youtube.svg";
 import SocailPinterest from "../../assets/images/socail-pinterest.svg";
 import { FDKLink } from "fdk-core/components";
 import useHeader from "../header/useHeader";
+import { useFPI, useGlobalStore } from "fdk-core/utils";
 
 const iconMap = {
   social_twitter: SocailTwitter,
@@ -24,7 +25,8 @@ const iconMap = {
   social_linked_in: SocailLinkedin,
 };
 
-export default function SocailMedia({ social_links, customClassName, fpi }) {
+export default function SocailMedia({ social_links, customClassName}) {
+  const fpi = useFPI();
   const { globalConfig } = useHeader(fpi);
   const openSameTab = !!globalConfig.footer_social_open_same_tab;
 

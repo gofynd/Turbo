@@ -8,6 +8,7 @@ import { sanitizeHTMLTag } from "../helper/utils";
 function ContactUsPage({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const THEME = useGlobalStore(fpi.getters.THEME);
+  const { t } = useGlobalTranslation("translation");
 
   const mode = THEME?.config?.list.find(
     (f) => f.name === THEME?.config?.current
