@@ -10,6 +10,7 @@ import SocailLinkedin from "../../assets/images/socail-linkedin.svg";
 import SocailYoutube from "../../assets/images/socail-youtube.svg";
 import SocailPinterest from "../../assets/images/socail-pinterest.svg";
 import { FDKLink } from "fdk-core/components";
+import useHeader from "../header/useHeader";
 
 const iconMap = {
   social_twitter: SocailTwitter,
@@ -23,7 +24,10 @@ const iconMap = {
   social_linked_in: SocailLinkedin,
 };
 
-export default function SocailMedia({ social_links, customClassName }) {
+export default function SocailMedia({ social_links, customClassName, fpi }) {
+  const { globalConfig } = useHeader(fpi);
+  const openSameTab = !!globalConfig.footer_social_open_same_tab;
+
   function getSocialIcon(key) {
     const SocialIcon = iconMap[key];
     return !!SocialIcon ? <SocialIcon /> : <></>;
@@ -33,7 +37,17 @@ export default function SocailMedia({ social_links, customClassName }) {
       {Object.entries(social_links).map(
         ([key, { link, title }]) =>
           link && (
-            <FDKLink
+            openSameTab ?(
+            <a
+              key={key}
+              href={link}
+              title={title}
+              className={styles.socialLink}
+            >
+              {getSocialIcon(`social_${key}`)}
+            </a>):
+            (
+              <FDKLink
               key={key}
               to={link}
               target="_blank"
@@ -42,6 +56,7 @@ export default function SocailMedia({ social_links, customClassName }) {
             >
               {getSocialIcon(`social_${key}`)}
             </FDKLink>
+            )
           )
       )}
     </div>

@@ -46,17 +46,20 @@ function Footer({ fpi }) {
   }, []);
 
   const logoMaxHeightMobile = globalConfig?.footer_logo_max_height_mobile || 25;
-  const logoMaxHeightDesktop = globalConfig?.footer_logo_max_height_desktop || 36;
+  const logoMaxHeightDesktop =
+    globalConfig?.footer_logo_max_height_desktop || 36;
 
   const getArtWork = () => {
     if (globalConfig?.footer_image) {
       return {
-        "--background-desktop": `url(${globalConfig?.footer_image_desktop ||
+        "--background-desktop": `url(${
+          globalConfig?.footer_image_desktop ||
           "../../assets/images/placeholder19x6.png"
-          })`,
-        "--background-mobile": `url(${globalConfig?.footer_image_mobile ||
+        })`,
+        "--background-mobile": `url(${
+          globalConfig?.footer_image_mobile ||
           "../../assets/images/placeholder4x5.png"
-          })`,
+        })`,
         "--footer-opacity": 0.25,
         "--footer-opacity-background": `${pallete?.footer?.footer_bottom_background}40`, // The last two digits represents the opacity (0.25 is converted to hex)
         backgroundRepeat: "no-repeat",
@@ -84,6 +87,8 @@ function Footer({ fpi }) {
     ...(isMobile && isPDP ? { paddingBottom: "74px" } : {}),
   };
 
+  const openInNewTab = globalConfig?.footer_social_open_same_tab;
+
   const isFooterHidden = useMemo(() => {
     const regex =
       /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$|^\/cart\/bag\/?$|^\/cart\/checkout\/?$/;
@@ -99,9 +104,7 @@ function Footer({ fpi }) {
               <div className={`${styles["footer__top--wrapper"]}`}>
                 <div className={styles["footer__top--info"]}>
                   {getLogo?.length > 0 && (
-                    <div
-                      className={`fx-footer-logo ${styles.logo}`}
-                    >
+                    <div className={`fx-footer-logo ${styles.logo}`}>
                       <img
                         src={getLogo}
                         loading="lazy"
@@ -124,17 +127,33 @@ function Footer({ fpi }) {
                     <div className={styles.linkBlock} key={index}>
                       <h5 className={`${styles.menuTitle} ${styles.fontBody}`}>
                         {item?.action?.page?.type === "external" ? (
-                          <a
-                            href={item?.action?.page?.query?.url[0]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {item.display}
-                          </a>
+                          openInNewTab ? (
+                            <a
+                              href={item?.action?.page?.query?.url[0]}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {item.display}
+                            </a>
+                          ) : (
+                            <a href={item?.action?.page?.query?.url[0]}>
+                              {item.display}
+                            </a>
+                          )
                         ) : convertActionToUrl(item?.action)?.length > 0 ? (
-                          <FDKLink action={item?.action}>
-                            {item.display}
-                          </FDKLink>
+                          openInNewTab ? (
+                            <FDKLink
+                              to={convertActionToUrl(item?.action)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {item.display}
+                            </FDKLink>
+                          ) : (
+                            <FDKLink action={item?.action}>
+                              {item.display}
+                            </FDKLink>
+                          )
                         ) : (
                           <p>{item.display}</p>
                         )}
@@ -156,11 +175,19 @@ function Footer({ fpi }) {
                                 </a>
                               ) : convertActionToUrl(subItem?.action)?.length >
                                 0 ? (
-                                <FDKLink
-                                  action={subItem?.action}
-                                >
-                                  {subItem.display}
-                                </FDKLink>
+                                openInNewTab ? (
+                                  <FDKLink
+                                    to={convertActionToUrl(subItem?.action)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {subItem.display}
+                                  </FDKLink>
+                                ) : (
+                                  <FDKLink action={subItem?.action}>
+                                    {subItem.display}
+                                  </FDKLink>
+                                )
                               ) : (
                                 <p>{subItem.display}</p>
                               )}
@@ -239,6 +266,7 @@ function Footer({ fpi }) {
                           )}
                           <span>
                             <SocialLinks
+                              fpi={fpi}
                               social_links={contactInfo?.social_links}
                             />
                           </span>

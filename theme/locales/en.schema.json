@@ -168,6 +168,8 @@
         "show_footer_contact_details_background": "Show Footer Contact Details Background",
         "social_media_text": "Social media text label",
         "social_media_text_info": "Show Label text for social media",
+        "open_same_tab":"Open social links in same tab",
+        "open_same_tab_info":"Check this to open social media links in the same tab instead of a new one",
         "footer_logo_max_height_mobile": "Footer Logo Max Height (Mobile)",
         "footer_logo_max_height_desktop": "Footer Logo Max Height (Desktop)"
       },

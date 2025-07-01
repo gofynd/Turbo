@@ -259,6 +259,14 @@
       "label": "t:resource.settings_schema.footer.show_footer_contact_details_background"
     },
     {
+      "type": "checkbox",
+      "id": "footer_social_open_same_tab",
+      "default": false,
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.open_same_tab",
+      "info": "t:resource.settings_schema.footer.open_same_tab_info"
+    },
+    {
       "type": "text",
       "id": "footer_social_text",
       "default": "Social Media",
