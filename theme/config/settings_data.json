@@ -164,6 +164,7 @@
             "image_border_radius": 12,
             "img_container_bg": "#EAEAEA",
             "payments_logo": "",
+            "button_options": "addtocart_buynow",
             "show_price": true,
             "img_fill": true,
             "disable_cart": false,
