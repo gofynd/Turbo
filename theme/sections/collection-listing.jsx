@@ -370,7 +370,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
   }
 
   const payload = {
-    slug: props?.collection?.value,
+    slug: router?.params?.slug ?? props?.collection?.value,
     search: filterQuery || undefined,
     sortOn: sortQuery || undefined,
     first: pageSize,
