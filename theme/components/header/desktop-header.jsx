@@ -36,7 +36,7 @@ function HeaderDesktop({
 
   const getMenuMaxLength = () => {
     if (isDoubleRowHeader) {
-      return 10;
+      return 50;
     }
 
     const logoMenuAlignment = globalConfig?.logo_menu_alignment;
@@ -54,15 +54,17 @@ function HeaderDesktop({
 
   return (
     <div
-      className={`${styles.headerDesktop}  ${styles[globalConfig.header_layout]
-        } ${styles[globalConfig.logo_menu_alignment]}`}
+      className={`${styles.headerDesktop}  ${
+        styles[globalConfig.header_layout]
+      } ${styles[globalConfig.logo_menu_alignment]}`}
     >
       <div className={styles.firstRow}>
         <div className={styles.left}>
           {!isDoubleRowHeader && (
             <Navigation
-              customClass={`${styles.firstRowNav} ${styles[globalConfig?.header_layout]
-                }`}
+              customClass={`${styles.firstRowNav} ${
+                styles[globalConfig?.header_layout]
+              }`}
               maxMenuLength={getMenuMaxLength()}
               fallbackLogo={fallbackLogo}
               navigationList={navigation}
@@ -126,7 +128,10 @@ function HeaderDesktop({
             )}
         </div>
         <div className={`${styles.right} ${styles.right__icons}`}>
-          <I18Dropdown fpi={fpi} languageIscCode={languageIscCode}></I18Dropdown>
+          <I18Dropdown
+            fpi={fpi}
+            languageIscCode={languageIscCode}
+          ></I18Dropdown>
           {isHyperlocal &&
             (!globalConfig?.always_on_search ||
               globalConfig?.logo_menu_alignment === "layout_4") && (
