@@ -36,7 +36,7 @@
     },
     {
       "type":"range",
-      "id":"mobile_logo_max_height",
+      "id":"mobile_logo_max_height_header",
       "category":"t:resource.common.header",
       "label":"t:resource.settings_schema.common.mobile_logo_header",
       "min": 20,
