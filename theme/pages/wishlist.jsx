@@ -5,20 +5,37 @@ import { isLoggedIn } from "../helper/auth-guard";
 import Wishlist from "@gofynd/theme-template/pages/wishlist/wishlist";
 import "@gofynd/theme-template/pages/wishlist/wishlist.css";
 import Shimmer from "../components/shimmer/shimmer";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
+import { getHelmet } from "../providers/global-provider";
+import { sanitizeHTMLTag } from "../helper/utils";
 
 function WishlistPage({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
+  const page = useGlobalStore(fpi.getters.PAGE) || {};
+  const THEME = useGlobalStore(fpi.getters.THEME);
   const { loading, ...wishlistProps } = useWishlist({ fpi });
+
+  const seoData = page?.seo || {};
+  const title = sanitizeHTMLTag(seoData?.title || "Wishlist");
+  const description = sanitizeHTMLTag(
+    seoData?.description || t("resource.wishlist.seo_description")
+  );
+
+  const mergedSeo = { ...seoData, title, description };
 
   if (loading) {
     return <Shimmer />;
   }
 
   return (
+    <>
+        {getHelmet({ seo: mergedSeo })}
     <div className="basePageContainer margin0auto">
       <div className={`${styles.wishlistWrap} ${styles.flexColumn}`}>
         <Wishlist {...wishlistProps} />
       </div>
     </div>
+    </>
   );
 }
 

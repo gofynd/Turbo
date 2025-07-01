@@ -1,6 +1,9 @@
 import React from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { SectionRenderer } from "fdk-core/components";
+import { getHelmet } from "../providers/global-provider";
+import { sanitizeHTMLTag } from "../helper/utils";
+
 
 function ContactUsPage({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
@@ -12,13 +15,24 @@ function ContactUsPage({ fpi }) {
   const globalConfig = mode?.global_config?.custom?.props;
   const { sections = [] } = page || {};
 
+  const seoData = page?.seo || {};
+  const title = sanitizeHTMLTag(seoData?.title || "Contact Us");
+  const description = sanitizeHTMLTag(
+    seoData?.description || t("resource.contact_us.seo_description")
+  );
+
+  const mergedSeo = { ...seoData, title, description };
+
   return (
     page?.value === "contact-us" && (
-      <SectionRenderer
-        sections={sections}
-        fpi={fpi}
-        globalConfig={globalConfig}
-      />
+      <>
+        {getHelmet({ seo: mergedSeo })}
+        <SectionRenderer
+          sections={sections}
+          fpi={fpi}
+          globalConfig={globalConfig}
+        />
+      </>
     )
   );
 }

@@ -754,7 +754,8 @@
     "wishlist": {
       "product_removed": "Products Removed From Wishlist",
       "no_product_in_wishlist": "You do not have any product added to wishlist",
-      "add_products_to_wishlist": "Add products to wishlist"
+      "add_products_to_wishlist": "Add products to wishlist",
+      "seo_description":"Save the products you love and build your wishlist. Easily revisit and purchase your favorite items anytime with just a few clicks."
     },
     "cart": {
       "no_items": "There are no items in cart",
@@ -982,7 +983,11 @@
       "slide_alt": "slide",
       "no_blogs_found": "No blogs found",
       "showing_results": "Showing {{count}} results of",
-      "no_blog_found": "No Blog Found"
+      "no_blog_found": "No Blog Found",
+      "seo_description":"Discover helpful articles, product tips, and expert insights to stay informed and inspired. Our blog covers everything from trends to how-to guides."
+    },
+    "about_us":{
+      "seo_description":"We’re dedicated to delivering high-quality products and exceptional service. Learn more about our journey, values, and what makes us a trusted choice."
     },
     "checkout": {
       "payment_retry_message": "Please try again or use a different payment method to complete payment",
@@ -1099,7 +1104,8 @@
       "please_enter_a_valid_phone_number": "Please enter a valid phone number",
       "please_enter_your_phone_number": "Please enter your phone number",
       "please_enter_a_valid_email_address": "Please enter a valid email address",
-      "please_enter_your_email_address": "Please enter your email address"
+      "please_enter_your_email_address": "Please enter your email address",
+      "seo_description":"Reach out to us for any support or questions. We're here to assist with your orders, returns, or product inquiries—quickly and efficiently."
     },
     "faq": {
       "no_frequently_asked_questions_found": "No Frequently Asked Questions Found",
