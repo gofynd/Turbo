@@ -14,7 +14,10 @@ import {
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const fpi = useFPI();
-  const slug = props?.collection?.value;
+  const isClient = typeof window !== "undefined";
+  const params = isClient ? useParams() : null;
+  const slug =
+    isClient && params?.slug ? params?.slug : props?.collection?.value;
   const listingProps = useCollectionListing({ fpi, slug, props });
 
   const { seo } = listingProps;
