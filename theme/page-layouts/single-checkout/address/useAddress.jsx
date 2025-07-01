@@ -37,6 +37,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   const [addressLoader, setAddressLoader] = useState(false);
   const [hideAddress, setHideAddress] = useState(false);
   const [isShipmentLoading, setIsShipmentLoading] = useState(false);
+  const [isCartValid, setIsCartValid] = useState(true);
 
   const getDefaultAddress =
     allAddresses?.filter((item) => item?.is_default_address) || [];
@@ -108,7 +109,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           currency: countryInfo.currency.code,
         });
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const handleCountrySearch = (event) => {
@@ -224,7 +225,10 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           if (cart_items?.checkout_mode === "other") {
             setHideAddress(true);
           }
-          showSnackbar(t("resource.common.address.address_addition_success"), "success");
+          showSnackbar(
+            t("resource.common.address.address_addition_success"),
+            "success"
+          );
           resetAddressState();
           fpi
             .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow })
@@ -235,7 +239,8 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         } else {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
           showSnackbar(
-            res?.errors?.[0]?.message ?? t("resource.common.address.new_address_creation_failure"),
+            res?.errors?.[0]?.message ??
+              t("resource.common.address.new_address_creation_failure"),
             "error"
           );
           setAddressLoader(false);
@@ -288,12 +293,16 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           fpi
             .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow })
             .then(() => selectAddress());
-          showSnackbar(t("resource.common.address.address_update_success"), "success");
+          showSnackbar(
+            t("resource.common.address.address_update_success"),
+            "success"
+          );
           resetAddressState();
         } else {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
           showSnackbar(
-            res?.errors?.[0]?.message || t("resource.common.address.address_update_failure"),
+            res?.errors?.[0]?.message ||
+              t("resource.common.address.address_update_failure"),
             "error"
           );
         }
@@ -315,10 +324,16 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       .then((res) => {
         if (res?.data?.removeAddress?.is_deleted) {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
-          showSnackbar(t("resource.common.address.address_deletion_success"), "success");
+          showSnackbar(
+            t("resource.common.address.address_deletion_success"),
+            "success"
+          );
         } else {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
-          showSnackbar(t("resource.common.address.address_deletion_failure"), "error");
+          showSnackbar(
+            t("resource.common.address.address_deletion_failure"),
+            "error"
+          );
           resetAddressState();
         }
       });
@@ -366,6 +381,12 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
             addressId: `${id.length ? id : selectedAddressId}`,
             id: `${cart_id}`,
             buyNow,
+          })
+          .then((res) => {
+            if (!res?.data?.cartShipmentDetails?.is_valid) {
+              showSnackbar(res?.data?.cartShipmentDetails?.message);
+              setIsCartValid(false);
+            }
           })
           .finally(() => {
             setIsShipmentLoading(false);
@@ -460,11 +481,13 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           return data;
         } else {
           showSnackbar(
-            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure")
+            res?.errors?.[0]?.message ||
+              t("resource.common.address.pincode_verification_failure")
           );
           data.showError = true;
           data.errorMsg =
-            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure");
+            res?.errors?.[0]?.message ||
+            t("resource.common.address.pincode_verification_failure");
           return data;
         }
       });
@@ -505,6 +528,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     countryDetails,
     onFailedGetCartShipmentDetails,
     isShipmentLoading,
+    isCartValid,
   };
 };
 

@@ -111,7 +111,7 @@ function SingleCheckoutPage({ fpi }) {
     }
   }, [showShipment, showPayment]);
 
-  const { isShipmentLoading, ...address } = useAddress(
+  const { isShipmentLoading, isCartValid, ...address } = useAddress(
     showShipmentHandler,
     showPaymentHandler,
     fpi
@@ -155,6 +155,7 @@ function SingleCheckoutPage({ fpi }) {
         convertHyperlocalTat={convertUTCToHyperlocalTat}
         loader={<Loader />}
         buybox={buybox}
+        isCartValid={isCartValid}
       />
       {/* <PriceBreakup breakUpValues={breakupValues}></PriceBreakup> */}
     </>
