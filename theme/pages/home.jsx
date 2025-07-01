@@ -10,17 +10,20 @@ import { getHelmet } from "../providers/global-provider";
 function Home({ numberOfSections, fpi }) {
   const { t } = useGlobalTranslation("translation");
   const page = useGlobalStore(fpi.getters.PAGE) || {};
+  const { isEdit = false } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
   const { globalConfig } = useThemeConfig({ fpi });
   const seoData = page?.seo || {};
   const title = sanitizeHTMLTag(seoData?.title || "Home");
   const { sections = [], error, isLoading } = page || {};
   const [step, setStep] = useState(0);
   const renderSections = useMemo(
-    () => sections?.slice(0, 3 + step * 2),
-    [sections, step]
+    () => (isEdit ? sections : sections?.slice(0, 3 + step * 2)),
+    [sections, step, isEdit]
   );
-const description = sanitizeHTMLTag(seoData?.description || t("resource.common.home_seo_description"));
-const mergedSeo = { ...seoData, title, description };
+  const description = sanitizeHTMLTag(
+    seoData?.description || t("resource.common.home_seo_description")
+  );
+  const mergedSeo = { ...seoData, title, description };
 
   if (error) {
     return (
