@@ -94,6 +94,9 @@ function HeaderDesktop({
           <FDKLink to="/">
             <img
               className={styles.logo}
+              style={{
+                maxHeight: `${globalConfig?.desktop_logo_max_height || 65}px`,
+              }}
               src={getShopLogo()}
               alt={t("resource.header.shop_logo_alt_text")}
             />

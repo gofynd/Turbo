@@ -25,6 +25,26 @@
       "default": 24
     },
     {
+      "type":"range",
+      "id":"desktop_logo_max_height",
+      "category":"t:resource.common.header",
+      "label":"t:resource.settings_schema.common.logo_header",
+      "min": 20,
+      "max": 100,
+      "unit": "px",
+      "default": 65
+    },
+    {
+      "type":"range",
+      "id":"mobile_logo_max_height",
+      "category":"t:resource.common.header",
+      "label":"t:resource.settings_schema.common.mobile_logo_header",
+      "min": 20,
+      "max": 100,
+      "unit": "px",
+      "default": 38
+    },
+    {
       "type": "select",
       "id": "header_layout",
       "default": "single",

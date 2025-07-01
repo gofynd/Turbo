@@ -112,7 +112,9 @@
         "product_card_configuration": "Product Card Configuration",
         "other_page_configuration": "Other Page Configuration",
         "google_maps": "Google Maps",
-        "mobile_logo_max_height": "Mobile Logo Max Height"
+        "mobile_logo_max_height": "Mobile Navigation Logo Max Height",
+        "logo_header":"Desktop Header Logo Max Height",
+        "mobile_logo_header":"Mobile Header Logo Max Height"
       },
       "typography": {
         "font_header": "Font Header",

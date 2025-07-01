@@ -278,6 +278,9 @@ function Header({ fpi }) {
                     className={`${styles.middle} ${styles.flexAlignCenter}`}
                   >
                     <img
+                     style={{
+                      maxHeight: `${globalConfig?.mobile_logo_max_height || 38}px`,
+                    }}
                       className={styles.logo}
                       src={getShopLogoMobile()}
                       alt={t("resource.refund_order.name_alt_text")}
