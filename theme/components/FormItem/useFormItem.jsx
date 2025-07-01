@@ -27,24 +27,40 @@ export const useFormItem = ({ fpi }) => {
       });
   };
 
-  const handleFormSubmit = (formValues) => {
-    const payload = {
-      slug: params?.slug,
-      customFormSubmissionPayloadInput: {
-        response: Object.keys(formValues).reduce(
-          (acc, key) => [...acc, { key, value: formValues?.[key] || "" }],
-          []
-        ),
-      },
-    };
+ const handleFormSubmit = (formValues) => {
+  const response = [];
+  Object.entries(formValues).forEach(([key, value]) => {
+    if (key === "mobile-number" && typeof value === "object") {
+      response.push({
+        key,
+        value: {
+          code: value.countryCode || "",
+          number: value.mobile || "",
+          valid: value.isValidNumber ?? false,
+        },
+      });
+    } else {
+      response.push({
+        key,
+        value: value ?? "",
+      });
+    }
+  });
 
-    return fpi.executeGQL(SUBMIT_CUSTOM_FORM, payload).then((res) => {
-      if (res?.errors) {
-        throw res?.errors?.[0];
-      }
-      return res?.data?.submitCustomForm;
-    });
+  const payload = {
+    slug: params?.slug,
+    customFormSubmissionPayloadInput: {
+      response,
+    },
   };
+
+  return fpi.executeGQL(SUBMIT_CUSTOM_FORM, payload).then((res) => {
+    if (res?.errors) {
+      throw res?.errors?.[0];
+    }
+    return res?.data?.submitCustomForm;
+  });
+};
 
   useEffect(() => {
     getCustomForm();
