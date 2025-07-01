@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/media-with-text.less";
@@ -27,7 +27,7 @@ export function Component({ props, globalConfig, blocks, fpi }) {
     padding_top,
     padding_bottom,
   } = props;
-
+  const descriptionRef = useRef(null);
   const getMobileImage = image_mobile?.value || placeholderMobile;
   const getDesktopImage = image_desktop?.value || placeholderDesktop;
 
@@ -50,6 +50,41 @@ export function Component({ props, globalConfig, blocks, fpi }) {
       { breakpoint: { max: 540 }, width: 1170, url: getMobileImage },
     ];
   };
+
+  const originalContent =
+    typeof description?.value === "string" ? description.value : "";
+
+  const styleMatches = [
+    ...originalContent.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi),
+  ];
+  const extractedStyles = styleMatches.map((match) => match[1]);
+
+  const scriptMatches = [
+    ...originalContent.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi),
+  ];
+  const extractedScripts = scriptMatches.map((match) => match[1]);
+
+  let cleanedContent = originalContent
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      extractedScripts.forEach((scriptContent) => {
+        try {
+          const script = document.createElement("script");
+          script.type = "text/javascript";
+          script.textContent = scriptContent;
+          sectionRef.current?.appendChild(script);
+        } catch (err) {
+          console.error("Script injection failed:", err);
+        }
+      });
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [description?.value]);
+
   const getProductSlugs = () => {
     return (
       blocks?.reduce((acc, block) => {
@@ -108,69 +143,69 @@ export function Component({ props, globalConfig, blocks, fpi }) {
 
   const mapAlignment = !isMobile
     ? {
-      top_start: {
-        justifyContent: "unset",
-        alignItems: "flex-start",
-        textAlign: "start",
-      },
-      top_center: {
-        justifyContent: "unset",
-        alignItems: "center",
-        textAlign: "center",
-      },
-      top_end: {
-        justifyContent: "unset",
-        alignItems: "flex-end",
-        textAlign: "end",
-      },
-      center_center: {
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-      },
-      center_start: {
-        justifyContent: "center",
-        alignItems: "flex-start",
-        textAlign: "start",
-      },
-      center_end: {
-        justifyContent: "center",
-        alignItems: "flex-end",
-        textAlign: "end",
-      },
-      bottom_start: {
-        justifyContent: "flex-end",
-        alignItems: "flex-start",
-        textAlign: "start",
-      },
-      bottom_end: {
-        justifyContent: "flex-end",
-        alignItems: "flex-end",
-        textAlign: "end",
-      },
-      bottom_center: {
-        justifyContent: "flex-end",
-        alignItems: "center",
-        textAlign: "center",
-      },
-    }
+        top_start: {
+          justifyContent: "unset",
+          alignItems: "flex-start",
+          textAlign: "start",
+        },
+        top_center: {
+          justifyContent: "unset",
+          alignItems: "center",
+          textAlign: "center",
+        },
+        top_end: {
+          justifyContent: "unset",
+          alignItems: "flex-end",
+          textAlign: "end",
+        },
+        center_center: {
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+        },
+        center_start: {
+          justifyContent: "center",
+          alignItems: "flex-start",
+          textAlign: "start",
+        },
+        center_end: {
+          justifyContent: "center",
+          alignItems: "flex-end",
+          textAlign: "end",
+        },
+        bottom_start: {
+          justifyContent: "flex-end",
+          alignItems: "flex-start",
+          textAlign: "start",
+        },
+        bottom_end: {
+          justifyContent: "flex-end",
+          alignItems: "flex-end",
+          textAlign: "end",
+        },
+        bottom_center: {
+          justifyContent: "flex-end",
+          alignItems: "center",
+          textAlign: "center",
+        },
+      }
     : {
-      center: {
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-      },
-      left: {
-        justifyContent: "center",
-        alignItems: "flex-start",
-        textAlign: "start",
-      },
-      right: {
-        justifyContent: "center",
-        alignItems: "flex-end",
-        textAlign: "end",
-      },
-    };
+        center: {
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+        },
+        left: {
+          justifyContent: "center",
+          alignItems: "flex-start",
+          textAlign: "start",
+        },
+        right: {
+          justifyContent: "center",
+          alignItems: "flex-end",
+          textAlign: "end",
+        },
+      };
 
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 16}px`,
@@ -231,9 +266,22 @@ export function Component({ props, globalConfig, blocks, fpi }) {
           </h2>
         )}
         {description?.value && (
-          <p className={`fx-description ${styles.media_text__description}`}>
-            {description?.value}
-          </p>
+          <div
+            ref={descriptionRef}
+            className={`fx-description ${styles.media_text__description}`}
+          >
+            {extractedStyles.map((css, index) => (
+              <style
+                key={`style-${index}`}
+                dangerouslySetInnerHTML={{ __html: css }}
+              />
+            ))}
+
+            <div
+              data-testid="html-content"
+              dangerouslySetInnerHTML={{ __html: cleanedContent }}
+            />
+          </div>
         )}
         {button_text?.value && (
           <FDKLink
@@ -355,10 +403,11 @@ export const settings = {
       label: "t:resource.common.heading",
     },
     {
-      type: "textarea",
       id: "description",
-      default: "",
       label: "t:resource.common.description",
+      type: "code",
+      default: "",
+      info: "t:resource.sections.raw_html.custom_html_code_editor",
     },
     {
       type: "text",

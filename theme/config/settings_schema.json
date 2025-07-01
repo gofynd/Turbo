@@ -288,86 +288,12 @@
       "info": "t:resource.settings_schema.cart_and_button_configuration.applies_to_product_pdp_featured_section"
     },
     {
-      "type": "header",
-      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "value": "Buy Button Configurations"
-    },
-    {
-      "type": "select",
-      "id": "button_options",
-      "label": "t:resource.settings_schema.cart_and_button_configuration.button_options",
-      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "default": "addtocart_buynow",
-      "info": "t:resource.settings_schema.cart_and_button_configuration.applicable_pdp_featured_product",
-      "options": [
-        {
-          "value": "addtocart_buynow",
-          "text": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart_buy_now"
-        },
-        {
-          "value": "addtocart_button",
-          "text": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart_custom_button"
-        },
-        {
-          "value": "buynow_button",
-          "text": "t:resource.settings_schema.cart_and_button_configuration.buy_now_custom_button"
-        },
-        {
-          "value": "button",
-          "text": "t:resource.common.custom_button"
-        },
-        {
-          "value": "addtocart",
-          "text": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart"
-        },
-        {
-          "value": "buynow",
-          "text": "t:resource.settings_schema.cart_and_button_configuration.buy_now"
-        },
-        {
-          "value": "addtocart_buynow_button",
-          "text": "t:resource.settings_schema.cart_and_button_configuration.all_three"
-        },
-        {
-          "value": "none",
-          "text": "t:resource.settings_schema.cart_and_button_configuration.none"
-        }
-      ]
-    },
-    {
-      "type": "text",
-      "id": "custom_button_text",
-      "label": "t:resource.common.custom_button_text",
-      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "default": "t:resource.default_values.enquire_now",
-      "info": "t:resource.settings_schema.cart_and_button_configuration.applicable_pdp_featured_product"
-    },
-    {
-      "type": "url",
-      "id": "custom_button_link",
-      "label": "t:resource.common.custom_button_link",
-      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "default": ""
-    },
-    {
       "type": "checkbox",
       "id": "show_quantity_control",
       "label": "t:resource.settings_schema.cart_and_button_configuration.show_quantity_control",
       "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "default": false,
       "info": "t:resource.settings_schema.cart_and_button_configuration.display_in_place_of_add_to_cart"
-    },
-    {
-      "type": "image_picker",
-      "id": "custom_button_icon",
-      "label": "t:resource.common.custom_button_icon",
-      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
-      "info": "t:resource.settings_schema.cart_and_button_configuration.applicable_pdp_featured_product",
-      "default": "",
-      "options": {
-        "aspect_ratio": "1:1",
-        "aspect_ratio_strict_check": true
-      }
     },
     {
       "type": "header",
