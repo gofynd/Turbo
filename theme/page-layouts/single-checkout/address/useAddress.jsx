@@ -131,6 +131,12 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
 
   useEffect(() => {
     if (address_id) {
+      setSelectedAddressId(address_id);
+    }
+  }, [address_id]);
+
+  useEffect(() => {
+    if (address_id) {
       // setSelectedAddressId(id);
       return;
     }
@@ -410,7 +416,8 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         setInvalidAddressError({
           id: id.length ? id : findAddress?.id,
           message:
-          translateDynamicLabel(res?.data?.selectAddress?.message, t) || res?.errors?.[0]?.message,
+            translateDynamicLabel(res?.data?.selectAddress?.message, t) ||
+            res?.errors?.[0]?.message,
         });
       }
     });

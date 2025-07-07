@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { SectionRenderer } from "fdk-core/components";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { useThemeConfig } from "../helper/hooks";
@@ -15,15 +15,27 @@ function Home({ numberOfSections, fpi }) {
   const seoData = page?.seo || {};
   const title = sanitizeHTMLTag(seoData?.title || "Home");
   const { sections = [], error, isLoading } = page || {};
-  const [step, setStep] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(3);
+
   const renderSections = useMemo(
-    () => (isEdit ? sections : sections?.slice(0, 3 + step * 2)),
-    [sections, step, isEdit]
+    () => (isEdit ? sections : sections?.slice(0, visibleCount)),
+    [sections, visibleCount]
   );
   const description = sanitizeHTMLTag(
     seoData?.description || t("resource.common.home_seo_description")
   );
   const mergedSeo = { ...seoData, title, description };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setVisibleCount(sections.length);
+      window?.removeEventListener("scroll", handleScroll);
+    };
+
+    window?.addEventListener("scroll", handleScroll);
+
+    return () => window?.removeEventListener("scroll", handleScroll);
+  }, [sections]);
 
   if (error) {
     return (
@@ -40,20 +52,11 @@ function Home({ numberOfSections, fpi }) {
       <div>
         <h1 className="visually-hidden">{title}</h1>
         {page?.value === "home" && (
-          <InfiniteLoader
-            infiniteLoaderEnabled={true}
-            loader={<></>}
-            hasNext={renderSections.length !== sections.length}
-            loadMore={() => {
-              setStep((prev) => prev + 1);
-            }}
-          >
-            <SectionRenderer
-              sections={renderSections || sections}
-              fpi={fpi}
-              globalConfig={globalConfig}
-            />
-          </InfiniteLoader>
+          <SectionRenderer
+            sections={renderSections || sections}
+            fpi={fpi}
+            globalConfig={globalConfig}
+          />
         )}
         {isLoading && <Loader />}
       </div>

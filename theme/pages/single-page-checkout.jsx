@@ -23,7 +23,7 @@ function SingleCheckoutPage({ fpi }) {
   const [showPayment, setShowPayment] = useState(false);
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [isApiLoading, setIsApiLoading] = useState(true);
-  const { onPriceDetailsClick } = useCart(fpi);
+  const { onPriceDetailsClick, cartData } = useCart(fpi);
   const steps = [
     { label: t("resource.checkout.address") },
     { label: t("resource.checkout.summary") },
@@ -32,7 +32,7 @@ function SingleCheckoutPage({ fpi }) {
 
   const { isHyperlocal, convertUTCToHyperlocalTat } = useHyperlocalTat({ fpi });
   const { isGoogleMap, mapApiKey } = useGoogleMapConfig({ fpi });
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const cart_id = searchParams.get("id");
   const buy_now = searchParams.get("buy_now") || false;
   const address_id = searchParams.get("address_id");
@@ -45,6 +45,14 @@ function SingleCheckoutPage({ fpi }) {
     () => bagData?.currency?.symbol || "₹",
     [bagData]
   );
+
+  useEffect(() => {
+    if (cartData?.id) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("id", cartData?.id);
+      setSearchParams(newParams);
+    }
+  }, [cartData?.id]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -122,6 +130,20 @@ function SingleCheckoutPage({ fpi }) {
       address?.selectAddress();
     }
   }, []);
+
+  const addressId = useMemo(() => {
+    return address?.getDefaultAddress?.find(
+      ({ is_default_address }) => is_default_address
+    )?.id;
+  }, [address.getDefaultAddress]);
+
+  useEffect(() => {
+    if (addressId) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("address_id", addressId);
+      setSearchParams(newParams);
+    }
+  }, [addressId]);
 
   return (
     <>
