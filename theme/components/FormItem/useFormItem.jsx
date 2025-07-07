@@ -30,7 +30,10 @@ export const useFormItem = ({ fpi }) => {
  const handleFormSubmit = (formValues) => {
   const response = [];
   Object.entries(formValues).forEach(([key, value]) => {
-    if (key === "mobile-number" && typeof value === "object") {
+    if (
+      (key === "mobile-number" || key === "phone" || key === "mobile") &&
+      typeof value === "object"
+    ) {
       response.push({
         key,
         value: {

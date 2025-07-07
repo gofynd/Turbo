@@ -556,6 +556,8 @@
       "first_name": "First Name",
       "please_enter_valid_first_name": "Please enter a valid first name",
       "last_name": "Last Name",
+      "maximum_64_characters_allowed":"Please enter characters less than 64",
+      "maximum_50_characters_allowed":"Please enter characters less than 50",
       "please_enter_valid_last_name": "Please enter a valid last name",
       "please_enter_valid_email_address": "Please enter valid email address",
       "password_message": "Password must be at least 8 characters and contain at least 1 letter, 1 number and 1 special character",

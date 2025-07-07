@@ -333,10 +333,10 @@ const useProductDescription = ({ fpi, slug, props }) => {
           }
           // });
         } else {
-          showSnackbar(
-            translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) || t("resource.common.add_cart_failure"),
-            "error"
-          );
+          const errorMessage =
+            translateDynamicLabel(outRes?.errors?.[0]?.message, t) ||
+            t("resource.common.add_cart_failure");
+          showSnackbar(errorMessage, "error");
         }
         return outRes;
       });
