@@ -1,5 +1,4 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 import useHeader from "../components/header/useHeader";
 import { CREATE_TICKET } from "../queries/supportQuery";
 import { useSnackbar } from "../helper/hooks";
@@ -10,6 +9,7 @@ import ContactPage from "@gofynd/theme-template/pages/contact-us/contact-us";
 import SocailMedia from "../components/socail-media/socail-media";
 import "@gofynd/theme-template/pages/contact-us/contact-us.css";
 import { getConfigFromProps } from "../helper/utils";
+import { useLocation } from "react-router-dom";
 
 function Component({ props = {} }) {
   const fpi = useFPI();
@@ -20,19 +20,46 @@ function Component({ props = {} }) {
   const { showSnackbar } = useSnackbar();
 
   const getPrefillData = (search) => {
-  const params = new URLSearchParams(search);
-  const sanitize = (val) =>
-    decodeURIComponent(val || "")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .trim() || "";
-  return {
-    name: sanitize(params.get("name")),
-    phone: sanitize(params.get("phone")),
-    email: sanitize(params.get("email")),
-    comment: sanitize(params.get("message")),
+    const params = new URLSearchParams(search);
+
+    const sanitize = (val) =>
+      decodeURIComponent(val || "")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/^"|"$/g, "")
+        .trim();
+
+    const isValidEmail = (val) =>
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,6}){1,2}$/.test(val);
+
+    const isValidPhone = (val) => /^\+?[0-9\s]{6,15}$/.test(val);
+
+    const isValidName = (val) => /^[a-zA-Z0-9\s.'-]{2,50}$/.test(val);
+
+    const isValidComment = (val) =>
+      typeof val === "string" && val.length <= 500;
+
+    const rawName = sanitize(params.get("name"));
+    const rawPhone = sanitize(params.get("phone"));
+    const rawEmail = sanitize(params.get("email"));
+    const rawComment = sanitize(params.get("message"));
+
+    return {
+      values: {
+        name: rawName,
+        phone: rawPhone,
+        email: rawEmail,
+        comment: rawComment,
+      },
+      errors: {
+        name: rawName && !isValidName(rawName),
+        phone: rawPhone && !isValidPhone(rawPhone),
+        email: rawEmail && !isValidEmail(rawEmail),
+        comment: rawComment && !isValidComment(rawComment),
+      },
+    };
   };
-  };
+
   const location = useLocation();
   const prefillData = getPrefillData(location.search);
 
