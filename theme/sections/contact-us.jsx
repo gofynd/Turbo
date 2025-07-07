@@ -1,5 +1,4 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 import useHeader from "../components/header/useHeader";
 import { CREATE_TICKET } from "../queries/supportQuery";
 import { useSnackbar } from "../helper/hooks";
@@ -18,23 +17,6 @@ function Component({ props = {} }) {
 
   const pageConfig = getConfigFromProps(props);
   const { showSnackbar } = useSnackbar();
-
-  const getPrefillData = (search) => {
-  const params = new URLSearchParams(search);
-  const sanitize = (val) =>
-    decodeURIComponent(val || "")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .trim() || "";
-  return {
-    name: sanitize(params.get("name")),
-    phone: sanitize(params.get("phone")),
-    email: sanitize(params.get("email")),
-    comment: sanitize(params.get("message")),
-  };
-  };
-  const location = useLocation();
-  const prefillData = getPrefillData(location.search);
 
   const handleSubmitForm = (data) => {
     try {
@@ -97,7 +79,6 @@ function Component({ props = {} }) {
       pageConfig={pageConfig}
       SocailMedia={SocailMedia}
       appInfo={appInfo}
-      prefillData={prefillData}
     />
   );
 }
