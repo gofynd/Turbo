@@ -1,6 +1,6 @@
 {
   "name": "Turbo",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "",
   "main": "index.js",
   "license": "ISC",
@@ -71,7 +71,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.12",
     "dompurify": "^3.1.6",
-    "fdk-store": "github:gofynd/fdk-store-gql#v3.0.50-beta.7",
+    "fdk-store": "github:gofynd/fdk-store-gql#v3.0.52",
     "framer-motion": "^11.3.28",
     "google-libphonenumber": "^3.2.38",
     "html-react-parser": "^5.1.8",
