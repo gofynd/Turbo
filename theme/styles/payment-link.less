@@ -106,6 +106,15 @@
       align-items: center;
       gap: 4px;
       align-self: stretch;
+      img {
+        width: 24px;
+        height: 24px;
+        padding: unset;
+        @media @tablet {
+          width: 16px;
+          height: 16px;
+        }
+      }
     }
     p {
       color: @TextHeading;

@@ -5,7 +5,7 @@ import "@gofynd/theme-template/pages/checkout/checkout.css";
 import usePayment from "../page-layouts/single-checkout/payment/usePayment";
 import Loader from "../components/loader/loader";
 import styles from "../styles/payment-link.less";
-import GatewayIcon from "../assets/images/trust-gateway.svg";
+import GatewayIcon from "../assets/images/trust-gateway.png";
 import LinkExpired from "../components/payment-link/link-expired";
 import PaymentLinkLoader from "../components/payment-link/payment-link-loader";
 import { currencyFormat } from "../helper/utils";
@@ -70,7 +70,7 @@ function PaymentLink({ fpi }) {
             <div className={styles.logoTextContainer}>
               <p className={`fontHeader`}>{t("resource.common.fynd")}</p>
               <div className={styles.gatewayContainer}>
-                <GatewayIcon />
+                <img src={GatewayIcon} />
                 <p className={`${styles.headerChildText} fontBody`}>
                   {t("resource.common.fynd_trusted_gateway")}
                 </p>

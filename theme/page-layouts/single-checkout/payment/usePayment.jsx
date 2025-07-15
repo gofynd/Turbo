@@ -528,6 +528,7 @@ const usePayment = (fpi) => {
           });
       }
     } else if (mode === "UPI") {
+      setIsLoading(true);
       const payload = {
         aggregator_name: selectedUPIData.aggregator_name,
         payment_mode: mode,
@@ -553,7 +554,7 @@ const usePayment = (fpi) => {
             !res?.data?.validateVPA?.data?.is_valid
           ) {
             setUPIError(true);
-            setIsLoading(false);
+            // setIsLoading(false);
             return { isUPIError: true };
           }
         }
@@ -614,10 +615,9 @@ const usePayment = (fpi) => {
           });
           if (finalres?.meta?.requestStatus === "rejected") {
             setShowUpiRedirectionModal(false);
-            setIsLoading(false);
+            // setIsLoading(false);
             return finalres?.payload;
           }
-          setIsLoading(false);
           return {
             ...finalres,
             aggregator_name: selectedUPIData.aggregator_name,
@@ -645,10 +645,9 @@ const usePayment = (fpi) => {
           });
           if (finalres?.meta?.requestStatus === "rejected") {
             setShowUpiRedirectionModal(false);
-            setIsLoading(false);
+            // setIsLoading(false);
             return finalres?.payload;
           }
-          setIsLoading(false);
           return {
             ...finalres,
             aggregator_name: selectedUPIData.aggregator_name,
@@ -656,6 +655,8 @@ const usePayment = (fpi) => {
         }
       } catch (error) {
         console.error("Error during UPI payment process:", error);
+      } finally {
+        setIsLoading(false);
       }
     } else if (mode === "QR") {
       setIsQrCodeLoading(true);
@@ -963,6 +964,7 @@ const usePayment = (fpi) => {
           });
       }
     } else if (mode === "CARDLESS_EMI") {
+      setIsLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
         aggregator_name: selectedCardless.aggregator_name,
