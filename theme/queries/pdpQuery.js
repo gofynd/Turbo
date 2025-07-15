@@ -274,6 +274,9 @@ export const GET_PRODUCT_DETAILS = `query($slug: String!)  {
       start_date
       sub_title
       title
+      rule {
+        discounted_price
+      }
     }
     page {
       current
@@ -337,6 +340,9 @@ export const OFFERS = `query Offers($slug: String!) {
       start_date
       sub_title
       title
+      rule {
+        discounted_price
+      }
     }
     page {
       current
@@ -990,6 +996,9 @@ export const GET_PRODUCT_PROMOTIONS = `query($slug: String!, $storeIdString: Str
       start_date
       sub_title
       title
+      rule {
+        discounted_price
+      }
     }
     page {
       current

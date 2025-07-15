@@ -1,6 +1,6 @@
 import React from "react";
 
-export const HTMLContent = React.forwardRef(({ content }, ref) => {
+export const HTMLContent = React.forwardRef(({ content, className }, ref) => {
   const originalContent = typeof content === "string" ? content : "";
 
   const styleMatches = [
@@ -31,6 +31,7 @@ export const HTMLContent = React.forwardRef(({ content }, ref) => {
       {/* Render processed HTML */}
       <div
         data-testid="html-content"
+        className={className}
         dangerouslySetInnerHTML={{ __html: cleanedContent }}
       />
     </div>

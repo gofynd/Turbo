@@ -144,9 +144,10 @@
       }
       .title {
         color: @FooterText;
-        @media @tablet {
-          margin-bottom: 8px;
-        }
+        // @media @tablet {
+        //   margin-bottom: 8px;
+        // }
+        margin-left: 4px;
       }
       .detail {
         color: @FooterLinkBody;
@@ -212,13 +213,22 @@
   
 }
 
+@media @desktop {
+  .footerSupportData a {
+    margin-left: 12px;
+  }
+
+  .contactIcon {}
+}
+
 .footerSupportData {
   @media @tablet{
     padding-bottom: 12px;
   }
   @media @desktop {
     display: flex;
-    gap:12px;
+    // gap:12px;
+    gap: 0;
     align-items: center;
   }
 }
@@ -276,5 +286,20 @@ ul {
   }
   .list li {
     margin-bottom: 10.7px;
+  }
+}
+
+.contactIcon path {
+  fill: @FooterIcon !important;
+  stroke: @FooterIcon !important;
+}
+
+.footerEmailCnt {
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+
+  @media @tablet {
+    margin-bottom: 8px;
   }
 }
