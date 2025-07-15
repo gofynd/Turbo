@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo, useCallback, useState } from "react";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
-import { useParams } from "react-router-dom";
 import CheckoutPayment from "@gofynd/theme-template/page-layouts/single-checkout/payment/checkout-payment.js";
 import "@gofynd/theme-template/pages/checkout/checkout.css";
 import usePayment from "../page-layouts/single-checkout/payment/usePayment";
@@ -10,7 +9,7 @@ import GatewayIcon from "../assets/images/trust-gateway.svg";
 import LinkExpired from "../components/payment-link/link-expired";
 import PaymentLinkLoader from "../components/payment-link/payment-link-loader";
 import { currencyFormat } from "../helper/utils";
-import Timer from "../assets/images/timer-count-down.svg";
+import CountDown from "../components/payment-link/countDown";
 
 function PaymentLink({ fpi }) {
   const { t } = useGlobalTranslation("translation");
@@ -18,7 +17,7 @@ function PaymentLink({ fpi }) {
 
   const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
   const [showPayment, setShowPayment] = useState(false);
-  // const { onPriceDetailsClick } = useCart(fpi);
+  const [linkExpired, setLinkExpired] = useState(false);
 
   const {
     setIsLoading,
@@ -29,15 +28,14 @@ function PaymentLink({ fpi }) {
     ...payment
   } = usePayment(fpi);
 
-  const [secondsLeft, setSecondsLeft] = useState(null);
   const currencySymbol = useMemo(
     () => bagData?.currency?.symbol || "₹",
-    [bagData]
+    [bagData?.currency?.symbol]
   );
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // Memoize all non-changing objects/functions
+  const memoizedPayment = useMemo(() => payment, [payment]);
+  const memoizedLoader = useCallback(() => <Loader />, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,42 +47,15 @@ function PaymentLink({ fpi }) {
       }
     };
     fetchData();
-  }, [fpi, secondsLeft === 0]);
-
-  useEffect(() => {
-    if (paymentLinkData?.polling_timeout) {
-      setSecondsLeft(paymentLinkData.polling_timeout);
-    }
-  }, [paymentLinkData?.polling_timeout]);
-
-  useEffect(() => {
-    if (secondsLeft === null || secondsLeft <= 0) return;
-
-    const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [secondsLeft !== null]);
-
-  const formatTime = (secs) => {
-    const minutes = Math.floor(secs / 60);
-    const seconds = secs % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-  };
+  }, [fpi]);
 
   if (isApiLoading) {
     return <PaymentLinkLoader />;
   }
+
   return (
     <>
-      {paymentLinkData?.external_order_id ? (
+      {paymentLinkData?.external_order_id && !linkExpired ? (
         <div
           className={`${styles.mainContainer} basePageContainer margin0auto`}
         >
@@ -105,18 +76,17 @@ function PaymentLink({ fpi }) {
                 </p>
               </div>
             </div>
-            {secondsLeft !== null && (
-              <div className={styles.timerBox}>
-                <Timer />
-                <span>{formatTime(secondsLeft)}</span>
-              </div>
-            )}
+            <CountDown
+              customClassName={styles.timerBox}
+              paymentLinkData={paymentLinkData}
+              setLinkExpired={setLinkExpired}
+            />
           </div>
           <div className={styles.paymentHeader}>
             <div className={styles.box}>
               <p className={`fontBody ${styles.text} ${styles.textWidth}`}>
                 {t("resource.payment_link.order_id")}
-              </p>{" "}
+              </p>
               <p className={`${styles.orderId} fontBody ${styles.text}`}>
                 {paymentLinkData?.external_order_id ?? ""}
               </p>
@@ -124,7 +94,7 @@ function PaymentLink({ fpi }) {
             <div className={styles.box}>
               <p className={`fontBody ${styles.text}  ${styles.textWidth}`}>
                 {t("resource.common.amount")}
-              </p>{" "}
+              </p>
               <p className={`${styles.orderId} fontBody ${styles.text}`}>
                 {paymentLinkData?.amount
                   ? currencyFormat(paymentLinkData?.amount, currencySymbol)
@@ -135,18 +105,13 @@ function PaymentLink({ fpi }) {
           <CheckoutPayment
             customClassName={styles.borderTopUnset}
             fpi={fpi}
-            // breakupValues={breakupValues}
-            // cartItemsCount={bagData?.items?.length}
             currencySymbol={currencySymbol}
-            payment={payment}
+            payment={memoizedPayment}
             showShipment={false}
             showPayment={true}
             setShowPayment={setShowPayment}
-            // setShowShipment={showShipmentHandler}
-            // onPriceDetailsClick={onPriceDetailsClick}
-            // shipments={shipments}
             showPaymentOptions={true}
-            loader={<Loader />}
+            loader={memoizedLoader}
           />
         </div>
       ) : (
@@ -155,6 +120,6 @@ function PaymentLink({ fpi }) {
     </>
   );
 }
-export const sections = JSON.stringify([]);
 
+export const sections = JSON.stringify([]);
 export default PaymentLink;

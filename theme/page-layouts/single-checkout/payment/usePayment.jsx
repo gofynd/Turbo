@@ -1067,13 +1067,13 @@ const usePayment = (fpi) => {
                 payment_gateway: selectedOtherPayment.aggregator_name,
                 payment_identifier: selectedOtherPayment.code,
               },
-              mode: mode,
-              name: selectedOtherPayment.name,
+              payment_mode: selectedOtherPayment.code ?? "",
+              name: selectedOtherPayment.code ?? "",
             },
           },
         };
         const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
-
+        const linkOrderInfo = res?.data?.createOrderHandlerPaymentLink;
         fpi.payment
           .checkoutPayment({
             ...linkDataOption,
@@ -1081,11 +1081,13 @@ const usePayment = (fpi) => {
             payment_gateway: selectedOtherPayment.aggregator_name,
             aggregator_name: selectedOtherPayment.aggregator_name,
             payment_identifier: selectedOtherPayment.code,
-            payment_mode: mode,
-            name: selectedOtherPayment.name,
+            payment_mode: selectedOtherPayment.code ?? "",
+            name: selectedOtherPayment.code ?? "",
+            payment: selectedOtherPayment,
             queryParams: getQueryParams(),
             data: res?.data,
             enableLinkPaymentOption: enableLinkPaymentOption,
+            success: linkOrderInfo?.success,
             paymentflow: linkDataOption?.aggregator_details?.find(
               (item) =>
                 item.aggregator_key === selectedOtherPayment?.aggregator_name
@@ -1199,7 +1201,11 @@ const usePayment = (fpi) => {
   };
 
   function otherOptions() {
-    let optn = paymentOption?.payment_option?.filter((opt) => {
+    const otherPaymentOptions =
+      linkPaymentOptions?.length > 0
+        ? linkPaymentOptions
+        : paymentOption?.payment_option;
+    let optn = otherPaymentOptions?.filter((opt) => {
       return (
         opt.name !== "CARD" &&
         opt.name !== "WL" &&
