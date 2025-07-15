@@ -36,16 +36,15 @@ export function Component({ props, blocks, preset, globalConfig }) {
   const customValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const { getCategoriesByDepartment } = useCategories(fpi);
 
-
-const sortCategoriesByPriority = (categoriesList) => {
-  if (!categoriesList) return [];
-  return [...categoriesList]
-    .sort((a, b) => (a?.priority ?? Infinity) - (b?.priority ?? Infinity))
-    .map((category) => ({
-      ...category,
-      childs: sortCategoriesByPriority(category?.childs),
-    }));
-};
+  const sortCategoriesByPriority = (categoriesList) => {
+    if (!categoriesList) return [];
+    return [...categoriesList]
+      .sort((a, b) => (a?.priority ?? Infinity) - (b?.priority ?? Infinity))
+      .map((category) => ({
+        ...category,
+        childs: sortCategoriesByPriority(category?.childs),
+      }));
+  };
 
   const departments = useMemo(() => {
     if (!blocks) {
@@ -89,7 +88,10 @@ const sortCategoriesByPriority = (categoriesList) => {
 
   function getWidthByCount() {
     if (windowWidth <= 768) {
-      return Math.min(categories?.length, 3);
+      return Math.min(
+        categories?.length ? categories?.length : preset?.blocks?.length,
+        3
+      );
     }
     return Math.min(categories?.length, itemCount);
   }
@@ -200,7 +202,7 @@ const sortCategoriesByPriority = (categoriesList) => {
         ];
       }
       fpi.custom.setValue(
-      `categories-listing-${departments?.join("__")}`,
+        `categories-listing-${departments?.join("__")}`,
         sortCategoriesByPriority(accumulatedCategories)
       );
     };
@@ -209,7 +211,7 @@ const sortCategoriesByPriority = (categoriesList) => {
     }
   }, [departments]);
 
- const sortedCategories = categories;
+  const sortedCategories = categories;
 
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 16}px`,
@@ -298,6 +300,7 @@ const sortCategoriesByPriority = (categoriesList) => {
           className={`${styles.categoryGrid} `}
           style={{
             "--per_row": itemCount,
+            "--per-row-mobile": itemCountMobile,
             "--brand-item": getWidthByCount() || 1,
           }}
         >
@@ -437,7 +440,8 @@ export const settings = {
         },
       ],
       default: "text-center",
-      label: "t:resource.sections.categories_listing.category_name_text_alignment",
+      label:
+        "t:resource.sections.categories_listing.category_name_text_alignment",
       info: "t:resource.sections.categories_listing.align_category_name",
     },
     {
@@ -660,7 +664,7 @@ Component.serverFetch = async ({ fpi, blocks }) => {
         ...newCategories.slice(0, 12 - accumulatedCategories.length),
       ];
     }
-   const sortedCategories = sortCategoriesByPriority(accumulatedCategories);
+    const sortedCategories = sortCategoriesByPriority(accumulatedCategories);
     fpi.custom.setValue(
       `categories-listing-${departments?.join("__")}`,
       sortedCategories

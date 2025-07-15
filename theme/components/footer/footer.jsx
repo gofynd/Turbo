@@ -8,6 +8,8 @@ import SocialLinks from "../socail-media/socail-media";
 import { useGlobalTranslation } from "fdk-core/utils";
 import fallbackFooterLogo from "../../assets/images/logo-footer.png";
 import { useThemeConfig } from "../../helper/hooks";
+import FooterContactLogo from "../../assets/images/footer-contact-logo.svg";
+import FooterEmailLogo from "../../assets/images/footer-email-logo.svg";
 
 function Footer({ fpi }) {
   const { t } = useGlobalTranslation("translation");
@@ -216,17 +218,22 @@ function Footer({ fpi }) {
                           className={styles.footerSupportData}
                           key={`email-${idx}`}
                         >
-                          <h5
-                            className={`${styles.title} ${styles.contacts} ${styles.fontBody}`}
-                          >
-                            {item?.key}
-                          </h5>
-                          <a
-                            href={`mailto:${item?.value}`}
-                            className={`${styles.detail} b1 ${styles.fontBody}`}
-                          >
-                            {item?.value}
-                          </a>
+                          <div className={styles.footerEmailCnt}>
+                            <FooterEmailLogo className={styles.contactIcon} />
+                            <h5
+                              className={`${styles.title} ${styles.contacts} ${styles.fontBody}`}
+                            >
+                              {item?.key}
+                            </h5>
+                          </div>
+                          <div>
+                            <a
+                              href={`mailto:${item?.value}`}
+                              className={`${styles.detail} b1 ${styles.fontBody}`}
+                            >
+                              {item?.value}
+                            </a>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -238,17 +245,22 @@ function Footer({ fpi }) {
                           className={styles.footerSupportData}
                           key={`phone-${idx}`}
                         >
-                          <h5
-                            className={`${styles.title} ${styles.contacts} ${styles.fontBody}`}
-                          >
-                            {item?.key}
-                          </h5>
-                          <a
-                            href={`tel:${item?.number}`}
-                            className={`${styles.detail} b1 ${styles.fontBody}`}
-                          >
-                            {`${item?.code ? `+${item.code}-` : ""}${item?.number}`}
-                          </a>
+                          <div className={styles.footerEmailCnt}>
+                            <FooterContactLogo className={styles.contactIcon} />
+                            <h5
+                              className={`${styles.title} ${styles.contacts} ${styles.fontBody}`}
+                            >
+                              {item?.key}
+                            </h5>
+                          </div>
+                          <div>
+                            <a
+                              href={`tel:${item?.number}`}
+                              className={`${styles.detail} b1 ${styles.fontBody}`}
+                            >
+                              {`${item?.code ? `+${item.code}-` : ""}${item?.number}`}
+                            </a>
+                          </div>
                         </div>
                       ))}
                     </div>
