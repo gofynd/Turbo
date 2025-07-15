@@ -70,7 +70,10 @@ function SingleCheckoutPage({ fpi }) {
           pincode: localStorage?.getItem("pincode") || "",
           cartId: cart_id,
           checkoutMode: "self",
-          amount: (res?.data?.cart?.breakup_values?.raw?.total || 0) * 100,
+          amount:
+            (res?.data?.cart?.breakup_values?.display[
+              res?.data?.cart?.breakup_values?.display?.length - 1
+            ]?.value || 0) * 100,
         };
         await fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload);
       } catch (err) {
@@ -85,17 +88,6 @@ function SingleCheckoutPage({ fpi }) {
   }, [fpi, buy_now]);
 
   function showPaymentOptions() {
-    setIsLoading(true);
-    const payload = {
-      pincode: "",
-      cartId: cart_id,
-      checkoutMode: "self",
-      amount: (getTotalValue() || 0.0) * 100,
-      // amount: (shipments?.breakup_values?.raw?.total || 0.1) * 100,
-    };
-    fpi.executeGQL(PAYMENT_OPTIONS, payload).finally(() => {
-      setIsLoading(false);
-    });
     setShowShipment(false);
     showPaymentHandler(true);
   }

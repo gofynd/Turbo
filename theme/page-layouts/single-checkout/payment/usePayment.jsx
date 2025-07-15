@@ -326,7 +326,7 @@ const usePayment = (fpi) => {
           merchant_code: selectedNewCardData.merchant_code,
           payment_gateway: selectedNewCardData.aggregator_name,
           aggregator_name: selectedNewCardData.aggregator_name,
-          payment_identifier: selectedNewCardData.code,
+          payment_identifier: selectedNewCardData.code ?? "",
           payment_mode: mode,
           name: selectedNewCardData.name,
           queryParams: getQueryParams(),
@@ -440,7 +440,7 @@ const usePayment = (fpi) => {
         ...getQueryParams(),
         aggregator_name: selectedWallet.aggregator_name,
         payment_mode: mode,
-        payment_identifier: selectedWallet.code,
+        payment_identifier: selectedWallet.code ?? "",
         merchant_code: selectedWallet.merchant_code,
       });
       if (enableLinkPaymentOption) {
@@ -454,7 +454,7 @@ const usePayment = (fpi) => {
               meta: {
                 merchant_code: selectedWallet.merchant_code,
                 payment_gateway: selectedWallet.aggregator_name,
-                payment_identifier: selectedWallet.code,
+                payment_identifier: selectedWallet.code ?? "",
               },
               mode: mode,
               name: selectedWallet.name,
@@ -470,7 +470,7 @@ const usePayment = (fpi) => {
             merchant_code: selectedWallet.merchant_code,
             payment_gateway: selectedWallet.aggregator_name,
             aggregator_name: selectedWallet.aggregator_name,
-            payment_identifier: selectedWallet.code,
+            payment_identifier: selectedWallet.code ?? "",
             payment_mode: mode,
             name: selectedWallet.name,
             queryParams: getQueryParams(),
@@ -483,7 +483,7 @@ const usePayment = (fpi) => {
               email: linkOrderInfo?.data?.email,
               method: linkOrderInfo?.data?.method,
               order_id: linkOrderInfo?.data?.order_id,
-              wallet: selectedWallet.code,
+              wallet: selectedWallet.code ?? "",
             },
             enableLinkPaymentOption: enableLinkPaymentOption,
             paymentflow: linkDataOption?.aggregator_details?.find(
@@ -510,7 +510,7 @@ const usePayment = (fpi) => {
           .checkoutPayment({
             ...options,
             aggregator_name: selectedWallet.aggregator_name,
-            payment_identifier: selectedWallet.code,
+            payment_identifier: selectedWallet.code ?? "",
             merchant_code: selectedWallet.merchant_code,
             payment: selectedWallet,
             address_id,
@@ -531,7 +531,7 @@ const usePayment = (fpi) => {
       const payload = {
         aggregator_name: selectedUPIData.aggregator_name,
         payment_mode: mode,
-        payment_identifier: selectedUPIData.code,
+        payment_identifier: selectedUPIData.code ?? "",
         merchant_code: selectedUPIData.merchant_code,
         id: cart_id,
       };
@@ -575,7 +575,7 @@ const usePayment = (fpi) => {
                 meta: {
                   merchant_code: selectedUPIData.merchant_code,
                   payment_gateway: selectedUPIData.aggregator_name,
-                  payment_identifier: selectedUPIData.code,
+                  payment_identifier: selectedUPIData.code ?? "",
                 },
                 mode: mode,
                 name: selectedUPIData.name,
@@ -664,7 +664,7 @@ const usePayment = (fpi) => {
           ...getQueryParams(),
           aggregator_name: selectedQrData.aggregator_name,
           payment_mode: mode,
-          payment_identifier: selectedQrData.code,
+          payment_identifier: selectedQrData.code ?? "",
           merchant_code: selectedQrData.merchant_code,
         });
         if (enableLinkPaymentOption) {
@@ -678,7 +678,7 @@ const usePayment = (fpi) => {
                 meta: {
                   merchant_code: selectedQrData.merchant_code,
                   payment_gateway: selectedQrData.aggregator_name,
-                  payment_identifier: selectedQrData.code,
+                  payment_identifier: selectedQrData.code ?? "",
                 },
                 mode: mode,
                 name: selectedQrData.name,
@@ -692,7 +692,7 @@ const usePayment = (fpi) => {
             merchant_code: selectedQrData.merchant_code,
             payment_gateway: selectedQrData.aggregator_name,
             aggregator_name: selectedQrData.aggregator_name,
-            payment_identifier: selectedQrData.code,
+            payment_identifier: selectedQrData.code ?? "",
             payment_mode: mode,
             name: selectedQrData.name,
             queryParams: getQueryParams(),
@@ -719,7 +719,7 @@ const usePayment = (fpi) => {
           const res = await fpi.payment.checkoutPayment({
             ...options,
             aggregator_name: selectedQrData.aggregator_name,
-            payment_identifier: selectedQrData.code,
+            payment_identifier: selectedQrData.code ?? "",
             merchant_code: selectedQrData.merchant_code,
             payment_mode: mode,
             payment: {
@@ -746,7 +746,7 @@ const usePayment = (fpi) => {
         ...getQueryParams(),
         aggregator_name: selectedNB.aggregator_name,
         payment_mode: mode,
-        payment_identifier: selectedNB.code,
+        payment_identifier: selectedNB.code ?? "",
         merchant_code: selectedNB.merchant_code,
       });
       if (enableLinkPaymentOption) {
@@ -760,7 +760,7 @@ const usePayment = (fpi) => {
               meta: {
                 merchant_code: selectedNB.merchant_code,
                 payment_gateway: selectedNB.aggregator_name,
-                payment_identifier: selectedNB.code,
+                payment_identifier: selectedNB.code ?? "",
               },
               mode: mode,
               name: selectedNB.name,
@@ -775,7 +775,7 @@ const usePayment = (fpi) => {
             merchant_code: selectedNB.merchant_code,
             payment_gateway: selectedNB.aggregator_name,
             aggregator_name: selectedNB.aggregator_name,
-            payment_identifier: selectedNB.code,
+            payment_identifier: selectedNB.code ?? "",
             payment_mode: mode,
             name: selectedNB.name,
             queryParams: getQueryParams(),
@@ -788,7 +788,7 @@ const usePayment = (fpi) => {
               email: linkOrderInfo?.data?.email,
               method: linkOrderInfo?.data?.method,
               order_id: linkOrderInfo?.data?.order_id,
-              bank: selectedNB.code,
+              bank: selectedNB.code ?? "",
             },
             success: linkOrderInfo?.success,
             enableLinkPaymentOption: enableLinkPaymentOption,
@@ -815,7 +815,7 @@ const usePayment = (fpi) => {
           .checkoutPayment({
             ...options,
             aggregator_name: selectedNB.aggregator_name,
-            payment_identifier: selectedNB.code,
+            payment_identifier: selectedNB.code ?? "",
             merchant_code: selectedNB.merchant_code,
             queryParams: getQueryParams(),
             payment: selectedNB,
@@ -872,7 +872,7 @@ const usePayment = (fpi) => {
         ...getQueryParams(),
         aggregator_name: selectedPayLater.aggregator_name,
         payment_mode: mode,
-        payment_identifier: selectedPayLater.code,
+        payment_identifier: selectedPayLater.code ?? "",
         merchant_code: selectedPayLater.merchant_code,
       });
       if (enableLinkPaymentOption) {
@@ -886,7 +886,7 @@ const usePayment = (fpi) => {
               meta: {
                 merchant_code: selectedPayLater.merchant_code,
                 payment_gateway: selectedPayLater.aggregator_name,
-                payment_identifier: selectedPayLater.code,
+                payment_identifier: selectedPayLater.code ?? "",
               },
               mode: mode,
               name: selectedPayLater.name,
@@ -901,7 +901,7 @@ const usePayment = (fpi) => {
             merchant_code: selectedPayLater.merchant_code,
             payment_gateway: selectedPayLater.aggregator_name,
             aggregator_name: selectedPayLater.aggregator_name,
-            payment_identifier: selectedPayLater.code,
+            payment_identifier: selectedPayLater.code ?? "",
             payment_mode: mode,
             name: selectedPayLater.name,
             queryParams: getQueryParams(),
@@ -914,7 +914,7 @@ const usePayment = (fpi) => {
               email: linkOrderInfo?.data?.email,
               method: linkOrderInfo?.data?.method,
               order_id: linkOrderInfo?.data?.order_id,
-              provider: selectedPayLater?.code,
+              provider: selectedPayLater?.code ?? "",
             },
             success: linkOrderInfo?.success,
             enableLinkPaymentOption: enableLinkPaymentOption,
@@ -943,7 +943,7 @@ const usePayment = (fpi) => {
           .checkoutPayment({
             ...options,
             aggregator_name: selectedPayLater.aggregator_name,
-            payment_identifier: selectedPayLater.code,
+            payment_identifier: selectedPayLater.code ?? "",
             merchant_code: selectedPayLater.merchant_code,
             queryParams: getQueryParams(),
             payment: selectedPayLater,
@@ -967,7 +967,7 @@ const usePayment = (fpi) => {
         ...getQueryParams(),
         aggregator_name: selectedCardless.aggregator_name,
         payment_mode: mode,
-        payment_identifier: selectedCardless.code,
+        payment_identifier: selectedCardless.code ?? "",
         merchant_code: selectedCardless.merchant_code,
       });
       if (enableLinkPaymentOption) {
@@ -981,7 +981,7 @@ const usePayment = (fpi) => {
               meta: {
                 merchant_code: selectedCardless.merchant_code,
                 payment_gateway: selectedCardless.aggregator_name,
-                payment_identifier: selectedCardless.code,
+                payment_identifier: selectedCardless.code ?? "",
               },
               mode: mode,
               name: selectedCardless.name,
@@ -996,7 +996,7 @@ const usePayment = (fpi) => {
             merchant_code: selectedCardless.merchant_code,
             payment_gateway: selectedCardless.aggregator_name,
             aggregator_name: selectedCardless.aggregator_name,
-            payment_identifier: selectedCardless.code,
+            payment_identifier: selectedCardless.code ?? "",
             payment_mode: mode,
             name: selectedCardless.name,
             queryParams: getQueryParams(),
@@ -1027,7 +1027,7 @@ const usePayment = (fpi) => {
             queryParams: getQueryParams(),
             ...options,
             aggregator_name: selectedCardless.aggregator_name,
-            payment_identifier: selectedCardless.code,
+            payment_identifier: selectedCardless.code ?? "",
             merchant_code: selectedCardless.merchant_code,
             payment: selectedCardless,
             address_id,
@@ -1050,8 +1050,8 @@ const usePayment = (fpi) => {
       addParamsToLocation({
         ...getQueryParams(),
         aggregator_name: selectedOtherPayment.aggregator_name,
-        payment_mode: selectedOtherPayment.code,
-        payment_identifier: selectedOtherPayment.code,
+        payment_mode: selectedOtherPayment.code ?? "",
+        payment_identifier: selectedOtherPayment.code ?? "",
         merchant_code: selectedOtherPayment.merchant_code,
       });
       if (enableLinkPaymentOption) {
@@ -1065,7 +1065,7 @@ const usePayment = (fpi) => {
               meta: {
                 merchant_code: selectedOtherPayment.merchant_code,
                 payment_gateway: selectedOtherPayment.aggregator_name,
-                payment_identifier: selectedOtherPayment.code,
+                payment_identifier: selectedOtherPayment.code ?? "",
               },
               payment_mode: selectedOtherPayment.code ?? "",
               name: selectedOtherPayment.code ?? "",
@@ -1103,8 +1103,8 @@ const usePayment = (fpi) => {
       } else {
         const payload = {
           aggregator_name: selectedOtherPayment.aggregator_name,
-          payment_mode: selectedOtherPayment.code,
-          payment_identifier: selectedOtherPayment.code,
+          payment_mode: selectedOtherPayment.code ?? "",
+          payment_identifier: selectedOtherPayment.code ?? "",
           merchant_code: selectedOtherPayment.merchant_code,
           id: cart_id,
         };
@@ -1114,8 +1114,8 @@ const usePayment = (fpi) => {
           .checkoutPayment({
             ...options,
             aggregator_name: selectedOtherPayment.aggregator_name,
-            payment_identifier: selectedOtherPayment.code,
-            merchant_code: selectedOtherPayment.code,
+            payment_identifier: selectedOtherPayment.code ?? "",
+            merchant_code: selectedOtherPayment.code ?? "",
             payment: selectedOtherPayment,
             address_id,
             billing_address_id: address_id,
