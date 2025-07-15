@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useCallback } from "react";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import placeholderDesktop from "../assets/images/placeholder/application-banner-desktop.png";
@@ -7,6 +7,7 @@ import { FDKLink } from "fdk-core/components";
 import styles from "../styles/sections/application-banner.less";
 import Hotspot from "../components/hotspot/product-hotspot";
 import { useViewport } from "../helper/hooks";
+import { useGlobalStore } from "fdk-core/utils";
 
 export function Component({ props, blocks, globalConfig }) {
   const isMobile = useViewport(0, 540);
@@ -18,7 +19,8 @@ export function Component({ props, blocks, globalConfig }) {
     padding_bottom,
     hover_application_banner,
   } = props;
-
+  const { themeHeaderHeight = 0 } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
+  const { sections } = useGlobalStore(fpi.getters.PAGE);
   const dynamicBoxStyle = (block) => {
     return {
       "--x_position": `${block.props?.x_position?.value || 0}%`,
@@ -63,6 +65,11 @@ export function Component({ props, blocks, globalConfig }) {
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 0}px`,
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
+    marginTop:
+      sections[0]?.name === "application-banner" &&
+      globalConfig?.transparent_header
+        ? `-${themeHeaderHeight}px`
+        : "",
   };
 
   return (
@@ -73,7 +80,7 @@ export function Component({ props, blocks, globalConfig }) {
       {banner_link?.value?.length > 0 ? (
         <FDKLink to={banner_link?.value}>
           <FyImage
-           customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
+            customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
             src={desktopImage}
             sources={getImgSrcSet()}
             isLazyLoaded={false}
@@ -206,7 +213,8 @@ export const settings = {
     {
       type: "checkbox",
       id: "hover_application_banner",
-      label: "t:resource.sections.application_banner.enable_hover_effect_on_banner",
+      label:
+        "t:resource.sections.application_banner.enable_hover_effect_on_banner",
       default: false,
     },
   ],

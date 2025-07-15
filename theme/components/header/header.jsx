@@ -41,6 +41,7 @@ function Header({ fpi }) {
   const [searchParams] = useSearchParams();
   const CART_ITEMS = useGlobalStore(fpi?.getters?.CART);
   const { headerHeight = 0 } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
+  const { sections } = useGlobalStore(fpi.getters.PAGE);
   const {
     globalConfig,
     cartItemCount,
@@ -125,6 +126,13 @@ function Header({ fpi }) {
 
     if (isRunningOnClient()) {
       const header = document?.querySelector(".fdk-theme-header");
+      if (
+        globalConfig?.transparent_header &&
+        (sections[0]?.name === "application-banner" ||
+          sections[0]?.name === "image-slideshow")
+      ) {
+        header.style.position = "unset";
+      }
       if (header) {
         const resizeObserver = new ResizeObserver(() => {
           fpi.custom.setValue(
@@ -223,11 +231,11 @@ function Header({ fpi }) {
     <>
       {!isHeaderHidden && !shouldHide && (
         <div
-          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""}`}
+          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.unsetBoxShadow : ""}`}
           ref={headerRef}
         >
           <header
-            className={`${styles.header} ${globalConfig?.header_border ? styles.seperator : ""}`}
+            className={`${styles.header} ${globalConfig?.header_border ? styles.seperator : ""} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.transparentBackground : ""}`}
           >
             <div
               className={`${styles.headerContainer} basePageContainer margin0auto `}
@@ -316,7 +324,7 @@ function Header({ fpi }) {
                 </div>
                 {isHyperlocal && (
                   <button
-                    className={styles.mobileBottom}
+                    className={`${styles.mobileBottom} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.unsetBorder : ""}`}
                     onClick={handleLocationModalOpen}
                   >
                     {isLoading ? (

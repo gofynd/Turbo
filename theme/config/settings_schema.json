@@ -473,6 +473,14 @@
       "default": "",
       "label": "t:resource.settings_schema.google_maps.google_maps_api_key",
       "info": "t:resource.settings_schema.google_maps.google_maps_api_key_info"
+    },
+     {
+      "type": "checkbox",
+      "id": "transparent_header",
+      "category": "t:resource.common.header",
+      "default": false,
+      "label": "t:resource.settings_schema.header.transparent_header",
+      "info": "t:resource.settings_schema.header.transparent_header_info"
     }
   ]
 }

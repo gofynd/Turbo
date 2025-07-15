@@ -152,7 +152,9 @@
         "date_range_info": "Lieferversprechen im Datumsbereich anzeigen",
         "bold": "Deutlich",
         "regular": "Regulär",
-        "semibold": "Halbfett"
+        "semibold": "Halbfett",
+        "transparent_header": "Transparent Header",
+        "transparent_header_info": "show transparent header when application banner or image slideshow used as first section"
       },
       "algolia_configuration": {
         "enable_algolia": "Algolia aktivieren"

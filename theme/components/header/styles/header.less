@@ -7,12 +7,18 @@
   &:not(.listing) {
     box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.03);
   }
+  &.unsetBoxShadow {
+    box-shadow: unset !important;
+  }
 }
 
 .header {
   position: relative;
   background-color: @HeaderBackground;
   z-index: unset !important;
+  &.transparentBackground {
+    background-color: unset !important;
+  }
   &.seperator {
     @media @desktop {
       border-bottom: 1px solid @DividerStokes;
@@ -132,7 +138,9 @@
     width: 100%;
     border-top: 1px solid @DividerStokes;
     border-bottom: 1px solid @DividerStokes;
-
+    &.unsetBorder {
+      border: unset;
+    }
     .label {
       font-size: 14px;
       font-weight: 600;

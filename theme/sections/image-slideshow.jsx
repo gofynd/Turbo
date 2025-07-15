@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef, useCallback } from "react";
 import { FDKLink } from "fdk-core/components";
 import Slider from "react-slick";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
@@ -12,13 +12,16 @@ import placeholderDesktop2 from "../assets/images/placeholder/slideshow-desktop2
 import placeholderMobile1 from "../assets/images/placeholder/slideshow-mobile1.jpg";
 import placeholderMobile2 from "../assets/images/placeholder/slideshow-mobile2.jpg";
 import styles from "../styles/sections/image-slideshow.less";
+import { useGlobalStore } from "fdk-core/utils";
 
 const placeholderImagesDesktop = [placeholderDesktop1, placeholderDesktop2];
 const placeholderImagesMobile = [placeholderMobile1, placeholderMobile2];
 
-function getMobileImage(block,index) {
- 
-  return block?.props?.mobile_image?.value || placeholderImagesMobile[index % placeholderImagesMobile.length];
+function getMobileImage(block, index) {
+  return (
+    block?.props?.mobile_image?.value ||
+    placeholderImagesMobile[index % placeholderImagesMobile.length]
+  );
 }
 function getDesktopImage(block, index) {
   return (
@@ -31,7 +34,7 @@ function getImgSrcSet(block, globalConfig, index) {
   if (globalConfig?.img_hd) {
     return [
       { breakpoint: { min: 501 } },
-      { breakpoint: { max: 540 }, url: getMobileImage(block,index) },
+      { breakpoint: { max: 540 }, url: getMobileImage(block, index) },
     ];
   }
   return [
@@ -41,18 +44,29 @@ function getImgSrcSet(block, globalConfig, index) {
     { breakpoint: { min: 1080 }, width: 2250 },
     { breakpoint: { min: 900 }, width: 1890 },
     { breakpoint: { min: 720 }, width: 1530 },
-    { breakpoint: { max: 180 }, width: 450, url: getMobileImage(block,index) },
-    { breakpoint: { max: 360 }, width: 810, url: getMobileImage(block,index) },
-    { breakpoint: { max: 540 }, width: 1170, url: getMobileImage(block,index) },
+    { breakpoint: { max: 180 }, width: 450, url: getMobileImage(block, index) },
+    { breakpoint: { max: 360 }, width: 810, url: getMobileImage(block, index) },
+    {
+      breakpoint: { max: 540 },
+      width: 1170,
+      url: getMobileImage(block, index),
+    },
   ];
 }
 
 export function Component({ props, blocks, globalConfig, preset }) {
   const blocksData = blocks.length === 0 ? preset?.blocks : blocks;
-  const { autoplay, slide_interval, padding_top, padding_bottom ,open_in_new_tab} = props;
+  const {
+    autoplay,
+    slide_interval,
+    padding_top,
+    padding_bottom,
+    open_in_new_tab,
+  } = props;
   const shouldOpenInNewTab =
     open_in_new_tab?.value === true || open_in_new_tab?.value === "true";
-
+  const { themeHeaderHeight = 0 } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
+  const { sections } = useGlobalStore(fpi.getters.PAGE);
   const config = useMemo(
     () => ({
       speed: 500,
@@ -89,10 +103,14 @@ export function Component({ props, blocks, globalConfig, preset }) {
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 0}px`,
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
+    marginTop:
+      sections[0]?.name === "image-slideshow" &&
+      globalConfig?.transparent_header
+        ? `-${themeHeaderHeight}px`
+        : "",
     "--slick-dots": `${blocksData?.length * 22 + 10}px`,
   };
 
-  
   return (
     <section style={dynamicStyles}>
       <Slider {...config} initialSlide={0} className={styles.slideshowSlider}>

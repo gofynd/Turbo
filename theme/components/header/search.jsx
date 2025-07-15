@@ -14,6 +14,7 @@ import styles from "./styles/search.less";
 import { SEARCH_PRODUCT, AUTOCOMPLETE } from "../../queries/headerQuery";
 import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
 import OutsideClickHandler from "react-outside-click-handler";
+import { useGlobalStore } from "fdk-core/utils";
 
 function Search({
   screen,
@@ -35,7 +36,7 @@ function Search({
   const inputRef = useRef(null);
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
   const isAlgoliaEnabled = globalConfig?.algolia_enabled;
-
+  const { sections } = useGlobalStore(fpi.getters.PAGE);
   const openSearch = () => {
     setShowSearch(!showSearch);
 
@@ -185,7 +186,7 @@ function Search({
       </button>
       <OutsideClickHandler onOutsideClick={handleOutsideClick}>
         <motion.div
-          className={`${styles.search} ${customSearchClass}`}
+          className={`${styles.search} ${customSearchClass} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.backgroundNone : ""}`}
           initial={{ scaleY: 0, opacity: 0 }}
           animate={{
             scaleY: showSearch ? 1 : 0,
@@ -208,9 +209,7 @@ function Search({
                 autoComplete="off"
                 defaultValue={searchText}
                 placeholder={
-                  isDoubleRowHeader
-                    ? t("resource.facets.search")
-                    : ""
+                  isDoubleRowHeader ? t("resource.facets.search") : ""
                 }
                 onChange={(e) => setEnterSearchData(e)}
                 onKeyUp={(e) =>
@@ -233,8 +232,9 @@ function Search({
               <label
                 htmlFor="searchInput"
                 id="search-input-label"
-                className={`${styles["search__input--label"]} b1 ${styles.fontBody
-                  } ${isSearchFocused ? styles.active : ""}`}
+                className={`${styles["search__input--label"]} b1 ${
+                  styles.fontBody
+                } ${isSearchFocused ? styles.active : ""}`}
                 style={{ display: !isDoubleRowHeader ? "block" : "none" }}
               >
                 {t("resource.facets.search")}
@@ -333,7 +333,10 @@ function Search({
                           redirectToProduct(`/products/?q=${searchText}`)
                         }
                       >
-                        <span>{t("resource.common.see_all")} {totalCount} {t("resource.header.products_title_text")}</span>
+                        <span>
+                          {t("resource.common.see_all")} {totalCount}{" "}
+                          {t("resource.header.products_title_text")}
+                        </span>
                       </button>
                     </div>
                   </>

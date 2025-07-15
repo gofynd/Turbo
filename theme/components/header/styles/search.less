@@ -9,6 +9,9 @@
   position: absolute;
   .inset(0);
   background-color: @HeaderBackground;
+  &.backgroundNone {
+    background-color: unset !important;
+  }
   z-index: 1;
   @media @tablet {
     display: flex;

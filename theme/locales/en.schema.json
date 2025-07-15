@@ -154,7 +154,9 @@
         "date_range_info": "Show delivery promise in date range",
         "bold": "Bold",
         "regular": "Regular",
-        "semibold": "Semibold"
+        "semibold": "Semibold",
+        "transparent_header": "Transparent Header",
+        "transparent_header_info": "Apply transparent header when application banner or image slide show on top"
       },
       "algolia_configuration": {
         "enable_algolia": "Enable Algolia"
