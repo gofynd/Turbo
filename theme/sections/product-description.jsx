@@ -1164,9 +1164,16 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                 {productPriceBySlug?.return_config
                                   ?.returnable && (
                                   <li className={styles.b2}>
-                                    {`${productPriceBySlug?.return_config?.time} ${productPriceBySlug?.return_config?.unit} ${t(
-                                      "resource.facets.return"
-                                    )}`}
+                                    {`${productPriceBySlug?.return_config?.time} ${
+                                      productPriceBySlug?.return_config?.unit
+                                        ? productPriceBySlug.return_config.unit.replace(
+                                            /\b\w/g,
+                                            (ch) => ch.toUpperCase()
+                                          )
+                                        : ""
+                                    } ${t("resource.facets.return")}`
+                                      .replace(/\s+/g, " ")
+                                      .trim()}
                                   </li>
                                 )}
                                 {/* v-else-if="returnConfig.returnable === false"  */}

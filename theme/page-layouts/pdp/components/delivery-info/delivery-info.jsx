@@ -79,12 +79,12 @@ function DeliveryInfo({
     const minDate = convertUTCDateToLocalDate(
       min,
       options,
-      formatLocale(locale, countryCode)
+      formatLocale(locale, countryCode,true)
     );
     const maxDate = convertUTCDateToLocalDate(
       max,
       options,
-      formatLocale(locale, countryCode)
+      formatLocale(locale, countryCode,true)
     );
 
     const deliveryMessage =

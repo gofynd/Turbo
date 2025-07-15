@@ -808,7 +808,7 @@
       "please_enter_valid_pincode": "Please enter valid pincode",
       "change_address": "Change Address",
       "select_this_address": "select this address",
-      "use_gst": "Use GST",
+      "use_gst": "USE GST",
       "enter_gstin": "Enter GSTIN",
       "gstin_applied_success": "GSTIN Applied Successfully!!! Claimed {{gst_credit}} GST input credit",
       "enter_gst_number": "Enter GST number to claim {{gst_credit}} input credit",

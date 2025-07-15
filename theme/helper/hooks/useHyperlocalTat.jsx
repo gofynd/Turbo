@@ -86,7 +86,7 @@ export const useHyperlocalTat = ({ fpi }) => {
             month: "short",
             day: "numeric",
           },
-          formatLocale(locale, countryCode)
+          formatLocale(locale, countryCode,true)
         );
         return `${t("resource.common.delivery_by", { date: deliveryBy })}`;
       } else {
