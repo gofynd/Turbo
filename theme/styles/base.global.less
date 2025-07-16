@@ -346,7 +346,7 @@ button {
 
 .base-page-container,
 .basePageContainer {
-  max-width: 1440px;
+  max-width: var(--page-max-width);
 }
 
 .remove-scroll,
@@ -460,7 +460,7 @@ img::selection {
       padding-bottom: 24px;
     }
   }
-  &:has(.slick-arrow){
+  &:has(.slick-arrow) {
     margin-bottom: 31px;
   }
 }
@@ -563,11 +563,11 @@ img::selection {
   }
 
   @keyframes slideInRight {
-  from {
-    transform: translateX(100%); /* Start off-screen from the right */
-  }
-  to {
-    transform: translateX(0); /* Move into the viewport */
+    from {
+      transform: translateX(100%); /* Start off-screen from the right */
+    }
+    to {
+      transform: translateX(0); /* Move into the viewport */
     }
   }
 }

@@ -49,7 +49,7 @@ function Home({ numberOfSections, fpi }) {
   return (
     <>
       {getHelmet({ seo: mergedSeo })}
-      <div>
+      <div className="margin0auto basePageContainer">
         <h1 className="visually-hidden">{title}</h1>
         {page?.value === "home" && (
           <SectionRenderer

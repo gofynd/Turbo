@@ -25,20 +25,20 @@
       "default": 24
     },
     {
-      "type":"range",
-      "id":"desktop_logo_max_height",
-      "category":"t:resource.common.header",
-      "label":"t:resource.settings_schema.common.logo_header",
+      "type": "range",
+      "id": "desktop_logo_max_height",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.common.logo_header",
       "min": 20,
       "max": 100,
       "unit": "px",
       "default": 65
     },
     {
-      "type":"range",
-      "id":"mobile_logo_max_height_header",
-      "category":"t:resource.common.header",
-      "label":"t:resource.settings_schema.common.mobile_logo_header",
+      "type": "range",
+      "id": "mobile_logo_max_height_header",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.common.mobile_logo_header",
       "min": 20,
       "max": 100,
       "unit": "px",
@@ -346,7 +346,6 @@
         }
       ]
     },
-   
     {
       "type": "checkbox",
       "id": "show_quantity_control",
@@ -459,6 +458,19 @@
       "info": "t:resource.settings_schema.other_page_configuration.border_radius_for_button"
     },
     {
+      "type": "header",
+      "category": "t:resource.settings_schema.common.other_page_configuration",
+      "value": "Configure Max Page Width"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_page_max_width",
+      "default": false,
+      "category": "t:resource.settings_schema.common.other_page_configuration",
+      "label": "Enable Page Max Width",
+      "info": "Sets a maximum width of 1440px for better layout on wide screens"
+    },
+    {
       "type": "checkbox",
       "id": "is_google_map",
       "category": "t:resource.settings_schema.common.google_maps",
@@ -474,7 +486,7 @@
       "label": "t:resource.settings_schema.google_maps.google_maps_api_key",
       "info": "t:resource.settings_schema.google_maps.google_maps_api_key_info"
     },
-     {
+    {
       "type": "checkbox",
       "id": "transparent_header",
       "category": "t:resource.common.header",

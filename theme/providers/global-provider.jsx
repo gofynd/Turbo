@@ -20,16 +20,17 @@ export function ThemeProvider({ children }) {
   const title = sanitizeHTMLTag(seoData?.title);
   const description = sanitizeHTMLTag(seoData?.description);
   const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
-  let domainUrl = CONFIGURATION?.application?.domains?.find(d => d.is_primary)?.name || "";
-    if (domainUrl && !/^https?:\/\//i.test(domainUrl)) {
-      domainUrl = `https://${domainUrl}`;
-    }
+  let domainUrl =
+    CONFIGURATION?.application?.domains?.find((d) => d.is_primary)?.name || "";
+  if (domainUrl && !/^https?:\/\//i.test(domainUrl)) {
+    domainUrl = `https://${domainUrl}`;
+  }
   const image = sanitizeHTMLTag(
-  seoData?.image ||
-  seoData?.image_url ||
-  CONFIGURATION?.application?.logo?.secure_url ||
-  ""
-);
+    seoData?.image ||
+      seoData?.image_url ||
+      CONFIGURATION?.application?.logo?.secure_url ||
+      ""
+  );
   const canonicalPath = sanitizeHTMLTag(seoData?.canonical_url);
   const { defaultCurrency } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
   const sellerDetails = JSON.parse(
@@ -118,6 +119,7 @@ export function ThemeProvider({ children }) {
         --buttonPrimaryL3: #${buttonPrimaryShade.tint(60).hex};
         --buttonLinkL1: #${buttonLinkShade.tint(20).hex};
         --buttonLinkL2: #${buttonLinkShade.tint(40).hex};
+        --page-max-width: ${globalConfig?.enable_page_max_width ? "1440px" : "unset"};
         ${accentDarkShades?.reduce((acc, color, index) => acc.concat(`--themeAccentD${index + 1}: #${color.hex};`), "")}
         ${accentLightShades?.reduce((acc, color, index) => acc.concat(`--themeAccentL${index + 1}: #${color.hex};`), "")}
       }`
@@ -190,7 +192,6 @@ export function ThemeProvider({ children }) {
         window?.scrollTo?.(0, 0);
       }, 0);
   }, [location?.pathname]);
-
 
   useEffect(() => {
     if (
