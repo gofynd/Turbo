@@ -175,6 +175,22 @@ export const WISHLIST_DATA = `query FollowedListing($collectionType: String!, $p
                 convertable
                 value
               }
+              col_7 {
+                convertable
+                value
+              }
+              col_8 {
+                convertable
+                value
+              }
+              col_9 {
+                convertable
+                value
+              }
+              col_10 {
+                convertable
+                value
+              }
             }
             image
             size_tip
@@ -184,7 +200,11 @@ export const WISHLIST_DATA = `query FollowedListing($collectionType: String!, $p
               col_3
               col_4
               col_5
-              col_6
+              col_6   
+              col_7
+              col_8
+              col_9
+              col_10
             }
             title
             unit
