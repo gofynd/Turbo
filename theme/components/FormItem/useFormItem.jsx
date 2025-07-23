@@ -27,47 +27,47 @@ export const useFormItem = ({ fpi }) => {
       });
   };
 
- const handleFormSubmit = (formValues) => {
-  const response = [];
-  Object.entries(formValues).forEach(([key, value]) => {
-    if (
-      (key === "mobile-number" || key === "phone" || key === "mobile") &&
-      typeof value === "object"
-    ) {
-      response.push({
-        key,
-        value: {
-          code: value.countryCode || "",
-          number: value.mobile || "",
-          valid: value.isValidNumber ?? false,
-        },
-      });
-    } else {
-      response.push({
-        key,
-        value: value ?? "",
-      });
-    }
-  });
+  const handleFormSubmit = (formValues) => {
+    const response = [];
+    Object.entries(formValues).forEach(([key, value]) => {
+      if (
+        (key === "mobile-number" || key === "phone" || key === "mobile") &&
+        typeof value === "object"
+      ) {
+        response.push({
+          key,
+          value: {
+            code: value.countryCode || "",
+            number: value.mobile || "",
+            valid: value.isValidNumber ?? false,
+          },
+        });
+      } else {
+        response.push({
+          key,
+          value: value ?? "",
+        });
+      }
+    });
 
-  const payload = {
-    slug: params?.slug,
-    customFormSubmissionPayloadInput: {
-      response,
-    },
+    const payload = {
+      slug: params?.slug,
+      customFormSubmissionPayloadInput: {
+        response,
+      },
+    };
+
+    return fpi.executeGQL(SUBMIT_CUSTOM_FORM, payload).then((res) => {
+      if (res?.errors) {
+        throw res?.errors?.[0];
+      }
+      return res?.data?.submitCustomForm;
+    });
   };
-
-  return fpi.executeGQL(SUBMIT_CUSTOM_FORM, payload).then((res) => {
-    if (res?.errors) {
-      throw res?.errors?.[0];
-    }
-    return res?.data?.submitCustomForm;
-  });
-};
 
   useEffect(() => {
     getCustomForm();
-  }, []);
+  }, [params?.slug]);
 
   return {
     formData,
