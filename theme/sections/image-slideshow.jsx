@@ -65,8 +65,11 @@ export function Component({ props, blocks, globalConfig, preset }) {
   } = props;
   const shouldOpenInNewTab =
     open_in_new_tab?.value === true || open_in_new_tab?.value === "true";
-  const { themeHeaderHeight = 0 } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
-  const { sections } = useGlobalStore(fpi.getters.PAGE);
+  const isBrowser = typeof window !== "undefined";
+  const themeHeaderHeight = isBrowser
+    ? useGlobalStore(fpi.getters.CUSTOM_VALUE)?.themeHeaderHeight
+    : 0;
+  const sections = isBrowser ? useGlobalStore(fpi.getters.PAGE)?.sections : [];
   const config = useMemo(
     () => ({
       speed: 500,

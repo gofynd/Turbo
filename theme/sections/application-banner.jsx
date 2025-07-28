@@ -19,8 +19,11 @@ export function Component({ props, blocks, globalConfig }) {
     padding_bottom,
     hover_application_banner,
   } = props;
-  const { themeHeaderHeight = 0 } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
-  const { sections } = useGlobalStore(fpi.getters.PAGE);
+  const isBrowser = typeof window !== "undefined";
+  const themeHeaderHeight = isBrowser
+    ? useGlobalStore(fpi.getters.CUSTOM_VALUE)?.themeHeaderHeight
+    : 0;
+  const sections = isBrowser ? useGlobalStore(fpi.getters.PAGE)?.sections : [];
   const dynamicBoxStyle = (block) => {
     return {
       "--x_position": `${block.props?.x_position?.value || 0}%`,
