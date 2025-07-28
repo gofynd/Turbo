@@ -382,28 +382,46 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       if (res?.data?.selectAddress?.is_valid) {
         setIsShipmentLoading(true);
         updateQuery("address_id", id.length ? id : selectedAddressId);
-        fpi
-          .executeGQL(FETCH_SHIPMENTS, {
-            addressId: `${id.length ? id : selectedAddressId}`,
-            id: `${cart_id}`,
-            buyNow,
-          })
-          .then((res) => {
-            if (!res?.data?.cartShipmentDetails?.is_valid) {
-              showSnackbar(res?.data?.cartShipmentDetails?.message);
-              setIsCartValid(false);
-            }
-          })
-          .finally(() => {
-            setIsShipmentLoading(false);
-          });
-
         if (findAddress?.area_code) {
-          fpi.executeGQL(LOCALITY, {
-            locality: "pincode",
-            localityValue: findAddress?.area_code,
-            country: findAddress?.country_iso_code,
-          });
+          fpi
+            .executeGQL(LOCALITY, {
+              locality: "pincode",
+              localityValue: findAddress?.area_code,
+              country: findAddress?.country_iso_code,
+            })
+            .then(() => {
+              fpi
+                .executeGQL(FETCH_SHIPMENTS, {
+                  addressId: `${id.length ? id : selectedAddressId}`,
+                  id: `${cart_id}`,
+                  buyNow,
+                })
+                .then((res) => {
+                  if (!res?.data?.cartShipmentDetails?.is_valid) {
+                    showSnackbar(res?.data?.cartShipmentDetails?.message);
+                    setIsCartValid(false);
+                  }
+                })
+                .finally(() => {
+                  setIsShipmentLoading(false);
+                });
+            });
+        } else {
+          fpi
+            .executeGQL(FETCH_SHIPMENTS, {
+              addressId: `${id.length ? id : selectedAddressId}`,
+              id: `${cart_id}`,
+              buyNow,
+            })
+            .then((res) => {
+              if (!res?.data?.cartShipmentDetails?.is_valid) {
+                showSnackbar(res?.data?.cartShipmentDetails?.message);
+                setIsCartValid(false);
+              }
+            })
+            .finally(() => {
+              setIsShipmentLoading(false);
+            });
         }
         setShowShipment(true);
         setAddressLoader(false);
