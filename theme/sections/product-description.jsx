@@ -299,7 +299,10 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       isSizeCollapsed ||
       (blockProps?.preselect_size && sizes !== undefined)
     ) {
-      onSizeSelection(sizes?.sizes?.[0]);
+      const firstAvailableSize = sizes?.sizes?.find(
+        (item) => item?.is_available
+      );
+      onSizeSelection(firstAvailableSize);
     }
   }, [isSizeCollapsed, blockProps?.preselect_size, sizes?.sizes]);
 
@@ -697,7 +700,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                         <span
                                           className={`captionSemiBold ${styles.otherSellers}`}
                                         >
-                                          &nbsp;{t("resource.auth.login.and_symbol")}&nbsp;
+                                          &nbsp;
+                                          {t("resource.auth.login.and_symbol")}
+                                          &nbsp;
                                           {`${soldBy?.count - 1} ${t(productPriceBySlug?.seller?.count > 1 ? "resource.common.other_plural" : "resource.common.other")}`}
                                         </span>
                                         <ArrowDownIcon
@@ -1045,7 +1050,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                           </div>
                         </>
                       );
-//
+                    //
                     case "size_guide":
                       return (
                         <>
