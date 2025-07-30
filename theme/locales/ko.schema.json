@@ -112,7 +112,9 @@
         "product_card_configuration": "제품 카드 구성",
         "other_page_configuration": "기타 페이지 구성",
         "google_maps": "구글 지도",
-        "mobile_logo_max_height": "모바일 로고 최대 높이"
+        "mobile_logo_max_height": "모바일 로고 최대 높이",
+        "logo_header": "데스크탑 헤더 로고 최대 높이",
+        "mobile_logo_header": "모바일 헤더 로고 최대 높이"
       },
       "typography": {
         "font_header": "글꼴 헤더",
@@ -152,7 +154,9 @@
         "date_range_info": "날짜 범위 내에서 배달 약속 표시",
         "bold": "용감한",
         "regular": "정기적인",
-        "semibold": "세미볼드"
+        "semibold": "세미볼드",
+        "transparent_header": "투명한 헤더",
+        "transparent_header_info": "애플리케이션 배너 또는 이미지 슬라이드 쇼가 상단에 투명한 헤더를 적용하십시오."
       },
       "algolia_configuration": {
         "enable_algolia": "Algolia 활성화"
@@ -167,7 +171,9 @@
         "social_media_text": "소셜 미디어 텍스트 레이블",
         "social_media_text_info": "소셜 미디어에 대한 레이블 텍스트 표시",
         "footer_logo_max_height_mobile": "푸터 로고 최대 높이(모바일)",
-        "footer_logo_max_height_desktop": "바닥글 로고 최대 높이(데스크톱)"
+        "footer_logo_max_height_desktop": "바닥글 로고 최대 높이(데스크톱)",
+        "open_same_tab": "같은 탭에서 소셜 링크를 엽니 다",
+        "open_same_tab_info": "새로운 탭 대신 동일한 탭에서 소셜 미디어 링크를 열려면 이것을 확인하십시오."
       },
       "cart_and_button_configuration": {
         "cart_options": "장바구니 옵션",

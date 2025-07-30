@@ -112,7 +112,9 @@
         "product_card_configuration": "Configuración de la tarjeta de producto",
         "other_page_configuration": "Otra configuración de página",
         "google_maps": "Mapas de Google",
-        "mobile_logo_max_height": "Altura máxima del logotipo móvil"
+        "mobile_logo_max_height": "Altura máxima del logotipo móvil",
+        "logo_header": "LOGO DEL PADRO DE ESCRITORIO LOGO MÁXIMO ALTA",
+        "mobile_logo_header": "Logotipo de encabezado móvil altura máxima"
       },
       "typography": {
         "font_header": "Encabezado de fuente",
@@ -152,7 +154,9 @@
         "date_range_info": "Mostrar la promesa de entrega en el rango de fechas",
         "bold": "Atrevido",
         "regular": "Regular",
-        "semibold": "Seminegrita"
+        "semibold": "Seminegrita",
+        "transparent_header": "Encabezado transparente",
+        "transparent_header_info": "Aplicar encabezado transparente cuando se muestre la banner de la aplicación o la diapositiva de imagen en la parte superior"
       },
       "algolia_configuration": {
         "enable_algolia": "Habilitar Algolia"
@@ -167,7 +171,9 @@
         "social_media_text": "Etiqueta de texto de redes sociales",
         "social_media_text_info": "Mostrar texto de etiqueta para redes sociales",
         "footer_logo_max_height_mobile": "Altura máxima del logotipo del pie de página (móvil)",
-        "footer_logo_max_height_desktop": "Altura máxima del logotipo del pie de página (escritorio)"
+        "footer_logo_max_height_desktop": "Altura máxima del logotipo del pie de página (escritorio)",
+        "open_same_tab": "Abrir enlaces sociales en la misma pestaña",
+        "open_same_tab_info": "Verifique esto para abrir enlaces de redes sociales en la misma pestaña en lugar de una nueva"
       },
       "cart_and_button_configuration": {
         "cart_options": "Opciones del carrito",

@@ -251,7 +251,19 @@
       "invalid_email": "Invalid email",
       "email_cannot_exceed_50_characters": "Email cannot exceed 50 characters",
       "other": "Other",
-      "product_is_not_serviceable_at_given_locality": "Product is not serviceable at given locality"
+      "product_is_not_serviceable_at_given_locality": "Product is not serviceable at given locality",
+      "no_items_in_cart": "No items in cart",
+      "street_name": "Street name",
+      "building_no__apartment": "Building No./ Apartment",
+      "area": "Area",
+      "landmark": "Landmark",
+      "sorry_item_is_out_of_stock": "Sorry, item is out of stock",
+      "added_only_those_products_that_are_in_stock": "Added only those products that are in stock",
+      "max_50_items_allowed_in_cart": "Max 50 items allowed in cart",
+      "nothing_updated": "Nothing Updated",
+      "item_updated": "Item updated",
+      "item_not_updated": "Item not updated",
+      "invalid_address": "Invalid address"
     },
     "auth": {
       "account_deletion_notice": "As per your request, your account will be deleted soon. If you wish to restore your account, please contact on below support email id",

@@ -577,7 +577,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                       getProductPrice("marked") && (
                                       <span
                                         className={`${styles.mrpLabel} ${styles["mrpLabel--effective"]}`}
-                                        style={{ marginLeft: 0 }}
+                                        style={{ marginInlineStart: 0 }}
                                       >
                                         {t("resource.common.mrp")}:
                                       </span>

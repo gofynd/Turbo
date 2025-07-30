@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import Snackbar from "awesome-snackbar";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import { isRunningOnClient } from "../utils";
 
 export function useLoggedInUser(fpi) {
   return {
@@ -45,6 +46,25 @@ const getSnackbarDuration = (message = "") => {
   return baseTime + extraTime;
 };
 
+function getSnackbarPosition(currentPosition) {
+  const directionMap = {
+    "top-left": "top-right",
+    "top-center": "top-center",
+    "top-right": "top-left",
+    "bottom-left": "bottom-right",
+    "bottom-center": "bottom-center",
+    "bottom-right": "bottom-left",
+  };
+  let newPosition = currentPosition;
+  if (isRunningOnClient()) {
+    const direction = document.dir;
+    if (direction === "rtl") {
+      newPosition = directionMap[currentPosition];
+    }
+  }
+  return newPosition;
+}
+
 export const useSnackbar = () => {
   const snackbarRef = useRef(null);
 
@@ -53,10 +73,10 @@ export const useSnackbar = () => {
     if (snackbarRef?.current) {
       snackbarRef.current.hide();
     }
-
+    const directivePosition = getSnackbarPosition(position);
     // Create a new snackbar and store it in the ref
     snackbarRef.current = new Snackbar(`${message}`, {
-      position,
+      position: directivePosition,
       style: {
         container: [
           ["background-color", getBgColor(type)],

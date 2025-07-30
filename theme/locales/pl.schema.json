@@ -112,7 +112,9 @@
         "product_card_configuration": "Konfiguracja karty produktu",
         "other_page_configuration": "Inna konfiguracja strony",
         "google_maps": "Mapy Google",
-        "mobile_logo_max_height": "Maksymalna wysokość logo mobilnego"
+        "mobile_logo_max_height": "Maksymalna wysokość logo mobilnego",
+        "logo_header": "Logo nagłówka komputerowego Max Wysokość",
+        "mobile_logo_header": "Logo nagłówka mobilnego Max Wysokość"
       },
       "typography": {
         "font_header": "Nagłówek czcionki",
@@ -152,7 +154,9 @@
         "date_range_info": "Pokaż obietnicę dostawy w zakresie dat",
         "bold": "Pogrubiony",
         "regular": "Regularny",
-        "semibold": "Półgruby"
+        "semibold": "Półgruby",
+        "transparent_header": "Przezroczysty nagłówek",
+        "transparent_header_info": "Zastosuj przejrzystość nagłówka, gdy na górze baner aplikacji lub slajd"
       },
       "algolia_configuration": {
         "enable_algolia": "Włącz Algolia"
@@ -167,7 +171,9 @@
         "social_media_text": "Etykieta tekstowa mediów społecznościowych",
         "social_media_text_info": "Pokaż tekst etykiety dla mediów społecznościowych",
         "footer_logo_max_height_mobile": "Maksymalna wysokość logo stopki (wersja mobilna)",
-        "footer_logo_max_height_desktop": "Maksymalna wysokość logo stopki (komputer stacjonarny)"
+        "footer_logo_max_height_desktop": "Maksymalna wysokość logo stopki (komputer stacjonarny)",
+        "open_same_tab": "Otwórz linki społecznościowe w tej samej zakładce",
+        "open_same_tab_info": "Sprawdź to, aby otworzyć linki do mediów społecznościowych w tej samej karcie zamiast nowej"
       },
       "cart_and_button_configuration": {
         "cart_options": "Opcje koszyka",

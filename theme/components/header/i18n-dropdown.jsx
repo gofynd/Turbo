@@ -280,6 +280,12 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
     return result;
   }
 
+  function getDefaultLocaleObject(locales) {
+    if (!Array.isArray(locales)) return {};
+
+    return locales.find(locale => locale.is_default === true) || {};
+  }
+
   useEffect(() => {
     if (currentCountry && Object.keys(currentCountry).length > 0) {
       setValue("country", currentCountry);
@@ -288,7 +294,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
 
   useEffect(() => {
     if (activeLocale && getValues("language")?.locale !== activeLocale) {
-      setValue("language", languageIscCode?.find(localeObj => localeObj.locale === activeLocale) || {});
+      setValue("language", languageIscCode?.find(localeObj => localeObj.locale === activeLocale) || getDefaultLocaleObject(languageIscCode));
     }
   }, [activeLocale, languageIscCode, setValue]);
 
@@ -383,7 +389,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
                 className={`${styles.locationLabel} ${styles.languageDisplayContainer}`}
               >{`${currentCountry.display_name} - ${currentCurrency.code}`}</span>
             </>
-          ) : languageIscCode.length > 1 && <span className={styles.languageDisplayContainer}>{languageIscCode?.find(localeObj => localeObj.locale === activeLocale)?.display_name || ""}</span>}
+          ) : languageIscCode.length > 1 && <span className={styles.languageDisplayContainer}>{languageIscCode?.find(localeObj => localeObj.locale === activeLocale)?.display_name || getDefaultLocaleObject(languageIscCode)?.display_name || ""}</span>} 
           <ArrowDownIcon className={styles.angleDownIcon} />
         </button>
       )}

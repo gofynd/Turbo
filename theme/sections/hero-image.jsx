@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { FDKLink } from "fdk-core/components";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import { getDirectionAdaptiveValue } from "../helper/utils";
+import { getDirectionAdaptiveValue, getLocaleDirection } from "../helper/utils";
 import styles from "../styles/sections/hero-image.less";
 import placeholderDesktop from "../assets/images/placeholder/hero-image-desktop.jpg";
 import placeholderMobile from "../assets/images/placeholder/hero-image-mobile.jpg";
 import Hotspot from "../components/hotspot/product-hotspot";
 import { DIRECTION_ADAPTIVE_CSS_PROPERTIES } from "../helper/constant";
 import { useWindowWidth } from "../helper/hooks";
+import { useFPI } from "fdk-core/utils";
 
 export function Component({ props, globalConfig, blocks }) {
   const {
@@ -31,6 +32,7 @@ export function Component({ props, globalConfig, blocks }) {
   const isMobile = windowWidth <= 540;
   const [tooltipHeight, setTooltipHeight] = useState(0);
   const [tooltipWidth, setTooltipWidth] = useState(0);
+  const fpi = useFPI();
 
   useEffect(() => {
     const updateTooltipDimensions = () => {
@@ -131,7 +133,7 @@ export function Component({ props, globalConfig, blocks }) {
                 ? VERTICAL_SPACING_TABLET
                 : VERTICAL_SPACING_DESKTOP;
             positions[`--left-position-${view}`] = "50%";
-            positions[`--transform-${view}`] = "translateX(-50%)";
+            positions[`--transform-${view}`] = `translateX(${getLocaleDirection(fpi)==="ltr" ? "-" : ""}50%)`;
           }
 
           break;
@@ -169,7 +171,7 @@ export function Component({ props, globalConfig, blocks }) {
             positions[`--transform-${view}`] = "translateY(-50%)";
           } else {
             positions[`--left-position-${view}`] = "50%";
-            positions[`--transform-${view}`] = "translate(-50%, -50%)";
+            positions[`--transform-${view}`] = `translate(${getLocaleDirection(fpi)==="ltr" ? "-" : ""}50%, -50%)`;
           }
 
           break;
@@ -209,7 +211,7 @@ export function Component({ props, globalConfig, blocks }) {
                 ? VERTICAL_SPACING_TABLET
                 : VERTICAL_SPACING_DESKTOP;
             positions[`--left-position-${view}`] = "50%";
-            positions[`--transform-${view}`] = "translateX(-50%)";
+            positions[`--transform-${view}`] = `translateX(${getLocaleDirection(fpi)==="ltr" ? "-" : ""}50%)`;
           }
 
           break;

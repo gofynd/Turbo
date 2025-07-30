@@ -259,27 +259,25 @@ export const getProductImgAspectRatio = (
 };
 
 export const currencyFormat = (value, currencySymbol, locale = "en-IN") => {
-  // Check if value is defined (including 0) and currencySymbol is provided
-  if (value != null) {
-    const formattedValue = value.toLocaleString(locale);
+  const formattingLocale = `${locale}-u-nu-latn`;
 
-    // If currencySymbol is a valid uppercase currency code
+  if (value != null) {
+    const formattedValue = value.toLocaleString(formattingLocale);
+
     if (currencySymbol && /^[A-Z]+$/.test(currencySymbol)) {
       return `${currencySymbol} ${formattedValue}`;
     }
 
-    // If currencySymbol is provided, attach it without space
     if (currencySymbol) {
       return `${currencySymbol}${formattedValue}`;
     }
 
-    // Return formatted value without currencySymbol
     return formattedValue;
   }
 
-  // Handle cases where value is null or undefined
   return "";
 };
+
 
 export const getReviewRatingData = (customMeta) => {
   const data = {};
@@ -488,4 +486,9 @@ export function addLocaleToShareCartUrl(url, locale, supportedLocales) {
     console.error('Invalid URL:', e);
     return url;
   }
+}
+
+export function getLocaleDirection(fpi) {
+  const dir = fpi?.store?.getState()?.custom?.currentLocaleDetails?.direction;
+  return dir || "ltr";
 }

@@ -129,7 +129,7 @@
         height: 600px;
         overflow: hidden;
         z-index: 1;
-        left: -30px;
+        inset-inline-start: -30px;
 
         .zoomedImage {
           width: 100%;
@@ -263,13 +263,13 @@
           .mrpStrike {
             position: relative;
             display: flex;
-            margin-right: 8px;
+            margin-inline-end: 8px;
 
             &::after {
               content: "";
               position: absolute;
               bottom: 50%;
-              left: 0;
+              inset-inline-start: 0;
               width: 100%;
               height: 0.5px;
               transform: translateY(50%);
@@ -288,7 +288,7 @@
           &--effective {
             line-height: 23px;
             min-height: 23px;
-            margin-right: 4px;
+            margin-inline-end: 4px;
 
             @media @tablet {
               line-height: 19px;
@@ -326,7 +326,7 @@
               margin-inline-end: 4px;
             }
             &--marked {
-              margin-right: 0.25rem;
+              margin-inline-end: 0.25rem;
             }
           }
         }
@@ -382,7 +382,7 @@
     flex-grow: 0;
     transition: all 0.5s;
     flex-basis: 33.33%;
-    margin-right: 12px;
+    margin-inline-end: 12px;
     // @media @tablet {
     //   padding-top: 24px;
     // }
@@ -500,7 +500,7 @@
       .cartIcon {
         height: 18px;
         width: 18px;
-        margin-right: 5px;
+        margin-inline-end: 5px;
         fill: @ButtonPrimary;
         transition: all 0.4s;
       }
@@ -559,7 +559,7 @@
   &__icon {
     width: 16px;
     height: 16px;
-    margin-right: 4px;
+    margin-inline-end: 4px;
   }
 
   @media @tablet {
@@ -614,7 +614,7 @@
     &__icon {
       width: 16px;
       height: 16px;
-      margin-right: 4px;
+      margin-inline-end: 4px;
     }
 
     @media @tablet {
@@ -624,7 +624,7 @@
     .customIcon {
       width: 16px;
       height: 16px;
-      margin-right: 4px;
+      margin-inline-end: 4px;
     }
   }
 }
@@ -645,7 +645,7 @@
     &__icon {
       width: 16px;
       height: 16px;
-      margin-right: 4px;
+      margin-inline-end: 4px;
     }
 
     @media @tablet {
@@ -655,7 +655,7 @@
     .customIcon {
       width: 16px;
       height: 16px;
-      margin-right: 4px;
+      margin-inline-end: 4px;
     }
   }
 }
@@ -676,7 +676,7 @@
     &__icon {
       width: 16px;
       height: 16px;
-      margin-right: 4px;
+      margin-inline-end: 4px;
     }
 
     @media @tablet {
@@ -686,7 +686,7 @@
     .customIcon {
       width: 16px;
       height: 16px;
-      margin-right: 4px;
+      margin-inline-end: 4px;
     }
   }
 }
@@ -707,7 +707,7 @@
     &__icon {
       width: 16px;
       height: 16px;
-      margin-right: 4px;
+      margin-inline-end: 4px;
     }
 
     @media @tablet {
@@ -717,7 +717,7 @@
     .customIcon {
       width: 16px;
       height: 16px;
-      margin-right: 4px;
+      margin-inline-end: 4px;
     }
   }
 }
@@ -755,7 +755,10 @@
   text-transform: uppercase;
   cursor: pointer;
   @media @tablet {
-    margin: 16px 0 32px 0;
+    margin-top: 16px;
+    margin-inline-end: 0;
+    margin-bottom: 32px;
+    margin-inline-start: 0;
     font-size: 12px;
     letter-spacing: -0.24px;
   }

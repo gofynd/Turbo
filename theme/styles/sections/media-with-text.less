@@ -38,7 +38,10 @@
       padding: 0 @SectionInlinePaddingTablet;
     }
     @media @desktop {
-      padding: 0 @SectionInlinePaddingDesktop 0 0;
+      padding-top: 0;
+      padding-inline-end: @SectionInlinePaddingDesktop;
+      padding-bottom: 0;
+      padding-inline-start: 0;
     }
   }
   &__heading {
@@ -90,7 +93,10 @@
         }
       }
       @media @desktop {
-        padding: 0 0 0 @SectionInlinePaddingDesktop;
+        padding-top: 0;
+        padding-inline-end: 0;
+        padding-bottom: 0;
+        padding-inline-start: @SectionInlinePaddingDesktop;
       }
     }
   }

@@ -6,8 +6,10 @@ import styles from "../styles/sections/testimonials.less";
 import { useWindowWidth } from "../helper/hooks";
 import { SliderNextArrow,SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
 import { useGlobalTranslation } from "fdk-core/utils";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 
 export function Component({ props, globalConfig, blocks, preset }) {
+  const { isRTL } = useLocaleDirection();
   const { title, autoplay, slide_interval, padding_top, padding_bottom } =
     props;
   const windowWidth = useWindowWidth();
@@ -62,6 +64,7 @@ export function Component({ props, globalConfig, blocks, preset }) {
           },
         },
       ],
+      rtl: isRTL,
     };
   };
 
@@ -80,6 +83,7 @@ export function Component({ props, globalConfig, blocks, preset }) {
       centerPadding: "50px",
       nextArrow: <SliderNextArrow />,
       prevArrow: <SliderPrevArrow />,
+      rtl: isRTL,
     };
   };
 

@@ -112,7 +112,9 @@
         "product_card_configuration": "ထုတ်ကုန်ကတ် ဖွဲ့စည်းမှု",
         "other_page_configuration": "အခြား Page Configuration",
         "google_maps": "Google Maps",
-        "mobile_logo_max_height": "မိုဘိုင်းလိုဂို Max အမြင့်"
+        "mobile_logo_max_height": "မိုဘိုင်းလိုဂို Max အမြင့်",
+        "logo_header": "desktop header logo max ကိုအမြင့်",
+        "mobile_logo_header": "Mobile header logo max ကိုအမြင့်"
       },
       "typography": {
         "font_header": "ဖောင့်ခေါင်း",
@@ -152,7 +154,9 @@
         "date_range_info": "ပေးပို့မှုကတိကို ရက်စွဲအပိုင်းအခြားတွင် ပြပါ။",
         "bold": "ရဲရင့်သည်။",
         "regular": "ပုံမှန်",
-        "semibold": "ပုံတူ"
+        "semibold": "ပုံတူ",
+        "transparent_header": "ပွင့်လင်းခေါင်းစီး",
+        "transparent_header_info": "လျှောက်လွှာအလံသို့မဟုတ်ပုံတွင်ပုံတစ်ပုံဆလိုက်ရှိုးပြပွဲတွင်ပွင့်လင်းမြင်သာသောခေါင်းစီးကိုအသုံးပြုပါ"
       },
       "algolia_configuration": {
         "enable_algolia": "Algolia ကိုဖွင့်ပါ။"
@@ -167,7 +171,9 @@
         "social_media_text": "ဆိုရှယ်မီဒီယာစာသားတံဆိပ်",
         "social_media_text_info": "ဆိုရှယ်မီဒီယာအတွက် အညွှန်းစာသားကို ပြပါ။",
         "footer_logo_max_height_mobile": "အောက်ခံလိုဂို Max Height (မိုဘိုင်း)",
-        "footer_logo_max_height_desktop": "အောက်ခံလိုဂို Max Height (ဒက်စ်တော့)"
+        "footer_logo_max_height_desktop": "အောက်ခံလိုဂို Max Height (ဒက်စ်တော့)",
+        "open_same_tab": "တူညီသော tab တွင်လူမှုဆက်ဆံရေးများဖွင့်လှစ်",
+        "open_same_tab_info": "ဤအရာကိုအသစ်တစ်ခုအစားတူညီသော tab တွင်လူမှုမီဒီယာလင့်ခ်များကိုဖွင့်ရန်ဤအချက်ကိုစစ်ဆေးပါ"
       },
       "cart_and_button_configuration": {
         "cart_options": "လှည်း ရွေးစရာများ",

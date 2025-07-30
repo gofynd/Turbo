@@ -15,9 +15,12 @@
   position: fixed;
   top: calc(var(--topPosition, var(--headerHeight)) + 69px);
   z-index: 1;
-  right: 50%;
+  inset-inline-end: 50%;
   z-index: 1;
   transform: translateX(50%);
+  [dir="rtl"] & {
+    transform: translateX(-50%);
+  }
 
   .text {
     color: @ThemeAccentD2;
@@ -40,7 +43,7 @@
   @media @desktop {
     justify-content: center;
     top: unset;
-    right: 40px;
+    inset-inline-end: 40px;
     bottom: 40px;
     width: 40px;
     height: 40px;

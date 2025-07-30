@@ -255,6 +255,7 @@ function Footer({ fpi }) {
                           </div>
                           <div>
                             <a
+                              dir="ltr"
                               href={`tel:${item?.number}`}
                               className={`${styles.detail} b1 ${styles.fontBody}`}
                             >

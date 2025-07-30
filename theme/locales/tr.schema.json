@@ -112,7 +112,9 @@
         "product_card_configuration": "Ürün Kartı Yapılandırması",
         "other_page_configuration": "Diğer Sayfa Yapılandırması",
         "google_maps": "Google Haritalar",
-        "mobile_logo_max_height": "Mobil Logo Maksimum Yükseklik"
+        "mobile_logo_max_height": "Mobil Logo Maksimum Yükseklik",
+        "logo_header": "Masaüstü başlık logosu maksimum yükseklik",
+        "mobile_logo_header": "Mobil başlık logosu maksimum yükseklik"
       },
       "typography": {
         "font_header": "Yazı Tipi Başlığı",
@@ -152,7 +154,9 @@
         "date_range_info": "Teslimat sözünü tarih aralığında göster",
         "bold": "Gözü pek",
         "regular": "Düzenli",
-        "semibold": "Yarı kalın"
+        "semibold": "Yarı kalın",
+        "transparent_header": "Şeffaf başlık",
+        "transparent_header_info": "Üstte uygulama afişi veya görüntü slayt gösterisi olduğunda şeffaf başlık uygulayın"
       },
       "algolia_configuration": {
         "enable_algolia": "Algolia'yı etkinleştir"
@@ -167,7 +171,9 @@
         "social_media_text": "Sosyal medya metin etiketi",
         "social_media_text_info": "Sosyal medya için Etiket metnini göster",
         "footer_logo_max_height_mobile": "Altbilgi Logosu Maksimum Yükseklik (Mobil)",
-        "footer_logo_max_height_desktop": "Altbilgi Logosu Maksimum Yükseklik (Masaüstü)"
+        "footer_logo_max_height_desktop": "Altbilgi Logosu Maksimum Yükseklik (Masaüstü)",
+        "open_same_tab": "Aynı sekmede sosyal bağlantıları açın",
+        "open_same_tab_info": "Yeni bir sekmedeki sosyal medya bağlantılarını açmak için bunu kontrol edin"
       },
       "cart_and_button_configuration": {
         "cart_options": "Sepet Seçenekleri",

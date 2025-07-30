@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import styles from "./styles/shipment-breakup.less";
-import { useGlobalTranslation } from "fdk-core/utils";
 
 function ShipmentBreakup({ fpi, breakup, shipmentInfo }) {
   const { t } = useGlobalTranslation("translation");

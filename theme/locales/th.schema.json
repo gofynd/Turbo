@@ -112,7 +112,9 @@
         "product_card_configuration": "การกำหนดค่าการ์ดผลิตภัณฑ์",
         "other_page_configuration": "การกำหนดค่าหน้าอื่น ๆ",
         "google_maps": "แผนที่ Google",
-        "mobile_logo_max_height": "ความสูงสูงสุดของโลโก้มือถือ"
+        "mobile_logo_max_height": "ความสูงสูงสุดของโลโก้มือถือ",
+        "logo_header": "โลโก้ส่วนหัวของเดสก์ท็อปความสูงสูงสุด",
+        "mobile_logo_header": "โลโก้ส่วนหัวมือถือความสูงสูงสุด"
       },
       "typography": {
         "font_header": "ส่วนหัวของแบบอักษร",
@@ -152,7 +154,9 @@
         "date_range_info": "แสดงคำมั่นสัญญาการจัดส่งในช่วงวันที่",
         "bold": "ตัวหนา",
         "regular": "ปกติ",
-        "semibold": "กึ่งหนา"
+        "semibold": "กึ่งหนา",
+        "transparent_header": "ส่วนหัวโปร่งใส",
+        "transparent_header_info": "ใช้ส่วนหัวโปร่งใสเมื่อแอปพลิเคชันแบนเนอร์หรือภาพสไลด์แสดงอยู่ด้านบน"
       },
       "algolia_configuration": {
         "enable_algolia": "เปิดใช้งาน Algolia"
@@ -167,7 +171,9 @@
         "social_media_text": "ป้ายข้อความโซเชียลมีเดีย",
         "social_media_text_info": "แสดงข้อความป้ายกำกับสำหรับโซเชียลมีเดีย",
         "footer_logo_max_height_mobile": "ความสูงสูงสุดของโลโก้ส่วนท้าย (มือถือ)",
-        "footer_logo_max_height_desktop": "ความสูงสูงสุดของโลโก้ส่วนท้าย (เดสก์ท็อป)"
+        "footer_logo_max_height_desktop": "ความสูงสูงสุดของโลโก้ส่วนท้าย (เดสก์ท็อป)",
+        "open_same_tab": "เปิดลิงก์โซเชียลในแท็บเดียวกัน",
+        "open_same_tab_info": "ตรวจสอบสิ่งนี้เพื่อเปิดลิงค์โซเชียลมีเดียในแท็บเดียวกันแทนที่จะเป็นใหม่"
       },
       "cart_and_button_configuration": {
         "cart_options": "ตัวเลือกรถเข็น",

@@ -12,6 +12,7 @@ import CategoriesCard from "../components/categories-card/categories-card";
 import { useParams } from "react-router-dom";
 import { CATEGORIES_LISTING } from "../queries/categoryQuery";
 import { useWindowWidth } from "../helper/hooks";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 
 // check for FDKLink here
 export function Component({ props, blocks, preset, globalConfig }) {
@@ -129,7 +130,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
     }
     return desktop_layout?.value === "horizontal";
   }
-
+  const { isRTL } = useLocaleDirection();
   const config = useMemo(() => {
     return {
       arrows: imagesForScrollView?.length > itemCount,
@@ -155,6 +156,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
           },
         },
       ],
+      rtl: isRTL,
     };
   }, [
     itemCount,
@@ -179,6 +181,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
       prevArrow: <SliderLeftIcon />,
       centerMode: imagesForScrollView?.length > itemCountMobile,
       centerPadding: "25px",
+      rtl: isRTL,
     }),
     [
       itemCountMobile,

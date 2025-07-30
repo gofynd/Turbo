@@ -30,9 +30,9 @@
     .slick-dots {
       width: 100%;
       transform: translate(-50%, 200%);
-      [dir="rtl"] & {
-        transform: translate(50%, -50%);
-      }
+      // [dir="rtl"] & {
+      //   transform: translate(50%, 200%);
+      // }
 
       li {
         margin: 0 2px;
@@ -141,7 +141,7 @@
   position: absolute;
   border-radius: 24px;
   bottom: 10px !important;
-  left: 10px !important;
+  inset-inline-start: 10px !important;
   top: unset !important;
   height: fit-content;
   width: fit-content;
@@ -178,8 +178,8 @@
 }
 .VideoShareIcon {
   bottom: 10px !important;
-  left: unset !important;
-  right: 10px !important;
+  inset-inline-start: unset !important;
+  inset-inline-end: 10px !important;
   top: unset !important;
   width: 40px;
   height: 40px;
@@ -195,7 +195,7 @@
 .shareIcon {
   position: absolute;
   bottom: 10px !important;
-  right: 10px !important;
+  inset-inline-end: 10px !important;
   width: 40px;
   height: 40px;
   top: unset !important;

@@ -112,7 +112,9 @@
         "product_card_configuration": "Конфигурация карточки продукта",
         "other_page_configuration": "Другая конфигурация страницы",
         "google_maps": "Карты Google",
-        "mobile_logo_max_height": "Максимальная высота мобильного логотипа"
+        "mobile_logo_max_height": "Максимальная высота мобильного логотипа",
+        "logo_header": "Логотип заголовка на рабочем столе максимальная высота",
+        "mobile_logo_header": "Mobile Logo Logo Max Height"
       },
       "typography": {
         "font_header": "Заголовок шрифта",
@@ -152,7 +154,9 @@
         "date_range_info": "Показать обещание доставки в диапазоне дат",
         "bold": "Смелый",
         "regular": "Обычный",
-        "semibold": "Полужирный"
+        "semibold": "Полужирный",
+        "transparent_header": "Прозрачный заголовок",
+        "transparent_header_info": "Примените прозрачный заголовок, когда баннер применения или слайд изображений."
       },
       "algolia_configuration": {
         "enable_algolia": "Включить Алголию"
@@ -167,7 +171,9 @@
         "social_media_text": "Текстовая метка для социальных сетей",
         "social_media_text_info": "Показать текст метки для социальных сетей",
         "footer_logo_max_height_mobile": "Максимальная высота логотипа нижнего колонтитула (мобильная версия)",
-        "footer_logo_max_height_desktop": "Максимальная высота логотипа нижнего колонтитула (для ПК)"
+        "footer_logo_max_height_desktop": "Максимальная высота логотипа нижнего колонтитула (для ПК)",
+        "open_same_tab": "Откройте социальные ссылки в той же вкладке",
+        "open_same_tab_info": "Проверьте это, чтобы открыть ссылки на социальные сети на той же вкладке вместо новой"
       },
       "cart_and_button_configuration": {
         "cart_options": "Параметры корзины",

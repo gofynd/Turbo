@@ -7,6 +7,7 @@ import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import placeholderImage from "../assets/images/placeholder/image-gallery.png";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 
 export function Component({ props, blocks = [], globalConfig = {}, preset }) {
   const {
@@ -152,6 +153,7 @@ const HorizontalLayout = ({
   autoplaySpeed,
   in_new_tab,
 }) => {
+  const { isRTL } = useLocaleDirection();
   const config = useMemo(
     () => ({
       dots: items.length > colCount,
@@ -182,6 +184,7 @@ const HorizontalLayout = ({
           },
         },
       ],
+      rtl: isRTL,
     }),
     [items.length, colCount, autoplay, autoplaySpeed]
   );
@@ -206,6 +209,7 @@ const HorizontalLayout = ({
       // arrows: getGallery.length > item_count?.value || false,
       nextArrow: <SliderRightIcon />,
       prevArrow: <SliderLeftIcon />,
+      rtl: isRTL,
     }),
     [items?.length, colCountMobile, autoplay, autoplaySpeed]
   );

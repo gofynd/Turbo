@@ -112,7 +112,9 @@
         "product_card_configuration": "Konfigurasi Kartu Produk",
         "other_page_configuration": "Konfigurasi Halaman Lainnya",
         "google_maps": "Peta Google",
-        "mobile_logo_max_height": "Tinggi Maksimum Logo Seluler"
+        "mobile_logo_max_height": "Tinggi Maksimum Logo Seluler",
+        "logo_header": "Logo Header Desktop Tinggi Max",
+        "mobile_logo_header": "Logo Header Mobile Tinggi Max"
       },
       "typography": {
         "font_header": "Judul Huruf",
@@ -152,7 +154,9 @@
         "date_range_info": "Tampilkan janji pengiriman dalam rentang tanggal",
         "bold": "Berani",
         "regular": "Biasa",
-        "semibold": "Semitebal"
+        "semibold": "Semitebal",
+        "transparent_header": "Header transparan",
+        "transparent_header_info": "Terapkan header transparan saat spanduk aplikasi atau slide show di atas"
       },
       "algolia_configuration": {
         "enable_algolia": "Aktifkan Algolia"
@@ -167,7 +171,9 @@
         "social_media_text": "Label teks media sosial",
         "social_media_text_info": "Tampilkan teks Label untuk media sosial",
         "footer_logo_max_height_mobile": "Tinggi Maksimum Logo Footer (Seluler)",
-        "footer_logo_max_height_desktop": "Tinggi Maksimum Logo Footer (Desktop)"
+        "footer_logo_max_height_desktop": "Tinggi Maksimum Logo Footer (Desktop)",
+        "open_same_tab": "Buka tautan sosial di tab yang sama",
+        "open_same_tab_info": "Periksa ini untuk membuka tautan media sosial di tab yang sama, bukan yang baru"
       },
       "cart_and_button_configuration": {
         "cart_options": "Opsi Keranjang",

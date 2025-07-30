@@ -7,6 +7,7 @@ import { COLLECTION } from "../queries/collectionsQuery";
 import { useGlobalStore, useFPI } from "fdk-core/utils";
 import placeholderImage from "../assets/images/placeholder/collections-listing.png";
 import CollectionCard from "../components/collection-card/collection-card";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 
 export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const fpi = useFPI();
@@ -115,7 +116,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
   } ${layout_mobile?.value === "stacked" ? styles.hideOnTablet : ""} ${
     layout_desktop?.value === "grid" ? styles.hideOnDesktop : ""
   }`;
-
+  const { isRTL } = useLocaleDirection();
   const config = useMemo(
     () => ({
       arrows: collectionsForScrollView?.length > itemsPerRow,
@@ -141,6 +142,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
           },
         },
       ],
+      rtl: isRTL,
     }),
     [collectionsForScrollView?.length, itemsPerRow]
   );
@@ -161,6 +163,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
       centerMode: collectionsForScrollView?.length > 1,
       centerPadding: "25px",
       cssEase: "linear",
+      rtl: isRTL,
     }),
     [collectionsForScrollView?.length]
   );

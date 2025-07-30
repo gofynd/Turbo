@@ -23,8 +23,8 @@
   padding: 7px 15px;
   text-align: center;
   bottom: 12px;
-  left: 12px;
-  right: 12px;
+  inset-inline-start: 12px;
+  inset-inline-end: 12px;
   margin: 0 auto;
 
   cursor: pointer;
@@ -44,11 +44,11 @@
   }
 
   &.text-left {
-    text-align: left;
+    text-align: start;
   }
 
   &.text-right {
-    text-align: right;
+    text-align: end;
   }
 
   @media @desktop {
@@ -93,8 +93,8 @@
     &.center {
       position: absolute;
       width: auto;
-      left: 0;
-      right: 0;
+      inset-inline-start: 0;
+      inset-inline-end: 0;
     }
   }
 }

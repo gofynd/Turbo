@@ -112,7 +112,9 @@
         "product_card_configuration": "Configuração do cartão do produto",
         "other_page_configuration": "Outra configuração de página",
         "google_maps": "Google Maps",
-        "mobile_logo_max_height": "Altura máxima do logotipo móvel"
+        "mobile_logo_max_height": "Altura máxima do logotipo móvel",
+        "logo_header": "Logotipo de cabeçalho da área de trabalho altura máxima",
+        "mobile_logo_header": "Logotipo de cabeçalho móvel altura máxima"
       },
       "typography": {
         "font_header": "Cabeçalho da fonte",
@@ -152,7 +154,9 @@
         "date_range_info": "Mostrar promessa de entrega no intervalo de datas",
         "bold": "Audacioso",
         "regular": "Regular",
-        "semibold": "Semi-negrito"
+        "semibold": "Semi-negrito",
+        "transparent_header": "Cabeçalho transparente",
+        "transparent_header_info": "Aplique o cabeçalho transparente quando o banner de aplicação ou a apresentação de slides da imagem na parte superior"
       },
       "algolia_configuration": {
         "enable_algolia": "Habilitar Algolia"
@@ -167,7 +171,9 @@
         "social_media_text": "Rótulo de texto de mídia social",
         "social_media_text_info": "Mostrar texto do rótulo para mídia social",
         "footer_logo_max_height_mobile": "Altura máxima do logotipo do rodapé (celular)",
-        "footer_logo_max_height_desktop": "Altura máxima do logotipo do rodapé (desktop)"
+        "footer_logo_max_height_desktop": "Altura máxima do logotipo do rodapé (desktop)",
+        "open_same_tab": "Links sociais abertos na mesma guia",
+        "open_same_tab_info": "Verifique isso para abrir links de mídia social na mesma guia em vez de um novo"
       },
       "cart_and_button_configuration": {
         "cart_options": "Opções de carrinho",

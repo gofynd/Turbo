@@ -24,6 +24,7 @@ import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide
 import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
 import useAddToCartModal from "../page-layouts/plp/useAddToCartModal";
 import { FDKLink } from "fdk-core/components";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const { t } = useGlobalTranslation("translation");
@@ -62,6 +63,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const pincodeDetails = useGlobalStore(fpi?.getters?.PINCODE_DETAILS);
   const isTablet = useViewport(0, 768);
+  const { isRTL } = useLocaleDirection();
 
   const addToCartConfigs = {
     mandatory_pincode,
@@ -132,6 +134,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
           },
         },
       ],
+      rtl: isRTL,
     };
   }, [activeCollectionItems?.length, per_row?.value]);
 
@@ -159,6 +162,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
       initialSlide: 0, // Start from the first slide
       waitForAnimate: false, // Avoid delays between slides during swipe
       edgeFriction: 0.35, // Provide some resistance at the edges
+      rtl: isRTL,
     };
   }, [activeCollectionItems?.length, per_row?.value]);
 

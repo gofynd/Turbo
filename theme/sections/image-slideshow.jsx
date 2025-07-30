@@ -12,6 +12,7 @@ import placeholderDesktop2 from "../assets/images/placeholder/slideshow-desktop2
 import placeholderMobile1 from "../assets/images/placeholder/slideshow-mobile1.jpg";
 import placeholderMobile2 from "../assets/images/placeholder/slideshow-mobile2.jpg";
 import styles from "../styles/sections/image-slideshow.less";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import { useGlobalStore } from "fdk-core/utils";
 
 const placeholderImagesDesktop = [placeholderDesktop1, placeholderDesktop2];
@@ -55,6 +56,7 @@ function getImgSrcSet(block, globalConfig, index) {
 }
 
 export function Component({ props, blocks, globalConfig, preset }) {
+  const { isRTL } = useLocaleDirection();
   const blocksData = blocks.length === 0 ? preset?.blocks : blocks;
   const {
     autoplay,
@@ -99,6 +101,7 @@ export function Component({ props, blocks, globalConfig, preset }) {
           },
         },
       ],
+      rtl: isRTL,
     }),
     [autoplay?.value, slide_interval?.value, blocksData]
   );

@@ -25,6 +25,7 @@ import {
 import { getProductImgAspectRatio } from "../helper/utils";
 import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide.css";
 import "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 
 const Modal = React.lazy(
   () => import("@gofynd/theme-template/components/core/modal/modal")
@@ -121,7 +122,7 @@ export function Component({ props, globalConfig }) {
     if (!getGallery) return [];
     return getGallery.slice(0, max_count?.value);
   }, [getGallery, max_count?.value]);
-
+  const { isRTL } = useLocaleDirection();
   const config = useMemo(() => {
     const itemCount = Number(item_count?.value ?? 4);
     const itemLength = imagesForScrollView?.length;
@@ -153,6 +154,7 @@ export function Component({ props, globalConfig }) {
           },
         },
       ],
+      rtl: isRTL,
     };
   }, [item_count?.value, imagesForScrollView?.length]);
 
@@ -175,6 +177,7 @@ export function Component({ props, globalConfig }) {
       touchThreshold: 5,
       draggable: true,
       touchMove: true,
+      rtl: isRTL,
     };
   }, [itemCountMobile, imagesForScrollView?.length]);
 
@@ -211,6 +214,7 @@ export function Component({ props, globalConfig }) {
           },
         },
       ],
+      rtl: isRTL,
     }),
     [imagesForScrollView.length]
   );
@@ -638,12 +642,12 @@ export function Component({ props, globalConfig }) {
             <div className={styles.slideWrapBanner}>
               <div
                 className={styles.titleBlock}
-                style={{ paddingLeft: "10px" }}
+                style={{ paddingInlineStart: "10px" }}
               >
                 {heading?.value?.length > 0 && (
                   <h2
                     className={`${styles.sectionHeading} fontHeader`}
-                    style={{ textAlign: "left" }}
+                    style={{ textAlign: "start" }}
                   >
                     {heading?.value}
                   </h2>
@@ -651,7 +655,7 @@ export function Component({ props, globalConfig }) {
                 {description?.value?.length > 0 && (
                   <p
                     className={`${styles.description} b2`}
-                    style={{ textAlign: "left" }}
+                    style={{ textAlign: "start" }}
                   >
                     {description?.value}
                   </p>

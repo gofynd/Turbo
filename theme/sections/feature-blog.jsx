@@ -9,6 +9,7 @@ import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
 import { formatLocale } from "../helper/utils";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 
 export function Component({ props, globalConfig }) {
   const fpi = useFPI();
@@ -18,7 +19,7 @@ export function Component({ props, globalConfig }) {
   const customValues = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const blogItems = customValues?.featuredBlogSectionData ?? [];
   const { heading, description, padding_top, padding_bottom } = props;
-
+  const { isRTL } = useLocaleDirection();
   const config = useMemo(
     () => ({
       arrows: blogItems.length > 3,
@@ -50,6 +51,7 @@ export function Component({ props, globalConfig }) {
           },
         },
       ],
+      rtl: isRTL,
     }),
     [blogItems?.length]
   );
@@ -72,6 +74,7 @@ export function Component({ props, globalConfig }) {
       touchMove: true,
       nextArrow: <SliderRightIcon />,
       prevArrow: <SliderLeftIcon />,
+      rtl: isRTL,
     }),
     [blogItems?.length]
   );

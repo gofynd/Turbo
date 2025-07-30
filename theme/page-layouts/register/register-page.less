@@ -66,8 +66,8 @@
 
     .radioContainer {
       margin-bottom: 8px;
-      padding-left: 24px;
-      margin-right: 12px;
+      padding-inline-start: 24px;
+      margin-inline-end: 12px;
       position: relative;
       color: @TextBody;
       font-size: 14px;
@@ -85,7 +85,7 @@
         width: 16px;
         position: absolute;
         top: 50%;
-        left: 0;
+        inset-inline-start: 0;
         transform: translateY(-50%);
         border: 1px solid #919191;
         border-radius: 50%;
@@ -95,8 +95,11 @@
         position: absolute;
         display: none;
         top: 50%;
-        left: 50%;
+        inset-inline-start: 50%;
         transform: translate(-50%, -50%);
+        [dir="rtl"] & {
+          transform: translate(50%, -50%);
+        }
         width: 9px;
         height: 9px;
         border-radius: 50%;
@@ -183,7 +186,7 @@
   position: relative;
   input {
     width: 100%;
-    padding-right: 40px;
+    padding-inline-end: 40px;
     background-color: @PageBackground;
   }
 }
@@ -194,7 +197,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  right: 12px;
+  inset-inline-end: 12px;
   cursor: pointer;
   background: none;
   border: none;

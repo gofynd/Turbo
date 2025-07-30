@@ -102,9 +102,9 @@
   font-weight: 800;
   text-transform: uppercase;
   background-color: @ButtonPrimary;
-  margin-right: 10px;
+  margin-inline-end: 10px;
   @media @mobile {
-    margin-right: 0;
+    margin-inline-end: 0;
   }
 }
 .paymentModal {
@@ -128,7 +128,7 @@
   @media @mobile {
     position: fixed;
     box-sizing: border-box;
-    left: 2.5%;
+    inset-inline-start: 2.5%;
     bottom: 20px;
     width: 95%;
   }
@@ -160,10 +160,10 @@
       text-align: unset !important;
     }
     .back {
-      margin-right: 10px;
+      margin-inline-end: 10px;
     }
     .cross {
-      margin-left: auto;
+      margin-inline-start: auto;
     }
   }
 }

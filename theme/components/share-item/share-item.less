@@ -3,15 +3,15 @@
 .share-popup-overlay {
   position: absolute;
   top: 65px;
-  right: 0px;
+  inset-inline-end: 0px;
   box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.09);
   @media @tablet {
     top: 100px;
-    right: 24px;
+    inset-inline-end: 24px;
   }
   .upArrow {
     position: absolute;
-    right: -10px;
+    inset-inline-end: -10px;
     top: -19px;
     @media @mobile {
       display: none;
@@ -22,7 +22,7 @@
     width: 100%;
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
-    left: 0;
+    inset-inline-start: 0;
     top: 0;
     z-index: 99;
   }
@@ -32,7 +32,7 @@
   width: 100%;
   position: fixed;
   top: 0;
-  left: 0;
+  inset-inline-start: 0;
 }
 
 .share-popup {
@@ -44,7 +44,7 @@
 
   @media @mobile {
     top: 44px;
-    right: 0;
+    inset-inline-end: 0;
     display: flex;
     flex-direction: column;
     padding: 0;
@@ -62,7 +62,10 @@
     justify-content: space-between;
     gap: 8px;
     @media @mobile {
-      padding: 16px 16px 0 16px !important;
+      padding-top: 16px !important;
+      padding-inline-end: 16px !important;
+      padding-bottom: 0 !important;
+      padding-inline-start: 16px !important;
     }
 
     .iconWrapper {
@@ -126,7 +129,7 @@
     position: fixed;
     bottom: 0;
     top: unset;
-    left: 0;
+    inset-inline-start: 0;
     width: 100%;
     z-index: 6;
     padding-bottom: 24px;

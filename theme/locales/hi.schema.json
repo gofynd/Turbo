@@ -112,7 +112,9 @@
         "product_card_configuration": "उत्पाद कार्ड कॉन्फ़िगरेशन",
         "other_page_configuration": "अन्य पेज कॉन्फ़िगरेशन",
         "google_maps": "गूगल मैप्स",
-        "mobile_logo_max_height": "मोबाइल लोगो अधिकतम ऊंचाई"
+        "mobile_logo_max_height": "मोबाइल लोगो अधिकतम ऊंचाई",
+        "logo_header": "डेस्कटॉप हेडर लोगो अधिकतम ऊंचाई",
+        "mobile_logo_header": "मोबाइल हेडर लोगो अधिकतम ऊंचाई"
       },
       "typography": {
         "font_header": "फ़ॉन्ट हेडर",
@@ -152,7 +154,9 @@
         "date_range_info": "दिनांक सीमा में डिलीवरी का वादा दिखाएं",
         "bold": "बोल्ड",
         "regular": "नियमित",
-        "semibold": "सेमीबोल्ड"
+        "semibold": "सेमीबोल्ड",
+        "transparent_header": "पारदर्शी शीर्ष लेख",
+        "transparent_header_info": "शीर्ष पर एप्लिकेशन बैनर या इमेज स्लाइड शो होने पर पारदर्शी हेडर लागू करें"
       },
       "algolia_configuration": {
         "enable_algolia": "एल्गोलिया सक्षम करें"
@@ -167,7 +171,9 @@
         "social_media_text": "सोशल मीडिया टेक्स्ट लेबल",
         "social_media_text_info": "सोशल मीडिया के लिए लेबल टेक्स्ट दिखाएं",
         "footer_logo_max_height_mobile": "फ़ुटर लोगो अधिकतम ऊंचाई (मोबाइल)",
-        "footer_logo_max_height_desktop": "फ़ुटर लोगो अधिकतम ऊंचाई (डेस्कटॉप)"
+        "footer_logo_max_height_desktop": "फ़ुटर लोगो अधिकतम ऊंचाई (डेस्कटॉप)",
+        "open_same_tab": "एक ही टैब में सामाजिक लिंक खोलें",
+        "open_same_tab_info": "एक नए के बजाय एक ही टैब में सोशल मीडिया लिंक खोलने के लिए इसे देखें"
       },
       "cart_and_button_configuration": {
         "cart_options": "कार्ट विकल्प",

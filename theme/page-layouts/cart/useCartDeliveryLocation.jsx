@@ -292,7 +292,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
         setAddrError(null);
       } else {
         const errMsg =
-          res?.data?.selectAddress?.message || t("resource.common.address.address_selection_failure");
+          translateDynamicLabel(res?.data?.selectAddress?.message, t) || t("resource.common.address.address_selection_failure");
         setAddrError({ id: addrId, message: errMsg });
         showSnackbar(translateDynamicLabel(errMsg, t), "error");
       }

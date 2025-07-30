@@ -112,7 +112,9 @@
         "product_card_configuration": "ការកំណត់រចនាសម្ព័ន្ធកាតផលិតផល",
         "other_page_configuration": "ការកំណត់រចនាសម្ព័ន្ធទំព័រផ្សេងទៀត។",
         "google_maps": "ផែនទី Google",
-        "mobile_logo_max_height": "និមិត្តសញ្ញាចល័ត កម្ពស់អតិបរមា"
+        "mobile_logo_max_height": "និមិត្តសញ្ញាចល័ត កម្ពស់អតិបរមា",
+        "logo_header": "កម្ពស់អតិបរិមាក្បាលផ្ទៃតុ",
+        "mobile_logo_header": "កម្ពស់ក្បាលទូរស័ព្ទចល័តអតិបរមា"
       },
       "typography": {
         "font_header": "បឋមកថាពុម្ពអក្សរ",
@@ -152,7 +154,9 @@
         "date_range_info": "បង្ហាញការសន្យាដឹកជញ្ជូនក្នុងចន្លោះកាលបរិច្ឆេទ",
         "bold": "ដិត",
         "regular": "ទៀងទាត់",
-        "semibold": "ពាក់កណ្តាល"
+        "semibold": "ពាក់កណ្តាល",
+        "transparent_header": "បឋមកថាថ្លា",
+        "transparent_header_info": "អនុវត្តបឋមកថាដែលមានតម្លាភាពនៅពេលដែលបដាកម្មវិធីឬការបញ្ចាំងស្លាយរូបភាពនៅខាងលើ"
       },
       "algolia_configuration": {
         "enable_algolia": "បើកដំណើរការអាល់ហ្គោលី"
@@ -167,7 +171,9 @@
         "social_media_text": "ស្លាកអត្ថបទប្រព័ន្ធផ្សព្វផ្សាយសង្គម",
         "social_media_text_info": "បង្ហាញអត្ថបទស្លាកសម្រាប់ប្រព័ន្ធផ្សព្វផ្សាយសង្គម",
         "footer_logo_max_height_mobile": "និមិត្តសញ្ញាបាតកថាកម្ពស់អតិបរមា (ទូរស័ព្ទ)",
-        "footer_logo_max_height_desktop": "និមិត្តសញ្ញាបាតកថា កម្ពស់អតិបរមា (ផ្ទៃតុ)"
+        "footer_logo_max_height_desktop": "និមិត្តសញ្ញាបាតកថា កម្ពស់អតិបរមា (ផ្ទៃតុ)",
+        "open_same_tab": "បើកបណ្តាញភ្ជាប់សង្គមនៅក្នុងផ្ទាំងតែមួយ",
+        "open_same_tab_info": "ធីកវាដើម្បីបើកតំណភ្ជាប់បណ្តាញសង្គមនៅក្នុងផ្ទាំងតែមួយជំនួសឱ្យថ្មី"
       },
       "cart_and_button_configuration": {
         "cart_options": "ជម្រើសរទេះ",

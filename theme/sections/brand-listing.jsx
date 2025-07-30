@@ -10,6 +10,7 @@ import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import { useWindowWidth } from "../helper/hooks";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 
 export function Component({ props, globalConfig, blocks, id: sectionId }) {
   const fpi = useFPI();
@@ -158,7 +159,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
       ? card?.data?.brand?.logo?.url
       : card?.data?.brand?.banners?.portrait?.url || placeholderImage;
   };
-
+  const { isRTL } = useLocaleDirection();
   const [slickSetting, setSlickSettings] = useState({
     dots: brands?.length > per_row?.value,
     arrows: brands?.length > per_row?.value,
@@ -192,6 +193,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
         },
       },
     ],
+    rtl: isRTL,
   });
   const [slickSettingsMobile, setSlickSettingsMobile] = useState({
     dots: false,
@@ -210,6 +212,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
     touchThreshold: 80,
     draggable: false,
     touchMove: true,
+    rtl: isRTL,
   });
 
   useEffect(() => {

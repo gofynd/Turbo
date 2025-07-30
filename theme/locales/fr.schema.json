@@ -112,7 +112,9 @@
         "product_card_configuration": "Configuration de la fiche produit",
         "other_page_configuration": "Autre configuration de page",
         "google_maps": "Google Maps",
-        "mobile_logo_max_height": "Hauteur maximale du logo mobile"
+        "mobile_logo_max_height": "Hauteur maximale du logo mobile",
+        "logo_header": "En-tête de bureau Logo max hauteur",
+        "mobile_logo_header": "En-tête mobile logo max hauteur"
       },
       "typography": {
         "font_header": "En-tête de police",
@@ -152,7 +154,9 @@
         "date_range_info": "Afficher la promesse de livraison dans la plage de dates",
         "bold": "Audacieux",
         "regular": "Régulier",
-        "semibold": "Semi-gras"
+        "semibold": "Semi-gras",
+        "transparent_header": "En-tête transparent",
+        "transparent_header_info": "Appliquer un en-tête transparent lorsque la bannière d'application ou le diaporama d'image en haut"
       },
       "algolia_configuration": {
         "enable_algolia": "Activer Algolia"
@@ -167,7 +171,9 @@
         "social_media_text": "Étiquette de texte pour les réseaux sociaux",
         "social_media_text_info": "Afficher le texte de l'étiquette pour les médias sociaux",
         "footer_logo_max_height_mobile": "Hauteur maximale du logo du pied de page (mobile)",
-        "footer_logo_max_height_desktop": "Hauteur maximale du logo du pied de page (bureau)"
+        "footer_logo_max_height_desktop": "Hauteur maximale du logo du pied de page (bureau)",
+        "open_same_tab": "Ouvrez les liens sociaux dans le même onglet",
+        "open_same_tab_info": "Vérifiez ceci pour ouvrir les liens de médias sociaux dans le même onglet au lieu d'un nouveau"
       },
       "cart_and_button_configuration": {
         "cart_options": "Options de panier",

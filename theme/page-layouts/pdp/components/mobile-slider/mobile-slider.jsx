@@ -11,6 +11,7 @@ import MuteIcon from "../../../../assets/images/mute.svg";
 import UnmuteIcon from "../../../../assets/images/unmute.svg";
 import AutoRotateIcon from "../../../../assets/images/auto-rotate.svg";
 import WishlistIcon from "../../../../assets/images/wishlist";
+import useLocaleDirection from "../../../../helper/hooks/useLocaleDirection";
 
 function MobileSlider({
   images,
@@ -27,6 +28,7 @@ function MobileSlider({
   sources = [],
 }) {
   const { t } = useGlobalTranslation("translation");
+  const { isRTL } = useLocaleDirection();
   const settings = {
     dots: true,
     infinite: images?.length > 1,
@@ -55,6 +57,7 @@ function MobileSlider({
         },
       },
     ],
+    rtl: isRTL,
   };
 
   const [showReplayButton, setShowReplayButton] = useState(false);

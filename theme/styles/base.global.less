@@ -441,7 +441,7 @@ img::selection {
     inset-inline-start: unset !important;
   }
   .slick-prev {
-    left: -20px !important;
+    inset-inline-start: 20px !important;
   }
 
   .slick-prev::before,
@@ -478,26 +478,30 @@ img::selection {
 }
 .slick-next {
   transform: translate(100%, 100%);
-  [dir="rtl"] & {
-    transform: translate(-100%, 100%) rotate(180deg);
-  }
   inset-inline-end: calc(50% - var(--slick-dots) / 2);
+  [dir="rtl"] & {
+    left: unset !important;
+    inset-inline-end: calc(50% - var(--slick-dots) / 2);
+    padding: 2px;
+  }
 }
 .slick-prev {
   transform: translate(-100%, 100%);
-  [dir="rtl"] & {
-    transform: translate(100%, 100%) rotate(180deg);
-  }
   inset-inline-start: calc(50% - var(--slick-dots) / 2);
+  [dir="rtl"] & {
+    right: unset !important;
+    inset-inline-start: calc(50% - var(--slick-dots) / 2);
+    padding: 1px;
+  }
 }
 .slick-dots {
   font-size: 0;
   position: absolute;
   inset-inline-start: 50%;
   transform: translate(-50%, 100%);
-  [dir="rtl"] & {
-    transform: translate(50%, -50%);
-  }
+  // [dir="rtl"] & {
+  //   transform: translate(50%, 100%);
+  // }
   bottom: 0px;
   padding: 0;
   width: auto;
@@ -560,6 +564,9 @@ img::selection {
     inset-inline-start: auto; /* Override if it has a specific left value */
     inset-inline-end: 0; /* Start from the right side */
     animation: slideInRight 0.5s ease-out forwards; /* New animation */
+    [dir="rtl"] & {
+      animation: slideInLeft 0.5s ease-out forwards; /* New animation */
+    }
   }
 
   @keyframes slideInRight {
@@ -570,6 +577,15 @@ img::selection {
       transform: translateX(0); /* Move into the viewport */
     }
   }
+
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%); /* Start off-screen from the right */
+    }
+    to {
+      transform: translateX(0); /* Move into the viewport */
+      }
+    }
 }
 
 .react-international-phone-country-selector-dropdown {

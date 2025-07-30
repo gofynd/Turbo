@@ -112,7 +112,9 @@
         "product_card_configuration": "产品卡配置",
         "other_page_configuration": "其他页面配置",
         "google_maps": "谷歌地图",
-        "mobile_logo_max_height": "移动徽标最大高度"
+        "mobile_logo_max_height": "移动徽标最大高度",
+        "logo_header": "桌面标题徽标最大高度",
+        "mobile_logo_header": "移动标头徽标最大高度"
       },
       "typography": {
         "font_header": "字体标题",
@@ -152,7 +154,8 @@
         "date_range_info": "显示日期范围内的送货承诺",
         "bold": "大胆的",
         "regular": "常规的",
-        "semibold": "半粗体"
+        "semibold": "半粗体",
+        "transparent_header_info": "当应用横幅或图像幻灯片在顶部显示透明标头"
       },
       "algolia_configuration": {
         "enable_algolia": "启用 Algolia"
@@ -167,7 +170,9 @@
         "social_media_text": "社交媒体文本标签",
         "social_media_text_info": "显示社交媒体的标签文本",
         "footer_logo_max_height_mobile": "页脚徽标最大高度（移动端）",
-        "footer_logo_max_height_desktop": "页脚徽标最大高度（桌面）"
+        "footer_logo_max_height_desktop": "页脚徽标最大高度（桌面）",
+        "open_same_tab": "在同一选项卡中打开社交链接",
+        "open_same_tab_info": "检查一下以在同一选项卡中打开社交媒体链接，而不是新选项卡"
       },
       "cart_and_button_configuration": {
         "cart_options": "购物车选项",

@@ -112,7 +112,9 @@
         "product_card_configuration": "Cấu hình thẻ sản phẩm",
         "other_page_configuration": "Cấu hình trang khác",
         "google_maps": "Bản đồ Google",
-        "mobile_logo_max_height": "Chiều cao tối đa của Logo di động"
+        "mobile_logo_max_height": "Chiều cao tối đa của Logo di động",
+        "logo_header": "Logo tiêu đề máy tính để bàn chiều cao tối đa",
+        "mobile_logo_header": "Logo tiêu đề di động chiều cao tối đa"
       },
       "typography": {
         "font_header": "Tiêu đề phông chữ",
@@ -152,7 +154,9 @@
         "date_range_info": "Hiển thị lời hứa giao hàng trong phạm vi ngày",
         "bold": "In đậm",
         "regular": "Thường xuyên",
-        "semibold": "Nửa đậm"
+        "semibold": "Nửa đậm",
+        "transparent_header": "Tiêu đề minh bạch",
+        "transparent_header_info": "Áp dụng tiêu đề trong suốt khi biểu ngữ ứng dụng hoặc trình chiếu hình ảnh trên đầu"
       },
       "algolia_configuration": {
         "enable_algolia": "Kích hoạt Algolia"
@@ -167,7 +171,9 @@
         "social_media_text": "Nhãn văn bản phương tiện truyền thông xã hội",
         "social_media_text_info": "Hiển thị văn bản Nhãn cho phương tiện truyền thông xã hội",
         "footer_logo_max_height_mobile": "Chiều cao tối đa của Logo chân trang (Di động)",
-        "footer_logo_max_height_desktop": "Chiều cao tối đa của Logo chân trang (Máy tính để bàn)"
+        "footer_logo_max_height_desktop": "Chiều cao tối đa của Logo chân trang (Máy tính để bàn)",
+        "open_same_tab": "Mở các liên kết xã hội trong cùng một tab",
+        "open_same_tab_info": "Kiểm tra điều này để mở các liên kết truyền thông xã hội trong cùng một tab thay vì một cái mới"
       },
       "cart_and_button_configuration": {
         "cart_options": "Tùy chọn giỏ hàng",

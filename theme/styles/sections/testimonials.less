@@ -18,19 +18,19 @@
 
 .testimonialSlider {
   --gap: 24px;
-  padding-left: @SectionInlinePaddingDesktop;
+  padding-inline-start: @SectionInlinePaddingDesktop;
   @media @tablet {
     --gap: 12px;
-    padding-left: @SectionInlinePaddingTablet;
+    padding-inline-start: @SectionInlinePaddingTablet;
   }
   @media @mobile {
-    padding-left: @SectionInlinePaddingMobile;
+    padding-inline-start: @SectionInlinePaddingMobile;
   }
 
   :global {
     .slick-list {
       margin: 0 calc(var(--gap) / 2 * -1);
-      padding-left: 0 !important;
+      padding-inline-start: 0 !important;
     }
     .slick-track {
       display: flex;
@@ -50,16 +50,16 @@
 
   &.twoItem {
     @media @desktop {
-      padding-right: @SectionInlinePaddingDesktop;
+      padding-inline-end: @SectionInlinePaddingDesktop;
     }
     @media @tablet-strict {
-      padding-right: @SectionInlinePaddingTablet;
+      padding-inline-end: @SectionInlinePaddingTablet;
     }
   }
 
   &.oneItem {
     @media @mobile {
-      padding-right: @SectionInlinePaddingMobile;
+      padding-inline-end: @SectionInlinePaddingMobile;
     }
   }
 }
@@ -77,7 +77,10 @@
 
   @media @desktop {
     align-items: flex-start;
-    padding: 16px 16px 16px 32px;
+    padding-top: 16px;
+    padding-inline-end: 16px;
+    padding-bottom: 16px;
+    padding-inline-start: 32px;
     column-gap: 16px;
   }
 

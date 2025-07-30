@@ -30,15 +30,15 @@
       color: @TextLabel;
 
       &.tabSizeGuide {
-        margin-left: 1.5rem;
+        margin-inline-start: 1.5rem;
 
         @media @tablet {
-          margin-left: 1rem;
+          margin-inline-start: 1rem;
         }
       }
 
       &.tabMeasure {
-        margin-left: 1.5rem;
+        margin-inline-start: 1.5rem;
       }
     }
   }
@@ -170,7 +170,7 @@
   height: 100%;
   position: fixed;
   top: 0;
-  left: 0;
+  inset-inline-start: 0;
   background-color: rgba(20, 19, 14, 0.6);
   opacity: 0;
   transition: all 0.4s;

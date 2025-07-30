@@ -191,7 +191,7 @@ function DeliveryInfo({
                     {showLogo && (
                       <div className={styles.fyndLogo}>
                         <span>{t("resource.common.with")}</span>
-                        <FyndLogoIcon style={{ marginLeft: "2px" }} />
+                        <FyndLogoIcon style={{ marginInlineStart: "2px" }} />
                         <span className={styles.fyndText}>Fynd</span>
                       </div>
                     )}

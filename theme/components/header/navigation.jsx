@@ -8,7 +8,7 @@ import CloseIcon from "../../assets/images/close.svg";
 import ArrowDownIcon from "../../assets/images/arrow-down.svg";
 import UserIcon from "../../assets/images/user.svg";
 import WishlistIcon from "../../assets/images/single-row-wishlist.svg";
-import { isRunningOnClient } from "../../helper/utils";
+import { getLocaleDirection, isRunningOnClient } from "../../helper/utils";
 import MegaMenu from "./mega-menu";
 import { useGlobalTranslation } from "fdk-core/utils";
 import { useParams } from "react-router-dom";
@@ -322,13 +322,13 @@ function Navigation({
       <div>
         <motion.div
           className={`${styles.sidebar}`}
-          initial={{ x: "-100%" }} // Start off-screen to the left
-          animate={{ x: showSidebar ? 0 : "-100%" }} // Animate to 0 when open, back to -100% when closed
+          initial={{ x: getLocaleDirection(fpi) === "rtl" ? "100%" : "-100%" }} // Start off-screen to the left
+          animate={{ x: showSidebar ? 0 : getLocaleDirection(fpi) === "rtl" ? "100%"  : "-100%" }} // Animate to 0 when open, back to -100% when closed
           transition={{ duration: 0.3, ease: "easeInOut" }}
           style={{
             position: "fixed",
             top: 0,
-            left: 0,
+            insetInlineStart: 0,
             height: "100%",
           }}
         >

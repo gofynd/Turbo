@@ -112,7 +112,9 @@
         "product_card_configuration": "Configurazione della scheda prodotto",
         "other_page_configuration": "Altra configurazione della pagina",
         "google_maps": "Google Maps",
-        "mobile_logo_max_height": "Altezza massima del logo mobile"
+        "mobile_logo_max_height": "Altezza massima del logo mobile",
+        "logo_header": "Altezza massima del logo dell'intestazione del desktop",
+        "mobile_logo_header": "Altezza massima del logo dell'intestazione mobile"
       },
       "typography": {
         "font_header": "Intestazione del carattere",
@@ -152,7 +154,9 @@
         "date_range_info": "Mostra la promessa di consegna nell'intervallo di date",
         "bold": "Grassetto",
         "regular": "Regolare",
-        "semibold": "Semibold"
+        "semibold": "Semibold",
+        "transparent_header": "Testa trasparente",
+        "transparent_header_info": "Applicare un'intestazione trasparente quando il banner dell'applicazione o la presentazione dell'immagine in alto"
       },
       "algolia_configuration": {
         "enable_algolia": "Abilita Algolia"
@@ -167,7 +171,9 @@
         "social_media_text": "Etichetta di testo dei social media",
         "social_media_text_info": "Mostra il testo dell'etichetta per i social media",
         "footer_logo_max_height_mobile": "Altezza massima del logo del piè di pagina (mobile)",
-        "footer_logo_max_height_desktop": "Altezza massima del logo del piè di pagina (desktop)"
+        "footer_logo_max_height_desktop": "Altezza massima del logo del piè di pagina (desktop)",
+        "open_same_tab": "Apri collegamenti social nella stessa scheda",
+        "open_same_tab_info": "Controlla questo per aprire i collegamenti dei social media nella stessa scheda anziché una nuova"
       },
       "cart_and_button_configuration": {
         "cart_options": "Opzioni carrello",
