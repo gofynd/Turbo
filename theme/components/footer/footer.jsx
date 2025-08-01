@@ -104,26 +104,32 @@ function Footer({ fpi }) {
           <div className={styles.footer__top}>
             <div className={styles.footerContainer}>
               <div className={`${styles["footer__top--wrapper"]}`}>
-                <div className={styles["footer__top--info"]}>
-                  {getLogo?.length > 0 && (
-                    <div className={`fx-footer-logo ${styles.logo}`}>
-                      <img
-                        src={getLogo}
-                        loading="lazy"
-                        alt={t("resource.footer.footer_logo_alt_text")}
-                        fetchpriority="low"
-                        style={{
-                          maxHeight: isMobile
-                            ? `${logoMaxHeightMobile}px`
-                            : `${logoMaxHeightDesktop}px`,
-                        }}
-                      />
-                    </div>
-                  )}
-                  <p className={`${styles.description} b1 ${styles.fontBody}`}>
-                    {globalConfig?.footer_description}
-                  </p>
-                </div>
+                {(getLogo?.length > 0 || globalConfig?.footer_description) && (
+                  <div
+                    className={`${styles["footer__top--info"]}  ${globalConfig?.footer_description?.length < 83 ? styles["footer__top--unsetFlexWidth"] : ""}`}
+                  >
+                    {getLogo?.length > 0 && (
+                      <div className={`fx-footer-logo ${styles.logo}`}>
+                        <img
+                          src={getLogo}
+                          loading="lazy"
+                          alt={t("resource.footer.footer_logo_alt_text")}
+                          fetchpriority="low"
+                          style={{
+                            maxHeight: isMobile
+                              ? `${logoMaxHeightMobile}px`
+                              : `${logoMaxHeightDesktop}px`,
+                          }}
+                        />
+                      </div>
+                    )}
+                    <p
+                      className={`${styles.description} b1 ${styles.fontBody}`}
+                    >
+                      {globalConfig?.footer_description}
+                    </p>
+                  </div>
+                )}
                 <div className={`${styles["footer__top--menu"]}`}>
                   {FooterNavigation?.map((item, index) => (
                     <div className={styles.linkBlock} key={index}>
@@ -199,12 +205,12 @@ function Footer({ fpi }) {
                       </ul>
                     </div>
                   ))}
-                  {FooterNavigation?.length === 1 && (
+                  {/* {FooterNavigation?.length === 1 && (
                     <div className={styles.lineBlock} />
                   )}
                   {FooterNavigation?.length === 2 && (
                     <div className={styles.lineBlock} />
-                  )}
+                  )} */}
                 </div>
               </div>
               {hasOne() && (

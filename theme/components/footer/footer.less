@@ -51,6 +51,11 @@
         line-height: 24px;
       }
     }
+    &--unsetFlexWidth {
+      @media @desktop {
+        flex: unset;
+      }
+    }
     &--menu {
       @media @mobile-up {
         display: flex;
@@ -67,7 +72,7 @@
         }
         @media @desktop {
           margin-bottom: 0;
-          max-width: 147px;
+          max-width: 100%;
         }
         .menuTitle {
           color: @FooterText;
