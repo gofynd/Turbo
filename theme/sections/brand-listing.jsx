@@ -92,11 +92,11 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
       { breakpoint: { min: 540 }, width: Math.round(1170 / 3) },
       {
         breakpoint: { min: 360 },
-        width: Math.round(810 / logoOnly?.value ? 3 : 1),
+        width: Math.round(810 / (logoOnly?.value ? 3 : 1)),
       },
       {
         breakpoint: { min: 180 },
-        width: Math.round(450 / logoOnly?.value ? 3 : 1),
+        width: Math.round(450 / (logoOnly?.value ? 3 : 1)),
       },
     ];
   };
@@ -674,7 +674,6 @@ export const settings = {
     ],
   },
 };
-
 
 Component.serverFetch = async ({ fpi, blocks, id }) => {
   try {

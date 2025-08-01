@@ -17,17 +17,6 @@
   position: relative;
   display: grid;
   grid-template-columns: 1fr;
-  video {
-    @media @tablet {
-      &::-webkit-media-controls {
-        display: none !important; /* Hides controls */
-      }
-
-      &::-moz-media-controls {
-        display: none !important; /* For Firefox */
-      }
-    }
-  }
 
   &:hover {
     @media @desktop {

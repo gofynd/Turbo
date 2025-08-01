@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { isRunningOnClient } from "../helper/utils";
+import { isRunningOnClient, detectMobileWidth } from "../helper/utils";
 import styles from "../styles/sections/hero-video.less";
 import placeholderImage from "../assets/images/placeholder/hero-video.png";
 import { useGlobalTranslation } from "fdk-core/utils";
@@ -24,6 +24,7 @@ export function Component({ props, globalConfig }) {
   const [ytOverlay, setYtOverlay] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isValidUrl, setIsValidUrl] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const videoRef = useRef(null);
   const ytVideoRef = useRef(null);
 
@@ -97,6 +98,10 @@ export function Component({ props, globalConfig }) {
     return null;
   }
 
+  function isIOS() {
+    return /iPhone|iPad|iPod/.test(navigator.userAgent);
+  }
+
   // function getYTVideoID() {
   //   if (!isValidURL(videoUrl?.value)) return null;
   //   const urlObj = new URL(videoUrl?.value);
@@ -107,6 +112,10 @@ export function Component({ props, globalConfig }) {
   //   }
   //   return v;
   // }
+
+  useEffect(() => {
+    setIsMobile(detectMobileWidth());
+  }, []);
 
   useEffect(() => {
     setIsValidUrl(isValidURL(videoUrl?.value));
@@ -367,7 +376,9 @@ export function Component({ props, globalConfig }) {
         {videoFile?.value ? (
           <video
             ref={videoRef}
-            onClick={handleVideoClick}
+            onClick={
+              isIOS() && !hidecontrols?.value ? undefined : handleVideoClick
+            }
             width="100%"
             poster={coverUrl?.value}
             autoPlay={autoplay?.value}
@@ -414,15 +425,19 @@ export function Component({ props, globalConfig }) {
                 }}
               ></div>
             )}
-            <div className={styles.overlay__content}>
-              <div
-                id="play"
-                // onClick={playVideo}
-                className={styles.overlay__playButton}
-              >
-                <PlayIcon />
+            {isMobile && !hidecontrols?.value ? (
+              <></>
+            ) : (
+              <div className={styles.overlay__content}>
+                <div
+                  id="play"
+                  // onClick={playVideo}
+                  className={styles.overlay__playButton}
+                >
+                  <PlayIcon />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
         {is_pause_button?.value && !showOverlay && ytOverlay && (
