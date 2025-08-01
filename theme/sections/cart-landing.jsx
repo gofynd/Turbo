@@ -99,7 +99,7 @@ export function Component({ blocks }) {
     setRemoveItemData(data);
     onRemoveIconClick();
   };
-
+  const [firstWord, secondWord] = (cartData?.message || "").split(" ");
   const isShareCart = useMemo(() => {
     return !!blocks?.find((block) => block?.type === "share_cart");
   }, [blocks]);
@@ -147,46 +147,62 @@ export function Component({ blocks }) {
                 </div>
               )}
             </div>
-            {cartItemsArray?.length > 0 &&
-              cartItemsArray?.map((singleItem, itemIndex) => {
-                const singleItemDetails = cartItems[singleItem];
-                const productImage =
-                  singleItemDetails?.product?.images?.length > 0 &&
-                  singleItemDetails?.product?.images[0]?.url?.replace(
-                    "original",
-                    "resize-w:250"
-                  );
+            {cartItemsArray?.length > 0 && (
+              <>
+                {firstWord === "Minimum" && secondWord === "order" && (
+                  <div className={styles.minCartContainer}>
+                    <div className={styles.minCartValidBox}>
+                      <span>{cartData?.message}</span>
+                      <span
+                        className={styles.continueBtn}
+                        onClick={() => navigate("/")}
+                      >
+                        {t("resource.common.continue_shopping")}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {cartItemsArray?.map((singleItem, itemIndex) => {
+                  const singleItemDetails = cartItems[singleItem];
+                  const productImage =
+                    singleItemDetails?.product?.images?.length > 0 &&
+                    singleItemDetails?.product?.images[0]?.url?.replace(
+                      "original",
+                      "resize-w:250"
+                    );
 
-                const currentSize = singleItem?.split("_")[1];
-                return (
-                  <ChipItem
-                    key={`${singleItemDetails?.product?.uid}_${singleItemDetails?.article?.store?.uid}_${singleItemDetails?.article?.item_index}`}
-                    isCartUpdating={isCartUpdating}
-                    isDeliveryPromise={!globalConfig?.is_hyperlocal}
-                    isSoldBy={false}
-                    singleItemDetails={singleItemDetails}
-                    productImage={productImage}
-                    onUpdateCartItems={onUpdateCartItems}
-                    currentSize={currentSize}
-                    itemIndex={itemIndex}
-                    sizeModalItemValue={sizeModalItemValue}
-                    currentSizeModalSize={currentSizeModalSize}
-                    setCurrentSizeModalSize={setCurrentSizeModalSize}
-                    setSizeModal={setSizeModal}
-                    sizeModal={sizeModal}
-                    singleItem={singleItem}
-                    cartItems={cartItems}
-                    buybox={buybox}
-                    cartItemsWithActualIndex={cartItemsWithActualIndex}
-                    onRemoveIconClick={handleRemoveIconClick}
-                    isPromoModalOpen={isPromoModalOpen}
-                    onOpenPromoModal={onOpenPromoModal}
-                    onClosePromoModal={onClosePromoModal}
-                    isCartValid={isValid}
-                    inValidCartMsg={cartData?.message}
-                  />
-                );
-              })}
+                  const currentSize = singleItem?.split("_")[1];
+                  return (
+                    <ChipItem
+                      key={`${singleItemDetails?.product?.uid}_${singleItemDetails?.article?.store?.uid}_${singleItemDetails?.article?.item_index}`}
+                      isCartUpdating={isCartUpdating}
+                      isDeliveryPromise={!globalConfig?.is_hyperlocal}
+                      isSoldBy={false}
+                      singleItemDetails={singleItemDetails}
+                      productImage={productImage}
+                      onUpdateCartItems={onUpdateCartItems}
+                      currentSize={currentSize}
+                      itemIndex={itemIndex}
+                      sizeModalItemValue={sizeModalItemValue}
+                      currentSizeModalSize={currentSizeModalSize}
+                      setCurrentSizeModalSize={setCurrentSizeModalSize}
+                      setSizeModal={setSizeModal}
+                      sizeModal={sizeModal}
+                      singleItem={singleItem}
+                      cartItems={cartItems}
+                      buybox={buybox}
+                      cartItemsWithActualIndex={cartItemsWithActualIndex}
+                      onRemoveIconClick={handleRemoveIconClick}
+                      isPromoModalOpen={isPromoModalOpen}
+                      onOpenPromoModal={onOpenPromoModal}
+                      onClosePromoModal={onClosePromoModal}
+                      isCartValid={isValid}
+                      inValidCartMsg={cartData?.message}
+                    />
+                  );
+                })}
+              </>
+            )}
           </div>
 
           {breakUpValues?.display.length > 0 && (
