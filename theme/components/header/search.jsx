@@ -12,9 +12,9 @@ import CloseIcon from "../../assets/images/close.svg";
 import InputSearchIcon from "../../assets/images/search.svg";
 import styles from "./styles/search.less";
 import { SEARCH_PRODUCT, AUTOCOMPLETE } from "../../queries/headerQuery";
-import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
 import OutsideClickHandler from "react-outside-click-handler";
-import { useGlobalStore } from "fdk-core/utils";
+import { FDKLink } from "fdk-core/components";
+import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
 
 function Search({
   screen,
@@ -32,11 +32,12 @@ function Search({
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [collectionsData, setCollectionsData] = useState([]);
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
   const isAlgoliaEnabled = globalConfig?.algolia_enabled;
-  const { sections } = useGlobalStore(fpi.getters.PAGE);
+
   const openSearch = () => {
     setShowSearch(!showSearch);
 
@@ -114,8 +115,25 @@ function Search({
           setShowSearchSuggestions(searchText?.length > 2);
         });
     }
-    fpi.executeGQL(AUTOCOMPLETE, { query: searchText });
+    fpi
+      .executeGQL(AUTOCOMPLETE, { query: searchText })
+      .then((res) => {
+        const { items } = res?.data?.searchProduct || {};
+        const filteredCollections = items
+          ?.filter((item) => item.type === "brand" || item.type === "category")
+          ?.map((item) => ({
+            ...item,
+            action: item.action,
+          }));
+        setCollectionsData(filteredCollections || []);
+      })
+      .finally(() => {});
   };
+  const groupedCollections = collectionsData.reduce((acc, item) => {
+    if (!acc[item.type]) acc[item.type] = [];
+    acc[item.type].push(item);
+    return acc;
+  }, {});
 
   const setEnterSearchData = useCallback(
     debounce((e) => {
@@ -127,15 +145,14 @@ function Search({
     }, 400),
     []
   );
-  const redirectToProduct = (link) => {
-    navigate(link);
+  const redirectToProduct = (link = "/") => {
+    if (link) navigate(link);
     closeSearch();
     setSearchText("");
     if (inputRef?.current) inputRef.current.value = "";
   };
 
   const getProductSearchSuggestions = (results) => results?.slice(0, 4);
-
   const checkInput = () => {
     if (searchText) {
       return;
@@ -186,7 +203,7 @@ function Search({
       </button>
       <OutsideClickHandler onOutsideClick={handleOutsideClick}>
         <motion.div
-          className={`${styles.search} ${customSearchClass} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.backgroundNone : ""}`}
+          className={`${styles.search} ${customSearchClass}`}
           initial={{ scaleY: 0, opacity: 0 }}
           animate={{
             scaleY: showSearch ? 1 : 0,
@@ -253,96 +270,141 @@ function Search({
               <div className={styles["search__suggestions--products"]}>
                 {showSearchSuggestions ? (
                   <>
-                    <div
-                      className={`b1 ${styles["search__suggestions--title"]} fontBody`}
-                      style={{
-                        display:
-                          !isDoubleRowHeader && searchData?.length > 0
-                            ? "block"
-                            : "none",
-                      }}
-                    >
-                      {t("resource.header.products_title_text")}
-                    </div>
-                    <ul
-                      style={{
-                        display: searchData?.length > 0 ? "block" : "none",
-                      }}
-                    >
-                      {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
-                      {getProductSearchSuggestions(searchData)?.map(
-                        (product, index) => (
-                          <li
-                            key={index}
-                            className={`${styles["search__suggestions--item"]} ${styles.flexAlignCenter}`}
-                            onClick={() =>
-                              redirectToProduct(`/product/${product.slug}`)
-                            }
-                          >
-                            <div className={styles.productThumb}>
-                              <FyImage
-                                src={getImage(product)?.url}
-                                alt={getImage(product)?.alt}
-                                sources={[{ width: 100 }]}
-                                globalConfig={globalConfig}
-                                aspectRatio={getProductImgAspectRatio(
-                                  globalConfig
-                                )}
-                              />
+                    {/* Collections Section */}
+                    {Object.keys(groupedCollections).length > 0 && (
+                      <div className={styles.collectionsSection}>
+                        {Object.entries(groupedCollections).map(
+                          ([type, items]) => (
+                            <div key={type} className={styles.collectionGroup}>
+                              <div
+                                className={styles["search__suggestions--title"]}
+                              >
+                                {type}
+                              </div>
+                              <ul>
+                                {items.map((item, index) => (
+                                  <li
+                                    key={index}
+                                    className={
+                                      styles["search__suggestions--item"]
+                                    }
+                                  >
+                                    <FDKLink
+                                      action={item.action}
+                                      className={styles.linkButton}
+                                      title={item.display}
+                                      onClick={() =>
+                                        redirectToProduct(
+                                          item.action?.path || "/"
+                                        )
+                                      }
+                                    >
+                                      {item.display}
+                                    </FDKLink>
+                                  </li>
+                                ))}
+                              </ul>
                             </div>
-                            <div
-                              className={`${styles.productTitle} b1 ${styles.fontBody}`}
-                            >
-                              {getDisplayData(product)}
-                            </div>
-                          </li>
-                        )
-                      )}
-                    </ul>
-                    <ul
-                      style={{
-                        display:
-                          searchData?.length === 0 && showSearch
-                            ? "block"
-                            : "none",
-                      }}
-                    >
-                      <button
-                        type="button"
-                        onClick={() =>
-                          redirectToProduct(`/products/?q=${searchText}`)
-                        }
-                      >
-                        <li
-                          className={`${styles.flexAlignCenter} ${styles.noResult} fontBody`}
+                          )
+                        )}
+                      </div>
+                    )}
+
+                    {searchData?.length > 0 && (
+                      <>
+                        <div
+                          className={`b1 ${styles["search__suggestions--title"]} fontBody`}
                         >
-                          {t("resource.common.no_match_found")}
-                        </li>
-                      </button>
-                    </ul>
-                    <div
-                      className={styles["search__suggestions--button"]}
-                      style={{
-                        display: totalCount > 4 ? "block" : "none",
-                      }}
-                    >
-                      <button
-                        type="button"
-                        className="btnLink fontBody"
-                        onClick={() =>
-                          redirectToProduct(`/products/?q=${searchText}`)
-                        }
-                      >
-                        <span>
-                          {t("resource.common.see_all")} {totalCount}{" "}
-                          {t("resource.header.products_title_text")}
-                        </span>
-                      </button>
-                    </div>
+                          Products
+                        </div>
+                        <ul>
+                          {getProductSearchSuggestions(searchData)?.map(
+                            (product, index) => {
+                              const productUrl = `/product/${product.slug}`;
+                              return (
+                                <FDKLink
+                                  key={index}
+                                  action={product.action}
+                                  onClick={() =>
+                                    redirectToProduct(
+                                      product.action?.path ||
+                                        `/product/${product.slug}`
+                                    )
+                                  }
+                                  className={
+                                    styles["search__suggestions--item-link"]
+                                  }
+                                >
+                                  <li
+                                    className={`${styles["search__suggestions--item"]} ${styles.flexAlignCenter}`}
+                                  >
+                                    <div className={styles.productThumb}>
+                                      <FyImage
+                                        src={getImage(product)?.url}
+                                        alt={getImage(product)?.alt}
+                                        sources={[{ width: 100 }]}
+                                        globalConfig={globalConfig}
+                                        aspectRatio={getProductImgAspectRatio(
+                                          globalConfig
+                                        )}
+                                      />
+                                    </div>
+                                    <div
+                                      className={`${styles.productTitle} b1 ${styles.fontBody}`}
+                                    >
+                                      {getDisplayData(product)}
+                                    </div>
+                                  </li>
+                                </FDKLink>
+                              );
+                            }
+                          )}
+                        </ul>
+                      </>
+                    )}
+                    {searchData?.length > 0 && totalCount > 4 && (
+                      <div className={styles["search__suggestions--button"]}>
+                        <FDKLink
+                          to={`/products/?q=${searchText}`}
+                          onClick={() => redirectToProduct()}
+                          className="btnLink fontBody"
+                          title={`See all ${totalCount} products`}
+                        >
+                          <span>SEE ALL {totalCount} PRODUCTS</span>
+                        </FDKLink>
+                      </div>
+                    )}
+                    {/* No Result Fallback */}
+                    {searchData?.length === 0 &&
+                      collectionsData?.length === 0 && (
+                        <ul>
+                          <li
+                            className={`${styles.flexAlignCenter} ${styles.noResult} fontBody`}
+                          >
+                            <ul className={styles.noResultContainer}>
+                              <li className={styles.noResultMessage}>
+                                <div>
+                                  Sorry, nothing found for{" "}
+                                  <strong>{searchText}</strong>
+                                </div>
+
+                                <FDKLink
+                                  to="/products"
+                                  onClick={() => redirectToProduct("/products")}
+                                  className={`${styles.noResultLink} btnPrimary `}
+                                  title="See all products"
+                                >
+                                  SEE ALL PRODUCTS &rarr;
+                                </FDKLink>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      )}
                   </>
                 ) : (
                   <div
-                    className={`${styles["search__suggestions--item "]} ${styles.fontBody}`}
+                    className={`${styles["search__suggestions--item"]} ${styles.fontBody}`}
                   >
                     {t("resource.common.loading")}
                   </div>

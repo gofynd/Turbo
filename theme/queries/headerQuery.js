@@ -105,6 +105,14 @@ export const SEARCH_PRODUCT = `query products(
       uid
       name
       slug
+      action{
+        page{
+          params
+          query
+          type
+        }
+      type
+      }
       media {
         alt
         meta {
