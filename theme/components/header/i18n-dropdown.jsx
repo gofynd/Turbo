@@ -1,7 +1,11 @@
 import React, { useState, useEffect, Fragment, useMemo, Suspense } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useParams } from "react-router-dom";
-import { useGlobalStore, useGlobalTranslation, useLocale } from "fdk-core/utils";
+import {
+  useGlobalStore,
+  useGlobalTranslation,
+  useLocale,
+} from "fdk-core/utils";
 import "@gofynd/theme-template/components/core/modal/modal.css";
 import FyInput from "@gofynd/theme-template/components/core/fy-input/fy-input";
 import "@gofynd/theme-template/components/core/fy-input/fy-input.css";
@@ -42,7 +46,8 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
   const { showSnackbar } = useSnackbar();
   const location = useLocation();
   const [countryInfo, setCountryInfo] = useSyncedState(countryDetails);
-  const { isI18ModalOpen = false, showLanguageDropdown = false } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
+  const { isI18ModalOpen = false, showLanguageDropdown = false } =
+    useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
 
   const [formSchema, setFormSchema] = useState([]);
@@ -57,8 +62,11 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
   });
 
   useEffect(() => {
-    setValue("language", languageIscCode?.find(lang => lang.locale === activeLocale) || {});
-  }, [languageIscCode])
+    setValue(
+      "language",
+      languageIscCode?.find((lang) => lang.locale === activeLocale) || {}
+    );
+  }, [languageIscCode]);
 
   const showI18Dropdown = useMemo(() => {
     const whiteListedRoutes = [
@@ -69,17 +77,23 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
       "/categories",
       "/brands",
       "/profile/address",
+      "/contact-us",
     ];
 
     const currentPath = location.pathname;
 
-    if (currentPath === "/" || currentPath === `/${locale}/` || currentPath === `/${locale}`) {
+    if (
+      currentPath === "/" ||
+      currentPath === `/${locale}/` ||
+      currentPath === `/${locale}`
+    ) {
       return true;
     }
 
     return whiteListedRoutes.some(
       (route) =>
-        currentPath.startsWith(route) || currentPath.startsWith(`/${locale}${route}`)
+        currentPath.startsWith(route) ||
+        currentPath.startsWith(`/${locale}${route}`)
     );
   }, [location.pathname]);
 
@@ -115,7 +129,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
           [slug]: localities,
         }));
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const checkLocality = (localityValue, localityType, selectedValues) => {
@@ -169,10 +183,10 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
         formValues
       ).then(() => {
         fpi.custom.setValue("isI18ModalOpen", false);
-        fpi.custom.setValue("showLanguageDropdown", false)
+        fpi.custom.setValue("showLanguageDropdown", false);
       });
     }
-  }
+  };
 
   const onDynamicFieldChange = async (selectedField) => {
     const serviceabilitySlugs =
@@ -218,22 +232,25 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
         );
         setValue("currency", countryCurrency ?? defaultCurrency);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const openI18nModal = () => {
     fpi.custom.setValue("isI18ModalOpen", true);
-    fpi.custom.setValue("showLanguageDropdown", true)
+    fpi.custom.setValue("showLanguageDropdown", true);
   };
 
   const closeI18nModal = () => {
     fpi.custom.setValue("isI18ModalOpen", false);
-    fpi.custom.setValue("showLanguageDropdown", false)
+    fpi.custom.setValue("showLanguageDropdown", false);
     setCountryInfo(countryDetails);
     reset({
       country: currentCountry,
       currency: currentCurrency,
-      language: languageIscCode?.find(localeObj => localeObj.locale === activeLocale) || {},
+      language:
+        languageIscCode?.find(
+          (localeObj) => localeObj.locale === activeLocale
+        ) || {},
     });
   };
 
@@ -241,7 +258,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
     const result = {};
     let errorText =
       field?.display_name?.toLowerCase() === "postcode" ||
-        field?.display_name?.toLowerCase() === "postal code"
+      field?.display_name?.toLowerCase() === "postal code"
         ? `${t("resource.common.invalid")} ${field?.display_name}`
         : (error_text ?? t("resource.common.invalid"));
 
@@ -283,7 +300,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
   function getDefaultLocaleObject(locales) {
     if (!Array.isArray(locales)) return {};
 
-    return locales.find(locale => locale.is_default === true) || {};
+    return locales.find((locale) => locale.is_default === true) || {};
   }
 
   useEffect(() => {
@@ -294,7 +311,12 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
 
   useEffect(() => {
     if (activeLocale && getValues("language")?.locale !== activeLocale) {
-      setValue("language", languageIscCode?.find(localeObj => localeObj.locale === activeLocale) || getDefaultLocaleObject(languageIscCode));
+      setValue(
+        "language",
+        languageIscCode?.find(
+          (localeObj) => localeObj.locale === activeLocale
+        ) || getDefaultLocaleObject(languageIscCode)
+      );
     }
   }, [activeLocale, languageIscCode, setValue]);
 
@@ -389,134 +411,154 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
                 className={`${styles.locationLabel} ${styles.languageDisplayContainer}`}
               >{`${currentCountry.display_name} - ${currentCurrency.code}`}</span>
             </>
-          ) : languageIscCode.length > 1 && <span className={styles.languageDisplayContainer}>{languageIscCode?.find(localeObj => localeObj.locale === activeLocale)?.display_name || getDefaultLocaleObject(languageIscCode)?.display_name || ""}</span>} 
+          ) : (
+            languageIscCode.length > 1 && (
+              <span className={styles.languageDisplayContainer}>
+                {languageIscCode?.find(
+                  (localeObj) => localeObj.locale === activeLocale
+                )?.display_name ||
+                  getDefaultLocaleObject(languageIscCode)?.display_name ||
+                  ""}
+              </span>
+            )
+          )}
           <ArrowDownIcon className={styles.angleDownIcon} />
         </button>
       )}
       {isI18ModalOpen && (
-    <Suspense fallback={<div />}>      
-      <Modal
-        hideHeader={true}
-        isOpen={isI18ModalOpen}
-        closeDialog={closeI18nModal}
-        bodyClassName={styles.i18ModalBody}
-        containerClassName={styles.i18ModalContainer}
-        ignoreClickOutsideForClass="fydrop"
-      >
-        <h4 className={styles.title}>
-          {isInternational && showI18Dropdown ? t("resource.localization.choose_location") : languageIscCode.length > 1 && t("resource.localization.select_language")}{" "}
-          <span onClick={closeI18nModal}>
-            <CrossIcon />
-          </span>
-        </h4>
-        <p className={styles.description}>
-          {isInternational && showI18Dropdown && t("resource.localization.choose_address_for_availability")}
-        </p>
+        <Suspense fallback={<div />}>
+          <Modal
+            hideHeader={true}
+            isOpen={isI18ModalOpen}
+            closeDialog={closeI18nModal}
+            bodyClassName={styles.i18ModalBody}
+            containerClassName={styles.i18ModalContainer}
+            ignoreClickOutsideForClass="fydrop"
+          >
+            <h4 className={styles.title}>
+              {isInternational && showI18Dropdown
+                ? t("resource.localization.choose_location")
+                : languageIscCode.length > 1 &&
+                  t("resource.localization.select_language")}{" "}
+              <span onClick={closeI18nModal}>
+                <CrossIcon />
+              </span>
+            </h4>
+            <p className={styles.description}>
+              {isInternational &&
+                showI18Dropdown &&
+                t("resource.localization.choose_address_for_availability")}
+            </p>
 
-        <form
-          className={styles.internationalization__dropdown}
-          onSubmit={handleSubmit(handleSetI18n)}
-        >
-          {isInternational && (
-            <div className={`${styles.section}`}>
-              <FormField
-                formData={{
-                  key: "country",
-                  type: "list",
-                  label: t("resource.localization.select_country"),
-                  placeholder: t("resource.localization.select_country"),
-                  options: countries,
-                  dataKey: "uid",
-                  onChange: handleCountryChange,
-                  validation: {
-                    validate: (value) =>
-                      Object.keys(value || {}).length > 0 || t("resource.localization.invalid_country"),
-                  },
-                  getOptionLabel: (option) => option.display_name || "",
-                }}
-                control={control}
-              />
-            </div>
-          )}
-          {formSchema.map((field) => (
-            <Fragment key={field.slug}>
-              {field?.input ? (
+            <form
+              className={styles.internationalization__dropdown}
+              onSubmit={handleSubmit(handleSetI18n)}
+            >
+              {isInternational && (
                 <div className={`${styles.section}`}>
                   <FormField
                     formData={{
-                      key: field.slug,
-                      type: field?.input,
-                      label: field?.display_name,
-                      placeholder: field?.display_name,
-                      options: formOptions[field.slug] ?? [],
-                      disabled: field.prev ? !watch(field.prev) : false,
-                      onChange: (value) => {
-                        onDynamicFieldChange(field, value);
+                      key: "country",
+                      type: "list",
+                      label: t("resource.localization.select_country"),
+                      placeholder: t("resource.localization.select_country"),
+                      options: countries,
+                      dataKey: "uid",
+                      onChange: handleCountryChange,
+                      validation: {
+                        validate: (value) =>
+                          Object.keys(value || {}).length > 0 ||
+                          t("resource.localization.invalid_country"),
                       },
-                      validation: field.validation,
                       getOptionLabel: (option) => option.display_name || "",
                     }}
                     control={control}
                   />
                 </div>
-              ) : null}
-            </Fragment>
-          ))}
+              )}
+              {formSchema.map((field) => (
+                <Fragment key={field.slug}>
+                  {field?.input ? (
+                    <div className={`${styles.section}`}>
+                      <FormField
+                        formData={{
+                          key: field.slug,
+                          type: field?.input,
+                          label: field?.display_name,
+                          placeholder: field?.display_name,
+                          options: formOptions[field.slug] ?? [],
+                          disabled: field.prev ? !watch(field.prev) : false,
+                          onChange: (value) => {
+                            onDynamicFieldChange(field, value);
+                          },
+                          validation: field.validation,
+                          getOptionLabel: (option) => option.display_name || "",
+                        }}
+                        control={control}
+                      />
+                    </div>
+                  ) : null}
+                </Fragment>
+              ))}
 
-          {
-            isInternational && (
-              <div className={`${styles.section}`}>
-                <FormField
-                  formData={{
-                    key: "currency",
-                    type: "list",
-                    label: t("resource.localization.select_currency"),
-                    placeholder: t("resource.localization.select_currency"),
-                    options: currencies,
-                    dataKey: "code",
-                    validation: {
-                      validate: (value) =>
-                        Object.keys(value || {}).length > 0 || t("resource.localization.invalid_currency"),
-                    },
-                    getOptionLabel: (option) => {
-                      return option?.code ? `${option?.code} - ${option?.name}` : ""
-                    }
-
-                  }}
-                  control={control}
-                />
-              </div>
-            )
-          }
-          {showLanguageDropdown && languageIscCode.length > 1 &&
-            <div className={`${styles.section}`}>
-              <FormField
-                formData={{
-                  key: "language",
-                  type: "list",
-                  label: t("resource.localization.select_language"),
-                  placeholder: t("resource.localization.select_language"),
-                  options: languageIscCode,
-                  dataKey: "locale",
-                  validation: {
-                    required: t("resource.header.language_is_required"), // Ensure language selection is required
-                    validate: (value) => (value?.locale ? true : t("resource.header.language_is_required"))
-                  },
-                  getOptionLabel: (option) => {
-                    return option.display_name || ""
-                  },
-                }}
-                control={control}
-              />
-            </div>}
-          <button className={`${styles.save_btn}`} type="submit">
-            {t("resource.facets.apply")}
-          </button>
-        </form >
-      </Modal >
-    </Suspense>
-    )}
-    </div >
+              {isInternational && (
+                <div className={`${styles.section}`}>
+                  <FormField
+                    formData={{
+                      key: "currency",
+                      type: "list",
+                      label: t("resource.localization.select_currency"),
+                      placeholder: t("resource.localization.select_currency"),
+                      options: currencies,
+                      dataKey: "code",
+                      validation: {
+                        validate: (value) =>
+                          Object.keys(value || {}).length > 0 ||
+                          t("resource.localization.invalid_currency"),
+                      },
+                      getOptionLabel: (option) => {
+                        return option?.code
+                          ? `${option?.code} - ${option?.name}`
+                          : "";
+                      },
+                    }}
+                    control={control}
+                  />
+                </div>
+              )}
+              {showLanguageDropdown && languageIscCode.length > 1 && (
+                <div className={`${styles.section}`}>
+                  <FormField
+                    formData={{
+                      key: "language",
+                      type: "list",
+                      label: t("resource.localization.select_language"),
+                      placeholder: t("resource.localization.select_language"),
+                      options: languageIscCode,
+                      dataKey: "locale",
+                      validation: {
+                        required: t("resource.header.language_is_required"), // Ensure language selection is required
+                        validate: (value) =>
+                          value?.locale
+                            ? true
+                            : t("resource.header.language_is_required"),
+                      },
+                      getOptionLabel: (option) => {
+                        return option.display_name || "";
+                      },
+                    }}
+                    control={control}
+                  />
+                </div>
+              )}
+              <button className={`${styles.save_btn}`} type="submit">
+                {t("resource.facets.apply")}
+              </button>
+            </form>
+          </Modal>
+        </Suspense>
+      )}
+    </div>
   );
 }
 
@@ -527,7 +569,7 @@ const FormField = ({ formData, control }) => {
     options = [],
     key = "",
     type = "",
-    onChange = (value) => { },
+    onChange = (value) => {},
     validation = {},
     getOptionLabel,
     disabled = false,

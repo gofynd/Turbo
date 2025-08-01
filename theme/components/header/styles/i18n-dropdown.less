@@ -1,68 +1,41 @@
 @import "../../../styles/main.less";
 
-.internationalization {
-  // position: relative;
-  // border: 1px solid @ButtonPrimary;
-  // border-radius: 4px;
+.internationalization__selected {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: @HeaderNav;
+  min-width: 210px;
+  justify-content: flex-end;
+  white-space: nowrap;
 
   @media @tablet {
-    padding: 0 !important;
-    border: unset;
+    width: 100%;
+    padding: 8px 4px;
   }
 
-  &__selected {
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  .locationLabel {
+    .b2(desktop);
     color: @HeaderNav;
-
+    line-height: 1;
     @media @tablet {
-      width: 100%;
-      padding: 8px 4px;
-    }
-
-    .locationLabel {
-      .b2(desktop);
+      .b2(mobile);
       color: @HeaderNav;
-      @media @tablet {
-        .b2(mobile);
-        color: @HeaderNav;
-      }
-      &.locationLabelMobile {
-        @media @desktop {
-          display: none;
-        }
-      }
     }
-    .angleDownIcon {
-      width: 24px;
-      height: 24px;
-      margin-inline-start: auto;
-      fill: currentColor;
+    &.locationLabelMobile {
       @media @desktop {
         display: none;
       }
     }
   }
-
-  &__dropdown {
-    // background-color: @DialogBackground; //Need to replace proper background color mapping here
-    // padding: 16px;
-    // z-index: 20;
-    // box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.05);
-    // border-radius: 6px;
-    // border: 1px solid @DividerStokes;
-
-    // @media @mobile {
-    //   width: 216px;
-    //   transform: translateX(80px);
-    // }
-
-    // @media @tablet-strict {
-    //   width: 256px;
-    // }
-    // background: green;
+  .angleDownIcon {
+    width: 24px;
+    height: 24px;
+    margin-inline-start: auto;
+    fill: currentColor;
+    @media @desktop {
+      display: none;
+    }
   }
 }
 
@@ -262,4 +235,3 @@
   font-weight: 600;
   color: #585555;
 }
-
