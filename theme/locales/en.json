@@ -1113,6 +1113,7 @@
       "please_enter_your_name": "Please enter your name",
       "message": "Message",
       "please_enter_your_comment": "Please enter your comment",
+      "entered_msg_greater_than_500_char" :"Entered message is more than 500 characters",
       "send_message": "SEND MESSAGE",
       "please_enter_a_valid_name": "Please enter a valid name",
       "please_enter_a_valid_phone_number": "Please enter a valid phone number",
