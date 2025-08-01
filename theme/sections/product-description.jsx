@@ -179,10 +179,15 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
     if (currentSize?.value) {
       const cartItemsKey = Object.keys(cartItems || {});
-      const selectedItemKey = `${productDetails?.uid}_${currentSize.value}_${productPriceBySlug?.store?.uid}`;
+      const selectedItemKey = `${productDetails?.uid}_${currentSize.value}_standard-delivery_${productPriceBySlug?.store?.uid}`;
 
       cartItemsKey.some((item, index) => {
-        if (item === selectedItemKey) {
+        const itemKeyWithoutItemIndex = item.substring(
+          0,
+          item.lastIndexOf("_")
+        );
+
+        if (itemKeyWithoutItemIndex === selectedItemKey) {
           selectedItemDetails = { ...cartItems[item], itemIndex: index };
           return true;
         }

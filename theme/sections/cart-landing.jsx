@@ -49,15 +49,15 @@ export function Component({ blocks }) {
     customerCheckoutMode,
     checkoutMode,
     buybox = {},
-    onGotoCheckout = () => { },
-    onRemoveIconClick = () => { },
-    onRemoveButtonClick = () => { },
-    onWishlistButtonClick = () => { },
-    onCloseRemoveModalClick = () => { },
-    onPriceDetailsClick = () => { },
-    updateCartCheckoutMode = () => { },
-    onOpenPromoModal = () => { },
-    onClosePromoModal = () => { },
+    onGotoCheckout = () => {},
+    onRemoveIconClick = () => {},
+    onRemoveButtonClick = () => {},
+    onWishlistButtonClick = () => {},
+    onCloseRemoveModalClick = () => {},
+    onPriceDetailsClick = () => {},
+    updateCartCheckoutMode = () => {},
+    onOpenPromoModal = () => {},
+    onClosePromoModal = () => {},
   } = useCart(fpi);
   const { globalConfig } = useThemeConfig({ fpi });
   const { isInternational } = useThemeFeature({ fpi });
@@ -69,7 +69,6 @@ export function Component({ blocks }) {
     fpi,
     cartData,
   });
-
   const [sizeModal, setSizeModal] = useState(null);
   const [currentSizeModalSize, setCurrentSizeModalSize] = useState(null);
   const [removeItemData, setRemoveItemData] = useState(null);
@@ -131,10 +130,15 @@ export function Component({ blocks }) {
             />
             <div className={styles.cartTitleContainer}>
               <div className={styles.bagDetailsContainer}>
-                <span className={styles.bagCountHeading}>{t("resource.section.cart.your_bag")}</span>
+                <span className={styles.bagCountHeading}>
+                  {t("resource.section.cart.your_bag")}
+                </span>
                 <span className={styles.bagCount}>
                   ({cartItemsArray?.length || 0}
-                  {cartItemsArray?.length > 1 ? ` ${t("resource.common.items")}` : ` ${t("resource.common.item")}`})
+                  {cartItemsArray?.length > 1
+                    ? ` ${t("resource.common.items")}`
+                    : ` ${t("resource.common.item")}`}
+                  )
                 </span>
               </div>
               {isShareCart && (
@@ -178,6 +182,8 @@ export function Component({ blocks }) {
                     isPromoModalOpen={isPromoModalOpen}
                     onOpenPromoModal={onOpenPromoModal}
                     onClosePromoModal={onClosePromoModal}
+                    isCartValid={isValid}
+                    inValidCartMsg={cartData?.message}
                   />
                 );
               })}
@@ -191,14 +197,14 @@ export function Component({ blocks }) {
                   case "coupon":
                     return (
                       // !!availableCouponList?.length && (
-                        <Coupon
-                          key={key}
-                          availableCouponList={availableCouponList}
-                          {...restCouponProps}
-                          currencySymbol={currencySymbol}
-                        />
+                      <Coupon
+                        key={key}
+                        availableCouponList={availableCouponList}
+                        {...restCouponProps}
+                        currencySymbol={currencySymbol}
+                      />
                       // )
-                    )
+                    );
                   case "comment":
                     return <Comment key={key} {...cartComment} />;
 
@@ -236,7 +242,10 @@ export function Component({ blocks }) {
                             <RadioIcon
                               checked={customerCheckoutMode === "other"}
                             />
-                            <span> {t("resource.section.cart.order_on_behalf")}</span>
+                            <span>
+                              {" "}
+                              {t("resource.section.cart.order_on_behalf")}
+                            </span>
                           </div>
                         )}
                       </React.Fragment>
@@ -260,7 +269,9 @@ export function Component({ blocks }) {
                                 }
                                 onClick={onGotoCheckout}
                               >
-                                {t("resource.section.cart.continue_as_guest_caps")}
+                                {t(
+                                  "resource.section.cart.continue_as_guest_caps"
+                                )}
                               </button>
                             )}
                           </>
