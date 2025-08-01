@@ -23,6 +23,7 @@ function SingleCheckoutPage({ fpi }) {
   const [showPayment, setShowPayment] = useState(false);
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [isApiLoading, setIsApiLoading] = useState(true);
+  const [checkoutAmount, setCheckoutAmount] = useState(0);
   const { onPriceDetailsClick, cartData } = useCart(fpi);
   const steps = [
     { label: t("resource.checkout.address") },
@@ -36,6 +37,7 @@ function SingleCheckoutPage({ fpi }) {
   const cart_id = searchParams.get("id");
   const buy_now = searchParams.get("buy_now") || false;
   const address_id = searchParams.get("address_id");
+  const error = searchParams.get("error");
   const cartCoupon = useCartCoupon({ fpi, cartData: bagData });
   const cartComment = useCartComment({ fpi, cartData: bagData });
   const { setIsLoading, ...payment } = usePayment(fpi);
@@ -54,8 +56,30 @@ function SingleCheckoutPage({ fpi }) {
     }
   }, [cartData?.id]);
 
+  async function showPaymentOptions(amount) {
+    try {
+      setIsLoading(true);
+      setShowShipment(false);
+      showPaymentHandler(true);
+
+      const finalAmount = amount || checkoutAmount;
+
+      const paymentPayload = {
+        pincode: localStorage?.getItem("pincode") || "",
+        cartId: cart_id,
+        checkoutMode: "self",
+        amount: finalAmount ? finalAmount * 100 : 0,
+      };
+
+      await fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload);
+    } catch (error) {
+      console.log(error, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
-    setIsLoading(true);
     setIsApiLoading(true);
     const payload = {
       buyNow: buy_now === "true",
@@ -66,31 +90,24 @@ function SingleCheckoutPage({ fpi }) {
       try {
         const res = await fpi.executeGQL(CHECKOUT_LANDING, payload);
 
-        const paymentPayload = {
-          pincode: localStorage?.getItem("pincode") || "",
-          cartId: cart_id,
-          checkoutMode: "self",
-          amount:
-            (res?.data?.cart?.breakup_values?.display[
-              res?.data?.cart?.breakup_values?.display?.length - 1
-            ]?.value || 0) * 100,
-        };
-        await fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload);
+        const breakupValues = res?.data?.cart?.breakup_values?.display;
+        const amount =
+          breakupValues && breakupValues.length > 0
+            ? breakupValues[breakupValues.length - 1]?.value
+            : 0;
+        setCheckoutAmount(amount);
+        if (error && amount) {
+          showPaymentOptions(amount);
+        }
       } catch (err) {
         console.error("checkout error", err);
       } finally {
         setIsApiLoading(false);
-        setIsLoading(false);
       }
     };
 
     fetchCheckoutData();
   }, [fpi, buy_now]);
-
-  function showPaymentOptions() {
-    setShowShipment(false);
-    showPaymentHandler(true);
-  }
 
   function showPaymentHandler(flag) {
     setShowPayment(flag);
@@ -137,6 +154,12 @@ function SingleCheckoutPage({ fpi }) {
     }
   }, [addressId]);
 
+  const redirectPaymentOptions = () => {
+    setIsLoading(true);
+    setShowShipment(false);
+    showPaymentHandler(true);
+  };
+
   return (
     <>
       <CheckoutPage
@@ -170,6 +193,7 @@ function SingleCheckoutPage({ fpi }) {
         loader={<Loader />}
         buybox={buybox}
         isCartValid={isCartValid}
+        redirectPaymentOptions={redirectPaymentOptions}
       />
       {/* <PriceBreakup breakUpValues={breakupValues}></PriceBreakup> */}
     </>
