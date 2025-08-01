@@ -155,7 +155,8 @@
         "bold": "大胆的",
         "regular": "常规的",
         "semibold": "半粗体",
-        "transparent_header_info": "当应用横幅或图像幻灯片在顶部显示透明标头"
+        "transparent_header_info": "当应用横幅或图像幻灯片在顶部显示透明标头",
+        "transparent_header": "透明标头"
       },
       "algolia_configuration": {
         "enable_algolia": "启用 Algolia"

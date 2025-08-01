@@ -263,7 +263,64 @@
       "nothing_updated": "Nothing Updated",
       "item_updated": "Item updated",
       "item_not_updated": "Item not updated",
-      "invalid_address": "Invalid address"
+      "invalid_address": "Invalid address",
+      "address_block_no_street_name": "Address (Block no, Street name)",
+      "address_line_1": "Address Line 1",
+      "address_line_2": "Address Line 2",
+      "apartment_building_floor_etc": "Apartment, Building, Floor, etc",
+      "apartment_building_house_no_floor_etc": "Apartment, Building, House no, Floor etc",
+      "apartment_unit_building_floor_room": "Apartment, Unit, Building, Floor, Room",
+      "apartment_unit_building_floor_room_etc": "Apartment, unit, building, floor, room, etc.",
+      "apartment_unit_building_floor_etc": "Apartment, Unit, Building, Floor, etc.",
+      "apartment_building_unit_floor_etc": "Apartment, building, unit, floor, etc",
+      "apartment_suite_unit_building_floor_etc": "Apartment, suite, unit, building, floor, etc.",
+      "apartment_suite_unit_floor_etc": "Apartment, suite, unit, floor, etc",
+      "apt_suite_etc": "Apt, suite, etc.",
+      "barangay": "Barangay",
+      "block": "Block",
+      "building_number_unit_number": "Building number, Unit number",
+      "building_apt_rt_rw": "Building, Apt, RT/RW",
+      "city_district": "City/District",
+      "city_town": "City/Town",
+      "city_ward_town_village": "City/Ward/Town/Village",
+      "complement": "Complement",
+      "county": "County",
+      "district_area": "District/Area",
+      "district_county_municipality": "District/County/Municipality",
+      "eircode": "Eircode",
+      "flat_apartment_building_name_or": "Flat, Apartment, Building name or #",
+      "flat_stair_door_number_etc": "Flat, stair, door number, etc",
+      "floor_unit_no": "Floor - Unit no.",
+      "governorate_city": "Governorate/City",
+      "house_number_and_street_name": "House number and Street name",
+      "locality_apartment_building_floor_etc": "Locality, apartment, building, floor, etc.",
+      "neighborhood_bairro": "Neighborhood/Bairro",
+      "postal_code": "Postal code",
+      "postcode": "Postcode",
+      "prefecture": "Prefecture",
+      "province": "Province",
+      "province_code": "Province code",
+      "province_city_do_si": "Province/City (Do/Si)",
+      "region": "Region",
+      "state_code": "State Code",
+      "street_address": "Street address",
+      "street_address_chome_banchi_go": "Street address/Chome, Banchi, Go",
+      "street_name_and_house_no": "Street name and house no",
+      "street_name_and_number": "Street name and number",
+      "street_name_no": "Street name/no",
+      "street_name_no_block": "Street name/no, Block",
+      "street_name_no_house_number": "Street name/no, house number",
+      "street_number": "Street number",
+      "subdistrict": "Subdistrict",
+      "subdistrict_district": "Subdistrict/District",
+      "suburb": "Suburb",
+      "town_city": "Town/City",
+      "unit___floor_no": "Unit / Floor No",
+      "wilaya": "Wilaya",
+      "zipcode": "Zipcode",
+      "zone_number": "Zone number",
+      "sorry_invalid_coupon": "Sorry! Invalid coupon",
+      "invalid_gstin_number": "Invalid gstin number"
     },
     "auth": {
       "account_deletion_notice": "As per your request, your account will be deleted soon. If you wish to restore your account, please contact on below support email id",
@@ -568,8 +625,8 @@
       "first_name": "First Name",
       "please_enter_valid_first_name": "Please enter a valid first name",
       "last_name": "Last Name",
-      "maximum_64_characters_allowed":"Please enter characters less than 64",
-      "maximum_50_characters_allowed":"Please enter characters less than 50",
+      "maximum_64_characters_allowed": "Please enter characters less than 64",
+      "maximum_50_characters_allowed": "Please enter characters less than 50",
       "please_enter_valid_last_name": "Please enter a valid last name",
       "please_enter_valid_email_address": "Please enter valid email address",
       "password_message": "Password must be at least 8 characters and contain at least 1 letter, 1 number and 1 special character",
@@ -769,7 +826,7 @@
       "product_removed": "Products Removed From Wishlist",
       "no_product_in_wishlist": "You do not have any product added to wishlist",
       "add_products_to_wishlist": "Add products to wishlist",
-      "seo_description":"Save the products you love and build your wishlist. Easily revisit and purchase your favorite items anytime with just a few clicks."
+      "seo_description": "Save the products you love and build your wishlist. Easily revisit and purchase your favorite items anytime with just a few clicks."
     },
     "cart": {
       "no_items": "There are no items in cart",
@@ -998,10 +1055,10 @@
       "no_blogs_found": "No blogs found",
       "showing_results": "Showing {{count}} results of",
       "no_blog_found": "No Blog Found",
-      "seo_description":"Discover helpful articles, product tips, and expert insights to stay informed and inspired. Our blog covers everything from trends to how-to guides."
+      "seo_description": "Discover helpful articles, product tips, and expert insights to stay informed and inspired. Our blog covers everything from trends to how-to guides."
     },
-    "about_us":{
-      "seo_description":"We’re dedicated to delivering high-quality products and exceptional service. Learn more about our journey, values, and what makes us a trusted choice."
+    "about_us": {
+      "seo_description": "We’re dedicated to delivering high-quality products and exceptional service. Learn more about our journey, values, and what makes us a trusted choice."
     },
     "checkout": {
       "payment_retry_message": "Please try again or use a different payment method to complete payment",
@@ -1120,7 +1177,7 @@
       "please_enter_your_phone_number": "Please enter your phone number",
       "please_enter_a_valid_email_address": "Please enter a valid email address",
       "please_enter_your_email_address": "Please enter your email address",
-      "seo_description":"Reach out to us for any support or questions. We're here to assist with your orders, returns, or product inquiries—quickly and efficiently."
+      "seo_description": "Reach out to us for any support or questions. We're here to assist with your orders, returns, or product inquiries—quickly and efficiently."
     },
     "faq": {
       "no_frequently_asked_questions_found": "No Frequently Asked Questions Found",
