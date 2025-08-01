@@ -23,6 +23,7 @@ import { useThemeConfig, useThemeFeature } from "../helper/hooks";
 import EmptyCartIcon from "../assets/images/empty-cart.svg";
 import RadioIcon from "../assets/images/radio";
 import Shimmer from "../components/shimmer/shimmer";
+import { translateDynamicLabel } from "../helper/utils";
 
 export function Component({ blocks }) {
   const { t } = useGlobalTranslation("translation");
@@ -152,7 +153,7 @@ export function Component({ blocks }) {
                 {firstWord === "Minimum" && secondWord === "order" && (
                   <div className={styles.minCartContainer}>
                     <div className={styles.minCartValidBox}>
-                      <span>{cartData?.message}</span>
+                      <span>{translateDynamicLabel(cartData?.message,t)}</span>
                       <span
                         className={styles.continueBtn}
                         onClick={() => navigate("/")}
