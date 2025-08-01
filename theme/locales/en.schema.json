@@ -113,8 +113,8 @@
         "other_page_configuration": "Other Page Configuration",
         "google_maps": "Google Maps",
         "mobile_logo_max_height": "Mobile Navigation Logo Max Height",
-        "logo_header":"Desktop Header Logo Max Height",
-        "mobile_logo_header":"Mobile Header Logo Max Height"
+        "logo_header": "Desktop Header Logo Max Height",
+        "mobile_logo_header": "Mobile Header Logo Max Height"
       },
       "typography": {
         "font_header": "Font Header",
@@ -156,7 +156,9 @@
         "regular": "Regular",
         "semibold": "Semibold",
         "transparent_header": "Transparent Header",
-        "transparent_header_info": "Apply transparent header when application banner or image slide show on top"
+        "transparent_header_info": "Apply transparent header when application banner or image slide show on top",
+        "sticky_header": "Sticky Header",
+        "sticky_header_info": "Enable/Disable Sticky Header"
       },
       "algolia_configuration": {
         "enable_algolia": "Enable Algolia"
@@ -170,8 +172,8 @@
         "show_footer_contact_details_background": "Show Footer Contact Details Background",
         "social_media_text": "Social media text label",
         "social_media_text_info": "Show Label text for social media",
-        "open_same_tab":"Open social links in same tab",
-        "open_same_tab_info":"Check this to open social media links in the same tab instead of a new one",
+        "open_same_tab": "Open social links in same tab",
+        "open_same_tab_info": "Check this to open social media links in the same tab instead of a new one",
         "footer_logo_max_height_mobile": "Footer Logo Max Height (Mobile)",
         "footer_logo_max_height_desktop": "Footer Logo Max Height (Desktop)"
       },

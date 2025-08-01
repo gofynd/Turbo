@@ -45,9 +45,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
         <>
           <div className={`${styles.collections__breadcrumbs} captionNormal`}>
             <span>
-              <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>&nbsp; / &nbsp;
+              <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>
+              &nbsp; / &nbsp;
             </span>
-            <span className={styles.active}>{t("resource.common.breadcrumb.collections")}</span>
+            <span className={styles.active}>
+              {t("resource.common.breadcrumb.collections")}
+            </span>
           </div>
           <div>
             {title && (
@@ -113,7 +116,7 @@ export const settings = {
     {
       type: "checkbox",
       id: "img_fill",
-      default: false,
+      default: true,
       label: "t:resource.common.fit_image_to_container",
       info: "t:resource.common.clip_image_to_fit_container",
     },

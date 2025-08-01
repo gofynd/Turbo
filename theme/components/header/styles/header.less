@@ -18,6 +18,11 @@
   z-index: unset !important;
   &.transparentBackground {
     background-color: unset !important;
+    transition: background 0.3s;
+    border-bottom: unset !important;
+  }
+  &.scrolled {
+    background-color: @HeaderBackground !important;
   }
   &.seperator {
     @media @desktop {

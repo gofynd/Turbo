@@ -165,6 +165,7 @@
             "img_container_bg": "#EAEAEA",
             "payments_logo": "",
             "button_options": "addtocart_buynow",
+             "sticky_header": true,
             "show_price": true,
             "img_fill": true,
             "disable_cart": false,
@@ -1703,7 +1704,7 @@
                 "type": "checkbox"
               },
               "img_fill": {
-                "value": false,
+                "value": true,
                 "type": "checkbox"
               },
               "title": {

@@ -56,6 +56,7 @@ function Header({ fpi }) {
   const i18N_DETAILS = useGlobalStore(fpi.getters.i18N_DETAILS);
   const { supportedLanguages } = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
   const [languageIscCode, setLanguageIscCode] = useState([]);
+  const [scrolled, setScrolled] = useState(false);
 
   const buyNow = searchParams?.get("buy_now") || false;
 
@@ -68,6 +69,30 @@ function Header({ fpi }) {
     const regex = /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$/;
     return regex.test(location?.pathname);
   }, [location?.pathname]);
+
+  useEffect(() => {
+    if (
+      globalConfig?.sticky_header &&
+      globalConfig?.transparent_header &&
+      (sections[0]?.name === "application-banner" ||
+        sections[0]?.name === "image-slideshow")
+    ) {
+      const handleScroll = () => setScrolled(window.scrollY > 10);
+      window?.addEventListener("scroll", handleScroll);
+      return () => window?.removeEventListener("scroll", handleScroll);
+    }
+  }, [globalConfig?.transparent_header, globalConfig?.sticky_header]);
+
+  useEffect(() => {
+    if (isRunningOnClient()) {
+      const header = document?.querySelector(".fdk-theme-header");
+      if (!globalConfig?.sticky_header) {
+        header.style.position = "unset";
+      } else {
+        header.style.position = "sticky";
+      }
+    }
+  }, [globalConfig?.sticky_header]);
 
   useEffect(() => {
     if (supportedLanguages?.items?.length > 0) {
@@ -126,13 +151,6 @@ function Header({ fpi }) {
 
     if (isRunningOnClient()) {
       const header = document?.querySelector(".fdk-theme-header");
-      if (
-        globalConfig?.transparent_header &&
-        (sections[0]?.name === "application-banner" ||
-          sections[0]?.name === "image-slideshow")
-      ) {
-        header.style.position = "unset";
-      }
       if (header) {
         const resizeObserver = new ResizeObserver(() => {
           fpi.custom.setValue(
@@ -235,7 +253,7 @@ function Header({ fpi }) {
           ref={headerRef}
         >
           <header
-            className={`${styles.header} ${globalConfig?.header_border ? styles.seperator : ""} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.transparentBackground : ""}`}
+            className={`${styles.header} ${globalConfig?.header_border ? styles.seperator : ""} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.transparentBackground : ""} ${scrolled ? styles.scrolled : ""}`}
           >
             <div
               className={`${styles.headerContainer} basePageContainer margin0auto `}
@@ -286,9 +304,9 @@ function Header({ fpi }) {
                     className={`${styles.middle} ${styles.flexAlignCenter}`}
                   >
                     <img
-                     style={{
-                      maxHeight: `${globalConfig?.mobile_logo_max_height_header || 38}px`,
-                    }}
+                      style={{
+                        maxHeight: `${globalConfig?.mobile_logo_max_height_header || 38}px`,
+                      }}
                       className={styles.logo}
                       src={getShopLogoMobile()}
                       alt={t("resource.refund_order.name_alt_text")}

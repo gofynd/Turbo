@@ -77,6 +77,14 @@
       "label": "t:resource.settings_schema.header.show_border_on_desktop",
       "info": "t:resource.settings_schema.header.show_border_on_desktop_info"
     },
+     {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "default": true,
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.sticky_header",
+      "info": "t:resource.settings_schema.header.sticky_header_info"
+    },
     {
       "type": "select",
       "id": "logo_menu_alignment",

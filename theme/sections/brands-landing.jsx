@@ -104,7 +104,7 @@ export const settings = {
     {
       type: "checkbox",
       id: "img_fill",
-      default: false,
+      default: true,
       label: "t:resource.common.fit_image_to_container",
       info: "t:resource.common.clip_image_to_fit_container",
     },

@@ -295,73 +295,124 @@ const usePayment = (fpi) => {
       //     openRbiGuidelineDialog = true;
       //     return;
       // }
-      setIsLoading(true);
-      addParamsToLocation({
-        ...getQueryParams(),
-        aggregator_name: selectedNewCardData.aggregator_name,
-        payment_mode: "CARD",
-      });
-      if (enableLinkPaymentOption) {
-        const payload = {
-          createOrderUserRequestInput: {
-            currency: "INR",
-            payment_link_id: id,
-            failure_callback_url: window.location.origin + "payment/link",
-            success_callback_url: window.location.origin + "/order-tracking",
-            payment_methods: {
-              meta: {
-                merchant_code: selectedNewCardData.merchant_code ?? "",
-                payment_gateway: selectedNewCardData.aggregator_name ?? "",
-                payment_identifier: selectedNewCardData.code ?? "",
-              },
-              mode: "CARD",
-              name: selectedNewCardData.name,
-            },
-          },
-        };
-        const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
-        let linkOrderInfo = res?.data?.createOrderHandlerPaymentLink;
-        const cardRes = await fpi.payment.checkoutPayment({
-          ...linkDataOption,
-          merchant_code: selectedNewCardData.merchant_code,
-          payment_gateway: selectedNewCardData.aggregator_name,
+      try {
+        setIsLoading(true);
+        addParamsToLocation({
+          ...getQueryParams(),
           aggregator_name: selectedNewCardData.aggregator_name,
-          payment_identifier: selectedNewCardData.code ?? "",
-          payment_mode: mode,
-          name: selectedNewCardData.name,
-          queryParams: getQueryParams(),
-          data: {
-            amount: linkOrderInfo?.data?.amount,
-            callback_url: linkOrderInfo?.data?.callback_url,
-            contact: linkOrderInfo?.data?.contact,
-            currency: linkOrderInfo?.data?.currency,
-            customer_id: linkOrderInfo?.data?.customer_id,
-            email: linkOrderInfo?.data?.email,
-            method: linkOrderInfo?.data?.method,
-            order_id: linkOrderInfo?.data?.order_id,
-            "card[name]": selectedCardData?.name,
-            "card[number]": selectedCardData?.card_number,
-            "card[cvv]": selectedCardData?.cvv,
-            "card[expiry_month]": selectedCardData?.exp_month,
-            "card[expiry_year]": selectedCardData?.exp_year,
-          },
-          payment: {
-            ...selectedNewCardData,
-            ...selectedCardData,
-            is_card_secure: isCardSecure,
-          },
-          enableLinkPaymentOption: enableLinkPaymentOption,
-          paymentflow: linkDataOption?.aggregator_details?.find(
-            (item) =>
-              item.aggregator_key === selectedNewCardData?.aggregator_name
-          ),
-          success: linkOrderInfo?.success,
+          payment_mode: "CARD",
         });
-        if (cardRes?.meta?.requestStatus === "rejected") {
-          setIsLoading(false);
-          return cardRes?.payload;
+        if (enableLinkPaymentOption) {
+          const payload = {
+            createOrderUserRequestInput: {
+              currency: "INR",
+              payment_link_id: id,
+              failure_callback_url: window.location.origin + "payment/link",
+              success_callback_url: window.location.origin + "/order-tracking",
+              payment_methods: {
+                meta: {
+                  merchant_code: selectedNewCardData.merchant_code ?? "",
+                  payment_gateway: selectedNewCardData.aggregator_name ?? "",
+                  payment_identifier: selectedNewCardData.code ?? "",
+                },
+                mode: "CARD",
+                name: selectedNewCardData.name,
+              },
+            },
+          };
+          const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
+          let linkOrderInfo = res?.data?.createOrderHandlerPaymentLink;
+          const cardRes = await fpi.payment.checkoutPayment({
+            ...linkDataOption,
+            merchant_code: selectedNewCardData.merchant_code,
+            payment_gateway: selectedNewCardData.aggregator_name,
+            aggregator_name: selectedNewCardData.aggregator_name,
+            payment_identifier: selectedNewCardData.code ?? "",
+            payment_mode: mode,
+            name: selectedNewCardData.name,
+            queryParams: getQueryParams(),
+            data: {
+              amount: linkOrderInfo?.data?.amount,
+              callback_url: linkOrderInfo?.data?.callback_url,
+              contact: linkOrderInfo?.data?.contact,
+              currency: linkOrderInfo?.data?.currency,
+              customer_id: linkOrderInfo?.data?.customer_id,
+              email: linkOrderInfo?.data?.email,
+              method: linkOrderInfo?.data?.method,
+              order_id: linkOrderInfo?.data?.order_id,
+              "card[name]": selectedCardData?.name,
+              "card[number]": selectedCardData?.card_number,
+              "card[cvv]": selectedCardData?.cvv,
+              "card[expiry_month]": selectedCardData?.exp_month,
+              "card[expiry_year]": selectedCardData?.exp_year,
+            },
+            payment: {
+              ...selectedNewCardData,
+              ...selectedCardData,
+              is_card_secure: isCardSecure,
+            },
+            enableLinkPaymentOption: enableLinkPaymentOption,
+            paymentflow: linkDataOption?.aggregator_details?.find(
+              (item) =>
+                item.aggregator_key === selectedNewCardData?.aggregator_name
+            ),
+            success: linkOrderInfo?.success,
+          });
+          if (cardRes?.meta?.requestStatus === "rejected") {
+            setIsLoading(false);
+            return cardRes?.payload;
+          }
+        } else {
+          const payload = {
+            payment_mode: "CARD",
+            id: cart_id,
+            address_id,
+          };
+          const { id, is_redirection, ...options } = payload;
+          const res = await fpi.payment.checkoutPayment({
+            ...options,
+            aggregator_name: selectedNewCardData.aggregator_name,
+            payment: {
+              ...selectedNewCardData,
+              ...selectedCardData,
+              is_card_secure: isCardSecure,
+            },
+            address_id,
+            billing_address_id: address_id,
+            paymentflow: paymentOption?.aggregator_details?.find(
+              (item) =>
+                item.aggregator_key === selectedNewCardData?.aggregator_name
+            ),
+            buy_now: buyNow,
+          });
+          if (res?.meta?.requestStatus === "rejected") {
+            setIsLoading(false);
+            return res?.payload;
+          }
         }
-      } else {
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    } else if (mode === "CARD") {
+      try {
+        if (
+          !selectedCard.compliant_with_tokenisation_guidelines
+          //  &&!isSavedCardSecure
+        ) {
+          // openRbiGuidelineDialog = true;
+          // return;
+        }
+        setIsLoading(true);
+        // const confirmedPayment = fpi.payment.confirmPayment(payload);
+        addParamsToLocation({
+          ...getQueryParams(),
+          aggregator_name: selectedCard.aggregator_name,
+          payment_mode: mode,
+          payment_identifier: selectedCard.card_id,
+          card_reference: selectedCard.card_reference,
+        });
         const payload = {
           payment_mode: "CARD",
           id: cart_id,
@@ -370,17 +421,19 @@ const usePayment = (fpi) => {
         const { id, is_redirection, ...options } = payload;
         const res = await fpi.payment.checkoutPayment({
           ...options,
-          aggregator_name: selectedNewCardData.aggregator_name,
+          aggregator_name: selectedCard.aggregator_name,
+          payment_identifier: selectedCard.card_id,
           payment: {
-            ...selectedNewCardData,
-            ...selectedCardData,
-            is_card_secure: isCardSecure,
+            ...selectedCard,
+            card_security_code: selectedCardCvv,
+            is_card_secure: selectedCard.compliant_with_tokenisation_guidelines,
+
+            // : isSavedCardSecure,
           },
           address_id,
           billing_address_id: address_id,
           paymentflow: paymentOption?.aggregator_details?.find(
-            (item) =>
-              item.aggregator_key === selectedNewCardData?.aggregator_name
+            (item) => item.aggregator_key === selectedCard?.aggregator_name
           ),
           buy_now: buyNow,
         });
@@ -388,51 +441,10 @@ const usePayment = (fpi) => {
           setIsLoading(false);
           return res?.payload;
         }
-      }
-    } else if (mode === "CARD") {
-      if (
-        !selectedCard.compliant_with_tokenisation_guidelines
-        //  &&!isSavedCardSecure
-      ) {
-        // openRbiGuidelineDialog = true;
-        // return;
-      }
-      setIsLoading(true);
-      // const confirmedPayment = fpi.payment.confirmPayment(payload);
-      addParamsToLocation({
-        ...getQueryParams(),
-        aggregator_name: selectedCard.aggregator_name,
-        payment_mode: mode,
-        payment_identifier: selectedCard.card_id,
-        card_reference: selectedCard.card_reference,
-      });
-      const payload = {
-        payment_mode: "CARD",
-        id: cart_id,
-        address_id,
-      };
-      const { id, is_redirection, ...options } = payload;
-      const res = await fpi.payment.checkoutPayment({
-        ...options,
-        aggregator_name: selectedCard.aggregator_name,
-        payment_identifier: selectedCard.card_id,
-        payment: {
-          ...selectedCard,
-          card_security_code: selectedCardCvv,
-          is_card_secure: selectedCard.compliant_with_tokenisation_guidelines,
-
-          // : isSavedCardSecure,
-        },
-        address_id,
-        billing_address_id: address_id,
-        paymentflow: paymentOption?.aggregator_details?.find(
-          (item) => item.aggregator_key === selectedCard?.aggregator_name
-        ),
-        buy_now: buyNow,
-      });
-      if (res?.meta?.requestStatus === "rejected") {
+      } catch (error) {
+        console.log(error);
+      } finally {
         setIsLoading(false);
-        return res?.payload;
       }
     } else if (mode === "WL") {
       setIsLoading(true);
@@ -492,9 +504,9 @@ const usePayment = (fpi) => {
             success: linkOrderInfo?.success,
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
               console.log(res, "error value in usePayment");
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -521,8 +533,8 @@ const usePayment = (fpi) => {
             buy_now: buyNow,
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -798,9 +810,9 @@ const usePayment = (fpi) => {
             ),
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
               console.log(res, "error value in usePayment");
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -828,8 +840,8 @@ const usePayment = (fpi) => {
             buy_now: buyNow,
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -862,8 +874,8 @@ const usePayment = (fpi) => {
           buy_now: buyNow,
         })
         .then((res) => {
+          setIsLoading(false);
           if (res?.error?.message) {
-            setIsLoading(false);
             setErrorMessage(res?.payload?.message);
           }
         });
@@ -925,9 +937,9 @@ const usePayment = (fpi) => {
             ),
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
               console.log(res, "error value in usePayment");
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -957,8 +969,8 @@ const usePayment = (fpi) => {
             buy_now: buyNow,
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -1010,9 +1022,9 @@ const usePayment = (fpi) => {
             ),
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
               console.log(res, "error value in usePayment");
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -1041,8 +1053,8 @@ const usePayment = (fpi) => {
             buy_now: buyNow,
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -1096,9 +1108,9 @@ const usePayment = (fpi) => {
             ),
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
               console.log(res, "error value in usePayment");
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -1128,12 +1140,12 @@ const usePayment = (fpi) => {
             buy_now: buyNow,
           })
           .then((res) => {
+            setIsLoading(false);
             if (res?.error?.message) {
               console.log(
                 res,
                 "response while calling fpi.payment.checkoutPayment"
               );
-              setIsLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
