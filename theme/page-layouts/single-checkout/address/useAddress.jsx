@@ -238,8 +238,11 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           resetAddressState();
           fpi
             .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow })
-            .then(() => {
-              selectAddress(res?.data?.addAddress?.id);
+            .then((data) => {
+              selectAddress(
+                res?.data?.addAddress?.id,
+                data?.data?.addresses?.address
+              );
             });
           setAddressLoader(false);
         } else {
@@ -298,7 +301,12 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         if (res?.data?.updateAddress?.success) {
           fpi
             .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow })
-            .then(() => selectAddress());
+            .then((data) => {
+              selectAddress(
+                res?.data?.updateAddress?.id,
+                data?.data?.addresses?.address
+              );
+            });
           showSnackbar(
             t("resource.common.address.address_update_success"),
             "success"
@@ -364,10 +372,10 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     navigate(`${location.pathname}?${updatedSearch}`);
   };
 
-  const selectAddress = (id = "") => {
-    const findAddress = allAddresses?.find(
-      (item) => item?.id === selectedAddressId
-    );
+  const selectAddress = (id = "", addresses) => {
+    const addressList = addresses?.length > 0 ? addresses : allAddresses;
+    const targetId = id || selectedAddressId;
+    const findAddress = addressList?.find((item) => item?.id === targetId);
     const payload = {
       cartId: cart_id,
       buyNow,
