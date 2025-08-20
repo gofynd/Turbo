@@ -360,6 +360,11 @@
   display: flex;
   justify-content: space-between;
   margin-top: 24px;
+  &--collapse {
+      @media @tablet {
+        display: none;
+      }
+  }
   .actionBuyNow {
     flex: 1;
 
@@ -394,6 +399,10 @@
 
     @media @tablet {
       margin-inline-end: 8px;
+      flex-basis: 40%;
+    }
+    @media @mobile {
+      flex-basis: 40%;
     }
 
     .sizeButton {

@@ -880,7 +880,13 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                   </div>
                                 )}
                             </div>
-                            <div className={styles.sizeCartContainer}>
+                            <div
+                              className={`${styles.sizeCartContainer} ${
+                                isSizeCollapsed
+                                  ? styles["sizeCartContainer--collapse"]
+                                  : ""
+                              }`}
+                            >
                               {!isSizeSelectionBlock(block) &&
                                 productMeta?.sellable && (
                                   <div
