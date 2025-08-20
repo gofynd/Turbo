@@ -1108,8 +1108,8 @@ const usePayment = (fpi) => {
             ),
           })
           .then((res) => {
-            setIsLoading(false);
             if (res?.error?.message) {
+              setIsLoading(false);
               console.log(res, "error value in usePayment");
               setErrorMessage(res?.payload?.message);
             }
@@ -1140,8 +1140,8 @@ const usePayment = (fpi) => {
             buy_now: buyNow,
           })
           .then((res) => {
-            setIsLoading(false);
             if (res?.error?.message) {
+              setIsLoading(false);
               console.log(
                 res,
                 "response while calling fpi.payment.checkoutPayment"
