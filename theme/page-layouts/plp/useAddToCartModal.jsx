@@ -325,7 +325,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
 
     if (selectedSize) {
       const cartItemsKey = Object.keys(cartItems || {});
-      const selectedItemKey = `${productData?.product?.uid}_${selectedSize}_${productData?.productPrice?.store?.uid}`;
+      const selectedItemKey = `${productData?.product?.uid}_${selectedSize}_standard-delivery_${productData?.productPrice?.store?.uid}`;
 
       cartItemsKey.some((item, index) => {
         const itemKeyWithoutItemIndex = item.substring(
