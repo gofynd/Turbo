@@ -162,7 +162,7 @@
             "product_img_width": "300",
             "product_img_height": "1000",
             "image_border_radius": 12,
-            "img_container_bg": "#EAEAEA",
+            "img_container_bg": "#FFFFFF",
             "payments_logo": "",
             "button_options": "addtocart_buynow",
              "sticky_header": true,
@@ -1554,6 +1554,10 @@
             "preset": {},
             "props": {
               "back_top": {
+                "type": "checkbox",
+                "value": true
+              },
+              "img_fill": {
                 "type": "checkbox",
                 "value": true
               },
