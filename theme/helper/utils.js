@@ -440,22 +440,6 @@ export function getLocalizedRedirectUrl(path = "", currentLocale) {
   return normalizedPath;
 }
 
-export function spaNavigate(path) {
-  // SSR / very old browsers
-  if (typeof window === "undefined" || !window.history || !window.history.pushState) {
-    window.location.href = path;
-    return;
-  }
-
-  const current = window.location.pathname + window.location.search;
-  if (current === path) return; // no-op
-
-  window.history.pushState(null, "", path);
-  window.dispatchEvent(new PopStateEvent("popstate"));
-}
-
-
-
 export function translateDynamicLabel(input, t) {
   const safeInput = input
     .toLowerCase()

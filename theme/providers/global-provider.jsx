@@ -11,7 +11,6 @@ import {
 import { useThemeConfig } from "../helper/hooks";
 import useInternational from "../components/header/useInternational";
 import { fetchCartDetails } from "../page-layouts/cart/useCart";
-import { registerCopilotTools } from "../../copilot";
 
 export function ThemeProvider({ children }) {
   const fpi = useFPI();
@@ -21,17 +20,6 @@ export function ThemeProvider({ children }) {
   const title = sanitizeHTMLTag(seoData?.title);
   const description = sanitizeHTMLTag(seoData?.description);
   const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", registerCopilotTools);
-      } else {
-        registerCopilotTools();
-      }
-    }
-  }, []);
-
   let domainUrl =
     CONFIGURATION?.application?.domains?.find((d) => d.is_primary)?.name || "";
   if (domainUrl && !/^https?:\/\//i.test(domainUrl)) {
