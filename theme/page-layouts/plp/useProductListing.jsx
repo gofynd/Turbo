@@ -29,7 +29,7 @@ const useProductListing = ({ fpi, props }) => {
   const { isInternational, i18nDetails, defaultCurrency } = useInternational({
     fpi,
   });
-  
+
   const { globalConfig, listingPrice } = useThemeConfig({
     fpi,
     page: "product-listing",
@@ -57,6 +57,7 @@ const useProductListing = ({ fpi, props }) => {
     img_resize_mobile = 500,
     size_selection_style = "dropdown",
     tax_label = "",
+    show_size_guide = false,
   } = Object.entries(props).reduce((acc, [key, { value }]) => {
     acc[key] = value;
     return acc;
@@ -71,6 +72,7 @@ const useProductListing = ({ fpi, props }) => {
     preselect_size,
     size_selection_style,
     tax_label,
+    show_size_guide,
   };
   const {
     headerHeight = 0,
@@ -98,7 +100,10 @@ const useProductListing = ({ fpi, props }) => {
   const isAlgoliaEnabled = globalConfig?.algolia_enabled;
 
   const breadcrumb = useMemo(
-    () => [{ label: t("resource.common.breadcrumb.home"), link: "/" }, { label: t("resource.common.breadcrumb.products") }],
+    () => [
+      { label: t("resource.common.breadcrumb.home"), link: "/" },
+      { label: t("resource.common.breadcrumb.products") },
+    ],
     []
   );
 
@@ -295,38 +300,39 @@ const useProductListing = ({ fpi, props }) => {
     return result.join(":::");
   }
 
- const handleFilterUpdate = ({ filter, item }) => {
-  const searchParams = isClient ? new URLSearchParams(location?.search) : null;
-  const {
-    key: { name, kind },
-  } = filter;
-  const { value, is_selected } = item;
-  if (kind === "range") {
-    if (value) {
-      searchParams?.set(name, value);
+  const handleFilterUpdate = ({ filter, item }) => {
+    const searchParams = isClient
+      ? new URLSearchParams(location?.search)
+      : null;
+    const {
+      key: { name, kind },
+    } = filter;
+    const { value, is_selected } = item;
+    if (kind === "range") {
+      if (value) {
+        searchParams?.set(name, value);
+      } else {
+        searchParams?.delete(name);
+      }
     } else {
-      searchParams?.delete(name);
-    }
-  } else {
-    const existingValues = searchParams?.getAll(name) || [];
-    
-    if (is_selected) {
-      const newValues = existingValues.filter((v) => v !== value);
-      searchParams.delete(name); 
-      newValues.forEach((v) => searchParams.append(name, v));
-    } else {
-      if (!existingValues.includes(value)) {
-        searchParams.append(name, value);
+      const existingValues = searchParams?.getAll(name) || [];
+
+      if (is_selected) {
+        const newValues = existingValues.filter((v) => v !== value);
+        searchParams.delete(name);
+        newValues.forEach((v) => searchParams.append(name, v));
+      } else {
+        if (!existingValues.includes(value)) {
+          searchParams.append(name, value);
+        }
       }
     }
-  }
-  searchParams?.delete("page_no");
-  navigate?.({
-    pathname: location?.pathname,
-    search: searchParams?.toString(),
-  });
-};
-
+    searchParams?.delete("page_no");
+    navigate?.({
+      pathname: location?.pathname,
+      search: searchParams?.toString(),
+    });
+  };
 
   const handleSortUpdate = (value) => {
     const searchParams = isClient
@@ -338,7 +344,10 @@ const useProductListing = ({ fpi, props }) => {
       searchParams?.delete("sort_on");
     }
     searchParams?.delete("page_no");
-    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
+    navigate?.(
+      location?.pathname +
+        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+    );
   };
 
   function resetFilters() {
@@ -349,7 +358,10 @@ const useProductListing = ({ fpi, props }) => {
       searchParams?.delete(filter.key.name);
     });
     searchParams?.delete("page_no");
-    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
+    navigate?.(
+      location?.pathname +
+        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+    );
   }
 
   const getPageUrl = (pageNo) => {
