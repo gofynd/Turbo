@@ -156,7 +156,7 @@
         "regular": "Regular",
         "semibold": "Semibold",
         "transparent_header": "Transparent Header",
-        "transparent_header_info": "Apply transparent header when application banner or image slide show on top",
+        "transparent_header_info": "Only works with a top Application banner, image slideshow and hero image.",
         "sticky_header": "Sticky Header",
         "sticky_header_info": "Enable/Disable Sticky Header"
       },

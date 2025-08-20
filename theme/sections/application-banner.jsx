@@ -19,11 +19,6 @@ export function Component({ props, blocks, globalConfig }) {
     padding_bottom,
     hover_application_banner,
   } = props;
-  const isBrowser = typeof window !== "undefined";
-  const themeHeaderHeight = isBrowser
-    ? useGlobalStore(fpi.getters.CUSTOM_VALUE)?.themeHeaderHeight
-    : 0;
-  const sections = isBrowser ? useGlobalStore(fpi.getters.PAGE)?.sections : [];
   const dynamicBoxStyle = (block) => {
     return {
       "--x_position": `${block.props?.x_position?.value || 0}%`,
@@ -68,11 +63,6 @@ export function Component({ props, blocks, globalConfig }) {
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 0}px`,
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
-    marginTop:
-      sections[0]?.name === "application-banner" &&
-      globalConfig?.transparent_header
-        ? `-${themeHeaderHeight}px`
-        : "",
   };
 
   return (

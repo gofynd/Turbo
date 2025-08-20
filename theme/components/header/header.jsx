@@ -41,7 +41,6 @@ function Header({ fpi }) {
   const [searchParams] = useSearchParams();
   const CART_ITEMS = useGlobalStore(fpi?.getters?.CART);
   const { headerHeight = 0 } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
-  const { sections } = useGlobalStore(fpi.getters.PAGE);
   const {
     globalConfig,
     cartItemCount,
@@ -70,26 +69,35 @@ function Header({ fpi }) {
     return regex.test(location?.pathname);
   }, [location?.pathname]);
 
+  const sections = useGlobalStore(fpi.getters.PAGE)?.sections || [];
+  const isValidSection =
+    sections[0]?.name === "application-banner" ||
+    sections[0]?.name === "image-slideshow" ||
+    sections[0]?.name === "hero-image" ||
+    sections[0]?.name === "image-gallery";
   useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+
     if (
       globalConfig?.sticky_header &&
       globalConfig?.transparent_header &&
-      (sections[0]?.name === "application-banner" ||
-        sections[0]?.name === "image-slideshow")
+      isValidSection
     ) {
-      const handleScroll = () => setScrolled(window.scrollY > 10);
-      window?.addEventListener("scroll", handleScroll);
-      return () => window?.removeEventListener("scroll", handleScroll);
+      window.addEventListener("scroll", handleScroll);
     }
-  }, [globalConfig?.transparent_header, globalConfig?.sticky_header]);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [
+    globalConfig?.transparent_header,
+    globalConfig?.sticky_header,
+    isValidSection,
+  ]);
 
   useEffect(() => {
     if (isRunningOnClient()) {
       const header = document?.querySelector(".fdk-theme-header");
       if (!globalConfig?.sticky_header) {
         header.style.position = "unset";
-      } else {
-        header.style.position = "sticky";
       }
     }
   }, [globalConfig?.sticky_header]);
@@ -249,16 +257,18 @@ function Header({ fpi }) {
     <>
       {!isHeaderHidden && !shouldHide && (
         <div
-          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.unsetBoxShadow : ""}`}
+          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""}${globalConfig?.transparent_header && isValidSection && !globalConfig?.sticky_header ? styles.transparentHeader : ""} ${globalConfig?.transparent_header && isValidSection && globalConfig?.sticky_header ? styles.stickyTransparentHeader : ""}`}
           ref={headerRef}
         >
           <header
-            className={`${styles.header} ${globalConfig?.header_border ? styles.seperator : ""} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.transparentBackground : ""} ${scrolled ? styles.scrolled : ""}`}
+            className={`${styles.header} ${globalConfig?.header_border ? styles.seperator : ""} ${globalConfig?.transparent_header && isValidSection ? styles.transparentBackground : ""} ${scrolled ? styles.scrolled : ""}`}
           >
             <div
-              className={`${styles.headerContainer} basePageContainer margin0auto `}
+              className={`${styles.headerContainer} ${globalConfig?.transparent_header && isValidSection ? styles.paddingMobile : ""} basePageContainer margin0auto `}
             >
-              <div className={styles.desktop}>
+              <div
+                className={`${styles.desktop} ${globalConfig?.transparent_header && isValidSection ? styles.transparent_desktop : ""}`}
+              >
                 <HeaderDesktop
                   checkLogin={checkLogin}
                   fallbackLogo={fallbackLogo}
@@ -277,11 +287,13 @@ function Header({ fpi }) {
                   languageIscCode={languageIscCode}
                 />
               </div>
-              <div className={styles.mobile}>
+              <div
+                className={`${styles.mobile}  ${globalConfig?.transparent_header && isValidSection ? styles.transparent_mobile : ""}`}
+              >
                 <div
                   className={`${styles.mobileTop} ${
                     styles[globalConfig.header_layout]
-                  } ${styles[globalConfig.logo_menu_alignment]}`}
+                  } ${styles[globalConfig.logo_menu_alignment]} ${globalConfig?.transparent_header && isValidSection ? styles.transparent_mobile : ""}`}
                 >
                   <Navigation
                     customClass={`${styles.left} ${styles.flexAlignCenter} ${
@@ -342,7 +354,7 @@ function Header({ fpi }) {
                 </div>
                 {isHyperlocal && (
                   <button
-                    className={`${styles.mobileBottom} ${globalConfig?.transparent_header && (sections[0]?.name === "application-banner" || sections[0]?.name === "image-slideshow") ? styles.unsetBorder : ""}`}
+                    className={`${styles.mobileBottom} ${globalConfig?.transparent_header && isValidSection ? styles.unsetBorder : ""}`}
                     onClick={handleLocationModalOpen}
                   >
                     {isLoading ? (

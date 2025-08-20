@@ -6,6 +6,7 @@
 @sm-max: (@md-min - 1);
 @md-max: (@lg-min - 1);
 @lg-max: (@xl-min - 1);
+@lg-semi-max: (@lg-semi + 1);
 
 @mobile: ~"only screen and (max-width: @{sm-max})";
 @mobile-up: ~"only screen and (min-width: @{md-min})";
@@ -13,6 +14,7 @@
 @tablet: ~"only screen and (max-width: @{md-max})";
 @tablet-strict: ~"only screen and (min-width: @{md-min}) and (max-width: @{md-max})";
 @tablet-extend: ~"only screen and (max-width: @{lg-semi})";
+@tablet-extend-up: ~"only screen and (min-width: @{lg-semi-max})";
 
 @desktop: ~"only screen and (min-width: @{lg-min})";
 @desktop-down: ~"only screen and (max-width: @{lg-max})";

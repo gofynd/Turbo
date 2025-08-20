@@ -105,7 +105,6 @@ export function ThemeProvider({ children }) {
     const buttonLinkShade = new Values(pallete.button.button_link);
     const accentDarkShades = new Values(pallete.theme.theme_accent).shades(20);
     const accentLightShades = new Values(pallete.theme.theme_accent).tints(20);
-
     styles = styles.concat(
       `:root, ::before, ::after {
         --font-body: ${bodyFontName};
