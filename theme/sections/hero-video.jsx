@@ -99,7 +99,9 @@ export function Component({ props, globalConfig }) {
   }
 
   function isIOS() {
-    return /iPhone|iPad|iPod/.test(navigator.userAgent);
+    if (isRunningOnClient()) {
+      return /iPhone|iPad|iPod/.test(navigator.userAgent);
+    }
   }
 
   // function getYTVideoID() {

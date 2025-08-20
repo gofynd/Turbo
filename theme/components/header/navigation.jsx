@@ -26,7 +26,8 @@ function Navigation({
   appInfo,
   checkLogin,
   languageIscCode,
-  fpi
+  fpi,
+  staticHeight,
 }) {
   const { locale } = useParams();
   const { t } = useGlobalTranslation("translation");
@@ -160,6 +161,7 @@ function Navigation({
         <MegaMenuLarge
           headerNavigation={getNavigation}
           l1MenuClassName={navWeightClassName}
+          staticHeight={staticHeight}
         ></MegaMenuLarge>
       ) : isMegaMenu ? (
         <MegaMenu
@@ -323,7 +325,13 @@ function Navigation({
         <motion.div
           className={`${styles.sidebar}`}
           initial={{ x: getLocaleDirection(fpi) === "rtl" ? "100%" : "-100%" }} // Start off-screen to the left
-          animate={{ x: showSidebar ? 0 : getLocaleDirection(fpi) === "rtl" ? "100%"  : "-100%" }} // Animate to 0 when open, back to -100% when closed
+          animate={{
+            x: showSidebar
+              ? 0
+              : getLocaleDirection(fpi) === "rtl"
+                ? "100%"
+                : "-100%",
+          }} // Animate to 0 when open, back to -100% when closed
           transition={{ duration: 0.3, ease: "easeInOut" }}
           style={{
             position: "fixed",
@@ -425,9 +433,11 @@ function Navigation({
               <ul key="l2_Nav">
                 <li
                   onClick={() => goBack("l1")}
-                  className={`${styles["sidebar__navigation--item"]} ${styles.title
-                    } ${styles.flexAlignCenter} ${styles.justifyStart} ${styles.fontBody
-                    } b1`}
+                  className={`${styles["sidebar__navigation--item"]} ${
+                    styles.title
+                  } ${styles.flexAlignCenter} ${styles.justifyStart} ${
+                    styles.fontBody
+                  } b1`}
                   style={{ display: sidebarl2Nav.title ? "flex" : "none" }}
                 >
                   <ArrowDownIcon
@@ -438,8 +448,9 @@ function Navigation({
                 {sidebarl2Nav.navigation.map((nav, index) => (
                   <li
                     key={index}
-                    className={`${styles["sidebar__navigation--item"]} ${styles.flexAlignCenter
-                      } ${styles.justifyBetween} ${styles.fontBody} h5`}
+                    className={`${styles["sidebar__navigation--item"]} ${
+                      styles.flexAlignCenter
+                    } ${styles.justifyBetween} ${styles.fontBody} h5`}
                   >
                     {convertActionToUrl(nav?.action) ? (
                       <FDKLink
@@ -484,9 +495,11 @@ function Navigation({
               <ul key="l3_Nav">
                 <li
                   onClick={() => goBack("l2")}
-                  className={`${styles["sidebar__navigation--item"]} ${styles.title
-                    } ${styles.flexAlignCenter} ${styles.justifyStart} ${styles.fontBody
-                    } b1`}
+                  className={`${styles["sidebar__navigation--item"]} ${
+                    styles.title
+                  } ${styles.flexAlignCenter} ${styles.justifyStart} ${
+                    styles.fontBody
+                  } b1`}
                   style={{ display: sidebarl3Nav.title ? "flex" : "none" }}
                 >
                   <ArrowDownIcon
@@ -501,8 +514,9 @@ function Navigation({
                 {sidebarl3Nav.navigation.map((nav, index) => (
                   <li
                     key={index}
-                    className={`${styles["sidebar__navigation--item"]} ${styles.flexAlignCenter
-                      } ${styles.justifyBetween} ${styles.fontBody} h5`}
+                    className={`${styles["sidebar__navigation--item"]} ${
+                      styles.flexAlignCenter
+                    } ${styles.justifyBetween} ${styles.fontBody} h5`}
                   >
                     {convertActionToUrl(nav?.action) ? (
                       <FDKLink
@@ -549,8 +563,9 @@ function Navigation({
             </button>
             <button
               type="button"
-              className={`${styles["sidebar__footer--item"]} ${styles.wishlist
-                } ${styles.flexAlignCenter} ${styles.fontBody} h5`}
+              className={`${styles["sidebar__footer--item"]} ${
+                styles.wishlist
+              } ${styles.flexAlignCenter} ${styles.fontBody} h5`}
               onClick={() => {
                 checkLogin("wishlist");
                 setShowSidebar(false);
@@ -561,8 +576,13 @@ function Navigation({
               />
               <span>{t("resource.common.breadcrumb.wishlist")}</span>
             </button>
-            <div className={`${styles.mobile} ${styles.i18Wrapper} ${styles.languageWrapper}`} >
-              <I18Dropdown fpi={fpi} languageIscCode={languageIscCode}></I18Dropdown>
+            <div
+              className={`${styles.mobile} ${styles.i18Wrapper} ${styles.languageWrapper}`}
+            >
+              <I18Dropdown
+                fpi={fpi}
+                languageIscCode={languageIscCode}
+              ></I18Dropdown>
             </div>
           </div>
         </motion.div>

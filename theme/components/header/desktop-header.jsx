@@ -48,6 +48,13 @@ function HeaderDesktop({
     }[logoMenuAlignment];
   };
 
+  const staticHeight =
+    isDoubleRowHeader && globalConfig?.always_on_search
+      ? 35.6
+      : isDoubleRowHeader
+        ? 121
+        : 85;
+
   const getShopLogo = () =>
     appInfo?.logo?.secure_url?.replace("original", "resize-h:165") ||
     fallbackLogo;
@@ -74,6 +81,7 @@ function HeaderDesktop({
               checkLogin={checkLogin}
               languageIscCode={languageIscCode}
               fpi={fpi}
+              staticHeight={staticHeight}
             />
           )}
           {isDoubleRowHeader && globalConfig?.always_on_search && (
@@ -228,6 +236,7 @@ function HeaderDesktop({
           checkLogin={checkLogin}
           languageIscCode={languageIscCode}
           fpi={fpi}
+          staticHeight={staticHeight}
         />
       )}
     </div>

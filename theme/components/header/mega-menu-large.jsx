@@ -6,7 +6,11 @@ import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import ArrowDownIcon from "../../assets/images/arrow-down.svg";
 
-function MegaMenuLarge({ headerNavigation, l1MenuClassName = "" }) {
+function MegaMenuLarge({
+  headerNavigation,
+  l1MenuClassName = "",
+  staticHeight,
+}) {
   return (
     <div className={`${styles.headerNavigation}`}>
       {headerNavigation.map((menu, index) => (
@@ -25,14 +29,14 @@ function MegaMenuLarge({ headerNavigation, l1MenuClassName = "" }) {
               />
             )}
           </div>
-          <Megamenu navigation={menu} />
+          <Megamenu navigation={menu} staticHeight={staticHeight} />
         </div>
       ))}
     </div>
   );
 }
 
-const Megamenu = ({ navigation }) => {
+const Megamenu = ({ navigation, staticHeight }) => {
   const fpi = useFPI();
   const { themeHeaderHeight = 0 } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
   const groupedNav = useMemo(() => {
@@ -52,7 +56,7 @@ const Megamenu = ({ navigation }) => {
   }
 
   const dynamicStyles = {
-    "--theme-header-height": `${themeHeaderHeight}px`,
+    "--theme-header-height": `${themeHeaderHeight || staticHeight}px`,
   };
 
   return (
