@@ -144,7 +144,8 @@ function Header({ fpi }) {
   useEffect(() => {
     if (
       isEmptyOrNull(CART_ITEMS?.cart_items) &&
-      location.pathname !== "/cart/bag/"
+      location.pathname !== "/cart/bag/" &&
+      !globalConfig?.show_quantity_control
     ) {
       const payload = {
         includeAllItems: true,

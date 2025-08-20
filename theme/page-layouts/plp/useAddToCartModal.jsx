@@ -61,7 +61,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         if (isEmptyOrNull(productPriceData.data.productPrice)) {
           setPincodeErrorMessage(
             productPriceData?.errors?.[0]?.message ||
-            t("resource.product.product_not_serviceable")
+              t("resource.product.product_not_serviceable")
           );
         } else {
           setPincodeErrorMessage("");
@@ -176,7 +176,8 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
           }));
         } else {
           setPincodeErrorMessage(
-            localityData?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure")
+            localityData?.errors?.[0]?.message ||
+              t("resource.common.address.pincode_verification_failure")
           );
         }
       } catch (error) {
@@ -224,9 +225,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         pageConfig?.mandatory_pincode &&
         (currentPincode?.length !== 6 || pincodeErrorMessage.length)
       ) {
-        setPincodeErrorMessage(
-          t("resource.product.enter_valid_pincode")
-        );
+        setPincodeErrorMessage(t("resource.product.enter_valid_pincode"));
         return;
       }
       if (
@@ -234,9 +233,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         ((currentPincode?.length > 0 && currentPincode?.length < 6) ||
           pincodeErrorMessage.length)
       ) {
-        setPincodeErrorMessage(
-          t("resource.product.enter_valid_pincode")
-        );
+        setPincodeErrorMessage(t("resource.product.enter_valid_pincode"));
         return;
       }
       if (
@@ -289,7 +286,8 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
           if (outRes?.data?.addItemsToCart?.success) {
             if (!buyNow) fetchCartDetails(fpi);
             showSnackbar(
-              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) || t("resource.common.add_to_cart_success"),
+              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
+                t("resource.common.add_to_cart_success"),
               "success"
             );
             if (buyNow) {
@@ -299,7 +297,8 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
             }
           } else {
             showSnackbar(
-              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) || t("resource.common.add_cart_failure"),
+              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
+                t("resource.common.add_cart_failure"),
               "error"
             );
           }
@@ -329,7 +328,12 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
       const selectedItemKey = `${productData?.product?.uid}_${selectedSize}_${productData?.productPrice?.store?.uid}`;
 
       cartItemsKey.some((item, index) => {
-        if (item === selectedItemKey) {
+        const itemKeyWithoutItemIndex = item.substring(
+          0,
+          item.lastIndexOf("_")
+        );
+
+        if (itemKeyWithoutItemIndex === selectedItemKey) {
           currentItemDetails = { ...cartItems[item], itemIndex: index };
           return true;
         }
@@ -365,13 +369,19 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
     if (!isMto) {
       if (totalQuantity > maxCartQuantity) {
         totalQuantity = maxCartQuantity;
-        showSnackbar(`${t("resource.product.max_quantity")} ${maxCartQuantity}.`, "error");
+        showSnackbar(
+          `${t("resource.product.max_quantity")} ${maxCartQuantity}.`,
+          "error"
+        );
       }
 
       if (totalQuantity < minCartQuantity) {
         if (operation === "edit_item") {
           totalQuantity = minCartQuantity;
-          showSnackbar(`${t("resource.product.min_quantity")} ${minCartQuantity}.`, "error");
+          showSnackbar(
+            `${t("resource.product.min_quantity")} ${minCartQuantity}.`,
+            "error"
+          );
         } else if (selectedItemDetails?.quantity > minCartQuantity) {
           totalQuantity = minCartQuantity;
         } else {
