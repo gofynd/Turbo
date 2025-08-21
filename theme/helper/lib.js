@@ -45,7 +45,7 @@ export async function pageDataResolver({ fpi, router, themeId }) {
   const filters = !query.isEdit || query.isEdit.toString() !== "true";
   fpi.custom.setValue("isEdit", !filters);
   const sectionPreviewHash = router.filterQuery?.sectionPreviewHash || "";
-  const company = fpi.getters.THEME(state)?.company_id;
+  const company = parseInt(fpi.getters.THEME(state)?.company_id, 10);
   if (pageValue && pageValue !== currentPageInStore) {
     const values = {
       themeId,
