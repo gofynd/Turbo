@@ -23,7 +23,7 @@ function ShareItem({ setShowSocialLinks, description, handleShare }) {
   const handleCopyToClipboard = (e) => {
     e.stopPropagation();
     copyToClipboard(shareUrl);
-    showSnackbar(t("resource.common.copy_link"), "success");
+    showSnackbar(t("resource.common.link_copied"), "success");
   };
 
   const shareOptions = [
