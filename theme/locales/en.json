@@ -710,7 +710,10 @@
       "order_id_caps": "ORDER ID",
       "placed_on": "Placed on",
       "cod": "COD",
-      "delivery_address": "DELIVERY ADDRESS"
+      "delivery_address": "DELIVERY ADDRESS",
+      "video_preview" : "Video Preview",
+      "image_preview" : "Image Preview",
+      "video_not_available":"Video not available"
     },
     "verify_email": {
       "email_success": "Email Successfully Verified",

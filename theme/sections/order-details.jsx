@@ -17,6 +17,14 @@ import EmptyState from "../components/empty-state/empty-state";
 import Loader from "../components/loader/loader";
 import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
 import OrderDeliveryIcon from "../assets/images/order-delivery.svg";
+import CrossIcon from "../assets/images/cross-black.svg";
+import DefaultImage from "../assets/images/default-image.svg";
+
+import "@gofynd/theme-template/components/core/modal/modal.css";
+
+const Modal = React.lazy(
+  () => import("@gofynd/theme-template/components/core/modal/modal")
+);
 
 export function Component({ blocks, fpi }) {
   const { t } = useGlobalTranslation("translation");
@@ -29,16 +37,20 @@ export function Component({ blocks, fpi }) {
   const [selectId, setSelectId] = useState("");
   const [goToLink, setGoToLink] = useState("");
 
+  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+  const [mediaLoadError, setMediaLoadError] = useState(false);
+
   useEffect(() => {
-  if (
-    shipmentDetails?.shipment_id &&
-    shipmentDetails?.show_download_invoice === true
-  ) {
-    getInvoice({
-      shipmentId: shipmentDetails.shipment_id,
-    });
-  }
-}, [shipmentDetails?.shipment_id, shipmentDetails?.show_download_invoice]);
+    if (
+      shipmentDetails?.shipment_id &&
+      shipmentDetails?.show_download_invoice === true
+    ) {
+      getInvoice({
+        shipmentId: shipmentDetails.shipment_id,
+      });
+    }
+  }, [shipmentDetails?.shipment_id, shipmentDetails?.show_download_invoice]);
 
   const getBag = () => {
     return shipmentDetails?.bags;
@@ -60,7 +72,9 @@ export function Component({ blocks, fpi }) {
     if (shipmentDetails?.can_cancel || shipmentDetails?.can_return) {
       const querParams = new URLSearchParams(location.search);
       querParams.set("selectedBagId", selectId);
-      navigate(goToLink + (querParams?.toString() ? `?${querParams.toString()}` : ""));
+      navigate(
+        goToLink + (querParams?.toString() ? `?${querParams.toString()}` : "")
+      );
     }
   };
 
@@ -82,6 +96,22 @@ export function Component({ blocks, fpi }) {
 
   const isVideo = (url) => /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(url);
 
+  const openMediaModal = (media) => {
+    setSelectedMedia(media);
+    setIsMediaModalOpen(true);
+    setMediaLoadError(false);
+  };
+
+  const closeMediaModal = () => {
+    setSelectedMedia(null);
+    setIsMediaModalOpen(false);
+    setMediaLoadError(false);
+  };
+
+  const handleMediaError = () => {
+    setMediaLoadError(true);
+  };
+
   return (
     <>
       {isLoading ? (
@@ -92,9 +122,7 @@ export function Component({ blocks, fpi }) {
             <div className={`${styles.error}`}>
               <EmptyState
                 title={t("resource.section.order.empty_state_title")}
-                description={t(
-                  "resource.section.order.empty_state_desc"
-                )}
+                description={t("resource.section.order.empty_state_desc")}
                 btnLink="/profile/orders"
                 btnTitle={t("resource.section.order.emptybtn_title")}
               ></EmptyState>
@@ -192,15 +220,79 @@ export function Component({ blocks, fpi }) {
                                   (file, index) => (
                                     <li key={index} className={styles.fileItem}>
                                       {isVideo(file.url) ? (
-                                        <video
-                                          className={styles.uploadedImage}
-                                          src={file.url}
-                                        />
+                                        <div className={styles.videoContainer}>
+                                          <video
+                                            className={styles.uploadedImage}
+                                            src={file.url}
+                                            preload="metadata"
+                                            onClick={() => openMediaModal(file)}
+                                            onError={(e) => {
+                                              e.target.style.display = "none";
+                                              const img =
+                                                document.createElement("img");
+                                              img.src = DefaultImage;
+                                              img.className =
+                                                styles.uploadedImage;
+                                              img.style.cursor = "pointer";
+                                              img.onclick = () =>
+                                                openMediaModal(file);
+                                              e.target.parentNode.appendChild(
+                                                img
+                                              );
+                                            }}
+                                             disablePictureInPicture
+                                            aria-label={
+                                              file.desc || `Video ${index + 1}`
+                                            }
+                                          >
+                                            <source
+                                              src={file.url}
+                                              type="video/mp4"
+                                            />
+                                            <source
+                                              src={file.url}
+                                              type="video/webm"
+                                            />
+                                            <source
+                                              src={file.url}
+                                              type="video/ogg"
+                                            />
+                                          </video>
+                                          <div className={styles.videoPlayIcon}>
+                                            <svg
+                                              width="40"
+                                              height="40"
+                                              viewBox="0 0 48 48"
+                                              fill="none"
+                                              className={styles.playIcon}
+                                            >
+                                              <circle
+                                                cx="24"
+                                                cy="24"
+                                                r="24"
+                                                fill="rgba(0,0,0,0.7)"
+                                              />
+                                              <path
+                                                d="M18 12l18 12-18 12V12z"
+                                                fill="white"
+                                                transform="translate(-2, 0)"
+                                              />
+                                            </svg>
+                                          </div>
+                                        </div>
                                       ) : (
                                         <img
                                           className={styles.uploadedImage}
                                           src={file.url}
-                                          alt={file.desc}
+                                          alt={
+                                            file.desc || `Image ${index + 1}`
+                                          }
+                                          onClick={() => openMediaModal(file)}
+                                          onError={(e) => {
+                                            e.target.src = DefaultImage;
+                                          }}
+                                          style={{ cursor: "pointer" }}
+                                          loading="lazy"
                                         />
                                       )}
                                     </li>
@@ -211,6 +303,7 @@ export function Component({ blocks, fpi }) {
                           </div>
                         )
                       );
+
                     case "shipment_tracking":
                       return (
                         initial && (
@@ -269,12 +362,14 @@ export function Component({ blocks, fpi }) {
                       return <BlockRenderer block={block} key={key} />;
 
                     default:
-                      return <h1 key={key}>{t("resource.common.invalid_block")}</h1>;
+                      return (
+                        <h1 key={key}>{t("resource.common.invalid_block")}</h1>
+                      );
                   }
                 })}
               </div>
             )}
-          </div >
+          </div>
 
           {!initial && (
             <div className={`${styles.btndiv}`}>
@@ -297,7 +392,60 @@ export function Component({ blocks, fpi }) {
               </div>
             </div>
           )}
-        </div >
+
+          {/* Image/Video preview Modal */}
+          {isMediaModalOpen && selectedMedia && (
+            <Modal
+              hideHeader={true}
+              isOpen={isMediaModalOpen}
+              closeDialog={closeMediaModal}
+              bodyClassName={styles.mediaModalBody}
+              containerClassName={styles.mediaModalContainer}
+              modalType="center-modal"
+            >
+              <div className={styles.mediaModalContent}>
+                <h4 className={styles.mediaModalTitle}>
+                  {isVideo(selectedMedia.url)
+                    ? t("resource.order.video_preview")
+                    : t("resource.order.image_preview")}
+                  <span onClick={closeMediaModal} className={styles.closeIcon}>
+                    <CrossIcon />
+                  </span>
+                </h4>
+
+                <div className={styles.mediaContent}>
+                  {mediaLoadError ? (
+                    <div className={styles.mediaErrorContainer}>
+                      <DefaultImage className={styles.modalImage} />
+                    </div>
+                  ) : isVideo(selectedMedia.url) ? (
+                    <video
+                      className={styles.modalVideo}
+                      src={selectedMedia.url}
+                      controls
+                      autoPlay
+                       disablePictureInPicture
+                      onError={handleMediaError}
+                    >
+                      <source src={selectedMedia.url} type="video/mp4" />
+                      <source src={selectedMedia.url} type="video/webm" />
+                      <source src={selectedMedia.url} type="video/ogg" />
+                    </video>
+                  ) : (
+                    <div className={styles.imageContainer}>
+                      <img
+                        className={styles.modalImage}
+                        src={selectedMedia.url}
+                        alt={selectedMedia.desc || "image"}
+                        onError={handleMediaError}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Modal>
+          )}
+        </div>
       )}
     </>
   );
@@ -369,4 +517,5 @@ export const settings = {
     ],
   },
 };
+
 export default Component;
