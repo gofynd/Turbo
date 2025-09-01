@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { FDKLink } from "fdk-core/components";
 import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
@@ -21,7 +21,6 @@ function Footer({ fpi }) {
   const { active: phoneActive = false, phone: phoneArray = [] } = phone ?? {};
   const { pallete } = useThemeConfig({ fpi });
   const [isMobile, setIsMobile] = useState(false);
-  const descriptionRef = useRef(null);
 
   const isPDP = /^\/product\/[^/]+\/?$/.test(location.pathname); // ⬅️ PDP check
 
@@ -47,50 +46,6 @@ function Footer({ fpi }) {
       };
     }
   }, []);
-
-  const processFooterDescription = useMemo(() => {
-    const originalContent =
-      typeof globalConfig?.footer_description === "string" 
-        ? globalConfig.footer_description 
-        : "";
-
-    if (!originalContent) return { cleanedContent: "", extractedStyles: [], extractedScripts: [] };
-
-    const styleMatches = [
-      ...originalContent.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi),
-    ];
-    const extractedStyles = styleMatches.map((match) => match[1]);
-
-    const scriptMatches = [
-      ...originalContent.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi),
-    ];
-    const extractedScripts = scriptMatches.map((match) => match[1]);
-
-    let cleanedContent = originalContent
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
-
-    return { cleanedContent, extractedStyles, extractedScripts };
-  }, [globalConfig?.footer_description]);
-
-  useEffect(() => {
-    if (processFooterDescription.extractedScripts.length === 0) return;
-
-    const timeout = setTimeout(() => {
-      processFooterDescription.extractedScripts.forEach((scriptContent) => {
-        try {
-          const script = document.createElement("script");
-          script.type = "text/javascript";
-          script.textContent = scriptContent;
-          descriptionRef.current?.appendChild(script);
-        } catch (err) {
-          console.error("Footer script injection failed:", err);
-        }
-      });
-    }, 300);
-
-    return () => clearTimeout(timeout);
-  }, [processFooterDescription.extractedScripts]);
 
   const logoMaxHeightMobile = globalConfig?.footer_logo_max_height_mobile || 25;
   const logoMaxHeightDesktop =
@@ -151,7 +106,7 @@ function Footer({ fpi }) {
               <div className={`${styles["footer__top--wrapper"]}`}>
                 {(getLogo?.length > 0 || globalConfig?.footer_description) && (
                   <div
-                    className={`${styles["footer__top--info"]}  ${processFooterDescription.cleanedContent?.length < 83 ? styles["footer__top--unsetFlexWidth"] : ""}`}
+                    className={`${styles["footer__top--info"]}  ${globalConfig?.footer_description?.length < 83 ? styles["footer__top--unsetFlexWidth"] : ""}`}
                   >
                     {getLogo?.length > 0 && (
                       <div className={`fx-footer-logo ${styles.logo}`}>
@@ -168,26 +123,11 @@ function Footer({ fpi }) {
                         />
                       </div>
                     )}
-                    {globalConfig?.footer_description && (
-                      <div
-                        ref={descriptionRef}
-                        className={`${styles.description} b1 ${styles.fontBody}`}
-                      >
-                        {processFooterDescription.extractedStyles.map((css, index) => (
-                          <style
-                            key={`footer-style-${index}`}
-                            dangerouslySetInnerHTML={{ __html: css }}
-                          />
-                        ))}
-
-                        <div
-                          data-testid="footer-html-content"
-                          dangerouslySetInnerHTML={{ 
-                            __html: processFooterDescription.cleanedContent 
-                          }}
-                        />
-                      </div>
-                    )}
+                    <p
+                      className={`${styles.description} b1 ${styles.fontBody}`}
+                    >
+                      {globalConfig?.footer_description}
+                    </p>
                   </div>
                 )}
                 <div className={`${styles["footer__top--menu"]}`}>
