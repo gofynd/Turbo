@@ -434,6 +434,8 @@
         "product_description": "उत्पाद वर्णन",
         "enable_buy_now": "अभी खरीदें सक्षम करें",
         "enable_buy_now_feature": "अभी खरीदें सुविधा सक्षम करें",
+        "show_sale_tag": "सेल टैग दिखाएं",
+        "show_sale_tag_info": "जब वस्तुओं पर छूट हो तो उत्पाद छवियों पर सेल बैज प्रदर्शित करें",
         "zoom_in": "उत्पाद छवि ज़ूम करें",
         "zoom_in_info": "कर्सर घुमाने पर उत्पाद छवि को ज़ूम करें",
         "show_bullets_in_product_details": "उत्पाद विवरण में बुलेट दिखाएँ",

@@ -3,6 +3,23 @@
 .productDetailsPage {
   max-width: @page-width;
 }
+
+// Sale Tag Styles - Matching PLP sale badge colors
+.saleTag {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  padding: 4px 10px;
+  background-color: @SaleBadgeBackground;
+  color: @SaleBadgeText;
+  border-radius: 30px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.24px;
+  z-index: 2;
+}
 .wishlist {
   position: absolute;
   top: 25px;
@@ -166,7 +183,8 @@
         display: flex;
       }
 
-      .videoPlayIcon, .modelIcon {
+      .videoPlayIcon,
+      .modelIcon {
         position: absolute;
         top: 50%;
         inset-inline-start: 50%;

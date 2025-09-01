@@ -74,6 +74,23 @@
     height: 100%;
     aspect-ratio: @ProductImgAspectRatio;
 
+    // Sale tag styles for mobile slider - Matching PLP sale badge colors
+    .saleTag {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      padding: 4px 10px;
+      background-color: @SaleBadgeBackground;
+      color: @SaleBadgeText;
+      border-radius: 20px;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      letter-spacing: -0.24px;
+      z-index: 2;
+    }
+
     .videoContainer {
       position: absolute;
       top: 50%;

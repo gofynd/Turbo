@@ -58,6 +58,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     img_resize,
     img_resize_mobile,
     zoom_in,
+    show_sale_tag,
   } = props;
 
   const addToCartBtnRef = useRef(null);
@@ -575,6 +576,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                     addToWishList={addToWishList}
                     isCustomOrder={isMto}
                     handleShare={() => handleShare()}
+                    showSaleTag={show_sale_tag?.value}
                   />
                 </div>
               </div>
@@ -1439,6 +1441,13 @@ export const settings = {
       label: "t:resource.sections.product_description.enable_buy_now",
       info: "t:resource.sections.product_description.enable_buy_now_feature",
       default: false,
+    },
+    {
+      type: "checkbox",
+      id: "show_sale_tag",
+      label: "t:resource.sections.product_description.show_sale_tag",
+      info: "t:resource.sections.product_description.show_sale_tag_info",
+      default: true,
     },
     {
       type: "checkbox",

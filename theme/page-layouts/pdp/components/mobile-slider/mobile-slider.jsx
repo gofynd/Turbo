@@ -26,6 +26,8 @@ function MobileSlider({
   handleShare,
   showShareIcon = true,
   sources = [],
+  // Sale tag props (configuration-based)
+  showSaleTag = false,
 }) {
   const { t } = useGlobalTranslation("translation");
   const { isRTL } = useLocaleDirection();
@@ -128,6 +130,14 @@ function MobileSlider({
       >
         {images?.map((media, i) => (
           <div className={styles.mediaWrapper} key={i}>
+            {/* Sale Tag for mobile - Configuration-based */}
+            {i === 0 && showSaleTag && (
+              <div className={styles.saleTag}>
+                <span className={styles.saleText}>
+                  {t("resource.common.sale")}
+                </span>
+              </div>
+            )}
             {media.type === "image" && (
               <div onClick={() => onImageClick()}>
                 <FyImage
@@ -162,7 +172,7 @@ function MobileSlider({
                         muted={isMute}
                         onClick={pauseVideo}
                         onEnded={onVideoEnd}
-                      // onLoadedData={videoLoaded(i)}
+                        // onLoadedData={videoLoaded(i)}
                       >
                         <source src={media?.url} type="video/mp4" />
                       </video>

@@ -34,6 +34,8 @@ function PdpImageGallery({
   handleShare,
   showShareIcon = true,
   imgSources = [],
+  // Sale tag props (configuration-based)
+  showSaleTag = false,
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [enableLightBox, setEnableLightBox] = useState(false);
@@ -126,6 +128,14 @@ function PdpImageGallery({
               addToWishList={addToWishList}
               hideImagePreview={hideImagePreview}
             />
+            {/* Sale Tag - Configuration-based */}
+            {showSaleTag && (
+              <div>
+                <span className={styles.saleTag}>
+                  {t("resource.common.sale")}
+                </span>
+              </div>
+            )}
             {isCustomOrder && (
               <div className={`${styles.badge} ${styles.b4}`}>
                 {t("resource.product.made_to_order")}
@@ -248,6 +258,7 @@ function PdpImageGallery({
           slideTabCentreNone={slideTabCentreNone}
           handleShare={handleShare}
           showShareIcon={showShareIcon}
+          showSaleTag={showSaleTag}
         />
       </div>
       {enableLightBox && (

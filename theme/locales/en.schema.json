@@ -436,6 +436,8 @@
         "product_description": "Product Description",
         "enable_buy_now": "Enable Buy now",
         "enable_buy_now_feature": "Enable buy now feature",
+        "show_sale_tag": "Show Sale Tag",
+        "show_sale_tag_info": "Display sale badge on product images when items are discounted",
         "zoom_in": "Zoom product image",
         "zoom_in_info": "Zoom product image on cursor hover",
         "show_bullets_in_product_details": "Show Bullets in Product Details",
