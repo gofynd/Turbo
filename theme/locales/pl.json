@@ -635,7 +635,15 @@
       "in": "W",
       "home_seo_description": "Kupuj online z łatwością i odkrywaj szeroki wybór produktów wysokiej jakości, najnowsze nowości i ekskluzywne oferty — wszystko w jednym miejscu.",
       "maximum_64_characters_allowed": "Wprowadź znaki mniej niż 64",
-      "maximum_50_characters_allowed": "Wprowadź znaki mniej niż 50"
+      "maximum_50_characters_allowed": "Wprowadź znaki mniej niż 50",
+      "page_titles": {
+        "contact_us": "Skontaktuj się z nami",
+        "home": "Dom",
+        "product_listing": "Lista produktów",
+        "wishlist": "Lista życzeń",
+        "about_us": "O nas",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Nie znaleziono kategorii"

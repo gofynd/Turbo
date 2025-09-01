@@ -319,7 +319,15 @@
       "amount": "مقدار",
       "home_seo_description": "خرید آنلاین با سهولت و کشف طیف گسترده ای از محصولات با کیفیت ، آخرین ورود و معاملات اختصاصی - همه در یک مکان",
       "maximum_64_characters_allowed": "لطفاً شخصیت های کمتر از 64 را وارد کنید",
-      "maximum_50_characters_allowed": "لطفا شخصیت های کمتر از 50 را وارد کنید"
+      "maximum_50_characters_allowed": "لطفا شخصیت های کمتر از 50 را وارد کنید",
+      "page_titles": {
+        "contact_us": "تماس با ما",
+        "home": "خانه",
+        "product_listing": "فهرست محصولات",
+        "wishlist": "لیست آرزوها",
+        "about_us": "درباره ما",
+        "blog": "وبلاگ"
+      }
     },
     "categories": {
       "empty_state": "دسته بندی پیدا نشد"

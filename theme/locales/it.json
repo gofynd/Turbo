@@ -636,7 +636,15 @@
       "in": "In",
       "home_seo_description": "Acquista online con facilità ed esplora un'ampia selezione di prodotti di qualità, novità e offerte esclusive, tutto in un unico posto.",
       "maximum_64_characters_allowed": "Inserisci i caratteri inferiori a 64",
-      "maximum_50_characters_allowed": "Inserisci caratteri inferiori a 50"
+      "maximum_50_characters_allowed": "Inserisci caratteri inferiori a 50",
+      "page_titles": {
+        "contact_us": "Contattaci",
+        "home": "Home",
+        "product_listing": "Elenco prodotti",
+        "wishlist": "Lista dei desideri",
+        "about_us": "Chi siamo",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Nessuna categoria trovata"

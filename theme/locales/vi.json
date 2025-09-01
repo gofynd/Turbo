@@ -635,7 +635,15 @@
       "in": "TRONG",
       "home_seo_description": "Mua sắm trực tuyến dễ dàng và khám phá nhiều sản phẩm chất lượng, hàng mới nhất và ưu đãi độc quyền — tất cả trong một nơi",
       "maximum_64_characters_allowed": "Vui lòng nhập ký tự nhỏ hơn 64",
-      "maximum_50_characters_allowed": "Vui lòng nhập ký tự dưới 50"
+      "maximum_50_characters_allowed": "Vui lòng nhập ký tự dưới 50",
+      "page_titles": {
+        "contact_us": "Liên hệ với chúng tôi",
+        "home": "Trang chủ",
+        "product_listing": "Danh sách sản phẩm",
+        "wishlist": "Danh sách mong muốn",
+        "about_us": "Về chúng tôi",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Không tìm thấy danh mục nào"

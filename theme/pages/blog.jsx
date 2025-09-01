@@ -15,7 +15,7 @@ function Blog({ fpi }) {
   const globalConfig = mode?.global_config?.custom?.props;
   const { sections = [] } = page || {};
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(seoData?.title || "Blog");
+  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.blog"));
   const description = sanitizeHTMLTag(
     seoData?.description || t("resource.blog.seo_description")
   );

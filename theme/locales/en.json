@@ -636,7 +636,15 @@
       "back_to_login_caps": "BACK TO LOGIN",
       "sorry_we_couldnt_find_any_results": "Sorry, we couldn’t find any results",
       "in": "in",
-      "home_seo_description": "Shop online with ease and explore a wide variety of quality products, latest arrivals, and exclusive deals—all in one place"
+      "home_seo_description": "Shop online with ease and explore a wide variety of quality products, latest arrivals, and exclusive deals—all in one place",
+      "page_titles": {
+        "contact_us": "Contact Us",
+        "home": "Home",
+        "product_listing": "Product Listing",
+        "wishlist": "Wishlist",
+        "about_us": "About Us",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "No category found"

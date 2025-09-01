@@ -635,7 +635,15 @@
       "in": "ใน",
       "home_seo_description": "ช้อปออนไลน์อย่างง่ายดายและสำรวจสินค้าคุณภาพ หลากหลาย รุ่นใหม่ล่าสุด และข้อเสนอสุดพิเศษ—all ในที่เดียว",
       "maximum_64_characters_allowed": "โปรดป้อนอักขระน้อยกว่า 64",
-      "maximum_50_characters_allowed": "โปรดป้อนอักขระน้อยกว่า 50"
+      "maximum_50_characters_allowed": "โปรดป้อนอักขระน้อยกว่า 50",
+      "page_titles": {
+        "contact_us": "ติดต่อเรา",
+        "home": "หน้าแรก",
+        "product_listing": "รายการสินค้า",
+        "wishlist": "รายการสิ่งที่ต้องการ",
+        "about_us": "เกี่ยวกับเรา",
+        "blog": "บล็อก"
+      }
     },
     "categories": {
       "empty_state": "ไม่พบหมวดหมู่"

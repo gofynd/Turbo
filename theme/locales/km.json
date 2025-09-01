@@ -635,7 +635,15 @@
       "in": "ក្នុង",
       "home_seo_description": "ជម្រុញការជាវតាមអ៊ីនធឺណិតដោយងាយស្រួល និងស្វែងរកផលិតផលដែលមានគុណភាព ការមកដល់ថ្មី និងការផ្តល់ជូនពិសេសៗ—all នៅកន្លែងតែមួយ។",
       "maximum_64_characters_allowed": "សូមបញ្ចូលតួអក្សរតិចជាង 64",
-      "maximum_50_characters_allowed": "សូមបញ្ចូលតួអក្សរតិចជាង 50"
+      "maximum_50_characters_allowed": "សូមបញ្ចូលតួអក្សរតិចជាង 50",
+      "page_titles": {
+        "contact_us": "ទាក់ទងមកយើង",
+        "home": "ដើម",
+        "product_listing": "បញ្ជីផលិតផល",
+        "wishlist": "បញ្ជីបំណង",
+        "about_us": "អំពីយើង",
+        "blog": "ប្លុក"
+      }
     },
     "categories": {
       "empty_state": "រកមិនឃើញប្រភេទទេ។"

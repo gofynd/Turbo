@@ -16,7 +16,7 @@ function WishlistPage({ fpi }) {
   const { loading, ...wishlistProps } = useWishlist({ fpi });
 
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(seoData?.title || "Wishlist");
+  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.wishlist"));
   const description = sanitizeHTMLTag(
     seoData?.description || t("resource.wishlist.seo_description")
   );

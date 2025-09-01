@@ -635,7 +635,15 @@
       "in": "dalam",
       "home_seo_description": "Beli-belah dalam talian dengan mudah dan terokai pelbagai produk berkualiti, ketibaan terkini, serta tawaran eksklusif — semuanya di satu tempat.",
       "maximum_64_characters_allowed": "Sila masukkan watak kurang dari 64",
-      "maximum_50_characters_allowed": "Sila masukkan watak kurang dari 50"
+      "maximum_50_characters_allowed": "Sila masukkan watak kurang dari 50",
+      "page_titles": {
+        "contact_us": "Hubungi Kami",
+        "home": "Laman Utama",
+        "product_listing": "Senarai Produk",
+        "wishlist": "Senarai Hajat",
+        "about_us": "Tentang Kami",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Tiada kategori ditemui"

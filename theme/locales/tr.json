@@ -635,7 +635,15 @@
       "in": "içinde",
       "home_seo_description": "Kolayca çevrimiçi alışveriş yapın ve kaliteli ürünlerin geniş yelpazesini, en son gelenleri ve özel fırsatları tek bir yerde keşfedin",
       "maximum_64_characters_allowed": "Lütfen 64'ten az karakterleri girin",
-      "maximum_50_characters_allowed": "Lütfen 50'den az karakterleri girin"
+      "maximum_50_characters_allowed": "Lütfen 50'den az karakterleri girin",
+      "page_titles": {
+        "contact_us": "Bize Ulaşın",
+        "home": "Ana Sayfa",
+        "product_listing": "Ürün Listesi",
+        "wishlist": "İstek Listesi",
+        "about_us": "Hakkımızda",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Hiçbir kategori bulunamadı"

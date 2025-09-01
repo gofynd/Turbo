@@ -635,7 +635,15 @@
       "in": "में",
       "home_seo_description": "ऑनलाइन आसानी से खरीदारी करें और एक ही जगह पर बेहतरीन गुणवत्ता वाले उत्पादों, नवीनतम आगमन और विशेष डील्स की विस्तृत रेंज का अन्वेषण करें",
       "maximum_64_characters_allowed": "कृपया 64 से कम वर्ण दर्ज करें",
-      "maximum_50_characters_allowed": "कृपया 50 से कम वर्ण दर्ज करें"
+      "maximum_50_characters_allowed": "कृपया 50 से कम वर्ण दर्ज करें",
+      "page_titles": {
+        "contact_us": "संपर्क करें",
+        "home": "होम",
+        "product_listing": "उत्पाद सूची",
+        "wishlist": "विशलिस्ट",
+        "about_us": "हमारे बारे में",
+        "blog": "ब्लॉग"
+      }
     },
     "categories": {
       "empty_state": "कोई श्रेणी नहीं मिली"

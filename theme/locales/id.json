@@ -635,7 +635,15 @@
       "in": "di dalam",
       "home_seo_description": "Belanja online dengan mudah dan temukan berbagai produk berkualitas, kedatangan terbaru, dan penawaran eksklusif — semuanya dalam satu tempat.",
       "maximum_64_characters_allowed": "Harap masukkan karakter kurang dari 64",
-      "maximum_50_characters_allowed": "Harap masukkan karakter kurang dari 50"
+      "maximum_50_characters_allowed": "Harap masukkan karakter kurang dari 50",
+      "page_titles": {
+        "contact_us": "Hubungi Kami",
+        "home": "Beranda",
+        "product_listing": "Daftar Produk",
+        "wishlist": "Daftar Keinginan",
+        "about_us": "Tentang Kami",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Tidak ada kategori yang ditemukan"

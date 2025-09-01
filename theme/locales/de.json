@@ -635,7 +635,15 @@
       "in": "In",
       "home_seo_description": "Bequem online einkaufen und eine große Auswahl an Qualitätsprodukten, Neuheiten und exklusiven Angeboten entdecken – alles an einem Ort.",
       "maximum_64_characters_allowed": "Bitte geben Sie Zeichen weniger als 64 ein",
-      "maximum_50_characters_allowed": "Bitte geben Sie Charaktere weniger als 50 ein"
+      "maximum_50_characters_allowed": "Bitte geben Sie Charaktere weniger als 50 ein",
+      "page_titles": {
+        "contact_us": "Kontakt",
+        "home": "Startseite",
+        "product_listing": "Produktliste",
+        "wishlist": "Wunschliste",
+        "about_us": "Über uns",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Keine Kategorie gefunden"

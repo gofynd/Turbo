@@ -635,7 +635,15 @@
       "in": "dans",
       "home_seo_description": "Faites vos achats en ligne en toute simplicité et découvrez une large sélection de produits de qualité, les dernières nouveautés et des offres exclusives — le tout en un seul endroit.",
       "maximum_64_characters_allowed": "Veuillez saisir les caractères moins de 64",
-      "maximum_50_characters_allowed": "Veuillez entrer des caractères moins de 50"
+      "maximum_50_characters_allowed": "Veuillez entrer des caractères moins de 50",
+      "page_titles": {
+        "contact_us": "Contactez-nous",
+        "home": "Accueil",
+        "product_listing": "Liste des produits",
+        "wishlist": "Liste de souhaits",
+        "about_us": "À propos de nous",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Aucune catégorie trouvée"

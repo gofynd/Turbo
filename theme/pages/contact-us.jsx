@@ -17,7 +17,7 @@ function ContactUsPage({ fpi }) {
   const { sections = [] } = page || {};
 
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(seoData?.title || "Contact Us");
+  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.contact_us"));
   const description = sanitizeHTMLTag(
     seoData?.description || t("resource.contact_us.seo_description")
   );

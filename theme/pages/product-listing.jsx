@@ -12,7 +12,7 @@ const ProductListing = ({ fpi }) => {
   const { sections = [] } = page || {};
   const seoData = page?.seo || {};
 
-  const title = sanitizeHTMLTag(seoData?.title || "Product Listing");
+  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.product_listing"));
   const description = sanitizeHTMLTag(
     seoData?.description || t("resource.product.seo_description")
   );

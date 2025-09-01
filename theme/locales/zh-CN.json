@@ -635,7 +635,15 @@
       "in": "在",
       "home_seo_description": "轻松在线购物，尽享各种优质商品、最新上架和独家优惠——一站式体验",
       "maximum_64_characters_allowed": "请输入不到64的角色",
-      "maximum_50_characters_allowed": "请输入不到50的角色"
+      "maximum_50_characters_allowed": "请输入不到50的角色",
+      "page_titles": {
+        "contact_us": "联系我们",
+        "home": "主页",
+        "product_listing": "产品列表",
+        "wishlist": "心愿单",
+        "about_us": "关于我们",
+        "blog": "博客"
+      }
     },
     "categories": {
       "empty_state": "未找到类别"

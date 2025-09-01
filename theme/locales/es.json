@@ -635,7 +635,15 @@
       "in": "en",
       "home_seo_description": "Compra en línea fácilmente y descubre una amplia variedad de productos de calidad, las últimas novedades y ofertas exclusivas, todo en un solo lugar.",
       "maximum_64_characters_allowed": "Ingrese caracteres de menos de 64",
-      "maximum_50_characters_allowed": "Ingrese caracteres de menos de 50"
+      "maximum_50_characters_allowed": "Ingrese caracteres de menos de 50",
+      "page_titles": {
+        "contact_us": "Contáctanos",
+        "home": "Inicio",
+        "product_listing": "Lista de productos",
+        "wishlist": "Lista de deseos",
+        "about_us": "Acerca de nosotros",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "No se encontró ninguna categoría"

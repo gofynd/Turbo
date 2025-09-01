@@ -635,7 +635,15 @@
       "in": "em",
       "home_seo_description": "Compre online com facilidade e explore uma grande variedade de produtos de qualidade, lançamentos e ofertas exclusivas — tudo em um só lugar.",
       "maximum_64_characters_allowed": "Por favor, insira os personagens com menos de 64",
-      "maximum_50_characters_allowed": "Por favor, insira os personagens menos de 50"
+      "maximum_50_characters_allowed": "Por favor, insira os personagens menos de 50",
+      "page_titles": {
+        "contact_us": "Contate-nos",
+        "home": "Início",
+        "product_listing": "Lista de produtos",
+        "wishlist": "Lista de desejos",
+        "about_us": "Sobre nós",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Nenhuma categoria encontrada"

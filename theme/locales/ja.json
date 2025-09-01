@@ -635,7 +635,15 @@
       "in": "で",
       "home_seo_description": "簡単にオンラインショッピングを楽しみ、豊富な高品質商品、新着アイテム、限定セールを一か所でチェックしましょう。",
       "maximum_64_characters_allowed": "64未満の文字を入力してください",
-      "maximum_50_characters_allowed": "50未満の文字を入力してください"
+      "maximum_50_characters_allowed": "50未満の文字を入力してください",
+      "page_titles": {
+        "contact_us": "お問い合わせ",
+        "home": "ホーム",
+        "product_listing": "商品一覧",
+        "wishlist": "ウィッシュリスト",
+        "about_us": "私たちについて",
+        "blog": "ブログ"
+      }
     },
     "categories": {
       "empty_state": "カテゴリが見つかりません"

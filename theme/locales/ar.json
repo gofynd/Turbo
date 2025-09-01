@@ -635,7 +635,15 @@
       "in": "في",
       "home_seo_description": "تسوّق عبر الإنترنت بسهولة واستكشف مجموعة واسعة من المنتجات عالية الجودة، وآخر الإصدارات، والعروض الحصرية — كل ذلك في مكان واحد",
       "maximum_64_characters_allowed": "الرجاء إدخال الأحرف أقل من 64",
-      "maximum_50_characters_allowed": "الرجاء إدخال الأحرف أقل من 50"
+      "maximum_50_characters_allowed": "الرجاء إدخال الأحرف أقل من 50",
+      "page_titles": {
+        "contact_us": "اتصل بنا",
+        "home": "الصفحة الرئيسية",
+        "product_listing": "قائمة المنتجات",
+        "wishlist": "قائمة الأمنيات",
+        "about_us": "معلومات عنا",
+        "blog": "مدونة"
+      }
     },
     "categories": {
       "empty_state": "لم يتم العثور على فئة"

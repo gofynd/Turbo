@@ -635,7 +635,15 @@
       "in": "in",
       "home_seo_description": "Winkel online met gemak en ontdek een breed assortiment aan kwaliteitsproducten, nieuwste aankomsten en exclusieve aanbiedingen — allemaal op één plek.",
       "maximum_64_characters_allowed": "Voer tekens in minder dan 64 in",
-      "maximum_50_characters_allowed": "Voer tekens in minder dan 50 in"
+      "maximum_50_characters_allowed": "Voer tekens in minder dan 50 in",
+      "page_titles": {
+        "contact_us": "Contact",
+        "home": "Thuis",
+        "product_listing": "Productlijst",
+        "wishlist": "Verlanglijst",
+        "about_us": "Over ons",
+        "blog": "Blog"
+      }
     },
     "categories": {
       "empty_state": "Geen categorie gevonden"

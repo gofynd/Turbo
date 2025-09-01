@@ -87,6 +87,7 @@ const FyDropdown = ({
   const handleClickOutside = useCallback((event) => {
     if (!dropdown?.current?.contains(event.target)) {
       setIsOpen(false);
+      setFilteredOptions(options);
     }
   }, []);
 
@@ -120,6 +121,7 @@ const FyDropdown = ({
       onChange?.(option);
       setQuery(getOptionLabel(option));
       toggleDropdown();
+      // setFilteredOptions(options);
     },
     [toggleDropdown]
   );
@@ -139,6 +141,7 @@ const FyDropdown = ({
       setIsOpen(true);
     } else {
       setIsOpen(false);
+      setFilteredOptions(options);
     }
   };
 

@@ -16,7 +16,7 @@ function AboutUsPage({ fpi }) {
   const { sections = [] } = page || {};
 
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(seoData?.title || "About Us");
+  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.about_us"));
   const description = sanitizeHTMLTag(
     seoData?.description || t("resource.about.seo_description")
   );
