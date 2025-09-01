@@ -1,4 +1,6 @@
 @import "../main.less";
+@import "../base.global.less";
+
 @viewAllCtaRight: 16px;
 
 .addToCartContainer {
@@ -87,6 +89,7 @@
       display: inline-flex;
       column-gap: 12px;
       .navigation {
+        .btnPrimary();
         padding: 8px;
         border: 1px solid @DividerStokes;
         border-radius: @ButtonRadius;

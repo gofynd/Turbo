@@ -43,6 +43,10 @@
         width: 100%;
         max-width: 216px;
       }
+      &:hover {
+        background-color: @ButtonPrimary;
+        color: @ButtonSecondary;
+      }
     }
   }
 
@@ -64,7 +68,7 @@
 
   &.inside {
     position: relative;
-    .collectionTitleWrapper { 
+    .collectionTitleWrapper {
       @media @desktop {
         position: absolute;
         inset-inline-start: 12px;
@@ -75,7 +79,7 @@
         border-radius: @ButtonRadius;
         overflow: hidden;
         &::before {
-          content:'';
+          content: "";
           position: absolute;
           top: 0;
           bottom: 0;
@@ -86,7 +90,7 @@
           z-index: -1;
         }
       }
-    
+
       .collectionTitle {
         @media @desktop {
           color: @ThemeAccentL5;
