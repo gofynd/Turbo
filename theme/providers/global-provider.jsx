@@ -11,7 +11,7 @@ import {
 import { useThemeConfig } from "../helper/hooks";
 import useInternational from "../components/header/useInternational";
 import { fetchCartDetails } from "../page-layouts/cart/useCart";
-import { registerCopilotTools } from "../../copilot";
+import { initializeCopilot } from "../../copilot";
 
 export function ThemeProvider({ children }) {
   const fpi = useFPI();
@@ -25,9 +25,11 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", registerCopilotTools);
+        document.addEventListener("DOMContentLoaded", () => {
+          initializeCopilot().catch(console.error);
+        });
       } else {
-        registerCopilotTools();
+        initializeCopilot().catch(console.error);
       }
     }
   }, []);

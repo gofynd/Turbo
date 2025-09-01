@@ -75,7 +75,7 @@ export function Component({ props, globalConfig, blocks, fpi }) {
           const script = document.createElement("script");
           script.type = "text/javascript";
           script.textContent = scriptContent;
-          sectionRef.current?.appendChild(script);
+          descriptionRef.current?.appendChild(script);
         } catch (err) {
           console.error("Script injection failed:", err);
         }

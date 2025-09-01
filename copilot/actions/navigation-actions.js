@@ -120,6 +120,91 @@ const buildDiscountUrlWithComplexFormat = (
 
 export const navigationActions = [
   {
+    name: "show_products",
+    description:
+      "Navigate to products listing page when user asks to see products (e.g., 'show me products', 'display products', 'view all products', 'take me to products')",
+    timeout: 5000,
+    parameters: {
+      type: "object",
+      properties: {
+        search_query: {
+          type: "string",
+          description: "Optional search query for specific products",
+        },
+        category: {
+          type: "string",
+          description: "Optional category filter",
+        },
+        brand: {
+          type: "string",
+          description: "Optional brand filter",
+        },
+      },
+      required: [],
+    },
+    handler: async (params = {}) => {
+      try {
+        console.log("🔧 [NAVIGATION ACTION] show_products handler called", {
+          params,
+          currentUrl: window.location.href,
+          timestamp: new Date().toISOString(),
+        });
+
+        const { search_query, category, brand } = params;
+
+        // Build URL with optional parameters
+        const searchParams = new URLSearchParams();
+
+        if (search_query) {
+          searchParams.set("q", search_query);
+        }
+
+        if (category) {
+          searchParams.set("category", category);
+        }
+
+        if (brand) {
+          searchParams.set("brand", brand);
+        }
+
+        const baseUrl = "/products";
+        const queryString = searchParams.toString();
+        const targetUrl = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+
+        console.log("🚀 [NAVIGATION ACTION] Navigating to products", {
+          targetUrl,
+          hasSearch: !!search_query,
+          hasCategory: !!category,
+          hasBrand: !!brand,
+        });
+
+        spaNavigate(targetUrl);
+
+        return {
+          success: true,
+          message: search_query
+            ? `Showing products for "${search_query}"...`
+            : "Showing all products...",
+          url: targetUrl,
+          ...(search_query && { search_query }),
+          ...(category && { category }),
+          ...(brand && { brand }),
+        };
+      } catch (error) {
+        console.error("❌ [NAVIGATION ACTION] Error in show_products:", error);
+        return {
+          success: false,
+          message: `Failed to show products: ${error.message}`,
+          action_required: "system_error",
+          error_details: {
+            type: error.name,
+            message: error.message,
+          },
+        };
+      }
+    },
+  },
+  {
     name: "navigate_to_product_by_position",
     description:
       "Navigate to view a specific product page by its position on the current product listing (e.g., 'show me 4th product', 'go to 2nd product', 'view 3rd product', 'take me to 5th product'). ONLY use for explicit navigation requests, NOT for adding to cart.",
