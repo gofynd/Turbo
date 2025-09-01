@@ -8,6 +8,7 @@ import placeholderImage from "../assets/images/placeholder/image-gallery.png";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, blocks = [], globalConfig = {}, preset }) {
   const {
@@ -156,7 +157,7 @@ const HorizontalLayout = ({
   const { isRTL } = useLocaleDirection();
   const config = useMemo(
     () => ({
-      dots: items.length > colCount,
+      dots: false,
       arrows: items?.length > colCount,
       infinite: items?.length > colCount,
       speed: 500,
@@ -167,8 +168,8 @@ const HorizontalLayout = ({
       autoplaySpeed,
       cssEase: "linear",
       // arrows: getGallery.length > item_count?.value || false,
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles}/>,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles}/>,
       responsive: [
         {
           breakpoint: 800,
@@ -216,7 +217,7 @@ const HorizontalLayout = ({
 
   return (
     <div
-      className={`${styles.imageSlider} ${items?.length <= colCountMobile ? styles.mobileItemLess : ""} ${className}`}
+      className={`remove-horizontal-scroll ${styles.imageSlider} ${items?.length <= colCountMobile ? styles.mobileItemLess : ""} ${className}`}
       style={{
         "--slick-dots": `${Math.ceil(items?.length / colCount) * 22 + 10}px`,
         maxWidth: "100vw",

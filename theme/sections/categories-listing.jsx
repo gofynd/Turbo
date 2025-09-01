@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom";
 import { CATEGORIES_LISTING } from "../queries/categoryQuery";
 import { useWindowWidth } from "../helper/hooks";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
-
+import {SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow"
 // check for FDKLink here
 export function Component({ props, blocks, preset, globalConfig }) {
   const { locale } = useParams();
@@ -134,7 +134,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
   const config = useMemo(() => {
     return {
       arrows: imagesForScrollView?.length > itemCount,
-      dots: imagesForScrollView?.length > itemCount,
+      dots: false,
       speed: 500,
       slidesToShow: itemCount,
       slidesToScroll: itemCount,
@@ -143,8 +143,8 @@ export function Component({ props, blocks, preset, globalConfig }) {
       autoplay: autoplay?.value,
       autoplaySpeed: (play_slides?.value ?? 3) * 1000,
       cssEase: "linear",
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 780,
@@ -236,7 +236,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
       )}
       {!!categories?.length > 0 && showScrollView() && (
         <div
-          className={`${styles.categorySlider} ${imagesForScrollView?.length === 1 ? styles.singleItem : ""}`}
+          className={`remove-horizontal-scroll ${styles.categorySlider} ${imagesForScrollView?.length === 1 ? styles.singleItem : ""}`}
           style={{
             "--slick-dots": `${Math.ceil(imagesForScrollView?.length / itemCount) * 22 + 10}px`,
           }}

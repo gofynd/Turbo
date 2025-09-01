@@ -10,6 +10,7 @@ import { formatLocale } from "../helper/utils";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, globalConfig }) {
   const fpi = useFPI();
@@ -23,7 +24,7 @@ export function Component({ props, globalConfig }) {
   const config = useMemo(
     () => ({
       arrows: blogItems.length > 3,
-      dots: blogItems.length > 3,
+      dots: false,
       speed: 500,
       slidesToShow: 3,
       slidesToScroll: 1,
@@ -32,8 +33,8 @@ export function Component({ props, globalConfig }) {
       pauseOnHover: true,
       cssEase: "linear",
       infinite: blogItems?.length > 3,
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles}  />,
       responsive: [
         {
           breakpoint: 780,
@@ -138,7 +139,7 @@ export function Component({ props, globalConfig }) {
       )}
       {blogItems?.length > 0 && (
         <div
-          className={`${blogItems?.length < 3 && styles["single-card-view"]}  ${styles.blogSlider}`}
+          className={`remove-horizontal-scroll ${blogItems?.length < 3 && styles["single-card-view"]}  ${styles.blogSlider}`}
           style={{
             "--slick-dots": `${blogItems?.length * 22 + 10}px`,
           }}

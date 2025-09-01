@@ -26,6 +26,10 @@ import { getProductImgAspectRatio } from "../helper/utils";
 import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide.css";
 import "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
 
 const Modal = React.lazy(
   () => import("@gofynd/theme-template/components/core/modal/modal")
@@ -127,7 +131,7 @@ export function Component({ props, globalConfig }) {
     const itemCount = Number(item_count?.value ?? 4);
     const itemLength = imagesForScrollView?.length;
     return {
-      dots: itemLength > itemCount,
+      dots: false,
       arrows: itemLength > itemCount,
       infinite: itemLength > itemCount,
       speed: 300,
@@ -136,8 +140,8 @@ export function Component({ props, globalConfig }) {
       swipeToSlide: true,
       autoplay: false,
       cssEase: "linear",
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+    prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 780,
@@ -145,7 +149,7 @@ export function Component({ props, globalConfig }) {
             arrows: false,
             slidesToShow: 3,
             slidesToScroll: 3,
-            dots: true,
+            dots: false,
             swipe: true,
             swipeToSlide: false,
             touchThreshold: 80,
@@ -170,8 +174,8 @@ export function Component({ props, globalConfig }) {
       autoplay: false,
       infinite: imagesForScrollView?.length > itemCountMobile,
       cssEase: "linear",
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       centerMode: imagesForScrollView?.length > itemCountMobile,
       centerPadding: "25px",
       touchThreshold: 5,
@@ -196,7 +200,7 @@ export function Component({ props, globalConfig }) {
           breakpoint: 780,
           settings: {
             arrows: false,
-            dots: true,
+            dots: false,
             slidesToShow: 3,
             slidesToScroll: 3,
           },
@@ -862,7 +866,9 @@ const ProductCardItem = ({
           aspectRatio={getProductImgAspectRatio(globalConfig)}
           imagePlaceholder={placeholderProduct}
           showAddToCart={showAddToCart}
-          actionButtonText={actionButtonText ?? t("resource.common.add_to_cart")}
+          actionButtonText={
+            actionButtonText ?? t("resource.common.add_to_cart")
+          }
           handleAddToCart={handleAddToCart}
           imgSrcSet={imgSrcSet}
           isSlider={isSlider}
@@ -930,7 +936,8 @@ export const settings = {
     },
     {
       id: "img_resize",
-      label: "t:resource.sections.products_listing.image_size_for_tablet_desktop",
+      label:
+        "t:resource.sections.products_listing.image_size_for_tablet_desktop",
       type: "select",
       options: [
         {
@@ -1140,7 +1147,8 @@ export const settings = {
       type: "text",
       id: "card_cta_text",
       label: "t:resource.common.button_text",
-      default: "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
+      default:
+        "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
     },
     {
       type: "checkbox",

@@ -14,6 +14,7 @@ import placeholderMobile2 from "../assets/images/placeholder/slideshow-mobile2.j
 import styles from "../styles/sections/image-slideshow.less";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import { useGlobalStore } from "fdk-core/utils";
+import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
 
 const placeholderImagesDesktop = [placeholderDesktop1, placeholderDesktop2];
 const placeholderImagesMobile = [placeholderMobile1, placeholderMobile2];
@@ -80,9 +81,9 @@ export function Component({ props, blocks, globalConfig, preset }) {
       pauseOnHover: true,
       cssEase: "linear",
       arrows: blocksData.length > 1,
-      dots: blocksData.length > 1,
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+      dots: false,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 800,
@@ -109,7 +110,7 @@ export function Component({ props, blocks, globalConfig, preset }) {
   };
 
   return (
-    <section style={dynamicStyles}>
+    <section className={`remove-horizontal-scroll`} style={dynamicStyles}>
       <Slider {...config} initialSlide={0} className={styles.slideshowSlider}>
         {blocksData?.map((block, index) => (
           <FDKLink

@@ -8,6 +8,7 @@ import { useGlobalStore, useFPI } from "fdk-core/utils";
 import placeholderImage from "../assets/images/placeholder/collections-listing.png";
 import CollectionCard from "../components/collection-card/collection-card";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const fpi = useFPI();
@@ -129,8 +130,8 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
       autoplaySpeed: 3000,
       infinite: collectionsForScrollView?.length > itemsPerRow,
       cssEase: "linear",
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 780,
@@ -202,7 +203,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
       )}
       {isHorizontalView && !!collectionsForScrollView.length && (
         <div
-          className={`${styles.collectionSlider} ${horizontalViewClassName}`}
+          className={`remove-horizontal-scroll ${styles.collectionSlider} ${horizontalViewClassName}`}
           style={{
             "--slick-dots": `${Math.ceil(collectionsForScrollView?.length / itemsPerRow) * 22 + 10}px`,
           }}

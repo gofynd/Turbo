@@ -11,6 +11,7 @@ import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import { useWindowWidth } from "../helper/hooks";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, globalConfig, blocks, id: sectionId }) {
   const fpi = useFPI();
@@ -161,16 +162,10 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
   };
   const { isRTL } = useLocaleDirection();
   const [slickSetting, setSlickSettings] = useState({
-    dots: brands?.length > per_row?.value,
+    dots: false,
     arrows: brands?.length > per_row?.value,
-    nextArrow: <SliderRightIcon />,
-    prevArrow: <SliderLeftIcon />,
-    // nextArrow: ({ currentSlide, slideCount, ...props }) => (
-    //   <SliderRightIcon {...props} />
-    // ),
-    // prevArrow: ({ currentSlide, slideCount, ...props }) => (
-    //   <SliderLeftIcon {...props} />
-    // ),
+    nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+    prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
     focusOnSelect: true,
     infinite: true,
     speed: 600,
@@ -220,7 +215,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
       setSlickSettings((prevConfig) => ({
         ...prevConfig,
         arrows: brands?.length > per_row?.value,
-        dots: brands?.length > per_row?.value,
+        dots: false,
       }));
     }
   }, [per_row, brands]);
@@ -317,7 +312,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
       {showScrollView() && getBrandCount()?.length > 0 && (
         <>
           <div
-            className={`${styles["categories-horizontal"]} ${
+            className={`remove-horizontal-scroll ${styles["categories-horizontal"]} ${
               styles[`card-count-${per_row?.value}`]
             } ${logoOnly?.value ? styles.logoWidth : ""} ${
               getBrandCount()?.length === 1 ? styles["single-card"] : ""
@@ -329,7 +324,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
           >
             <Slider
               style={{ maxWidth: "100vw" }}
-              className={`${styles["brands-carousel"]} ${logoOnly?.value ? styles[`logo-carousel`] : ""} ${logoOnly?.value ? styles[`card-count-${per_row?.value}`] : ""} ${getBrandCount()?.length <= per_row?.value || windowWidth <= 480 ? "no-nav" : ""} ${styles[alignment?.value]}`}
+              className={` ${styles["brands-carousel"]} ${logoOnly?.value ? styles[`logo-carousel`] : ""} ${logoOnly?.value ? styles[`card-count-${per_row?.value}`] : ""} ${getBrandCount()?.length <= per_row?.value || windowWidth <= 480 ? "no-nav" : ""} ${styles[alignment?.value]}`}
               {...slickSetting}
             >
               {!isLoading &&

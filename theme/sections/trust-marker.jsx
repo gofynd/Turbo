@@ -7,6 +7,7 @@ import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, globalConfig, blocks, preset }) {
   const {
@@ -106,7 +107,7 @@ const HorizontalLayout = ({
   const { isRTL } = useLocaleDirection();
   const slickSetting = useMemo(() => {
     return {
-      dots: trustMarker?.length > colCount,
+      dots: false,
       arrows: trustMarker?.length > colCount,
       focusOnSelect: true,
       infinite: trustMarker?.length > colCount,
@@ -116,8 +117,8 @@ const HorizontalLayout = ({
       autoplay: false,
       centerMode: false,
       centerPadding: trustMarker?.length === 1 ? "0" : "152px",
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
+       nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles}  />,
       responsive: [
         {
           breakpoint: 1023,
@@ -150,7 +151,7 @@ const HorizontalLayout = ({
 
   return (
     <div
-      className={`${styles.horizontalLayout} ${className}`}
+      className={`remove-horizontal-scroll ${styles.horizontalLayout} ${className}`}
       style={{
         "--slick-dots": `${Math.ceil(trustMarker?.length / colCount) * 22 + 10}px`,
       }}

@@ -46,8 +46,8 @@ export function Component({ props, globalConfig, blocks, preset }) {
       autoplaySpeed: Number(slide_interval?.value) * 1000,
       centerMode: testimonialsList.length > 2,
       centerPadding: testimonialsList.length > 2 ? "75px" : "0px",
-       nextArrow: <SliderNextArrow />,
-      prevArrow: <SliderPrevArrow />,
+       nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 1023,
@@ -99,7 +99,7 @@ export function Component({ props, globalConfig, blocks, preset }) {
       </h2>
 
       <div
-        className={`testimonial-slider ${styles.testimonialSlider} 
+        className={`remove-horizontal-scroll testimonial-slider ${styles.testimonialSlider} 
           ${testimonialsList?.length === 1 ? styles.oneItem : ""}  
           ${testimonialsList?.length === 2 ? styles.twoItem : ""}
         `}

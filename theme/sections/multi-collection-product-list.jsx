@@ -25,7 +25,7 @@ import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
 import useAddToCartModal from "../page-layouts/plp/useAddToCartModal";
 import { FDKLink } from "fdk-core/components";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
-
+import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
@@ -111,7 +111,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     const colCount = Number(per_row?.value ?? 4);
     const isCollectionExceedCount = activeCollectionItems?.length > colCount;
     return {
-      dots: isCollectionExceedCount,
+      dots: false,
       arrows: isCollectionExceedCount,
       infinite: isCollectionExceedCount,
       speed: 400,
@@ -124,8 +124,8 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
       autoplaySpeed: 3000,
       centerMode: false,
       cssEase: "ease-in-out",
-      nextArrow: <ArrowRightIcon />,
-      prevArrow: <ArrowLeftIcon />,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles}  />,
       responsive: [
         {
           breakpoint: 780,
@@ -279,7 +279,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
         <div className={styles.productContainer}>
           {activeCollectionItems?.length > 0 && (
             <div
-              className={styles.slideWrap}
+              className={`remove-horizontal-scroll ${styles.slideWrap}`}
               style={{
                 "--slick-dots": `${Math.ceil(activeCollectionItems?.length / per_row?.value) * 22 + 10}px`,
               }}
