@@ -376,28 +376,29 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     const addressList = addresses?.length > 0 ? addresses : allAddresses;
     const targetId = id || selectedAddressId;
     const findAddress = addressList?.find((item) => item?.id === targetId);
-    const payload = {
-      cartId: cart_id,
-      buyNow,
-      selectCartAddressRequestInput: {
-        cart_id,
-        id: id.length ? id : findAddress?.id,
-        billing_address_id: id.length ? id : findAddress?.id,
-      },
-    };
 
-    fpi.executeGQL(SELECT_ADDRESS, payload).then((res) => {
-      if (res?.data?.selectAddress?.is_valid) {
-        setIsShipmentLoading(true);
-        updateQuery("address_id", id.length ? id : selectedAddressId);
-        if (findAddress?.area_code) {
-          fpi
-            .executeGQL(LOCALITY, {
-              locality: "pincode",
-              localityValue: findAddress?.area_code,
-              country: findAddress?.country_iso_code,
-            })
-            .then(() => {
+    // If area_code exists, call LOCALITY first, then select address and fetch shipment
+    if (findAddress?.area_code) {
+      setIsShipmentLoading(true);
+      fpi
+        .executeGQL(LOCALITY, {
+          locality: "pincode",
+          localityValue: findAddress?.area_code,
+          country: findAddress?.country_iso_code,
+        })
+        .then(() => {
+          const payload = {
+            cartId: cart_id,
+            buyNow,
+            selectCartAddressRequestInput: {
+              cart_id,
+              id: id.length ? id : findAddress?.id,
+              billing_address_id: id.length ? id : findAddress?.id,
+            },
+          };
+          fpi.executeGQL(SELECT_ADDRESS, payload).then((res) => {
+            if (res?.data?.selectAddress?.is_valid) {
+              updateQuery("address_id", id.length ? id : selectedAddressId);
               fpi
                 .executeGQL(FETCH_SHIPMENTS, {
                   addressId: `${id.length ? id : selectedAddressId}`,
@@ -413,8 +414,39 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
                 .finally(() => {
                   setIsShipmentLoading(false);
                 });
-            });
-        } else {
+              setShowShipment(true);
+              setAddressLoader(false);
+              setInvalidAddressError(null);
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+            } else {
+              setIsShipmentLoading(false);
+              setInvalidAddressError({
+                id: id.length ? id : findAddress?.id,
+                message:
+                  translateDynamicLabel(res?.data?.selectAddress?.message, t) ||
+                  res?.errors?.[0]?.message,
+              });
+            }
+          });
+        });
+    } else {
+      // If no area_code, skip locality and proceed as before
+      const payload = {
+        cartId: cart_id,
+        buyNow,
+        selectCartAddressRequestInput: {
+          cart_id,
+          id: id.length ? id : findAddress?.id,
+          billing_address_id: id.length ? id : findAddress?.id,
+        },
+      };
+      fpi.executeGQL(SELECT_ADDRESS, payload).then((res) => {
+        if (res?.data?.selectAddress?.is_valid) {
+          setIsShipmentLoading(true);
+          updateQuery("address_id", id.length ? id : selectedAddressId);
           fpi
             .executeGQL(FETCH_SHIPMENTS, {
               addressId: `${id.length ? id : selectedAddressId}`,
@@ -430,23 +462,23 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
             .finally(() => {
               setIsShipmentLoading(false);
             });
+          setShowShipment(true);
+          setAddressLoader(false);
+          setInvalidAddressError(null);
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        } else {
+          setInvalidAddressError({
+            id: id.length ? id : findAddress?.id,
+            message:
+              translateDynamicLabel(res?.data?.selectAddress?.message, t) ||
+              res?.errors?.[0]?.message,
+          });
         }
-        setShowShipment(true);
-        setAddressLoader(false);
-        setInvalidAddressError(null);
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
-      } else {
-        setInvalidAddressError({
-          id: id.length ? id : findAddress?.id,
-          message:
-            translateDynamicLabel(res?.data?.selectAddress?.message, t) ||
-            res?.errors?.[0]?.message,
-        });
-      }
-    });
+      });
+    }
   };
 
   const onFailedGetCartShipmentDetails = async () => {

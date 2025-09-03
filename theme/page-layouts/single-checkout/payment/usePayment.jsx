@@ -1160,6 +1160,7 @@ const usePayment = (fpi) => {
   };
 
   const cancelPayment = async (payload) => {
+    setIsLoading(false);
     return fpi.executeGQL(RESEND_OR_CANCEL_PAYMENT, {
       resendOrCancelPaymentRequestInput: payload,
     });
