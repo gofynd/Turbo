@@ -13,9 +13,16 @@ import {
   useSnackbar,
   useAddressFormSchema,
   usePincodeInput,
+  useGoogleMapConfig,
+  useThemeFeature,
 } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
-import { capitalize, translateDynamicLabel } from "../../helper/utils";
+import useHyperlocal from "../../components/header/location-modal/useHyperlocal";
+import {
+  capitalize,
+  getAddressStr,
+  translateDynamicLabel,
+} from "../../helper/utils";
 
 const useCartDeliveryLocation = ({ fpi }) => {
   const { t } = useGlobalTranslation("translation");
@@ -24,12 +31,12 @@ const useCartDeliveryLocation = ({ fpi }) => {
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
   const CART = useGlobalStore(fpi.getters.CART);
+  const { selectedAddress } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const { cart_items } = CART || {};
   const [selectedAddressId, setSelectedAddressId] = useState("");
   const [isPincodeModalOpen, setIsPincodeModalOpen] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState(null);
   const [error, setError] = useState(null);
   const [addrError, setAddrError] = useState(null);
   const {
@@ -38,9 +45,9 @@ const useCartDeliveryLocation = ({ fpi }) => {
     defaultAddress,
     otherAddresses = [],
     addAddress,
-    mapApiKey,
-    showGoogleMap,
   } = useAddress({ fpi, pageName: "cart" });
+  const { isServiceability } = useThemeFeature({ fpi });
+  const { isHeaderMap, isCheckoutMap, mapApiKey } = useGoogleMapConfig({ fpi });
   const { showSnackbar } = useSnackbar();
 
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
@@ -64,13 +71,14 @@ const useCartDeliveryLocation = ({ fpi }) => {
     countries,
     countryDetails,
     currentCountry,
-    deliveryLocation,
+    deliveryLocation: deliveryLocationInfo,
     isServiceabilityPincodeOnly,
     fetchCountrieDetails,
     setI18nDetails,
   } = useInternational({
     fpi,
   });
+  const { updatedSelectedAddress } = useHyperlocal(fpi);
 
   const [selectedCountry, setSelectedCountry] = useState(currentCountry);
   const [countrySearchText, setCountrySearchText] = useState("");
@@ -115,7 +123,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
           currency: countryInfo.currency.code,
         });
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const handleCountrySearch = (event) => {
@@ -165,24 +173,29 @@ const useCartDeliveryLocation = ({ fpi }) => {
           return data;
         } else {
           showSnackbar(
-            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure")
+            res?.errors?.[0]?.message ||
+              t("resource.common.address.pincode_verification_failure")
           );
           data.showError = true;
           data.errorMsg =
-            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure");
+            res?.errors?.[0]?.message ||
+            t("resource.common.address.pincode_verification_failure");
           return data;
         }
       });
   };
 
   function handleButtonClick() {
-    if (!isServiceabilityPincodeOnly) {
-      fpi.custom.setValue("isI18ModalOpen", true);
-    } else if (isLoggedIn) {
+    if (isLoggedIn) {
       setIsAddressModalOpen(true);
+    } else if (!isServiceabilityPincodeOnly) {
+      fpi.custom.setValue("isI18ModalOpen", true);
     } else {
-      setIsPincodeModalOpen(true);
+      fpi.custom.setValue("isServiceabilityModalOpen", true);
     }
+    // else {
+    //   setIsPincodeModalOpen(true);
+    // }
   }
   function handleAddButtonClick() {
     setIsAddressModalOpen(false);
@@ -197,7 +210,9 @@ const useCartDeliveryLocation = ({ fpi }) => {
   }
   function gotoCheckout(id) {
     if (cart_items?.id && id) {
-      navigate(`/cart/checkout?id=${cart_items?.id ?? ""}&address_id=${id ?? ""}`);
+      navigate(
+        `/cart/checkout?id=${cart_items?.id ?? ""}&address_id=${id ?? ""}`
+      );
     } else {
       navigate("/cart/bag");
     }
@@ -243,32 +258,15 @@ const useCartDeliveryLocation = ({ fpi }) => {
     return addressParts.filter(Boolean).join(", ");
   }
 
-  const selectedAddressString = useMemo(() => {
-    if (selectedAddress) {
-      return getFormattedAddress(selectedAddress);
-    } else if (defaultAddress?.id) {
-      return getFormattedAddress(defaultAddress);
-    } else {
-      return "";
-    }
-  }, [selectedAddress, defaultAddress]);
-
-  const personName = useMemo(() => {
-    if (selectedAddress) {
-      return selectedAddress.name;
-    } else if (defaultAddress?.id) {
-      return defaultAddress.name;
-    } else {
-      return "";
-    }
-  }, [selectedAddress, defaultAddress]);
-
   const selectAddress = (id = "") => {
     const findAddress = allAddress.find(
       (item) => item?.id === selectedAddressId
     );
     if (!cart_items?.id) {
-      showSnackbar(t("resource.common.address.address_selection_failure"), "error");
+      showSnackbar(
+        t("resource.common.address.address_selection_failure"),
+        "error"
+      );
       return;
     }
     const cart_id = cart_items?.id;
@@ -286,13 +284,15 @@ const useCartDeliveryLocation = ({ fpi }) => {
     fpi.executeGQL(SELECT_ADDRESS, payload).then((res) => {
       if (res?.data?.selectAddress?.is_valid) {
         const selectedAddPincode = findAddress?.area_code;
+        updatedSelectedAddress(findAddress);
         // setPincode(selectedAddPincode);
         closeModal();
         gotoCheckout(addrId);
         setAddrError(null);
       } else {
         const errMsg =
-          translateDynamicLabel(res?.data?.selectAddress?.message, t) || t("resource.common.address.address_selection_failure");
+          translateDynamicLabel(res?.data?.selectAddress?.message, t) ||
+          t("resource.common.address.address_selection_failure");
         setAddrError({ id: addrId, message: errMsg });
         showSnackbar(translateDynamicLabel(errMsg, t), "error");
       }
@@ -320,16 +320,30 @@ const useCartDeliveryLocation = ({ fpi }) => {
         });
       } else {
         showSnackbar(
-          res?.errors?.[0]?.message ?? t("resource.common.address.address_addition_failure"),
+          res?.errors?.[0]?.message ??
+            t("resource.common.address.address_addition_failure"),
           "error"
         );
       }
     });
   }
 
+  const deliveryLocation = useMemo(() => {
+    if (selectedAddress) {
+      return getAddressStr(selectedAddress);
+    }
+    return deliveryLocationInfo.join(", ");
+  }, [isServiceability, selectedAddress, deliveryLocationInfo]);
+
+  const btnLabel =
+    !isServiceabilityPincodeOnly || (isServiceability && isHeaderMap)
+      ? t("resource.cart.select_location")
+      : t("resource.cart.enter_pin_code");
+
   return {
     pincode: locationDetails?.pincode || "",
-    deliveryLocation: deliveryLocation.join(", "),
+    deliveryLocation,
+    btnLabel,
     pincodeInput,
     error,
     isPincodeModalOpen,
@@ -343,8 +357,8 @@ const useCartDeliveryLocation = ({ fpi }) => {
     selectedAddressId,
     setSelectedAddressId,
     addAddress: addAddressCaller,
+    showGoogleMap: isCheckoutMap,
     mapApiKey,
-    showGoogleMap,
     getLocality,
     isAddAddressModalOpen,
     selectAddress,

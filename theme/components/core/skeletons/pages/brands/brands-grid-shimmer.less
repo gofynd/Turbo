@@ -1,0 +1,35 @@
+@import "../../../../../styles/main.less";
+
+.brandsGridShimmer {
+  --col-count: 1;
+  --row-gap: 16px;
+  --col-gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(
+    var(--col-count),
+    calc(
+      (100% / var(--col-count)) -
+        (var(--col-gap) * (var(--col-count) - 1) / var(--col-count))
+    )
+  );
+  gap: var(--row-gap) var(--col-gap);
+
+  // Mobile up - 3 columns for brands (matches card-list.less for BRANDS)
+  @media @mobile-up {
+    --col-count: 3;
+    --row-gap: 16px;
+    --col-gap: 24px;
+  }
+
+  // Desktop - 4 columns for brands
+  @media @desktop {
+    --col-count: 4;
+  }
+}
+
+// Match the existing brands card styling from card-list
+.grpListWrap {
+  .brandsGridShimmer {
+    // Inherit any specific BRANDS styling
+  }
+}

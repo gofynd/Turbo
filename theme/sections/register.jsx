@@ -9,14 +9,10 @@ import { getConfigFromProps } from "../helper/utils";
 function Component({ props }) {
   const fpi = useFPI();
   const registerProps = useRegister({ fpi });
-
   const pageConfig = getConfigFromProps(props);
 
   return (
-    <AuthContainer
-      bannerImage={pageConfig?.image_banner}
-      bannerAlignment={pageConfig?.image_layout}
-    >
+    <AuthContainer bannerAlignment={pageConfig?.image_layout}>
       <Register {...registerProps} pageConfig={pageConfig} />
     </AuthContainer>
   );

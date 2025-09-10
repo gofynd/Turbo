@@ -57,79 +57,171 @@ export const PLP_PRODUCTS = `query products(
       size
     }
     items {
-        action {
-          page {
-            params
-            type
-            query
-          }
+      brand {
+        _custom_json
+        custom_config
+        description
+        name
+        uid
+        id
+      }
+      color
+      item_code
+      item_type
+      has_variant
+      uid
+      grouped_attributes {
+        title
+        details {
+          key
+          type
+          value
+        }
+      }
+      attributes
+      custom_config
+      media {
+        alt
+        type
+        url
+        meta {
+          source
+        }
+      }
+      custom_order {
+        is_custom_order
+        manufacturing_time
+        manufacturing_time_unit
+      }
+      custom_meta {
+        key
+        value
+      }
+      description
+      discount
+      highlights
+      image_nature
+      is_dependent
+      moq {
+        increment_unit
+        maximum
+        minimum
+      }
+      name
+      net_quantity {
+        unit
+        value
+      }
+      price {
+        effective {
+          currency_code
+          currency_symbol
+          max
+          min
+        }
+        marked {
+          currency_code
+          currency_symbol
+          max
+          min
+        }
+      }
+      product_group_tag
+      product_online_date
+      rating
+      rating_count
+      seo {
+        description
+        title
+      }
+      short_description
+      similars
+      slug
+      tags
+      teaser_tag
+      tryouts
+      type
+      action {
+        type
+        page {
+          params
+          query
           type
         }
-        brand {
-            name
-        }
+      }
+      categories {
+        _custom_json
+        custom_config
+        description
+        name
+        uid
+        id
         action {
+          type
           page {
             params
             query
             type
           }
+        }
+        logo {
+          alt
           type
+          url
+          meta {
+            source
+          }
         }
-        price {
-            effective {
-                currency_code
-                currency_symbol
-                max
-                min
-            }
-            marked {
-                currency_code
-                currency_symbol
-                max
-                min
-            }
-        }
-        media {
+      }
+      identifiers
+      sizes
+      sellable
+      variants {
+        display_type
+        header
+        key
+        total
+        items {
+          _custom_json
+          color
+          color_name
+          is_available
+          name
+          slug
+          uid
+          value
+          medias {
             alt
             type
             url
-        }
-        variants {
-          display_type
-          header
-          items {
-            _custom_meta {
-              key
-              value
+            meta {
+              source
             }
-            color
-            color_name
-            is_available
-            medias {
-              alt
-              type
-              url
-            }
-            name
-            slug
-            uid
-            value
           }
-          key
-          total
+          action {
+            type
+            page {
+              params
+              query
+              type
+            }
+          }
         }
-        slug
-        uid
-        sellable
-        teaser_tag
-        discount
-        name
-        product_online_date
+      }
+      country_of_origin
+      is_tryout
+      channel
+      slug
+      uid
+      sellable
+      teaser_tag
+      discount
+      name
+      product_online_date
+      sizes
     }
   }
-}
-`;
+}`;
 
 export const GET_QUICK_VIEW_PRODUCT_DETAILS = `query($slug: String!)  {
   product(slug: $slug) {
@@ -198,7 +290,6 @@ export const GET_QUICK_VIEW_PRODUCT_DETAILS = `query($slug: String!)  {
             convertable
             value
           }
-          
         }
         image
         size_tip
@@ -208,7 +299,7 @@ export const GET_QUICK_VIEW_PRODUCT_DETAILS = `query($slug: String!)  {
           col_3
           col_4
           col_5
-          col_6 
+          col_6
           col_7
           col_8
           col_9

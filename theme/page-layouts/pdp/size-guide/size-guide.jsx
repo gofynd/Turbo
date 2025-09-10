@@ -87,26 +87,26 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
   const displayStyle = useMemo(() => {
     let displayStyle = "none";
     if (activeTab === "measure") {
-      displayStyle = productMeta.size_chart.image ? "block" : "flex";
+      displayStyle = productMeta.size_chart.image && "block";
     }
     return displayStyle;
   }, [activeTab]);
 
   return (
-    <Suspense fallback={<div/>}>
-    <Modal
-      modalType="right-modal"
-      isOpen={isOpen}
-      title=""
-      closeDialog={(e) => onCloseDialog(e)}
-      headerClassName={styles.sidebarHeader}
-      bodyClassName={styles.sizeContainer}
-    >
-      {/* Size Guide Dialog */}
-      {/* Tabs */}
-      <div className={styles.sizeTabs}>
-        {/* Size Guide Tab */}
-        {isSizeChartAvailable() && (
+    <Suspense fallback={<div />}>
+      <Modal
+        modalType="right-modal"
+        isOpen={isOpen}
+        title=""
+        closeDialog={(e) => onCloseDialog(e)}
+        headerClassName={styles.sidebarHeader}
+        bodyClassName={styles.sizeContainer}
+      >
+        {/* Size Guide Dialog */}
+        {/* Tabs */}
+        <div className={styles.sizeTabs}>
+          {/* Size Guide Tab */}
+          {/* {isSizeChartAvailable() && ( */}
           <button
             type="button"
             className={`b2 ${styles.tab} ${styles.tabSizeGuide} ${
@@ -116,10 +116,10 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
           >
             {t("resource.product.size_guide_lower")}
           </button>
-        )}
+          {/* )} */}
 
-        {/* Measure Tab */}
-        {productMeta?.size_chart && (
+          {/* Measure Tab */}
+          {/* {productMeta?.size_chart && ( */}
           <button
             type="button"
             className={`b2 ${styles.tab} ${styles.tabMeasure} ${
@@ -129,151 +129,173 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
           >
             {t("resource.product.how_to_measure")}
           </button>
-        )}
-      </div>
-
-      {/* Body */}
-      <div className={styles.sidebarBody}>
-        {/* Left Container */}
-        <div
-          className={`${styles.leftContainer} ${
-            !productMeta?.size_chart?.image ? styles.cstLw : ""
-          }`}
-          style={{ display: activeTab === "size_guide" ? "block" : "none" }}
-        >
-          {/* Button Group */}
-          <div className={styles.btnGroup}>
-            <h4 className="h4 fontHeader" style={{ marginBottom: "16px" }}>
-              {productMeta?.size_chart?.title}
-            </h4>
-            <div className={styles.btnContainer}>
-              {isSizeChartAvailable() &&
-                Object.entries(values)?.map(([key, val]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => {
-                      changeSelectedMetric(key);
-                    }}
-                    className={`h5 ${styles.unitBtn} ${styles.fontBody} ${
-                      previewSelectedMetric === key
-                        ? styles.unitBtnSelected
-                        : ""
-                    }`}
-                  >
-                    {val}
-                  </button>
-                ))}
-            </div>
-          </div>
-          {/* Size Description */}
-          {productMeta?.size_chart && productMeta?.size_chart?.description && (
-            <div className={styles.sizeDesc}>
-              <FyHTMLRenderer
-                htmlContent={productMeta?.size_chart?.description}
-              />
-            </div>
-          )}
-
-          <div className={styles.sizeInfo}>
-            <table className={styles.sizeTable}>
-              <thead>
-                <tr>
-                  {headers?.map(
-                    ([key, val]) =>
-                      val !== null && (
-                        <th
-                          key={`column${key}`}
-                          className={`b2 ${styles.sizeHeader}`}
-                        >
-                          {val?.value}
-                        </th>
-                      )
-                  )}
-                </tr>
-              </thead>
-
-              <tbody>
-                {productMeta?.size_chart?.sizes?.map((row, index) => (
-                  <tr key={`row_${index}`} className={styles.sizeRow}>
-                    {Object.entries(row)
-                      .filter(
-                        ([key, val]) => !key?.includes("__") && val !== null
-                      )
-                      ?.map(([key, val], index2) => (
-                        <td
-                          key={`cell_${key}`}
-                          className={`captionNormal ${styles.sizeCell}`}
-                        >
-                          {headers[index2][1]?.convertable
-                            ? convertMetrics(val)
-                            : val}
-                        </td>
-                      ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {!isSizeChartAvailable() && (
-            <div className={styles.notAvailable}>
-              <h3 className={styles.fontHeader}>
-                {t("resource.common.not_available_contact_for_info")}
-              </h3>
-              <FDKLink to="/contact-us" target="_blank">
-                <button
-                  type="button"
-                  className={`${styles.contactUs} btnPrimary ${styles.fontBody}`}
-                >
-                  {t("resource.common.contact_us_caps")}
-                </button>
-              </FDKLink>
-            </div>
-          )}
+          {/* )} */}
         </div>
 
-        <div
-          className={styles.rightContainer}
-          style={{
-            display: displayStyle,
-          }}
-        >
-          {productMeta &&
-            productMeta.size_chart &&
-            productMeta.size_chart.image && (
-              <div className={styles.sizeGuideImage}>
-                <FyImage
-                  src={productMeta.size_chart.image}
-                  alt={productMeta.size_chart.title}
-                  sources={[{ width: 500 }]}
-                  aspectRatio={0.8}
-                  mobileAspectRatio={0.8}
-                />
+        {/* Body */}
+        <div className={styles.sidebarBody}>
+          {/* Left Container */}
+          <div
+            className={`${styles.leftContainer} ${
+              !productMeta?.size_chart?.image ? styles.cstLw : ""
+            }`}
+            style={{ display: activeTab === "size_guide" ? "block" : "none" }}
+          >
+            {/* Button Group */}
+            {(productMeta?.size_chart?.title || isSizeChartAvailable()) && (
+              <div className={styles.btnGroup}>
+                {productMeta?.size_chart?.title && (
+                  <h4
+                    className="h4 fontHeader"
+                    style={{ marginBottom: "16px" }}
+                  >
+                    {productMeta?.size_chart?.title}
+                  </h4>
+                )}
+                <div className={styles.btnContainer}>
+                  {isSizeChartAvailable() &&
+                    Object.entries(values)?.map(([key, val]) => (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => {
+                          changeSelectedMetric(key);
+                        }}
+                        className={`h5 ${styles.unitBtn} ${styles.fontBody} ${
+                          previewSelectedMetric === key
+                            ? styles.unitBtnSelected
+                            : ""
+                        }`}
+                      >
+                        {val}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+            {/* Size Description */}
+            {productMeta?.size_chart &&
+              productMeta?.size_chart?.description && (
+                <div className={styles.sizeDesc}>
+                  <FyHTMLRenderer
+                    htmlContent={productMeta?.size_chart?.description}
+                  />
+                </div>
+              )}
+
+            {isSizeChartAvailable() && (
+              <div className={styles.sizeInfo}>
+                <table className={styles.sizeTable}>
+                  <thead>
+                    <tr>
+                      {headers?.map(
+                        ([key, val]) =>
+                          val !== null && (
+                            <th
+                              key={`column${key}`}
+                              className={`b2 ${styles.sizeHeader}`}
+                            >
+                              {val?.value}
+                            </th>
+                          )
+                      )}
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {productMeta?.size_chart?.sizes?.map((row, index) => (
+                      <tr key={`row_${index}`} className={styles.sizeRow}>
+                        {Object.entries(row)
+                          .filter(
+                            ([key, val]) => !key?.includes("__") && val !== null
+                          )
+                          ?.map(([key, val], index2) => (
+                            <td
+                              key={`cell_${key}`}
+                              className={`captionNormal ${styles.sizeCell}`}
+                            >
+                              {headers[index2][1]?.convertable
+                                ? convertMetrics(val)
+                                : val}
+                            </td>
+                          ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
 
-          {/* Not Available */}
-          {!productMeta ||
-            !productMeta.size_chart ||
-            (!productMeta.size_chart.image && (
+            {!isSizeChartAvailable() && (
               <div className={styles.notAvailable}>
-                <h3 className={styles.fontHeader}>
-                  {t("resource.common.not_available_contact_for_info")}
+                <h3 className={`${styles.fontHeader} fontHeader`}>
+                  {t("resource.common.size_not_available_info_heading")}
                 </h3>
+                <p className="fontBody">
+                  {" "}
+                  {t("resource.common.size_not_available_info_description")}
+                </p>
                 <FDKLink to="/contact-us" target="_blank">
                   <button
                     type="button"
-                    className={`${styles.contactUs} btnPrimary ${styles.fontBody}`}
+                    className={`${styles.contactUs} ${styles.btnPrimary} ${styles.fontBody}`}
                   >
                     {t("resource.common.contact_us_caps")}
                   </button>
                 </FDKLink>
               </div>
-            ))}
+            )}
+          </div>
+
+          <div
+            className={styles.rightContainer}
+            style={{
+              display: displayStyle,
+            }}
+          >
+            {productMeta &&
+              productMeta.size_chart &&
+              productMeta.size_chart.image && (
+                <div className={styles.sizeGuideImage}>
+                  <FyImage
+                    src={productMeta.size_chart.image}
+                    alt={productMeta.size_chart.title}
+                    sources={[{ width: 500 }]}
+                    aspectRatio={0.8}
+                    mobileAspectRatio={0.8}
+                  />
+                </div>
+              )}
+
+            {/* Not Available */}
+            {!productMeta ||
+              !productMeta.size_chart ||
+              (!productMeta.size_chart.image && (
+                <div className={styles.notAvailable}>
+                  <h3 className={`${styles.fontHeader} fontHeader`}>
+                    {t(
+                      "resource.common.size_measure_not_available_info_heading"
+                    )}
+                  </h3>
+                  <p className={`${styles.fontBody} fontBody`}>
+                    {" "}
+                    {t(
+                      "resource.common.size_measure_not_available_info_description"
+                    )}
+                  </p>
+                  <FDKLink to="/contact-us" target="_blank">
+                    <button
+                      type="button"
+                      className={`${styles.contactUs} ${styles.btnPrimary} ${styles.fontBody}`}
+                    >
+                      {t("resource.common.contact_us_caps")}
+                    </button>
+                  </FDKLink>
+                </div>
+              ))}
+          </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
     </Suspense>
   );
 }

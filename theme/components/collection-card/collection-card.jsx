@@ -6,7 +6,7 @@ import placeholderImage from "../../assets/images/placeholder/collections-listin
 import styles from "./collection-card.less";
 
 const CollectionCard = ({
-  className = '',
+  className = "",
   collectionName,
   collectionImage,
   collectionAction,

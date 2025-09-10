@@ -8,7 +8,10 @@ import { useGlobalStore, useFPI } from "fdk-core/utils";
 import placeholderImage from "../assets/images/placeholder/collections-listing.png";
 import CollectionCard from "../components/collection-card/collection-card";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
-import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const fpi = useFPI();
@@ -121,7 +124,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const config = useMemo(
     () => ({
       arrows: collectionsForScrollView?.length > itemsPerRow,
-      dots: collectionsForScrollView?.length > itemsPerRow,
+      dots: false,
       speed: collectionsForScrollView?.length / itemsPerRow > 2 ? 700 : 400,
       slidesToShow: itemsPerRow,
       slidesToScroll: itemsPerRow,
@@ -350,6 +353,23 @@ export const settings = {
       ],
     },
     {
+      type: "select",
+      id: "name_placement",
+      label: "Collection Title & Button Placement",
+      default: "inside",
+      info: "Place collection title and button inside or outside the image",
+      options: [
+        {
+          value: "inside",
+          text: "Inside the image",
+        },
+        {
+          value: "outside",
+          text: "Outside the image",
+        },
+      ],
+    },
+    {
       type: "text",
       id: "button_text",
       default: "t:resource.default_values.shop_now",
@@ -358,7 +378,8 @@ export const settings = {
     {
       type: "range",
       id: "per_row",
-      label: "t:resource.sections.collections_listing.collections_per_row_desktop",
+      label:
+        "t:resource.sections.collections_listing.collections_per_row_desktop",
       min: "3",
       max: "4",
       step: "1",
@@ -402,6 +423,28 @@ export const settings = {
       label: "t:resource.sections.categories.bottom_padding",
       default: 16,
       info: "t:resource.sections.categories.bottom_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Top padding",
+      default: 16,
+      info: "Top padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Bottom padding",
+      default: 16,
+      info: "Bottom padding for section",
     },
   ],
   blocks: [

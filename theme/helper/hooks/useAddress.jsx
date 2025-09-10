@@ -9,12 +9,9 @@ import {
 import { LOCALITY } from "../../queries/logisticsQuery";
 import { useSnackbar } from "./hooks";
 import { capitalize } from "../utils";
-import { useGoogleMapConfig } from "./useGoogleMapConfig";
-
-export const useAddress = ({ fpi, pageName }) => {
+export const useAddress = ({ fpi }) => {
   const { t } = useGlobalTranslation("translation");
   const { showSnackbar } = useSnackbar();
-  const { isGoogleMap, mapApiKey } = useGoogleMapConfig({ fpi });
   const addressData = useGlobalStore(fpi.getters.ADDRESS);
   const { loading: isLoading, address: allAddress } = addressData || {};
   const defaultAddress = useMemo(
@@ -85,6 +82,9 @@ export const useAddress = ({ fpi, pageName }) => {
     delete add?.otherAddressType;
     /* eslint-disable no-underscore-dangle */
     delete add?.__typename;
+    if (add?.area === null) delete add.area;
+    if (add?.google_map_point === null) delete add.google_map_point;
+    if (add?.meta === null) delete add.meta;
     const payload = {
       id: addressId,
       address2Input: {
@@ -108,8 +108,6 @@ export const useAddress = ({ fpi, pageName }) => {
     addAddress,
     updateAddress,
     removeAddress,
-    mapApiKey,
-    showGoogleMap: isGoogleMap,
     getLocality,
   };
 };

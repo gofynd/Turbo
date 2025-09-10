@@ -58,6 +58,7 @@ export const THEME_DATA = `query Theme($themeId: String!, $pageValue: String!){
         name
         id
         custom_css
+        canvas
         source {
           type
           id
@@ -336,6 +337,9 @@ export const GLOBAL_DATA = `query ApplicationConfiguration {
         show_name
         enable_selection
         is_seller_buybox_enabled
+      }
+      fulfillment_option {
+        count
       }
       common {
         listing_price {

@@ -113,8 +113,10 @@
         "other_page_configuration": "Other Page Configuration",
         "google_maps": "Google Maps",
         "mobile_logo_max_height": "Mobile Navigation Logo Max Height",
+        "mobile_logo_max_height_info": "Adjust the maximum height of the logo inside the mobile sidebar menu",
         "logo_header": "Desktop Header Logo Max Height",
-        "mobile_logo_header": "Mobile Header Logo Max Height"
+        "mobile_logo_header": "Mobile Header Logo Max Height",
+        "mobile_logo_header_info": "Adjust the maximum height of the logo in the top mobile header"
       },
       "typography": {
         "font_header": "Font Header",
@@ -158,7 +160,9 @@
         "transparent_header": "Transparent Header",
         "transparent_header_info": "Only works with a top Application banner, image slideshow and hero image.",
         "sticky_header": "Sticky Header",
-        "sticky_header_info": "Enable/Disable Sticky Header"
+        "sticky_header_info": "Enable/Disable Sticky Header",
+        "show_secondary_header_on_checkout": "Show Checkout Header",
+        "show_secondary_header_on_checkout_info": "When enabled, the header will be visible on the checkout page."
       },
       "algolia_configuration": {
         "enable_algolia": "Enable Algolia"

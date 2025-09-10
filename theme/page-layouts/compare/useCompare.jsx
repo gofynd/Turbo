@@ -125,10 +125,7 @@ const useCompare = (fpi) => {
           }
         });
     } catch (error) {
-      showSnackbar(
-        t("resource.compare.fetch_suggestion_failure"),
-        "error"
-      );
+      showSnackbar(t("resource.compare.fetch_suggestion_failure"), "error");
     }
   };
 

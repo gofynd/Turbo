@@ -4,6 +4,7 @@
   .firstRow {
     display: flex;
     padding: 7px 0;
+
     .middle {
       .logo,
       a {
@@ -11,28 +12,36 @@
         max-height: 65px;
       }
     }
+
     .left,
     .right {
       display: flex;
       align-items: center;
       flex: 1;
+      &.dontShow {
+        display: none;
+      }
     }
+
     .right__icons {
       justify-content: flex-end;
       .column-gap(16px);
+
       .icon {
         width: 24px;
         height: 24px;
         display: flex;
-
         color: @HeaderIcon;
         // justify-content: center;
       }
+
       min-height: 55px;
+
       &--bag,
       &--wishlist {
         & > div {
           position: relative;
+
           .count {
             min-width: 16px;
             min-height: 16px;
@@ -47,39 +56,52 @@
             inset-inline-end: 0;
             top: 0;
             transform: translate(50%, -50%);
+
             [dir="rtl"] & {
               transform: translate(-50%, -50%);
             }
           }
         }
       }
+
       .labelSignin {
         color: @HeaderNav;
         cursor: pointer;
       }
     }
   }
+
   .secondRow {
     display: flex;
     justify-content: center;
+    &.visiblityNone {
+      visibility: hidden;
+    }
   }
+
   &.layout_1,
   &.layout_2,
   &.layout_3 {
     .firstRow {
+      &.increasePadding {
+        padding: 14px 0;
+      }
       .left {
         margin: 0 74px;
         justify-content: center;
       }
+
       .middle {
         order: -1;
       }
+
       .right {
         flex: 0 1 auto;
         padding: 0 8px;
       }
     }
   }
+
   &.layout_2 {
     .firstRow {
       .left {
@@ -87,6 +109,7 @@
       }
     }
   }
+
   &.layout_3 {
     .first-row {
       .left {
@@ -94,6 +117,7 @@
       }
     }
   }
+
   &.single {
     &.layout_4 {
       .firstRow {
@@ -102,16 +126,19 @@
           top: 50%;
           inset-inline-start: 50%;
           transform: translate(-50%, -50%);
+
           [dir="rtl"] & {
             transform: translate(50%, -50%);
           }
         }
       }
     }
+
     .firstRow {
       @media @desktop {
         padding: 15px 0;
       }
+
       .right__icons {
         .column-gap(16px);
 
@@ -122,17 +149,21 @@
             height: 14px;
           }
         }
+
         &--bag {
           & > div .count {
             transform: translate(4px, 0px);
+
             [dir="rtl"] & {
               transform: translate(-4px, 0px);
             }
           }
         }
+
         &--wishlist {
           & > div .count {
             transform: translate(3px, -3px);
+
             [dir="rtl"] & {
               transform: translate(-3px, -3px);
             }
@@ -141,12 +172,14 @@
       }
     }
   }
+
   &.double {
     &.layout_2 {
       .secondRow {
         justify-content: flex-start;
       }
     }
+
     &.layout_3 {
       .secondRow {
         justify-content: flex-end;
@@ -154,12 +187,14 @@
     }
   }
 }
+
 .headerIcon {
   width: 24px;
   height: 24px;
   cursor: pointer;
   fill: @HeaderIcon;
 }
+
 .singleRowIcon g > path {
   fill: @HeaderIcon;
 }
@@ -168,39 +203,62 @@
   width: 100%;
   max-width: 600px;
   padding-inline-end: 24px;
+
   .customSearchClass {
     position: relative;
     transform: scaleY(1) !important;
     opacity: 1 !important;
     transition: none !important;
+
     .search__wrapper {
       width: unset !important;
     }
   }
+
   .customSearchWrapperClass {
     width: unset;
   }
 }
+
 .hyperlocalActionBtn {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 4px;
   color: @HeaderNav;
+  text-align: left;
+
   &.hyperlocalSearchOn {
     margin-inline-start: 24px;
   }
-  .label {
-    font-size: 14px;
-    font-weight: 500;
-    white-space: nowrap;
+
+  .truckIcon {
+    font-size: 24px;
+    min-width: 24px;
   }
 
-  .pincode {
+  .locationMeta {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 4px;
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: -0.24px;
+  }
+
+  .deliveryPromise {
+    font-size: 14px;
+    font-weight: 500;
+    .text-line-clamp();
+  }
+
+  .deliveryAddress {
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 170px;
+    .text-line-clamp();
+
+    &.promiseAddress {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: -0.24px;
+      color: @TextBody;
+    }
   }
 }

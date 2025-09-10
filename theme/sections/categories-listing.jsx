@@ -13,7 +13,10 @@ import { useParams } from "react-router-dom";
 import { CATEGORIES_LISTING } from "../queries/categoryQuery";
 import { useWindowWidth } from "../helper/hooks";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
-import {SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow"
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
 // check for FDKLink here
 export function Component({ props, blocks, preset, globalConfig }) {
   const { locale } = useParams();
@@ -236,7 +239,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
       )}
       {!!categories?.length > 0 && showScrollView() && (
         <div
-          className={`remove-horizontal-scroll ${styles.categorySlider} ${imagesForScrollView?.length === 1 ? styles.singleItem : ""}`}
+          className={`remove-horizontal-scroll ${styles.categoryListingSlider} ${styles.categorySlider} ${imagesForScrollView?.length === 1 ? styles.singleItem : ""}`}
           style={{
             "--slick-dots": `${Math.ceil(imagesForScrollView?.length / itemCount) * 22 + 10}px`,
           }}
@@ -354,7 +357,7 @@ const CategoriesItem = ({
       <CategoriesCard
         config={{
           category_name_placement: category_name_placement?.value,
-          category_name_position: category_name_position?.value,
+          categorcoy_name_position: category_name_position?.value,
           category_name_text_alignment: category_name_text_alignment?.value,
           show_category_name: show_category_name?.value,
           img_container_bg: img_container_bg?.value,
@@ -568,6 +571,28 @@ export const settings = {
       label: "t:resource.sections.categories.bottom_padding",
       default: 16,
       info: "t:resource.sections.categories.bottom_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Top padding",
+      default: 16,
+      info: "Top padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Bottom padding",
+      default: 16,
+      info: "Bottom padding for section",
     },
   ],
   blocks: [

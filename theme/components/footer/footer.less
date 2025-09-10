@@ -1,6 +1,7 @@
 @import "../../styles/main.less";
 
 @lg-min: 1024px;
+
 .footer {
   background-color: @FooterBackground;
   background-image: var(--background-desktop);
@@ -154,9 +155,6 @@
       }
       .title {
         color: @FooterText;
-        // @media @tablet {
-        //   margin-bottom: 8px;
-        // }
         margin-left: 4px;
       }
       .detail {
@@ -221,12 +219,10 @@
     }
   }
 }
-
 @media @desktop {
   .footerSupportData a {
     margin-left: 12px;
   }
-
   .contactIcon {
   }
 }
@@ -237,7 +233,6 @@
   }
   @media @desktop {
     display: flex;
-    // gap:12px;
     gap: 0;
     align-items: center;
   }
@@ -306,7 +301,6 @@ ul {
   display: flex;
   align-items: center;
   vertical-align: middle;
-
   @media @tablet {
     margin-bottom: 8px;
   }

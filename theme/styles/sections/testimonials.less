@@ -2,12 +2,12 @@
 @lg-min: 1024px;
 
 .nextArrowStyles {
-  border:1px solid red;
+  border: 1px solid red;
   right: 20px;
   inset-inline-start: "unset";
 }
 .prevArrowStyles {
-  left: 20px;
+  left: -20px;
 }
 
 .testimonialTitle {
@@ -95,7 +95,7 @@
 
   .testimonialImage {
     width: 100%;
-    border-radius:~"calc(@{ImageRadius} / 2)";
+    border-radius: ~"calc(@{ImageRadius} / 2)";
 
     @media @desktop {
       flex: 0 0 232px;
@@ -124,7 +124,6 @@
 
     .testimonialText {
       color: @TextBody;
-      // font-style: italic;
       font-size: 16px;
       line-height: 24px;
       margin-bottom: 16px;

@@ -4,7 +4,6 @@ import { SectionRenderer } from "fdk-core/components";
 import { getHelmet } from "../providers/global-provider";
 import { sanitizeHTMLTag } from "../helper/utils";
 
-
 function ContactUsPage({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const THEME = useGlobalStore(fpi.getters.THEME);
@@ -17,7 +16,9 @@ function ContactUsPage({ fpi }) {
   const { sections = [] } = page || {};
 
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.contact_us"));
+  const title = sanitizeHTMLTag(
+    seoData?.title || t("resource.common.page_titles.contact_us")
+  );
   const description = sanitizeHTMLTag(
     seoData?.description || t("resource.contact_us.seo_description")
   );

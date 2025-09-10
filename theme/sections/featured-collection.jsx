@@ -141,7 +141,7 @@ export function Component({ props, globalConfig }) {
       autoplay: false,
       cssEase: "linear",
       nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-    prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 780,
@@ -336,7 +336,7 @@ export function Component({ props, globalConfig }) {
     <>
       <section className={styles.sectionWrapper} style={dynamicStyles}>
         <div
-          className={`fx-title-block ${styles.titleBlock} ${desktop_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""}  ${mobile_layout?.value === "banner_horizontal_scroll" ? styles.hideOnMobile : ""}`}
+          className={`fx-title-block ${styles.titleBlock} ${desktop_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""}  ${mobile_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""}`}
           style={{
             alignItems:
               text_alignment?.value === "left"
@@ -544,7 +544,7 @@ export function Component({ props, globalConfig }) {
                 />
               ))}
             </Slider>
-            <Slider className={`${styles.hideOnDesktop}`} {...configMobile}>
+            <Slider className={`${styles.hideOnTablet}`} {...configMobile}>
               {imagesForScrollView?.map((product, index) => (
                 <ProductCardItem
                   key={`${product.uid}_${index}`}
@@ -850,7 +850,24 @@ const ProductCardItem = ({
 
   return (
     <div className={className}>
-      <FDKLink action={product?.action || ""}>
+      <FDKLink
+        action={{
+          ...(product?.action || {}),
+          page: {
+            ...(product?.action?.page || {}),
+            query: {
+              ...(product?.action?.page?.query || {}),
+              ...(product?.sizes && { size: product?.sizes[0] }),
+            },
+          },
+        }}
+        state={{
+          product: {
+            ...product,
+            sizes: { sellable: product?.sellable, sizes: product?.sizes },
+          },
+        }}
+      >
         <ProductCard
           product={product}
           listingPrice={listingPrice}
@@ -992,6 +1009,62 @@ export const settings = {
       default: "500",
     },
     {
+      id: "img_resize",
+      label: "Image size for Tablet/Desktop",
+      type: "select",
+      options: [
+        {
+          value: "300",
+          text: "300px",
+        },
+        {
+          value: "500",
+          text: "500px",
+        },
+        {
+          value: "700",
+          text: "700px",
+        },
+        {
+          value: "900",
+          text: "900px",
+        },
+        {
+          value: "1100",
+          text: "1100px",
+        },
+        {
+          value: "1300",
+          text: "1300px",
+        },
+      ],
+      default: "300",
+    },
+    {
+      id: "img_resize_mobile",
+      label: "Image size for Mobile",
+      type: "select",
+      options: [
+        {
+          value: "300",
+          text: "300px",
+        },
+        {
+          value: "500",
+          text: "500px",
+        },
+        {
+          value: "700",
+          text: "700px",
+        },
+        {
+          value: "900",
+          text: "900px",
+        },
+      ],
+      default: "500",
+    },
+    {
       type: "color",
       id: "img_container_bg",
       category: "t:resource.common.image_container",
@@ -1102,6 +1175,23 @@ export const settings = {
       default: "below_description",
       label: "t:resource.sections.blog.button_position",
       info: "t:resource.sections.blog.button_position_info",
+    },
+    {
+      id: "button_position",
+      type: "select",
+      options: [
+        {
+          value: "below_description",
+          text: "Below description",
+        },
+        {
+          value: "below_products",
+          text: "Below products",
+        },
+      ],
+      default: "below_description",
+      label: "Button Position",
+      info: "Applicable for only desktop view",
     },
     {
       type: "range",

@@ -6,8 +6,9 @@ import {
   GET_PRODUCT_DETAILS,
   GET_PRODUCT_PROMOTIONS,
   OFFERS,
-  PRODUCT_SIZE_PRICE,
   PRODUCT_SELLERS,
+  FULFILLMENT_OPTIONS,
+  PRODUCT_DETAILS_WITH_SIZE,
 } from "../../../queries/pdpQuery";
 import useHeader from "../../../components/header/useHeader";
 import {
@@ -16,7 +17,11 @@ import {
   FOLLOWED_PRODUCTS_IDS,
   REMOVE_WISHLIST,
 } from "../../../queries/wishlistQuery";
-import { useSnackbar, usePincodeInput } from "../../../helper/hooks";
+import {
+  useSnackbar,
+  usePincodeInput,
+  useThemeFeature,
+} from "../../../helper/hooks";
 import { LOCALITY } from "../../../queries/logisticsQuery";
 import { isEmptyOrNull, translateDynamicLabel } from "../../../helper/utils";
 import { fetchCartDetails } from "../../cart/useCart";
@@ -26,20 +31,28 @@ import {
   useGlobalTranslation,
 } from "fdk-core/utils";
 
-const useProductDescription = ({ fpi, slug, props }) => {
+const useProductDescription = ({
+  fpi,
+  slug,
+  size,
+  props,
+  cachedProductData,
+}) => {
   const { t } = useGlobalTranslation("translation");
   const { mandatory_pincode } = props;
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const PRODUCT = useGlobalStore(fpi.getters.PRODUCT);
   const LoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
-  const COUPONS = useGlobalStore(fpi.getters.COUPONS);
-  // const PROMOTION_OFFERS = useGlobalStore(fpi.getters.PROMOTION_OFFERS); // Currently not storing offers on PDP, using custom store for now
-  const { isPdpSsrFetched, isI18ModalOpen, productPromotions } = useGlobalStore(
+  const { isPdpSsrFetched, isI18ModalOpen, ssrSizeToSelect } = useGlobalStore(
     fpi?.getters?.CUSTOM_VALUE
   );
-  const { buybox } = useGlobalStore(fpi.getters.APP_FEATURES);
+  const { buybox, fulfillment_option } = useGlobalStore(
+    fpi.getters.APP_FEATURES
+  );
 
+  const { isServiceability } = useThemeFeature({ fpi });
   const {
+    isLoading: isCountryDetailsLoading,
     i18nDetails,
     isValidDeliveryLocation,
     deliveryLocation,
@@ -56,11 +69,39 @@ const useProductDescription = ({ fpi, slug, props }) => {
   const [allStoresInfo, setAllStoresInfo] = useState({});
   const [selectPincodeError, setSelectPincodeError] = useState(false);
   const [pincodeErrorMessage, setPincodeErrorMessage] = useState("");
-  const { product_details, product_meta, product_price_by_slug } = PRODUCT;
-  const { sizes, loading: productMetaLoading } = product_meta || {};
-  const { loading: productDetailsLoading } = product_details || {};
   const [isPageLoading, setIsPageLoading] = useState(!isPdpSsrFetched);
 
+  const isProductDataLoading = useMemo(
+    () => isPageLoading && isEmptyOrNull(cachedProductData),
+    [isPageLoading, cachedProductData]
+  );
+
+  const product_details =
+    isPageLoading && !isEmptyOrNull(cachedProductData)
+      ? cachedProductData
+      : PRODUCT?.product_details || {};
+
+  const product_meta =
+    isPageLoading && !isEmptyOrNull(cachedProductData)
+      ? cachedProductData
+      : PRODUCT?.product_meta || {};
+
+  const { product_price_with_fullfillment } = PRODUCT;
+
+  const foItems = product_price_with_fullfillment?.items || [];
+
+  const selectedFO =
+    foItems.find((foItem) => foItem?.fulfillment_option?.is_default) ||
+    foItems[0];
+
+  const [currentFO, setCurrentFO] = useState(
+    selectedFO?.fulfillment_option || {}
+  );
+  const [fulfillmentOptions, setFulfillmentOptions] = useState(foItems);
+
+  const [productPriceBySlug, setProductPriceBySlug] = useState(
+    selectedFO || {}
+  );
   const { wishlistIds } = useHeader(fpi);
   const { showSnackbar } = useSnackbar();
   const navigate = useNavigate();
@@ -75,11 +116,11 @@ const useProductDescription = ({ fpi, slug, props }) => {
   //   false;
 
   useEffect(() => {
-    if (slug && product_price_by_slug?.store?.uid) {
+    if (slug && productPriceBySlug?.store?.uid) {
       const values = {
         slug,
-        storeIdInt: product_price_by_slug?.store?.uid,
-        storeIdString: product_price_by_slug?.store?.uid?.toString(),
+        storeIdInt: productPriceBySlug?.store?.uid,
+        storeIdString: productPriceBySlug?.store?.uid?.toString(),
       };
       fpi.executeGQL(GET_PRODUCT_PROMOTIONS, values).then((res) => {
         setOffers({
@@ -88,14 +129,18 @@ const useProductDescription = ({ fpi, slug, props }) => {
         });
       });
     }
-  }, [slug, product_price_by_slug?.store?.uid]);
+  }, [slug, productPriceBySlug?.store?.uid]);
 
   useEffect(() => {
     if (slug && (!isPdpSsrFetched || slug !== PRODUCT?.product_details?.slug)) {
       setIsLoading(true);
       const values = { slug };
+      if (size) {
+        values.size = size;
+      }
+      const query = size ? PRODUCT_DETAILS_WITH_SIZE : GET_PRODUCT_DETAILS;
       fpi
-        .executeGQL(GET_PRODUCT_DETAILS, values)
+        .executeGQL(query, values)
         .then((res) => {
           const product = res?.data?.product;
           if (
@@ -109,6 +154,27 @@ const useProductDescription = ({ fpi, slug, props }) => {
               "productPromotions",
               res?.data?.promotions || {}
             );
+            if (size) {
+              const sizeToSelect = product?.sizes?.sizes?.find(
+                (item) => item?.value === size
+              );
+              setCurrentSize(sizeToSelect);
+            } else {
+              // If no URL size, auto-select first available size
+              const sizes = product?.sizes?.sizes || [];
+              if (sizes.length > 0) {
+                const isMto = product?.custom_order?.is_custom_order || false;
+                // Find first available size (quantity > 0 or MTO product)
+                const firstAvailableSize = sizes.find(
+                  (sizeOption) => sizeOption.quantity > 0 || isMto
+                );
+                // Fallback to first size if no available sizes found
+                const sizeToSelect = firstAvailableSize || sizes[0];
+                if (sizeToSelect?.value) {
+                  setCurrentSize(sizeToSelect);
+                }
+              }
+            }
           }
         })
         .catch(() => {
@@ -123,18 +189,42 @@ const useProductDescription = ({ fpi, slug, props }) => {
 
   useEffect(() => {
     fpi.custom.setValue("isPdpSsrFetched", false);
+    if (ssrSizeToSelect) {
+      setCurrentSize(ssrSizeToSelect);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!isEmptyOrNull(product_price_with_fullfillment)) {
+      const foItems = product_price_with_fullfillment?.items || [];
+
+      const selectedFO =
+        foItems.find((foItem) => foItem?.fulfillment_option?.is_default) ||
+        foItems[0];
+
+      setCurrentFO(selectedFO?.fulfillment_option || {});
+      setFulfillmentOptions(foItems);
+
+      setProductPriceBySlug(selectedFO || {});
+    }
+  }, [product_price_with_fullfillment]);
+
+  useEffect(() => {
+    if (fulfillmentOptions?.length && currentFO?.slug) {
+      const currentProductPrice = fulfillmentOptions.find(
+        (foItem) => foItem?.fulfillment_option?.slug === currentFO?.slug
+      );
+
+      setProductPriceBySlug(currentProductPrice);
+    }
+  }, [currentFO?.slug]);
 
   useEffect(() => {
     setFollowed(wishlistIds?.includes(product_details?.uid));
   }, [LoggedIn, wishlistIds, product_details]);
 
-  const updateIntlLocation = () => {
-    // console.log("update country");
-  };
-
   const fetchProductPrice = (pincode = "") => {
-    if (!currentSize) return;
+    if (!currentSize?.value) return;
     const reqPincode = pincode || locationPincode;
 
     setIsLoadingPriceBySize(true);
@@ -143,12 +233,20 @@ const useProductDescription = ({ fpi, slug, props }) => {
       size: currentSize?.value.toString(),
       pincode: reqPincode.toString() || "",
     };
-    fpi.executeGQL(PRODUCT_SIZE_PRICE, payload).then((res) => {
+    fpi.executeGQL(FULFILLMENT_OPTIONS, payload).then((res) => {
       setIsLoadingPriceBySize(false);
-      if (isEmptyOrNull(res.data.productPrice) && isValidDeliveryLocation) {
+
+      const foItems =
+        res?.data?.productsPriceWithFulfillmentOption?.items || [];
+
+      const selectedFO =
+        foItems.find((foItem) => foItem?.fulfillment_option?.is_default) ||
+        foItems[0];
+
+      if (isEmptyOrNull(selectedFO)) {
         setPincodeErrorMessage(
-          translateDynamicLabel(res?.errors?.[0]?.message, t) ||
-          t("resource.product.product_not_serviceable")
+          res?.errors?.[0]?.message ||
+            t("resource.product.product_not_serviceable")
         );
       } else {
         setSelectPincodeError(false);
@@ -239,7 +337,10 @@ const useProductDescription = ({ fpi, slug, props }) => {
     }
   }
 
-  const getProductSellers = (listingStrategy = "") => {
+  const getProductSellers = (
+    listingStrategy = "",
+    fulfillmentOptionSlug = ""
+  ) => {
     setIsSellerLoading(true);
 
     const values = {
@@ -248,6 +349,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
       strategy: listingStrategy,
       pageNo: 1,
       pageSize: 100,
+      fulfillmentOptionSlug,
     };
 
     fpi
@@ -264,7 +366,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
     event,
     size,
     buyNow = false,
-    itemDetails = product_price_by_slug
+    itemDetails = productPriceBySlug
   ) {
     if (event) {
       event.stopPropagation();
@@ -276,19 +378,12 @@ const useProductDescription = ({ fpi, slug, props }) => {
       if (isServiceabilityPincodeOnly) {
         setSelectPincodeError(true);
         setPincodeErrorMessage("");
-        showSnackbar(
-          t("resource.product.before_cart_validate_pincode", {
-            displayName: pincodeInput.displayName,
-          }),
-          "error"
-        );
+      } else if (isServiceability) {
+        fpi.custom.setValue("isServiceabilityModalOpen", true);
       } else {
-        showSnackbar(
-          t("resource.product.select_valid_delivery_location"),
-          "error"
-        );
         fpi.custom.setValue("isI18ModalOpen", true);
       }
+      showSnackbar(t("resource.product.enter_valid_location"), "error");
       return;
     }
     if (!size) {
@@ -312,6 +407,7 @@ const useProductDescription = ({ fpi, slug, props }) => {
               quantity: getQty(),
               seller_id: itemDetails?.seller?.uid,
               store_id: itemDetails?.store?.uid,
+              fulfillment_option_slug: currentFO?.slug || "",
             },
           ],
         },
@@ -323,7 +419,8 @@ const useProductDescription = ({ fpi, slug, props }) => {
             fetchCartDetails(fpi);
           }
           showSnackbar(
-            translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) || t("resource.common.add_to_cart_success"),
+            translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
+              t("resource.common.add_to_cart_success"),
             "success"
           );
           if (buyNow) {
@@ -352,9 +449,11 @@ const useProductDescription = ({ fpi, slug, props }) => {
   const minCartQuantity = moq?.minimum || 1;
 
   return {
+    isProductDataLoading,
     productDetails: product_details || {},
     productMeta: product_meta?.sizes || {},
-    productPriceBySlug: product_price_by_slug || null,
+    productPriceBySlug,
+    setProductPriceBySlug,
     currentImageIndex,
     currentSize,
     pincode: locationPincode,
@@ -368,10 +467,10 @@ const useProductDescription = ({ fpi, slug, props }) => {
     pincodeErrorMessage,
     buybox,
     pincodeInput,
+    isCountryDetailsLoading,
     isValidDeliveryLocation,
     deliveryLocation: deliveryLocation.join(", "),
     isServiceabilityPincodeOnly,
-    updateIntlLocation,
     setCurrentSize,
     setCurrentImageIndex,
     addToWishList,
@@ -386,6 +485,11 @@ const useProductDescription = ({ fpi, slug, props }) => {
     allStoresInfo,
     getProductSellers,
     isSellerLoading,
+    currentFO,
+    setCurrentFO,
+    fulfillmentOptions,
+    setFulfillmentOptions,
+    availableFOCount: fulfillment_option?.count || 1,
   };
 };
 

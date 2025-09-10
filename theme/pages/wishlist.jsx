@@ -4,7 +4,7 @@ import styles from "../styles/wishlist.less";
 import { isLoggedIn } from "../helper/auth-guard";
 import Wishlist from "@gofynd/theme-template/pages/wishlist/wishlist";
 import "@gofynd/theme-template/pages/wishlist/wishlist.css";
-import Shimmer from "../components/shimmer/shimmer";
+import WishlistShimmer from "../components/shimmer/wishlist-shimmer";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { getHelmet } from "../providers/global-provider";
 import { sanitizeHTMLTag } from "../helper/utils";
@@ -16,7 +16,9 @@ function WishlistPage({ fpi }) {
   const { loading, ...wishlistProps } = useWishlist({ fpi });
 
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.wishlist"));
+  const title = sanitizeHTMLTag(
+    seoData?.title || t("resource.common.page_titles.wishlist")
+  );
   const description = sanitizeHTMLTag(
     seoData?.description || t("resource.wishlist.seo_description")
   );
@@ -24,17 +26,17 @@ function WishlistPage({ fpi }) {
   const mergedSeo = { ...seoData, title, description };
 
   if (loading) {
-    return <Shimmer />;
+    return <WishlistShimmer />;
   }
 
   return (
     <>
-        {getHelmet({ seo: mergedSeo })}
-    <div className="basePageContainer margin0auto">
-      <div className={`${styles.wishlistWrap} ${styles.flexColumn}`}>
-        <Wishlist {...wishlistProps} />
+      {getHelmet({ seo: mergedSeo })}
+      <div className="basePageContainer margin0auto">
+        <div className={`${styles.wishlistWrap} ${styles.flexColumn}`}>
+          <Wishlist {...wishlistProps} />
+        </div>
       </div>
-    </div>
     </>
   );
 }
@@ -54,7 +56,8 @@ export const settings = JSON.stringify({
       type: "text",
       id: "card_cta_text",
       label: "t:resource.common.button_text",
-      default: "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
+      default:
+        "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
     },
     {
       type: "checkbox",

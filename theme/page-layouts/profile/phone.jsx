@@ -21,7 +21,10 @@ function Phone({ fpi }) {
   const handleSetPrimary = useCallback(async (phoneDetails) => {
     try {
       await setMobileNumberAsPrimary(phoneDetails);
-      showSnackbar(`${phoneDetails?.phone} ${t("resource.profile.set_as_primary")}`, "success");
+      showSnackbar(
+        `${phoneDetails?.phone} ${t("resource.profile.set_as_primary")}`,
+        "success"
+      );
     } catch (error) {
       showSnackbar(error?.message, "error");
       throw error;
@@ -31,7 +34,10 @@ function Phone({ fpi }) {
   const handleSendOtp = useCallback(async (phoneDetails) => {
     try {
       const data = await sendOtpMobile(phoneDetails);
-      showSnackbar(`${t("resource.profile.otp_sent_mobile")} ${phoneDetails?.mobile}`, "success");
+      showSnackbar(
+        `${t("resource.profile.otp_sent_mobile")} ${phoneDetails?.mobile}`,
+        "success"
+      );
       return data;
     } catch (error) {
       showSnackbar(error?.message, "error");
@@ -52,7 +58,10 @@ function Phone({ fpi }) {
   const handleResendOtp = useCallback(async (phoneDetails) => {
     try {
       const data = await resendOtp(phoneDetails);
-      showSnackbar(`${t("resource.profile.otp_sent_mobile")} ${phoneDetails?.mobile}`, "success");
+      showSnackbar(
+        `${t("resource.profile.otp_sent_mobile")} ${phoneDetails?.mobile}`,
+        "success"
+      );
       return data;
     } catch (error) {
       showSnackbar(error?.message, "error");
@@ -63,7 +72,10 @@ function Phone({ fpi }) {
   const handleDelete = useCallback(async (phoneDetails) => {
     try {
       await deleteMobileNumber(phoneDetails);
-      showSnackbar(`${phoneDetails?.phone} ${t("resource.common.removed_success")}`, "success");
+      showSnackbar(
+        `${phoneDetails?.phone} ${t("resource.common.removed_success")}`,
+        "success"
+      );
     } catch (error) {
       showSnackbar(error?.message, "error");
       throw error;

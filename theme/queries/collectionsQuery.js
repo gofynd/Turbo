@@ -232,8 +232,7 @@ export const COLLECTION_ITEMS = `query collectionItems(
 }
 `;
 
-export const COLLECTION_WITH_ITEMS = `
-query collectionWithItems(
+export const COLLECTION_WITH_ITEMS = `query collectionWithItems(
   $slug: String!
   $search: String
   $filters: Boolean
@@ -254,7 +253,6 @@ query collectionWithItems(
       canonical_url
     }
   }
-
   collectionItems(
     slug: $slug
     search: $search
@@ -342,6 +340,49 @@ query collectionWithItems(
         }
         key
       }
+      sizes {
+        discount
+        multi_size
+        sellable
+        sizes:size_details {
+          dimension {
+            height
+            is_default
+            length
+            unit
+            width
+          }
+          display
+          is_available
+          quantity
+          seller_identifiers
+          value
+          weight {
+            is_default
+            shipping
+            unit
+          }
+        }
+        price {
+          effective {
+            currency_code
+            currency_symbol
+            max
+            min
+          }
+          marked {
+            currency_code
+            currency_symbol
+            max
+            min
+          }  
+        }
+      }
+      custom_order {
+        is_custom_order
+        manufacturing_time
+        manufacturing_time_unit
+      }
       slug
       uid
       sellable
@@ -366,8 +407,7 @@ query collectionWithItems(
       value
     }
   }
-}
-`;
+}`;
 
 export const COLLECTION_DETAILS = `query collection(
   $slug: String!
@@ -420,6 +460,7 @@ export const FEATURED_COLLECTION = `query Collection($slug: String!, $first:Int,
           type
         }
         teaser_tag
+        sizes
         sellable
         discount
         name

@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import styles from "../styles/order-list.less";
 import useOrdersListing from "../page-layouts/orders/useOrdersListing";
 import OrdersHeader from "@gofynd/theme-template/components/order-header/order-header";
@@ -10,19 +11,19 @@ import Loader from "../components/loader/loader";
 import ProfileRoot from "../components/profile/profile-root";
 import EmptyState from "../components/empty-state/empty-state";
 import { isLoggedIn } from "../helper/auth-guard";
-import { useGlobalTranslation } from "fdk-core/utils";
 
 function OrdersList({ fpi }) {
   const { t } = useGlobalTranslation("translation");
   const { isLoading, orders, handelBuyAgain } = useOrdersListing(fpi);
+  const { fulfillment_option } = useGlobalStore(fpi.getters.APP_FEATURES);
   const orderShipments = orders;
   const getOrdersCount = () => {
     const itemTotal = orderShipments?.page?.item_total;
 
     if (itemTotal) {
       return `(${itemTotal} ${
-        itemTotal === 1 
-          ? t("resource.order.list.orders_count_singular_suffix") 
+        itemTotal === 1
+          ? t("resource.order.list.orders_count_singular_suffix")
           : t("resource.order.list.orders_count_suffix")
       })`;
     } else {
@@ -55,7 +56,9 @@ function OrdersList({ fpi }) {
 
             {orderShipments?.items?.length === 0 ? (
               <div className={`${styles.error}`}>
-                <EmptyState title={t("resource.common.empty_state")}></EmptyState>
+                <EmptyState
+                  title={t("resource.common.empty_state")}
+                ></EmptyState>
               </div>
             ) : (
               <div className={`${styles.myOrders}`}>
@@ -65,14 +68,14 @@ function OrdersList({ fpi }) {
                     orderInfo={item}
                     onBuyAgainClick={handelBuyAgain}
                     isBuyAgainEligible={true}
+                    availableFOCount={fulfillment_option?.count || 1}
                   ></OrderShipment>
                 ))}
               </div>
             )}
           </>
         </motion.div>
-      )
-      }
+      )}
     </ProfileRoot>
   );
 }

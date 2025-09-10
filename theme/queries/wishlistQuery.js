@@ -60,6 +60,65 @@ export const FETCH_FOLLOWED_PRODUCTS = `query followedListing(
       teaser_tag
       discount
       name
+      grouped_attributes {
+        title
+        details {
+          key
+          type
+          value
+        }
+      }
+      custom_order {
+        is_custom_order
+        manufacturing_time
+        manufacturing_time_unit
+      }
+      sizes {
+        discount
+        multi_size
+        sellable
+        sizes:size_details {
+          dimension {
+            height
+            is_default
+            length
+            unit
+            width
+          }
+          display
+          is_available
+          quantity
+          seller_identifiers
+          value
+          weight {
+            is_default
+            shipping
+            unit
+          }
+        }
+        price {
+          effective {
+            currency_code
+            currency_symbol
+            max
+            min
+          }
+          marked {
+            currency_code
+            currency_symbol
+            max
+            min
+          }  
+        }
+      }
+      action {
+        page {
+          params
+          query
+          type
+        }
+        type
+      }
     }
     page {
       current
@@ -200,7 +259,7 @@ export const WISHLIST_DATA = `query FollowedListing($collectionType: String!, $p
               col_3
               col_4
               col_5
-              col_6   
+              col_6
               col_7
               col_8
               col_9

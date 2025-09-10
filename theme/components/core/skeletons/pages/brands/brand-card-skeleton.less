@@ -1,0 +1,72 @@
+@import "../../../../../styles/main.less";
+
+.brandCardSkeleton {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+
+  .imageContainer {
+    position: relative;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+
+    .logoOverlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+  }
+
+  .brandInfo {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    padding: 15px 27px 15px 15px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+
+    @media @desktop {
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+    }
+
+    .logoIcon {
+      flex-shrink: 0;
+      max-width: 33px;
+
+      @media (max-width: 767px) {
+        max-width: 50px;
+      }
+    }
+
+    .brandName {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767px) {
+  .brandCardSkeleton {
+    .imageContainer {
+      .logoOverlay {
+        // Smaller logo on mobile
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+    }
+  }
+}

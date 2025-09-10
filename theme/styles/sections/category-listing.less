@@ -52,6 +52,22 @@
   }
 }
 
+.categoryListingSlider {
+  .slick-next {
+    right: 10px !important;
+    inset-inline-start: unset !important;
+  }
+  .slick-prev {
+    left: 10px !important;
+  }
+
+  .slick-prev::before,
+  .slick-next::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+
 .categorySlider {
   --gap: 24px;
   padding-inline: @SectionInlinePaddingDesktop;

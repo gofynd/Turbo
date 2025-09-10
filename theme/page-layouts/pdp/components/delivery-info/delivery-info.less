@@ -1,7 +1,6 @@
 @import "../../../../styles/main.less";
 
 .delivery {
-  margin-bottom: 4px;
   display: flex;
   border-radius: @ButtonRadius;
   background-color: @ThemeAccentL4;
@@ -19,14 +18,7 @@
     cursor: pointer;
   }
 }
-.deliveryWrapper {
-  display: flex;
-  gap: 8px;
-  padding: 16px;
-  align-items: flex-start;
-  border-radius: 16px;
-  border: 1px solid @DividerStokes;
-}
+
 .deliveryInfoWrapper {
   width: 100%;
 }
@@ -35,6 +27,7 @@
     display: flex;
     align-items: flex-start;
     gap: 4px;
+    margin-top: 4px;
 
     .deliveryText {
       letter-spacing: -0.24px;
@@ -73,36 +66,7 @@
     }
   }
 }
-.deliveryLocation {
-  padding-bottom: 4px;
-  .text-line-clamp();
-  &__bold {
-    color: @TextBody;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.32px;
-    @media @tablet {
-      font-size: 14px;
-    }
-  }
-  &__addrs {
-    color: @ButtonLink;
-    font-size: 14px;
-    @media @tablet {
-      font-size: 12px;
-    }
-    font-weight: 500;
-    letter-spacing: -0.28px;
-    text-decoration-line: underline;
-    text-decoration-style: solid;
-    text-decoration-skip-ink: none;
-    text-decoration-thickness: auto;
-    text-underline-offset: auto;
-    text-underline-position: from-font;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-}
+
 .error {
   color: @ErrorText;
   margin-top: 6px;
@@ -163,4 +127,68 @@
 }
 .emptyPincode {
   color: @InformationText;
+}
+
+.locationWrapper {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-radius: @ButtonRadius;
+  border: 1px solid @DividerStokes;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+
+  .locationPin {
+    min-width: 24px;
+    color: @ButtonLink;
+  }
+
+  .currentLocation {
+    color: @TextBody;
+    padding-inline-start: 4px;
+    padding-inline-end: 16px;
+    .text-line-clamp();
+  }
+
+  .servicibilityCta {
+    margin-left: auto;
+    color: @ButtonLink;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.28px;
+  }
+
+  .deliveryLocation {
+    display: flex;
+    align-items: center;
+    .deliveryLocationBold {
+      .text-line-clamp();
+      color: @TextBody;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.32px;
+      @media @tablet {
+        font-size: 14px;
+      }
+    }
+    .deliveryLocationText {
+      color: @ButtonLink;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.28px;
+      text-decoration-line: underline;
+      text-decoration-style: solid;
+      text-decoration-skip-ink: none;
+      text-decoration-thickness: auto;
+      text-underline-offset: auto;
+      text-underline-position: from-font;
+      text-transform: uppercase;
+      cursor: pointer;
+      @media @tablet {
+        font-size: 12px;
+      }
+    }
+  }
 }

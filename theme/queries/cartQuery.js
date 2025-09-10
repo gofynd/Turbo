@@ -61,6 +61,12 @@ const CART_ITEMS = `items {
         marked
       }
     }
+    fulfillment_option {
+      name
+      slug
+      type
+      is_default
+    }
   }
   price_per_unit {
     base {

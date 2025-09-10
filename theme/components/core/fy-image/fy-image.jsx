@@ -3,7 +3,7 @@ import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { motion, useInView } from "framer-motion";
 
 import styles from "./fy-image.less";
-import ImageSkeleton from "../skeletons/image-skeleton";
+import { ImageSkeleton } from "../skeletons";
 import { isRunningOnClient, transformImage } from "../../../helper/utils";
 import PLACEHOLDER_URL from "../../../assets/images/placeholder.png";
 
@@ -181,8 +181,9 @@ const FyImage = ({
 
   return (
     <div
-      className={`${styles.imageWrapper} ${globalConfig?.img_fill || isImageCover ? styles.fill : ""
-        } ${customClass}`}
+      className={`${styles.imageWrapper} ${
+        globalConfig?.img_fill || isImageCover ? styles.fill : ""
+      } ${customClass}`}
       style={dynamicStyles}
       ref={imgWrapperRef}
     >

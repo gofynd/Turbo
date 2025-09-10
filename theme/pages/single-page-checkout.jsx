@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import CheckoutPage from "@gofynd/theme-template/pages/checkout/checkout";
 import "@gofynd/theme-template/pages/checkout/checkout.css";
 import { CHECKOUT_LANDING, PAYMENT_OPTIONS } from "../queries/checkoutQuery";
-import { useHyperlocalTat, useGoogleMapConfig } from "../helper/hooks";
+import { useGoogleMapConfig, useDeliverPromise } from "../helper/hooks";
 import useAddress from "../page-layouts/single-checkout/address/useAddress";
 import usePayment from "../page-layouts/single-checkout/payment/usePayment";
 import useCart from "../page-layouts/cart/useCart";
@@ -17,7 +17,9 @@ function SingleCheckoutPage({ fpi }) {
   const bagData = useGlobalStore(fpi?.getters?.CART_ITEMS) || {};
   const { shipments } = useGlobalStore(fpi.getters.SHIPMENTS) || {};
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
-  const { buybox } = useGlobalStore(fpi.getters.APP_FEATURES);
+  const { buybox, fulfillment_option } = useGlobalStore(
+    fpi.getters.APP_FEATURES
+  );
   const breakupValues = bagData?.breakup_values?.display || [];
   const [showShipment, setShowShipment] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
@@ -31,8 +33,9 @@ function SingleCheckoutPage({ fpi }) {
     { label: t("resource.checkout.payment") },
   ];
 
-  const { isHyperlocal, convertUTCToHyperlocalTat } = useHyperlocalTat({ fpi });
-  const { isGoogleMap, mapApiKey } = useGoogleMapConfig({ fpi });
+  const { getFormattedPromise } = useDeliverPromise({ fpi });
+
+  const { isCheckoutMap, mapApiKey } = useGoogleMapConfig({ fpi });
   const [searchParams, setSearchParams] = useSearchParams();
   const cart_id = searchParams.get("id");
   const buy_now = searchParams.get("buy_now") || false;
@@ -42,6 +45,7 @@ function SingleCheckoutPage({ fpi }) {
   const cartComment = useCartComment({ fpi, cartData: bagData });
   const { setIsLoading, ...payment } = usePayment(fpi);
   const { getTotalValue } = payment;
+  const { currentStep = null } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
 
   const currencySymbol = useMemo(
     () => bagData?.currency?.symbol || "₹",
@@ -55,6 +59,18 @@ function SingleCheckoutPage({ fpi }) {
       setSearchParams(newParams);
     }
   }, [cartData?.id]);
+
+  useEffect(() => {
+    fpi.custom.setValue("currentStep", currentStepIdx);
+  }, [currentStepIdx]);
+
+  useEffect(() => {
+    if (currentStep !== null && currentStep !== currentStepIdx) {
+      setCurrentStepIdx(currentStep);
+      setShowShipment(currentStep === 1);
+      setShowPayment(currentStep === 2);
+    }
+  }, [currentStep]);
 
   async function showPaymentOptions(amount) {
     try {
@@ -186,14 +202,14 @@ function SingleCheckoutPage({ fpi }) {
         }}
         stepperProps={{ steps, currentStepIdx }}
         // mapApiKey={"AIzaSyAVCJQAKy6UfgFqZUNABAuGQp2BkGLhAgI"}
-        showGoogleMap={isGoogleMap}
+        showGoogleMap={isCheckoutMap}
         mapApiKey={mapApiKey}
-        isHyperlocal={isHyperlocal}
-        convertHyperlocalTat={convertUTCToHyperlocalTat}
+        getDeliveryPromise={(promise) => getFormattedPromise(promise?.iso)}
         loader={<Loader />}
         buybox={buybox}
         isCartValid={isCartValid}
         redirectPaymentOptions={redirectPaymentOptions}
+        availableFOCount={fulfillment_option?.count || 1}
       />
       {/* <PriceBreakup breakUpValues={breakupValues}></PriceBreakup> */}
     </>

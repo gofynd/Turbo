@@ -1,6 +1,6 @@
 import React from "react";
 import { useFPI } from "fdk-core/utils";
-import Shimmer from "../components/shimmer/shimmer";
+import { PLPShimmer } from "../components/core/skeletons";
 import ProductListing from "@gofynd/theme-template/pages/product-listing/product-listing";
 import "@gofynd/theme-template/pages/product-listing/index.css";
 import useProductListing from "../page-layouts/plp/useProductListing";
@@ -12,13 +12,24 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
 
   const listingProps = useProductListing({ fpi, props });
 
-  if (isRunningOnClient() && listingProps?.isPageLoading) {
-    return <Shimmer />;
-  }
+  // Show shimmer only on client side when page is actually loading
+  const shouldShowShimmer = isRunningOnClient() && listingProps?.isPageLoading;
 
   return (
     <div className="margin0auto basePageContainer">
-      <ProductListing {...listingProps} />
+      {shouldShowShimmer ? (
+        <PLPShimmer
+          gridDesktop={props?.grid_desktop?.value || 4}
+          gridTablet={props?.grid_tablet?.value || 3}
+          gridMobile={props?.grid_mob?.value || 2}
+          showFilters={true}
+          showSortBy={true}
+          showPagination={props?.loading_options?.value === "pagination"}
+          productCount={props?.page_size?.value || 12}
+        />
+      ) : (
+        <ProductListing {...listingProps} />
+      )}
     </div>
   );
 }
@@ -60,16 +71,16 @@ export const settings = {
       options: [
         {
           value: "view_more",
-      text: "t:resource.common.view_more",
-      },
-      {
-        value: "infinite",
-        text: "t:resource.common.infinite_scroll",
-      },
-      {
-        value: "pagination",
-        text: "t:resource.common.pagination",
-      },
+          text: "t:resource.common.view_more",
+        },
+        {
+          value: "infinite",
+          text: "t:resource.common.infinite_scroll",
+        },
+        {
+          value: "pagination",
+          text: "t:resource.common.pagination",
+        },
       ],
       default: "infinite",
       info: "t:resource.sections.collections_listing.loading_options_info",
@@ -115,7 +126,7 @@ export const settings = {
       type: "checkbox",
       id: "in_new_tab",
       label: "t:resource.common.open_product_in_new_tab",
-      default: true,
+      default: false,
       info: "t:resource.common.open_product_in_new_tab_desktop",
     },
     {
@@ -182,7 +193,8 @@ export const settings = {
     },
     {
       id: "img_resize",
-      label: "t:resource.sections.products_listing.image_size_for_tablet_desktop",
+      label:
+        "t:resource.sections.products_listing.image_size_for_tablet_desktop",
       type: "select",
       options: [
         {
@@ -247,7 +259,8 @@ export const settings = {
       type: "text",
       id: "card_cta_text",
       label: "t:resource.common.button_text",
-      default: "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
+      default:
+        "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
     },
     {
       type: "checkbox",

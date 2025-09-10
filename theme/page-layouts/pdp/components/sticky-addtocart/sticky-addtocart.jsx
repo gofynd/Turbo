@@ -99,7 +99,7 @@ const StickyAddToCart = ({
             </button>
           </motion.div>
         )}
-      </AnimatePresence >
+      </AnimatePresence>
       <div className={styles.addToCartModal}>
         <Modal
           isOpen={showSizeModal}
@@ -130,7 +130,7 @@ const StickyAddToCart = ({
                   </button>
                 </>
               )}
-            </div >
+            </div>
 
             <div className={styles.sizes}>
               <ul>
@@ -147,7 +147,7 @@ const StickyAddToCart = ({
                 ))}
               </ul>
             </div>
-          </div >
+          </div>
 
           <div className={styles.priceBlock}>
             <div className={styles.productPrice}>
@@ -164,7 +164,9 @@ const StickyAddToCart = ({
                 blockProps?.mrp_label &&
                 getProductPrice("effective") !== getProductPrice("marked") && (
                   <>
-                    <span className={styles.mrpLabel}>{t("resource.common.mrp")}</span>
+                    <span className={styles.mrpLabel}>
+                      {t("resource.common.mrp")}
+                    </span>
                     <span className={styles["productPrice--marked"]}>
                       {getProductPrice("marked")}
                     </span>
@@ -269,7 +271,7 @@ const StickyAddToCart = ({
             productMeta={productMeta}
           />
         )}
-      </div >
+      </div>
     </>
   );
 };

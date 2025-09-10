@@ -47,21 +47,21 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
     if (shipment?.order_id) {
       getActiveRefundMode(shipment?.order_id);
     }
-    return () => { };
+    return () => {};
   }, [shipment?.order_id]);
 
   useEffect(() => {
-      if (typeof document !== "undefined" && document.body) {
-        if (showAddPayments) {
-          document.body.classList.add("remove-scroll");
-        } else {
-          document.body.classList.remove("remove-scroll");
-        }
-      }
-      return () => {
+    if (typeof document !== "undefined" && document.body) {
+      if (showAddPayments) {
+        document.body.classList.add("remove-scroll");
+      } else {
         document.body.classList.remove("remove-scroll");
-      };
-    }, [showAddPayments]);
+      }
+    }
+    return () => {
+      document.body.classList.remove("remove-scroll");
+    };
+  }, [showAddPayments]);
 
   const onClose = () => {
     setPageState(1);
@@ -93,19 +93,14 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
     verifyOtpForBank(data)
       .then((data) => {
         onClose();
-        showSnackbar(
-          t("resource.order.new_payment_added_success"),
-          "success"
-        );
+        showSnackbar(t("resource.order.new_payment_added_success"), "success");
         setVerifiedPayment(true);
       })
       .catch((err) => {
-        const errMsg =
-          err.response ||
-          t("resource.common.error_message");
+        const errMsg = err.response || t("resource.common.error_message");
         showSnackbar(errMsg, "error");
       })
-      .finally(() => { });
+      .finally(() => {});
   };
   const addVPA = (formdata) => {
     const data = {
@@ -165,9 +160,7 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
             setPageState(1);
             onClose();
             showSnackbar(
-              t(
-                "resource.order.new_payment_added_success"
-              ),
+              t("resource.order.new_payment_added_success"),
               "success"
             );
             getBeneficiaryDetails();
@@ -181,16 +174,13 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
           setPageState(3);
         } else {
           const errMsg =
-            data?.errors?.[0]?.message ||
-            t("resource.common.error_message");
+            data?.errors?.[0]?.message || t("resource.common.error_message");
           showSnackbar(errMsg, "error");
           setLoadSpinner(false);
         }
       })
       .catch((err) => {
-        const errMsg =
-          err.response ||
-          t("resource.common.error_message");
+        const errMsg = err.response || t("resource.common.error_message");
         showSnackbar(errMsg, "error");
         setLoadSpinner(false);
       })
@@ -254,12 +244,12 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
                     {((selectedPayment === "PAYTM" && pageState === 2) ||
                       (selectedPayment === "AMAZON PAY" &&
                         pageState === 2)) && (
-                        <WalletForm
-                          fpi={fpi}
-                          loadSpinner={loadSpinner}
-                          addWalletAccount={addWalletAccount}
-                        ></WalletForm>
-                      )}
+                      <WalletForm
+                        fpi={fpi}
+                        loadSpinner={loadSpinner}
+                        addWalletAccount={addWalletAccount}
+                      ></WalletForm>
+                    )}
                   </div>
                 )}
               </div>

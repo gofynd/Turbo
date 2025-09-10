@@ -13,6 +13,8 @@ import WishlistIcon from "../../assets/images/single-row-wishlist.svg";
 import UserIcon from "../../assets/images/single-row-user.svg";
 import CartIcon from "../../assets/images/single-row-cart.svg";
 import { FDKLink } from "fdk-core/components";
+import TruckIcon from "../../assets/images/truck.svg";
+import Shimmer from "../shimmer/shimmer";
 
 function HeaderDesktop({
   checkLogin,
@@ -24,12 +26,13 @@ function HeaderDesktop({
   navigation,
   wishlistCount,
   fpi,
-  isHyperlocal = false,
+  isServiceability = false,
   isPromiseLoading = false,
-  pincode = "",
-  deliveryMessage = "",
-  onDeliveryClick = () => {},
+  deliveryAddress = "",
+  deliveryPromise = "",
+  onServiceabilityClick = () => {},
   languageIscCode,
+  hideNavList,
 }) {
   const { t } = useGlobalTranslation("translation");
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
@@ -48,6 +51,10 @@ function HeaderDesktop({
     }[logoMenuAlignment];
   };
 
+  const getShopLogo = () =>
+    appInfo?.logo?.secure_url?.replace("original", "resize-h:165") ||
+    fallbackLogo;
+
   const staticHeight =
     isDoubleRowHeader && globalConfig?.always_on_search
       ? 35.6
@@ -55,19 +62,21 @@ function HeaderDesktop({
         ? 121
         : 85;
 
-  const getShopLogo = () =>
-    appInfo?.logo?.secure_url?.replace("original", "resize-h:165") ||
-    fallbackLogo;
-
   return (
     <div
       className={`${styles.headerDesktop}  ${
         styles[globalConfig.header_layout]
       } ${styles[globalConfig.logo_menu_alignment]}`}
     >
-      <div className={styles.firstRow}>
-        <div className={styles.left}>
-          {!isDoubleRowHeader && (
+      <div
+        className={`${styles.firstRow} ${
+          isDoubleRowHeader && globalConfig?.always_on_search && hideNavList
+            ? styles.increasePadding
+            : ""
+        }`}
+      >
+        <div className={`${styles.left}`}>
+          {!isDoubleRowHeader && !hideNavList && (
             <Navigation
               customClass={`${styles.firstRowNav} ${
                 styles[globalConfig?.header_layout]
@@ -84,19 +93,21 @@ function HeaderDesktop({
               staticHeight={staticHeight}
             />
           )}
-          {isDoubleRowHeader && globalConfig?.always_on_search && (
-            <div className={styles.alwaysOnSearch}>
-              <Search
-                customSearchClass={styles.customSearchClass}
-                customSearchWrapperClass={styles.customSearchWrapperClass}
-                showCloseButton={false}
-                alwaysOnSearch={true}
-                screen="desktop"
-                globalConfig={globalConfig}
-                fpi={fpi}
-              />
-            </div>
-          )}
+          {isDoubleRowHeader &&
+            globalConfig?.always_on_search &&
+            !hideNavList && (
+              <div className={styles.alwaysOnSearch}>
+                <Search
+                  customSearchClass={styles.customSearchClass}
+                  customSearchWrapperClass={styles.customSearchWrapperClass}
+                  showCloseButton={false}
+                  alwaysOnSearch={true}
+                  screen="desktop"
+                  globalConfig={globalConfig}
+                  fpi={fpi}
+                />
+              </div>
+            )}
         </div>
         <div className={`${styles.middle} ${styles.flexCenter}`}>
           <FDKLink to="/">
@@ -109,101 +120,85 @@ function HeaderDesktop({
               alt={t("resource.header.shop_logo_alt_text")}
             />
           </FDKLink>
-          {isHyperlocal &&
+          {isServiceability &&
             globalConfig?.always_on_search &&
             ["layout_1", "layout_2", "layout_3"].includes(
               globalConfig?.logo_menu_alignment
-            ) && (
-              <button
-                className={`${styles.hyperlocalActionBtn} ${styles.hyperlocalSearchOn}`}
-                onClick={onDeliveryClick}
-              >
-                {isPromiseLoading ? (
-                  t("resource.header.fetching")
-                ) : (
-                  <>
-                    <div className={styles.label}>
-                      {pincode
-                        ? deliveryMessage
-                        : t("resource.header.pin_code")}
-                    </div>
-                    {pincode && (
-                      <div className={styles.pincode}>
-                        <span>{pincode}</span>
-                        <AngleDownIcon className={styles.headerAngleDownIcon} />
-                      </div>
-                    )}
-                  </>
-                )}
-              </button>
+            ) &&
+            !hideNavList && (
+              <ServiceabilityButton
+                className={styles.hyperlocalSearchOn}
+                {...{
+                  isPromiseLoading,
+                  deliveryAddress,
+                  deliveryPromise,
+                  onServiceabilityClick,
+                }}
+              />
             )}
         </div>
         <div className={`${styles.right} ${styles.right__icons}`}>
-          <I18Dropdown
-            fpi={fpi}
-            languageIscCode={languageIscCode}
-          ></I18Dropdown>
-          {isHyperlocal &&
-            (!globalConfig?.always_on_search ||
-              globalConfig?.logo_menu_alignment === "layout_4") && (
-              <button
-                className={styles.hyperlocalActionBtn}
-                onClick={onDeliveryClick}
-              >
-                {isPromiseLoading ? (
-                  t("resource.header.fetching")
-                ) : (
-                  <>
-                    <div className={styles.label}>
-                      {pincode
-                        ? deliveryMessage
-                        : t("resource.header.pin_code")}
-                    </div>
-                    {pincode && (
-                      <div className={styles.pincode}>
-                        <span>{pincode}</span>
-                        <AngleDownIcon className={styles.headerAngleDownIcon} />
-                      </div>
-                    )}
-                  </>
-                )}
-              </button>
-            )}
-          {(!isDoubleRowHeader || !globalConfig?.always_on_search) && (
-            <div className={`${styles.icon} ${styles["right__icons--search"]}`}>
-              <Search
-                customClass={`${styles[globalConfig?.header_layout]}-row-search`}
-                screen="desktop"
-                globalConfig={globalConfig}
-                fpi={fpi}
-              />
-            </div>
+          {!hideNavList && (
+            <I18Dropdown
+              fpi={fpi}
+              languageIscCode={languageIscCode}
+            ></I18Dropdown>
           )}
-          <button
-            type="button"
-            className={`${styles.icon} ${styles["right__icons--profile"]}`}
-            aria-label={t("resource.profile.profile")}
-            onClick={() => checkLogin("profile")}
-          >
-            <UserIcon
-              className={`${styles.user} ${styles.headerIcon} ${styles.singleRowIcon}`}
-            />
-          </button>
-          <button
-            type="button"
-            className={` ${styles["right__icons--wishlist"]}`}
-            aria-label="wishlist"
-            onClick={() => checkLogin("wishlist")}
-          >
-            <div className={styles.icon}>
-              <WishlistIcon
-                className={`${styles.wishlist} ${styles.singleRowIcon}`}
+          {isServiceability &&
+            (!globalConfig?.always_on_search ||
+              globalConfig?.logo_menu_alignment === "layout_4") &&
+            !hideNavList && (
+              <ServiceabilityButton
+                {...{
+                  isPromiseLoading,
+                  deliveryAddress,
+                  deliveryPromise,
+                  onServiceabilityClick,
+                }}
               />
-              {wishlistCount > 0 && LoggedIn && (
-                <span className={styles.count}>{wishlistCount}</span>
-              )}
-            </div>
-          </button>
+            )}
+          {(!isDoubleRowHeader || !globalConfig?.always_on_search) &&
+            !hideNavList && (
+              <div
+                className={`${styles.icon} ${styles["right__icons--search"]}`}
+              >
+                <Search
+                  customClass={`${styles[globalConfig?.header_layout]}-row-search`}
+                  screen="desktop"
+                  globalConfig={globalConfig}
+                  fpi={fpi}
+                />
+              </div>
+            )}
+          {!hideNavList && (
+            <button
+              type="button"
+              className={`${styles.icon} ${styles["right__icons--profile"]}`}
+              aria-label={t("resource.profile.profile")}
+              onClick={() => checkLogin("profile")}
+            >
+              <UserIcon
+                className={`${styles.user} ${styles.headerIcon} ${styles.singleRowIcon}`}
+              />
+            </button>
+          )}
+          {!hideNavList && (
+            <button
+              type="button"
+              className={` ${styles["right__icons--wishlist"]}`}
+              aria-label="wishlist"
+              onClick={() => checkLogin("wishlist")}
+            >
+              <div className={styles.icon}>
+                <WishlistIcon
+                  className={`${styles.wishlist} ${styles.singleRowIcon}`}
+                />
+                {wishlistCount > 0 && LoggedIn && (
+                  <span className={styles.count}>{wishlistCount}</span>
+                )}
+              </div>
+            </button>
+          )}
           {!globalConfig?.disable_cart &&
             globalConfig?.button_options !== "none" && (
               <button
@@ -224,9 +219,9 @@ function HeaderDesktop({
             )}
         </div>
       </div>
-      {isDoubleRowHeader && (
+      {isDoubleRowHeader && !hideNavList && (
         <Navigation
-          customClass={styles.secondRow}
+          customClass={`${styles.secondRow}`}
           maxMenuLength={getMenuMaxLength()}
           fallbackLogo={fallbackLogo}
           navigationList={navigation}
@@ -244,3 +239,39 @@ function HeaderDesktop({
 }
 
 export default HeaderDesktop;
+
+const ServiceabilityButton = ({
+  className,
+  isPromiseLoading = false,
+  deliveryAddress = "",
+  deliveryPromise = "",
+  onServiceabilityClick = () => {},
+}) => {
+  const { t } = useGlobalTranslation("translation");
+  return (
+    <button
+      className={`${styles.hyperlocalActionBtn} ${className}`}
+      onClick={onServiceabilityClick}
+    >
+      {isPromiseLoading ? (
+        <Shimmer width="150px" height="16px" />
+      ) : (
+        <>
+          <TruckIcon className={styles.truckIcon} />
+          <div className={styles.locationMeta}>
+            {!!deliveryPromise && (
+              <div className={styles.deliveryPromise}>{deliveryPromise}</div>
+            )}
+            <div
+              className={`${styles.deliveryAddress} ${!!deliveryPromise && styles.promiseAddress}`}
+            >
+              {!!deliveryAddress
+                ? deliveryAddress
+                : t("resource.header.location_label")}
+            </div>
+          </div>
+        </>
+      )}
+    </button>
+  );
+};

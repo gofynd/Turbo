@@ -18,11 +18,14 @@ function Dropdown({ type, selectedOption, dropdownData }) {
   const replaceQueryParam = (key, value) => {
     const querParams = new URLSearchParams(location.search);
     querParams.set(key, value);
-    navigate("/profile/orders" + (querParams?.toString() ? `?${querParams.toString()}` : ""));
+    navigate(
+      "/profile/orders" +
+        (querParams?.toString() ? `?${querParams.toString()}` : "")
+    );
     close();
     getOrderDataWithFilterQuery();
   };
-  const getOrderDataWithFilterQuery = () => { };
+  const getOrderDataWithFilterQuery = () => {};
   const replaceQuery = (option) => {
     switch (type) {
       case "time": {

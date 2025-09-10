@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { isRunningOnClient, detectMobileWidth } from "../helper/utils";
+import { detectMobileWidth, isRunningOnClient } from "../helper/utils";
 import styles from "../styles/sections/hero-video.less";
 import placeholderImage from "../assets/images/placeholder/hero-video.png";
 import { useGlobalTranslation } from "fdk-core/utils";

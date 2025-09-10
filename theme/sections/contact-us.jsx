@@ -103,7 +103,7 @@ function Component({ props = {} }) {
       fpi
         .executeGQL(CREATE_TICKET, values)
         .then(() => {
-          showSnackbar(t("resource.common.ticket_success"), "success");
+          showSnackbar(t("resource.common.form_success"), "success");
         })
         .catch(() => showSnackbar(t("resource.common.error_message"), "error"));
     } catch (error) {

@@ -13,7 +13,7 @@ function BankForm({
   fpi,
   addBankAccount,
   setShowBeneficiaryAdditionPage,
-  exisitingBankRefundOptions=[],
+  exisitingBankRefundOptions = [],
   footerClassName = "",
 }) {
   const { t } = useGlobalTranslation("translation");
@@ -82,22 +82,30 @@ function BankForm({
     }
 
     if (/\d/.test(value)) {
-      return t("resource.refund_order.numbers_not_allowed_in_account_holder_name");
+      return t(
+        "resource.refund_order.numbers_not_allowed_in_account_holder_name"
+      );
     }
 
     // Add validation for special characters (except spaces and common name characters)
     if (!/^[a-zA-Z\s.',-]+$/.test(value)) {
-      return t("resource.refund_order.special_characters_not_allowed_in_account_holder_name");
+      return t(
+        "resource.refund_order.special_characters_not_allowed_in_account_holder_name"
+      );
     }
 
     // Minimum name length check
     if (value.trim().length <= 5) {
-      return t("resource.refund_order.account_holder_name_should_be_more_than_5_characters");
+      return t(
+        "resource.refund_order.account_holder_name_should_be_more_than_5_characters"
+      );
     }
 
     // Maximum name length check (assuming a reasonable max)
     if (value.trim().length > 50) {
-      return t("resource.refund_order.account_holder_name_should_not_exceed_50_characters");
+      return t(
+        "resource.refund_order.account_holder_name_should_not_exceed_50_characters"
+      );
     }
 
     return true;
@@ -113,20 +121,41 @@ function BankForm({
 
     // Check if it contains only digits
     if (!/^\d+$/.test(accountNumber)) {
-      return t("resource.refund_order.account_number_should_contain_only_numbers");
+      return t(
+        "resource.refund_order.account_number_should_contain_only_numbers"
+      );
     }
 
     // Check minimum length (typical minimum for most banks)
     if (accountNumber.length < 9) {
-      return t("resource.refund_order.account_number_should_be_at_least_9_digits");
+      return t(
+        "resource.refund_order.account_number_should_be_at_least_9_digits"
+      );
     }
 
     // Check maximum length (typical maximum for most banks)
     if (accountNumber.length > 18) {
-      return t("resource.refund_order.account_number_should_not_exceed_18_digits");
+      return t(
+        "resource.refund_order.account_number_should_not_exceed_18_digits"
+      );
     }
 
     return true;
+  };
+
+  const handleAccountNumberInput = (e) => {
+    if (e.target.value.length > 18) {
+      e.target.value = e.target.value.slice(0, 18);
+    }
+  };
+  const handleAccountHolderKeyPress = (e) => {
+    if (
+      !/[a-zA-Z\s.',-]/.test(e.key) &&
+      e.key !== "Backspace" &&
+      e.key !== "Delete"
+    ) {
+      e.preventDefault();
+    }
   };
 
   return (
@@ -165,10 +194,12 @@ function BankForm({
             showAsterik
             required
             id={accountNoId}
+            onInput={(e) => handleAccountNumberInput(e)}
             type="number"
             {...register("accountNo", {
               validate: (value) =>
-                validateAccountNo(value) || t("resource.order.enter_valid_account_number"),
+                validateAccountNo(value) ||
+                t("resource.order.enter_valid_account_number"),
             })}
             error={!!errors?.accountNo}
             errorMessage={errors?.accountNo?.message || ""}
@@ -181,10 +212,12 @@ function BankForm({
             showAsterik
             required
             id={confirmedAccountNoId}
+            onInput={(e) => handleAccountNumberInput(e)}
             type="number"
             {...register("confirmedAccountNo", {
               validate: (value) =>
-                value === getValues("accountNo") || t("resource.refund_order.account_numbers_do_not_match"),
+                value === getValues("accountNo") ||
+                t("resource.refund_order.account_numbers_do_not_match"),
             })}
             error={!!errors?.confirmedAccountNo}
             errorMessage={errors?.confirmedAccountNo?.message || ""}
@@ -197,10 +230,14 @@ function BankForm({
             showAsterik
             required
             id={accounHolderId}
+            onKeyPress={(e) => {
+              handleAccountHolderKeyPress(e);
+            }}
             type="text"
             {...register("accounHolder", {
               validate: (value) =>
-                validateAccounHolder(value) || t("resource.order.account_holder_name_validation"),
+                validateAccounHolder(value) ||
+                t("resource.order.account_holder_name_validation"),
             })}
             error={!!errors?.accounHolder}
             errorMessage={errors?.accounHolder?.message || ""}
@@ -230,9 +267,7 @@ function BankForm({
               type="submit"
             >
               {loadSpinner && (
-                <ButtonSpinnerIcon
-                  className={`${styles.spinner}`}
-                />
+                <ButtonSpinnerIcon className={`${styles.spinner}`} />
               )}
 
               {!loadSpinner && <span>{t("resource.common.continue")}</span>}

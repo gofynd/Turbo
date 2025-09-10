@@ -1,7 +1,7 @@
 import React from "react";
 import { useFPI } from "fdk-core/utils";
 import { useParams } from "react-router-dom";
-import Shimmer from "../components/shimmer/shimmer";
+import { PLPShimmer } from "../components/core/skeletons";
 import ProductListing from "@gofynd/theme-template/pages/product-listing/product-listing";
 import "@gofynd/theme-template/pages/product-listing/index.css";
 import useCollectionListing from "../page-layouts/collection-listing/useCollectionListing";
@@ -23,7 +23,17 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const { seo } = listingProps;
 
   if (listingProps?.isPageLoading && isRunningOnClient()) {
-    return <Shimmer />;
+    return (
+      <PLPShimmer
+        gridDesktop={props?.grid_desktop?.value || 4}
+        gridTablet={props?.grid_tablet?.value || 3}
+        gridMobile={props?.grid_mob?.value || 1}
+        showFilters={true}
+        showSortBy={true}
+        showPagination={props?.loading_options?.value === "pagination"}
+        productCount={props?.page_size?.value || 12}
+      />
+    );
   }
 
   return (
@@ -133,7 +143,7 @@ export const settings = {
       type: "checkbox",
       id: "in_new_tab",
       label: "t:resource.common.open_product_in_new_tab",
-      default: true,
+      default: false,
       info: "t:resource.common.open_product_in_new_tab_desktop",
     },
     {

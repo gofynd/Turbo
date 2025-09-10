@@ -4,7 +4,10 @@ import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/testimonials.less";
 import { useWindowWidth } from "../helper/hooks";
-import { SliderNextArrow,SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
 import { useGlobalTranslation } from "fdk-core/utils";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 
@@ -46,7 +49,7 @@ export function Component({ props, globalConfig, blocks, preset }) {
       autoplaySpeed: Number(slide_interval?.value) * 1000,
       centerMode: testimonialsList.length > 2,
       centerPadding: testimonialsList.length > 2 ? "75px" : "0px",
-       nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
       prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {

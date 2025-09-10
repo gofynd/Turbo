@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 export function Component({ props }) {
   const { code, padding_top, padding_bottom } = props;
   const sectionRef = useRef(null);
+  const location = useLocation(); // detect SPA route changes
 
   const originalContent = typeof code?.value === "string" ? code.value : "";
 
@@ -10,11 +12,28 @@ export function Component({ props }) {
   const extractedStyles = styleMatches.map((match) => match[1]);
 
   const scriptMatches = [...originalContent.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)];
-  const extractedScripts = scriptMatches.map((match) => match[1]);
+  const extractedInlineScripts = scriptMatches.map((match) => match[1]);
+
+  const externalScriptMatches = [...originalContent.matchAll(/<script[^>]*src="([^"]+)"[^>]*><\/script>/gi)];
+  const externalScripts = externalScriptMatches.map((match) => match[1]);
+
+  const linkMatches = [...originalContent.matchAll(/<link[^>]*rel="[^"]*"[^>]*href="([^"]+)"[^>]*>/gi)];
+  const externalLinks = linkMatches.map((match) => {
+    const hrefMatch = match[0].match(/href="([^"]+)"/);
+    const relMatch = match[0].match(/rel="([^"]+)"/);
+    const asMatch = match[0].match(/as="([^"]+)"/);
+    return {
+      href: hrefMatch?.[1],
+      rel: relMatch?.[1],
+      as: asMatch?.[1],
+    };
+  });
 
   let cleanedContent = originalContent
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<script[^>]*src="[^"]+"[^>]*><\/script>/gi, "")
+    .replace(/<link[^>]*href="[^"]+"[^>]*>/gi, "");
 
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 16}px`,
@@ -22,21 +41,44 @@ export function Component({ props }) {
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      extractedScripts.forEach((scriptContent) => {
-        try {
-          const script = document.createElement("script");
-          script.type = "text/javascript";
-          script.textContent = scriptContent;
-          sectionRef.current?.appendChild(script);
-        } catch (err) {
-          console.error("Script injection failed:", err);
-        }
-      });
-    }, 300); 
+    const cleanupElements = [];
 
-    return () => clearTimeout(timeout);
-  }, [code?.value]);
+    // Inject inline scripts
+    extractedInlineScripts.forEach((scriptContent) => {
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.textContent = scriptContent;
+      sectionRef.current?.appendChild(script);
+      cleanupElements.push(script);
+    });
+
+    // Inject external scripts
+    externalScripts.forEach((src) => {
+      if (document.querySelector(`script[src="${src}"]`)) return;
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+      cleanupElements.push(script);
+    });
+
+    // Inject external links (e.g., fonts or stylesheets)
+    externalLinks.forEach(({ href, rel, as }) => {
+      if (document.querySelector(`link[href="${href}"]`)) return;
+      const link = document.createElement("link");
+      link.href = href;
+      link.rel = rel || "stylesheet";
+      if (as) link.as = as;
+      document.head.appendChild(link);
+      cleanupElements.push(link);
+    });
+
+    return () => {
+      // Clean up on unmount
+      cleanupElements.forEach((el) => el.remove());
+    };
+  }, [code?.value, location.pathname]);
 
   return !code?.value ? null : (
     <section
@@ -73,9 +115,9 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "px",
-      label: "t:resource.sections.categories.top_padding",
+      label: "Top padding",
       default: 16,
-      info: "t:resource.sections.categories.top_padding_for_section",
+      info: "Top padding for section",
     },
     {
       type: "range",
@@ -84,14 +126,12 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "px",
-      label: "t:resource.sections.categories.bottom_padding",
+      label: "Bottom padding",
       default: 16,
-      info: "t:resource.sections.categories.bottom_padding_for_section",
+      info: "Bottom padding for section",
     },
   ],
   blocks: [],
 };
 
 export default Component;
-
-

@@ -60,7 +60,7 @@
 }
 
 .grid-gap(@row-gap, @column-gap: @row-gap) {
-  @supports not (gap: @row-gap @column-gap) {
+  @supports not (gap: @{row-gap} @{column-gap}) {
     margin-inline-start: -(@column-gap / 2);
     margin-inline-end: -(@column-gap / 2);
     margin-bottom: -@row-gap;
@@ -71,7 +71,7 @@
     }
   }
 
-  @supports (gap: @row-gap @column-gap) {
+  @supports (gap: @{row-gap} @{column-gap}) {
     gap: @row-gap @column-gap;
   }
 }

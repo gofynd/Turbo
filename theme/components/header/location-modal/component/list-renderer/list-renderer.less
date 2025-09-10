@@ -1,0 +1,45 @@
+@import "../../../../../styles/main.less";
+
+.placePredictionsWrapper {
+  padding-block: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  
+  .predictionList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .predictionHeading {
+    color: @TextLabel;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .predictionItem {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: @HeaderNav;
+    cursor: pointer;
+  }
+
+  .predictionItemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    .mainText {
+      font-weight: 500;
+      line-height: normal;
+    }
+    .secondaryText {
+      font-weight: 400;
+      line-height: 18px;
+      letter-spacing: -0.28px;
+    }
+  }
+}

@@ -121,6 +121,43 @@ export const SEARCH_PRODUCT = `query products(
         type
         url
       }
+      brand {
+        name
+      }
+      grouped_attributes {
+        title
+        details {
+          key
+          type
+          value
+        }
+      }
+      attributes
+      media {
+        alt
+        type
+        url
+        meta {
+          source
+        }
+      }
+      discount
+      highlights
+      price {
+        effective {
+          currency_code
+          currency_symbol
+          max
+          min
+        }
+        marked {
+          currency_code
+          currency_symbol
+          max
+          min
+        }
+      }
+      short_description
     }
   }
 }`;
@@ -155,5 +192,4 @@ export const AUTOCOMPLETE = `query SearchProduct($query: String!) {
       }
     }
   }
-}
-`;
+}`;

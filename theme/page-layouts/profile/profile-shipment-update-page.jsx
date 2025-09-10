@@ -51,7 +51,9 @@ function ProfileShipmentUpdatePage({ fpi }) {
   const [inProgress, setInProgress] = useState(false);
   const [updateError, setUpdateError] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [errorText, setErrorText] = useState(t("resource.common.error_message"));
+  const [errorText, setErrorText] = useState(
+    t("resource.common.error_message")
+  );
   const [reasonOtherText, setReasonOtherText] = useState("");
   const { showSnackbar } = useSnackbar();
   const {
@@ -91,14 +93,14 @@ function ProfileShipmentUpdatePage({ fpi }) {
       });
       getRefundDetails(shipmentDetails?.order_id);
     }
-    return () => { };
+    return () => {};
   }, [shipmentDetails?.order_id]);
 
   useEffect(() => {
     setAccordianlv1({
       0: reasonsList.reasons,
     });
-    return () => { };
+    return () => {};
   }, [reasonsList]);
   useEffect(() => {
     if (shipmentDetails) {
@@ -255,10 +257,10 @@ function ProfileShipmentUpdatePage({ fpi }) {
     return shipmentDetails?.can_cancel
       ? !(selectLast() && !selectedReason[selectLast()].reasons?.length > 0)
       : !(
-        selectLast() &&
-        !selectedReason[selectLast()].reasons?.length > 0 &&
-        (showimg() ? imageList.length > 0 : true)
-      );
+          selectLast() &&
+          !selectedReason[selectLast()].reasons?.length > 0 &&
+          (showimg() ? imageList.length > 0 : true)
+        );
   }, [shipmentDetails, selectedReason, imageList]);
 
   const getUpdatedBagsList = () => {
@@ -410,11 +412,17 @@ function ProfileShipmentUpdatePage({ fpi }) {
         ["video/quicktime", "video/mp4"].includes(item.type)
       );
       if (images.length > 4)
-        return showUpdateErrorText(t("resource.profile.max_4_images_allowed_upload"));
+        return showUpdateErrorText(
+          t("resource.profile.max_4_images_allowed_upload")
+        );
       if (videos.length > 1)
-        return showUpdateErrorText(t("resource.profile.max_1_video_allowed_upload"));
+        return showUpdateErrorText(
+          t("resource.profile.max_1_video_allowed_upload")
+        );
       if (images.length < 2)
-        return showUpdateErrorText(t("resource.profile.min_2_images_required_upload"));
+        return showUpdateErrorText(
+          t("resource.profile.min_2_images_required_upload")
+        );
 
       const filesizecheck = images.every((item) => item.size / 1000 < 5000);
 
@@ -439,7 +447,9 @@ function ProfileShipmentUpdatePage({ fpi }) {
         ].includes(item.type)
       );
       if (!filetype)
-        return showUpdateErrorText(t("resource.profile.valid_file_formats_required"));
+        return showUpdateErrorText(
+          t("resource.profile.valid_file_formats_required")
+        );
     }
 
     // if (!confirmReturn) {
@@ -704,8 +714,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                     ></BeneficiaryItem>
                   )} */}
                   </div>
-                )
-              }
+                )}
               {showimg() && <div className={`${styles.divider}`}></div>}
               {showimg() && (
                 <div className={`${styles.cancelimg}`}>
@@ -715,7 +724,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                   <div className={`${styles.addPhoto} ${styles.boldmd}`}>
                     {/* <SvgWrapper svgSrc="add-photo" /> */}
                     <label className={`${styles.addImg}`} htmlFor="my-file">
-                    {t("resource.profile.add_images_videos")}
+                      {t("resource.profile.add_images_videos")}
                       <input
                         type="file"
                         accept="video/*, image/*"
@@ -752,13 +761,13 @@ function ProfileShipmentUpdatePage({ fpi }) {
                     </ul>
                   </div>
                   <div className={`${styles.makesure}`}>
-                  {t("resource.profile.ensure_product_tag_visible")}
+                    {t("resource.profile.ensure_product_tag_visible")}
                   </div>
                   <div className={`${styles.accept}`}>
-                  {t("resource.profile.accepted_image_formats_and_size")}
+                    {t("resource.profile.accepted_image_formats_and_size")}
                   </div>
                   <div className={`${styles.accept}`}>
-                  {t("resource.profile.accepted_video_formats_and_size")}
+                    {t("resource.profile.accepted_video_formats_and_size")}
                   </div>
                   {previewList.length > 0 && (
                     <div className={`${styles.previewImg}`}>
@@ -792,7 +801,8 @@ function ProfileShipmentUpdatePage({ fpi }) {
               {/* <div className={`${styles.divider}`}></div> */}
               {/* <div className={`${styles.textarea}`}>
                 <div>
-                  {t("resource.common.comments")} <span>({t("resource.common.optional")})</span>
+                  {t("resource.common.comments")}{" "}
+                  <span>({t("resource.common.optional")})</span>
                 </div>
                 <textarea
                   placeholder={t("resource.common.enter_reason")}

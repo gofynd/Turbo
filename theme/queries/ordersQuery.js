@@ -57,6 +57,12 @@ export const ORDER_LISTING = `query orders(
         total_bags
         track_url
         traking_no
+        fulfillment_option {
+          name
+          slug
+          type
+          is_default
+        }
         bags {
           can_cancel
           can_return
@@ -193,6 +199,12 @@ export const ORDER_BY_ID = `query order($orderId: String!) {
       total_bags
       track_url
       traking_no
+      fulfillment_option {
+        name
+        slug
+        type
+        is_default
+      }
       bags {
         can_cancel
         can_return

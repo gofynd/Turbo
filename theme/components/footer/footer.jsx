@@ -50,11 +50,12 @@ function Footer({ fpi }) {
 
   const processFooterDescription = useMemo(() => {
     const originalContent =
-      typeof globalConfig?.footer_description === "string" 
-        ? globalConfig.footer_description 
+      typeof globalConfig?.footer_description === "string"
+        ? globalConfig.footer_description
         : "";
 
-    if (!originalContent) return { cleanedContent: "", extractedStyles: [], extractedScripts: [] };
+    if (!originalContent)
+      return { cleanedContent: "", extractedStyles: [], extractedScripts: [] };
 
     const styleMatches = [
       ...originalContent.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi),
@@ -133,7 +134,6 @@ function Footer({ fpi }) {
     ...getArtWork(),
     ...(isMobile && isPDP ? { paddingBottom: "74px" } : {}),
   };
-
   const openInNewTab = globalConfig?.footer_social_open_same_tab;
 
   const isFooterHidden = useMemo(() => {
@@ -151,7 +151,7 @@ function Footer({ fpi }) {
               <div className={`${styles["footer__top--wrapper"]}`}>
                 {(getLogo?.length > 0 || globalConfig?.footer_description) && (
                   <div
-                    className={`${styles["footer__top--info"]}  ${processFooterDescription.cleanedContent?.length < 83 ? styles["footer__top--unsetFlexWidth"] : ""}`}
+                    className={`${styles["footer__top--info"]} ${processFooterDescription.cleanedContent?.length < 83 ? styles["footer__top--unsetFlexWidth"] : ""}`}
                   >
                     {getLogo?.length > 0 && (
                       <div className={`fx-footer-logo ${styles.logo}`}>
@@ -173,17 +173,19 @@ function Footer({ fpi }) {
                         ref={descriptionRef}
                         className={`${styles.description} b1 ${styles.fontBody}`}
                       >
-                        {processFooterDescription.extractedStyles.map((css, index) => (
-                          <style
-                            key={`footer-style-${index}`}
-                            dangerouslySetInnerHTML={{ __html: css }}
-                          />
-                        ))}
+                        {processFooterDescription.extractedStyles.map(
+                          (css, index) => (
+                            <style
+                              key={`footer-style-${index}`}
+                              dangerouslySetInnerHTML={{ __html: css }}
+                            />
+                          )
+                        )}
 
                         <div
                           data-testid="footer-html-content"
-                          dangerouslySetInnerHTML={{ 
-                            __html: processFooterDescription.cleanedContent 
+                          dangerouslySetInnerHTML={{
+                            __html: processFooterDescription.cleanedContent,
                           }}
                         />
                       </div>
@@ -257,7 +259,7 @@ function Footer({ fpi }) {
                                   </FDKLink>
                                 )
                               ) : (
-                                <p>{subItem.display}</p>
+                                <p>{subItem.display} </p>
                               )}
                             </li>
                           ) : null

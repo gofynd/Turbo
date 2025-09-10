@@ -12,7 +12,7 @@ import { formatLocale } from "../../helper/utils";
 
 function OrderShipment({
   orderInfo,
-  onBuyAgainClick = () => { },
+  onBuyAgainClick = () => {},
   isBuyAgainEligible,
 }) {
   const fpi = useFPI();
@@ -80,10 +80,9 @@ function OrderShipment({
     return [];
   };
   const getTotalItems = (items) => {
-    return t(
-      `resource.order.${items === 1 ? "single" : "multiple"}`,
-      { count: items }
-    );
+    return t(`resource.order.${items === 1 ? "single" : "multiple"}`, {
+      count: items,
+    });
   };
   const getTotalPieces = (pieces) => {
     const total = pieces.reduce((pre, curr) => {
@@ -146,8 +145,7 @@ function OrderShipment({
                     <div
                       className={`${styles.shipmentId} ${styles.boldls} ${styles.uktLinks}`}
                     >
-                      {t("resource.common.shipment")}:{" "}
-                      {item?.shipment_id}
+                      {t("resource.common.shipment")}: {item?.shipment_id}
                     </div>
                     <div className={`${styles.shipmentStats} ${styles.light}`}>
                       <span>{getTotalItems(item?.bags?.length)}</span>

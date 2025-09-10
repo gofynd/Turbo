@@ -48,7 +48,8 @@ function Refund({ fpi }) {
   const [isBeneficiaryAdded, setIsBeneficiaryAdded] = useState(false);
   const [beneficiaryDetails, setBeneficiaryDetails] = useState(null);
 
-  const { verifyIfscCode,addRefundBankAccountUsingOTP} =useRefundDetails(fpi);
+  const { verifyIfscCode, addRefundBankAccountUsingOTP } =
+    useRefundDetails(fpi);
 
   const [otpResendTime, setOtpResendTime] = useState(0);
   const resendTimerRef = useRef(null);
@@ -143,12 +144,12 @@ function Refund({ fpi }) {
         }
         setIsValidOtp(!!data?.verifyOtpForRefundBankDetails?.success);
         // await getRefundDetails(orderId);
-        //setting this to empty for now . Use these variables to list the already registered bank details 
+        //setting this to empty for now . Use these variables to list the already registered bank details
         setShowBeneficiaryAdditionPage(true);
-        setExisingBankRefundOptions([])
+        setExisingBankRefundOptions([]);
       })
-      .catch((error) => { })
-      .finally(() => { });
+      .catch((error) => {})
+      .finally(() => {});
   };
 
   const handleBankFormSubmit = async (
@@ -190,13 +191,12 @@ function Refund({ fpi }) {
           setIsBeneficiaryAdded(isSuccess);
         }
         // handling validations with different errors
-        if(!isSuccess){
-          if(data?.msg){
-            showSnackbar(data?.msg , "error");          
+        if (!isSuccess) {
+          if (data?.msg) {
+            showSnackbar(data?.msg, "error");
             return;
           }
         }
-
       })
       .catch((error) => {
         if (error?.errors && error.errors.length) {
@@ -252,7 +252,12 @@ function Refund({ fpi }) {
   }
 
   if (!orderId || !shipmentId) {
-    return <EmptyState title={t("resource.refund_order.invalid_refund_link")} showButton={false} />;
+    return (
+      <EmptyState
+        title={t("resource.refund_order.invalid_refund_link")}
+        showButton={false}
+      />
+    );
   }
   const handleSelectBank = (bankOption) => {
     setSelectedBank(bankOption);
@@ -294,7 +299,7 @@ function Refund({ fpi }) {
               ) : (
                 <div className={styles.outerContainer}>
                   <div className={styles.refundHeadertext}>
-                      {t("resource.profile.select_refund_option")}
+                    {t("resource.profile.select_refund_option")}
                   </div>
                   <div className={styles.mainContentSection}>
                     <div className={styles.contentHeader}>
@@ -327,7 +332,8 @@ function Refund({ fpi }) {
                             <div className={styles.bankDetails}>
                               <div className={styles.bankdetailsHeader}>
                                 <div className={styles.bankName}>
-                                  {bankOption.bank_name || t("resource.refund_order.bank_account")}
+                                  {bankOption.bank_name ||
+                                    t("resource.refund_order.bank_account")}
                                 </div>
                                 <div className={styles.svgWrapper}>
                                   <BankVerifiedIcon />
@@ -396,6 +402,7 @@ function Refund({ fpi }) {
 }
 
 function BeneficiarySuccess({ orderId, shipmentId }) {
+  const { t } = useGlobalTranslation("translation");
   return (
     <>
       <div className={styles.beneficiaryHeader}>
@@ -477,7 +484,7 @@ function OtpValidationForm({
       <div className={styles.refundOtpHead}>
         <h4>{t("resource.common.enter_otp")}</h4>
         <div>
-        {t("resource.refund_order.otp_sent_to_phone")} {customerPhone || ""}
+          {t("resource.refund_order.otp_sent_to_phone")} {customerPhone || ""}
         </div>
       </div>
       <form className={styles.refundOtpForm} onSubmit={handleSubmit(onSubmit)}>
@@ -508,18 +515,20 @@ function OtpValidationForm({
             errorMessage={errors?.otp?.message || ""}
           />
           <button
-                className={`${styles.formResendTimer} ${
-                    otpResendTime === 0 ? styles.resendEnabled : ""
-                }`}
-                disabled={otpResendTime > 0}
-                type="button"
-                onClick={onResendClick}
-                style={{ cursor: otpResendTime > 0 ? "default" : "pointer" }}
-                >
-                {otpResendTime > 0
-                  ? t("resource.refund_order.resend_otp_in_seconds", { time: otpResendTime })
-                  : t("resource.refund_order.resend_otp")}
-            </button>
+            className={`${styles.formResendTimer} ${
+              otpResendTime === 0 ? styles.resendEnabled : ""
+            }`}
+            disabled={otpResendTime > 0}
+            type="button"
+            onClick={onResendClick}
+            style={{ cursor: otpResendTime > 0 ? "default" : "pointer" }}
+          >
+            {otpResendTime > 0
+              ? t("resource.refund_order.resend_otp_in_seconds", {
+                  time: otpResendTime,
+                })
+              : t("resource.refund_order.resend_otp")}
+          </button>
         </div>
         <Button
           className={styles.refundOtpSubmitBtn}
@@ -537,12 +546,24 @@ function OtpValidationForm({
   );
 }
 
-function BeneficiaryForm({ fpi, onSubmit, setShowBeneficiaryAdditionPage, exisitingBankRefundOptions }) {
+function BeneficiaryForm({
+  fpi,
+  onSubmit,
+  setShowBeneficiaryAdditionPage,
+  exisitingBankRefundOptions,
+}) {
   const { t } = useGlobalTranslation("translation");
   return (
     <div className={styles.beneficiaryForm}>
-      <h4 className={styles.beneficiaryFormTitle}>{t("resource.refund_order.enter_bank_details")}</h4>
-      <BankForm fpi={fpi} addBankAccount={onSubmit} setShowBeneficiaryAdditionPage={setShowBeneficiaryAdditionPage} exisitingBankRefundOptions={exisitingBankRefundOptions} />
+      <h4 className={styles.beneficiaryFormTitle}>
+        {t("resource.refund_order.enter_bank_details")}
+      </h4>
+      <BankForm
+        fpi={fpi}
+        addBankAccount={onSubmit}
+        setShowBeneficiaryAdditionPage={setShowBeneficiaryAdditionPage}
+        exisitingBankRefundOptions={exisitingBankRefundOptions}
+      />
     </div>
   );
 }

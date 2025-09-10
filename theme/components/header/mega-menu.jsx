@@ -11,7 +11,7 @@ function MegaMenu({ headerNavigation, l1MenuClassName = "" }) {
 
   useEffect(() => {
     setNavWidths();
-    return () => { };
+    return () => {};
   }, []);
 
   const getPreciseOffsetWidth = (element) => {
@@ -98,9 +98,7 @@ function MegaMenu({ headerNavigation, l1MenuClassName = "" }) {
             <div link={menu.link} className={`${styles.navigationItem}`}>
               <div className={`${styles.l1Category} ${l1MenuClassName}`}>
                 <h5 className={`${styles.l1CategoryHeading}`}>
-                  <FDKLink action={menu?.action}>
-                    {menu.display}
-                  </FDKLink>
+                  <FDKLink action={menu?.action}>{menu.display}</FDKLink>
                 </h5>
                 {menu.sub_navigation && menu.sub_navigation.length > 0 && (
                   <ArrowDownIcon
@@ -138,10 +136,7 @@ function MegaMenu({ headerNavigation, l1MenuClassName = "" }) {
                         {l2Menu?.sub_navigation?.length > 0 && (
                           <div className={`${styles.l3Category}`}>
                             {l2Menu?.sub_navigation.map((l3Menu, l3index) => (
-                              <FDKLink
-                                key={l3index}
-                                action={l3Menu?.action}
-                              >
+                              <FDKLink key={l3index} action={l3Menu?.action}>
                                 <div className={`${styles.l3CategoryItem}`}>
                                   {l3Menu.display}
                                 </div>

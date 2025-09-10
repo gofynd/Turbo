@@ -375,23 +375,137 @@ export const SELECT_ADDRESS = `mutation SelectAddress( $buyNow: Boolean, $cartId
 export const FETCH_SHIPMENTS = `query CartShipmentDetails($buyNow: Boolean, $addressId: String, $id: String) {
   cartShipmentDetails(addressId: $addressId, id: $id, buyNow: $buyNow) {
     buy_now
-        cart_id
-        checkout_mode
-        comment
-        coupon_text
-        delivery_charge_info
-        error
-        gstin
-        id
-        is_valid
-        last_modified
+    cart_id
+    checkout_mode
+    comment
+    coupon_text
+    delivery_charge_info
+    error
+    gstin
+    id
+    is_valid
+    last_modified
+    message
+    restrict_checkout
+    uid
+    custom_cart_meta
+    currency {
+      code
+      symbol
+    }
+    delivery_promise {
+      formatted {
+        max
+        min
+      }
+      timestamp {
+        max
+        min
+      }
+      iso {
+        max
+        min
+      }
+    }
+    shipments {
+      box_type
+      dp_id
+      dp_options
+      fulfillment_id
+      fulfillment_type
+      order_type
+      shipment_type
+      shipments
+      promise {
+        formatted {
+          max
+          min
+        }
+        timestamp {
+          max
+          min
+        }
+        iso {
+          max
+          min
+        }
+      }
+      fulfillment_option {
+        name
+        slug
+        type
+        is_default
+      }
+      items {
+        bulk_offer
+        coupon_message
+        custom_order
+        discount
+        is_set
+        key
         message
-        restrict_checkout
-        uid
-        custom_cart_meta
-        currency {
-          code
-          symbol
+        moq
+        parent_item_identifiers
+        product_ean_id
+        quantity
+        article {
+          _custom_json
+          cart_item_meta
+          extra_meta
+          gift_card
+          identifier
+          is_gift_visible
+          meta
+          mto_quantity
+          parent_item_identifiers
+          product_group_tags
+          quantity
+          seller_identifier
+          size
+          tags
+          type
+          uid
+          price {
+            base {
+              currency_code
+              currency_symbol
+              effective
+              marked
+            }
+            converted {
+              currency_code
+              currency_symbol
+              effective
+              marked
+            }
+          }
+          seller {
+            name
+            uid
+          }
+          store {
+            name
+            store_code
+            uid
+          }
+          fulfillment_option {
+            name
+            slug
+            type
+            is_default
+          }
+        }
+        availability {
+          deliverable
+          is_valid
+          other_store_quantity
+          out_of_stock
+          sizes
+          available_sizes {
+            display
+            is_available
+            value
+          }
         }
         delivery_promise {
           formatted {
@@ -407,254 +521,152 @@ export const FETCH_SHIPMENTS = `query CartShipmentDetails($buyNow: Boolean, $add
             min
           }
         }
-        shipments {
-            box_type
-            dp_id
-            dp_options
-            fulfillment_id
-            fulfillment_type
-            order_type
-            shipment_type
-            shipments
-            promise {
-              formatted {
-                  max
-                  min
-              }
-              timestamp {
-                  max
-                  min
-              }
-              iso {
-                  max
-                  min
-              }
+        price {
+          base {
+            currency_code
+            currency_symbol
+            effective
+            marked
           }
-            items {
-                bulk_offer
-                coupon_message
-                custom_order
-                discount
-                is_set
-                key
-                message
-                moq
-                parent_item_identifiers
-                product_ean_id
-                quantity
-                article {
-                    _custom_json
-                    cart_item_meta
-                    extra_meta
-                    gift_card
-                    identifier
-                    is_gift_visible
-                    meta
-                    mto_quantity
-                    parent_item_identifiers
-                    product_group_tags
-                    quantity
-                    seller_identifier
-                    size
-                    tags
-                    type
-                    uid
-                    price {
-                        base {
-                            currency_code
-                            currency_symbol
-                            effective
-                            marked
-                        }
-                        converted {
-                            currency_code
-                            currency_symbol
-                            effective
-                            marked
-                        }
-                    }
-                    seller {
-                        name
-                        uid
-                    }
-                    store {
-                        name
-                        store_code
-                        uid
-                    }
-                }
-                availability {
-                    deliverable
-                    is_valid
-                    other_store_quantity
-                    out_of_stock
-                    sizes
-                    available_sizes {
-                        display
-                        is_available
-                        value
-                    }
-                }
-                delivery_promise {
-                    formatted {
-                        max
-                        min
-                    }
-                    timestamp {
-                        max
-                        min
-                    }
-                    iso {
-                        max
-                        min
-                    }
-                }
-                price {
-                    base {
-                        currency_code
-                        currency_symbol
-                        effective
-                        marked
-                    }
-                    converted {
-                        currency_code
-                        currency_symbol
-                        effective
-                        marked
-                    }
-                }
-                price_per_unit {
-                    base {
-                        currency_code
-                        currency_symbol
-                        effective
-                        marked
-                        selling_price
-                    }
-                    converted {
-                        currency_code
-                        currency_symbol
-                        effective
-                        marked
-                        selling_price
-                    }
-                }
-                product {
-                    _custom_json
-                    attributes
-                    item_code
-                    name
-                    slug
-                    tags
-                    type
-                    uid
-                    images {
-                        aspect_ratio
-                        secure_url
-                        url
-                    }
-                    brand {
-                      name
-                      uid
-                  }
-                  categories {
-                      name
-                      uid
-                  }
-                  action {
-                      type
-                      url
-                  }
-                }
-                promotions_applied {
-                    amount
-                    article_quantity
-                    code
-                    meta
-                    mrp_promotion
-                    offer_text
-                    promo_id
-                    promotion_group
-                    promotion_name
-                    promotion_type
-                    applied_free_articles {
-                        article_id
-                        parent_item_identifier
-                        quantity
-                        free_gift_item_details {
-                            item_brand_name
-                            item_id
-                            item_images_url
-                            item_name
-                            item_price_details {
-                              currency
-                              marked {
-                                  min
-                                  max
-                              }
-                              effective {
-                                  min
-                                  max
-                              }
-                            }
-                            item_slug
-                        }
-                    }
-                }
-            }
+          converted {
+            currency_code
+            currency_symbol
+            effective
+            marked
+          }
         }
-        currency {
-            code
-            symbol
+        price_per_unit {
+          base {
+            currency_code
+            currency_symbol
+            effective
+            marked
+            selling_price
+          }
+          converted {
+            currency_code
+            currency_symbol
+            effective
+            marked
+            selling_price
+          }
         }
-        delivery_promise {
-            formatted {
-                max
-                min
-            }
-            timestamp {
-                max
-                min
-            }
-            iso {
-                max
-                min
-            }
+        product {
+          _custom_json
+          attributes
+          item_code
+          name
+          slug
+          tags
+          type
+          uid
+          images {
+            aspect_ratio
+            secure_url
+            url
+          }
+          brand {
+            name
+            uid
+          }
+          categories {
+            name
+            uid
+          }
+          action {
+            type
+            url
+          }
         }
-        breakup_values {
-            display {
-                currency_code
-                currency_symbol
-                display
-                key
-                message
-                value
-                preset
+        promotions_applied {
+          amount
+          article_quantity
+          code
+          meta
+          mrp_promotion
+          offer_text
+          promo_id
+          promotion_group
+          promotion_name
+          promotion_type
+          applied_free_articles {
+            article_id
+            parent_item_identifier
+            quantity
+            free_gift_item_details {
+              item_brand_name
+              item_id
+              item_images_url
+              item_name
+              item_price_details {
+                currency
+                marked {
+                  min
+                  max
+                }
+                effective {
+                  min
+                  max
+                }
+              }
+              item_slug
             }
-            loyalty_points {
-                applicable
-                description
-                is_applied
-                total
-            }
-            raw {
-                cod_charge
-                convenience_fee
-                coupon
-                delivery_charge
-                discount
-                fynd_cash
-                gift_card
-                gst_charges
-                mop_total
-                mrp_total
-                subtotal
-                total
-                vog
-                you_saved
-                total_charge
-            }
+          }
         }
+      }
+    }
+    currency {
+      code
+      symbol
+    }
+    delivery_promise {
+      formatted {
+        max
+        min
+      }
+      timestamp {
+        max
+        min
+      }
+      iso {
+        max
+        min
+      }
+    }
+    breakup_values {
+      display {
+        currency_code
+        currency_symbol
+        display
+        key
+        message
+        value
+        preset
+      }
+      loyalty_points {
+        applicable
+        description
+        is_applied
+        total
+      }
+      raw {
+        cod_charge
+        convenience_fee
+        coupon
+        delivery_charge
+        discount
+        fynd_cash
+        gift_card
+        gst_charges
+        mop_total
+        mrp_total
+        subtotal
+        total
+        vog
+        you_saved
+        total_charge
+      }
+    }
   }
 }`;
 
@@ -935,6 +947,7 @@ export const PAYMENT_OPTIONS = `query PaymentModeRoutes($amount: Float!,$cartId:
           remaining_limit
           retry_count
           timeout
+          partial_payment_allowed
         }
         name
         save_card
@@ -1732,3 +1745,126 @@ export const VALID_UPI = `mutation validateVPA($validateVPARequestInput: Validat
     customer_name
   }
 }`;
+
+export const CREDIT_NOTE_BALANCE = `mutation validateCustomerAndCreditSummary(
+  $customerAndCreditSummary: CustomerAndCreditSummary
+) {
+  validateCustomerAndCreditSummary(
+    customerAndCreditSummary: $customerAndCreditSummary
+  ) {
+    is_eligible
+    is_applied
+    message
+    cart_id
+    account {
+      account_id
+      status
+      redeemable_balance {
+          amount
+          currency
+          uid
+      }
+      available_balance {
+          amount
+          currency
+          uid
+      }
+      amount_on_hold {
+          amount
+          currency
+          uid
+      }
+    }
+  }
+}
+`;
+
+export const UPDATE_CART_BREAKUP = `mutation updateCartBreakup(
+  $b: Boolean
+  $buyNow: Boolean
+  $i: Boolean
+  $id: String
+  $updateCartBreakupRequestInput: UpdateCartBreakupRequestInput
+) {
+  updateCartBreakup(
+    b: $b
+    buyNow: $buyNow
+    i: $i
+    id: $id
+    updateCartBreakupRequestInput: $updateCartBreakupRequestInput
+  ) {
+    applied_promo_details {
+      amount
+      article_quantity
+      code
+      meta
+      mrp_promotion
+      offer_text
+      promo_id
+      promotion_group
+      promotion_name
+      promotion_type
+      cancellation_allowed
+    }
+    buy_now
+    cart_id
+    checkout_mode
+    comment
+    coupon {
+      cashback_amount
+      cashback_message_primary
+      cashback_message_secondary
+      coupon_code
+      coupon_description
+      coupon_id
+      coupon_subtitle
+      coupon_title
+      coupon_type
+      coupon_value
+      discount
+      is_applied
+      is_valid
+      maximum_discount_value
+      message
+      minimum_cart_value
+    }
+    coupon_text
+    currency {
+      code
+      symbol
+    }
+    delivery_charge_info
+    gstin
+    id
+    is_valid
+    items {
+      coupon_message
+      custom_order
+      discount
+      is_set
+      key
+      message
+      moq
+      parent_item_identifiers
+      product_ean_id
+      quantity
+      bulk_offer
+    }
+    last_modified
+    message
+    notification
+    pan_config
+    pan_no
+    payment_selection_lock {
+      default_options
+      enabled
+      payment_identifier
+    }
+    restrict_checkout
+    staff_user_id
+    success
+    uid
+    custom_cart_meta
+  }
+}
+`;

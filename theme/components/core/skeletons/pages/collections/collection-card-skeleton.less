@@ -1,0 +1,54 @@
+@import "../../../../../styles/main.less";
+
+.collectionCardSkeleton {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+
+  .imageContainer {
+    position: relative;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+
+    .titleOverlay {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      z-index: 2;
+
+      // Add a subtle background for better visibility
+      &::before {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: -8px;
+        right: -8px;
+        top: -8px;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.4) 0%,
+          transparent 100%
+        );
+        border-radius: 4px;
+        z-index: -1;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767px) {
+  .collectionCardSkeleton {
+    .imageContainer {
+      .titleOverlay {
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+      }
+    }
+  }
+}

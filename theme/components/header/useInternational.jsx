@@ -80,6 +80,10 @@ const useInternational = ({ fpi }) => {
     );
   }, [locationDetails, countryDetails]);
 
+  const deliveryLocationStr = useMemo(() => {
+    return deliveryLocation.join(", ");
+  }, [deliveryLocation]);
+
   const isServiceabilityPincodeOnly = useMemo(
     () =>
       countryDetails?.fields?.serviceability_fields?.length === 1 &&
@@ -128,6 +132,7 @@ const useInternational = ({ fpi }) => {
   }
 
   return {
+    isLoading: !countryDetails,
     isInternational,
     i18nDetails,
     countries,
@@ -139,6 +144,7 @@ const useInternational = ({ fpi }) => {
     countryAddressFieldMap,
     isValidDeliveryLocation,
     deliveryLocation,
+    deliveryLocationStr,
     isServiceabilityPincodeOnly,
     fetchCountrieDetails,
     fetchLocalities,

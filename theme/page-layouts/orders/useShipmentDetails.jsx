@@ -89,10 +89,7 @@ const useShipmentDetails = (fpi) => {
           res?.data?.updateShipmentStatus?.statuses[0]?.shipments[0]
             ?.final_state?.shipment_id;
         if (type === "return") {
-          showSnackbar(
-            t("resource.order.return_accepted"),
-            "success"
-          );
+          showSnackbar(t("resource.order.return_accepted"), "success");
         }
         if (newShipmentId) {
           setTimeout(() => {

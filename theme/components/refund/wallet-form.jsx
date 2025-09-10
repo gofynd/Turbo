@@ -54,18 +54,13 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
     setInProgress(true);
     verifyOtpForWallet(data)
       .then((data) => {
-        showSnackbar(
-          t("resource.order.otp_sent_success"),
-          "success"
-        );
+        showSnackbar(t("resource.order.otp_sent_success"), "success");
         setRequestId(data.request_id);
         setOtpSent(true);
         setInProgress(false);
       })
       .catch((err) => {
-        const errMsg =
-          err.response ||
-          t("resource.common.error_message");
+        const errMsg = err.response || t("resource.common.error_message");
         showSnackbar(errMsg, "error");
         setInProgress(false);
       })
@@ -97,9 +92,7 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
               {...register("phone", {
                 validate: (value) =>
                   validPhone(value) ||
-                  t(
-                    "resource.common.enter_valid_mobile_number"
-                  ),
+                  t("resource.common.enter_valid_mobile_number"),
               })}
             />
           </div>
@@ -119,8 +112,7 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
               type="number"
               {...register("otp", {
                 validate: (value) =>
-                  validOtp(value) ||
-                  t("resource.common.enter_valid_otp"),
+                  validOtp(value) || t("resource.common.enter_valid_otp"),
               })}
             />
           </div>
@@ -132,9 +124,7 @@ function WalletForm({ fpi, addWalletAccount, loadSpinner }) {
         >
           {loadSpinner && <ButtonSpinnerIcon className={`${styles.spinner}`} />}
 
-          {!loadSpinner && (
-            <span>{t("resource.facets.add")}</span>
-          )}
+          {!loadSpinner && <span>{t("resource.facets.add")}</span>}
         </button>
         {/* {item.name === "otp" && otpSent && resend !== 2 && (
           <div

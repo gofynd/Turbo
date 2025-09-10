@@ -115,7 +115,10 @@ const useCollectionListing = ({ fpi, slug, props }) => {
   const breadcrumb = useMemo(
     () => [
       { label: t("resource.common.breadcrumb.home"), link: "/" },
-      { label: t("resource.common.breadcrumb.collections"), link: "/collections" },
+      {
+        label: t("resource.common.breadcrumb.collections"),
+        link: "/collections",
+      },
       { label: collectionName },
     ],
     [collectionName]
@@ -330,7 +333,10 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       searchParams?.delete(name, value);
     }
     searchParams?.delete("page_no");
-    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
+    navigate?.(
+      location?.pathname +
+        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+    );
   };
 
   const handleSortUpdate = (value) => {
@@ -343,7 +349,10 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       searchParams?.delete("sort_on");
     }
     searchParams?.delete("page_no");
-    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
+    navigate?.(
+      location?.pathname +
+        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+    );
   };
 
   function resetFilters() {
@@ -354,7 +363,10 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       searchParams?.delete(filter.key.name);
     });
     searchParams?.delete("page_no");
-    navigate?.(location?.pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ""));
+    navigate?.(
+      location?.pathname +
+        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+    );
   }
 
   const getPageUrl = (pageNo) => {

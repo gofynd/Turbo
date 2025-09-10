@@ -10,12 +10,16 @@ import { formatLocale } from "../helper/utils";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
-import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, globalConfig }) {
   const fpi = useFPI();
-  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS) || {};
-  const locale = language?.locale || "en"
+  const { language, countryCode } =
+    useGlobalStore(fpi.getters.i18N_DETAILS) || {};
+  const locale = language?.locale || "en";
   const { t } = useGlobalTranslation("translation");
   const customValues = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const blogItems = customValues?.featuredBlogSectionData ?? [];
@@ -34,7 +38,7 @@ export function Component({ props, globalConfig }) {
       cssEase: "linear",
       infinite: blogItems?.length > 3,
       nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles}  />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 780,
@@ -185,7 +189,8 @@ export function Component({ props, globalConfig }) {
 
 const BlogItem = ({ className = "", blog, sources, defer }) => {
   const fpi = useFPI();
-  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS) || {};
+  const { language, countryCode } =
+    useGlobalStore(fpi.getters.i18N_DETAILS) || {};
   const locale = language?.locale || "en";
   const getBlogTag = (blog) => {
     return blog?.tags?.length > 1 ? `${blog?.tags?.[0]},` : blog?.tags?.[0];
@@ -315,6 +320,28 @@ export const settings = {
       label: "t:resource.sections.categories.bottom_padding",
       default: 16,
       info: "t:resource.sections.categories.bottom_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Top padding",
+      default: 16,
+      info: "Top padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Bottom padding",
+      default: 16,
+      info: "Bottom padding for section",
     },
   ],
 };

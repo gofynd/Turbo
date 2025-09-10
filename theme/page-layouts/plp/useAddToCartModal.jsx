@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState, useEffect } from "react";
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import { GET_QUICK_VIEW_PRODUCT_DETAILS } from "../../queries/plpQuery";
 import { FEATURE_PRODUCT_SIZE_PRICE } from "../../queries/featureProductQuery";
 import {
@@ -7,15 +13,32 @@ import {
   useNavigate,
 } from "fdk-core/utils";
 import { LOCALITY } from "../../queries/logisticsQuery";
-import { ADD_TO_CART } from "../../queries/pdpQuery";
+import { ADD_TO_CART, FULFILLMENT_OPTIONS } from "../../queries/pdpQuery";
 import useCart, { fetchCartDetails } from "../cart/useCart";
-import { useSnackbar, useHyperlocalTat } from "../../helper/hooks";
-import { isEmptyOrNull, translateDynamicLabel } from "../../helper/utils";
+import {
+  useSnackbar,
+  useThemeFeature,
+  useDeliverPromise,
+} from "../../helper/hooks";
+import {
+  isEmptyOrNull,
+  translateDynamicLabel,
+  convertUTCDateToLocalDate,
+  formatLocale,
+} from "../../helper/utils";
 
 const useAddToCartModal = ({ fpi, pageConfig }) => {
   const { t } = useGlobalTranslation("translation");
+  const { language, countryCode } =
+    useGlobalStore(fpi.getters.i18N_DETAILS) || {};
+  const locale = language?.locale ? language?.locale : "en";
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const pincodeDetails = useGlobalStore(fpi?.getters?.PINCODE_DETAILS);
+  const { fulfillment_option } = useGlobalStore(fpi?.getters?.APP_FEATURES);
+  const { isServiceabilityModalOpen = false, selectedAddress } = useGlobalStore(
+    fpi?.getters?.CUSTOM_VALUE
+  );
+  const isOpenPending = useRef(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [productData, setProductData] = useState({
@@ -30,11 +53,13 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
   const [pincodeErrorMessage, setPincodeErrorMessage] = useState("");
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [sizeError, setSizeError] = useState(false);
+  const [currentFO, setCurrentFO] = useState({});
+  const [fulfillmentOptions, setFulfillmentOptions] = useState([]);
 
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
-  const { isHyperlocal } = useHyperlocalTat({ fpi });
-
+  const { getFormattedPromise } = useDeliverPromise({ fpi });
+  const { isServiceability } = useThemeFeature({ fpi });
   const { onUpdateCartItems, isCartUpdating, cartItems } = useCart(fpi, false);
 
   const isMto = useMemo(
@@ -45,8 +70,8 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
   const fetchProductPrice = useCallback(
     async (size, productSlug) => {
       try {
-        const productPriceData = await fpi.executeGQL(
-          FEATURE_PRODUCT_SIZE_PRICE,
+        const productPriceWithFO = await fpi.executeGQL(
+          FULFILLMENT_OPTIONS,
           {
             slug: productSlug || slug,
             pincode: currentPincode || "",
@@ -58,16 +83,30 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
           { skipStoreUpdate: false }
         );
 
-        if (isEmptyOrNull(productPriceData.data.productPrice)) {
+        const productPriceList =
+          productPriceWithFO?.data?.productsPriceWithFulfillmentOption?.items ||
+          [];
+
+        const selectedProductPrice =
+          productPriceList.find(
+            (foItem) => foItem?.fulfillment_option?.is_default
+          ) ||
+          productPriceList[0] ||
+          {};
+
+        setCurrentFO(selectedProductPrice?.fulfillment_option || {});
+        setFulfillmentOptions(productPriceList);
+
+        if (isEmptyOrNull(selectedProductPrice)) {
           setPincodeErrorMessage(
-            productPriceData?.errors?.[0]?.message ||
+            productPriceWithFO?.errors?.[0]?.message ||
               t("resource.product.product_not_serviceable")
           );
         } else {
           setPincodeErrorMessage("");
         }
 
-        return productPriceData;
+        return selectedProductPrice;
       } catch (error) {
         console.error(error);
       }
@@ -101,7 +140,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
             productDetails?.data?.product?.sizes?.sizes[0]?.value
           );
           setProductData({
-            productPrice: productPriceData?.data?.productPrice || {},
+            productPrice: productPriceData || {},
             product: productDetails?.data?.product,
           });
         } else {
@@ -121,11 +160,22 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
     async (productSlug) => {
       setIsLoading(true);
       setSlug(productSlug);
-      await fetchProductData(productSlug);
-      setIsOpen(true);
-      setIsLoading(false);
+      if (
+        isServiceability &&
+        pageConfig?.mandatory_pincode &&
+        !selectedAddress
+      ) {
+        fpi.custom.setValue("isServiceabilityModalOpen", true);
+        isOpenPending.current = true;
+        await fetchProductData(productSlug);
+        setIsLoading(false);
+      } else {
+        await fetchProductData(productSlug);
+        setIsLoading(false);
+        setIsOpen(true);
+      }
     },
-    [fetchProductData]
+    [fetchProductData, selectedAddress]
   );
 
   const onSizeSelection = useCallback(
@@ -142,7 +192,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
       const productPriceData = await fetchProductPrice(sizeValue);
       setProductData((prevData) => ({
         ...prevData,
-        productPrice: productPriceData?.data?.productPrice || {},
+        productPrice: productPriceData || {},
       }));
     },
     [isMto, fetchProductPrice]
@@ -172,7 +222,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
 
           setProductData((prevData) => ({
             ...prevData,
-            productPrice: productPriceData?.data?.productPrice || {},
+            productPrice: productPriceData || {},
           }));
         } else {
           setPincodeErrorMessage(
@@ -225,7 +275,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         pageConfig?.mandatory_pincode &&
         (currentPincode?.length !== 6 || pincodeErrorMessage.length)
       ) {
-        setPincodeErrorMessage(t("resource.product.enter_valid_pincode"));
+        setPincodeErrorMessage(t("resource.product.enter_valid_location"));
         return;
       }
       if (
@@ -233,7 +283,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         ((currentPincode?.length > 0 && currentPincode?.length < 6) ||
           pincodeErrorMessage.length)
       ) {
-        setPincodeErrorMessage(t("resource.product.enter_valid_pincode"));
+        setPincodeErrorMessage(t("resource.product.enter_valid_location"));
         return;
       }
       if (
@@ -277,6 +327,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
                 quantity,
                 seller_id: productData?.productPrice?.seller?.uid,
                 store_id: productData?.productPrice?.store?.uid,
+                fulfillment_option_slug: currentFO?.slug || "",
               },
             ],
           },
@@ -325,7 +376,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
 
     if (selectedSize) {
       const cartItemsKey = Object.keys(cartItems || {});
-      const selectedItemKey = `${productData?.product?.uid}_${selectedSize}_standard-delivery_${productData?.productPrice?.store?.uid}`;
+      const selectedItemKey = `${productData?.product?.uid}_${selectedSize}_${currentFO?.slug}_${productData?.productPrice?.store?.uid}`;
 
       cartItemsKey.some((item, index) => {
         const itemKeyWithoutItemIndex = item.substring(
@@ -350,6 +401,15 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
       ({ value }) => selectedSize === value
     );
   }, [selectedSize]);
+
+  const tatMessage = useMemo(() => {
+    if (!productData?.productPrice?.delivery_promise) return "";
+    return getFormattedPromise(productData.productPrice.delivery_promise);
+  }, [
+    productData?.productPrice?.delivery_promise,
+    countryCode,
+    getFormattedPromise,
+  ]);
 
   const moq = productData?.product?.moq;
   const incrementDecrementUnit = moq?.increment_unit ?? 1;
@@ -416,6 +476,56 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (fulfillmentOptions?.length && currentFO?.slug) {
+      const currentProductPrice = fulfillmentOptions.find(
+        (foItem) => foItem?.fulfillment_option?.slug === currentFO?.slug
+      );
+
+      setProductData((prevData) => ({
+        ...prevData,
+        productPrice: currentProductPrice || {},
+      }));
+    }
+  }, [currentFO?.slug]);
+
+  useEffect(() => {
+    const handlePlaceSelection = async () => {
+      setIsOpen(true);
+      const isSingleSize = productData?.product?.sizes?.sizes?.length === 1;
+      const isSizeCollapsed = pageConfig?.hide_single_size && isSingleSize;
+      const preSelectFirstOfMany = pageConfig?.preselect_size;
+      if (
+        isSizeCollapsed ||
+        (preSelectFirstOfMany && productData?.product?.sizes !== undefined)
+      ) {
+        const productPriceData = await fetchProductPrice(
+          productData?.product?.sizes?.sizes[0]?.value,
+          slug
+        );
+        setSelectedSize(productData?.product?.sizes?.sizes[0]?.value);
+        setProductData((prevData) => ({
+          ...prevData,
+          productPrice: productPriceData || {},
+        }));
+      }
+      isOpenPending.current = false;
+    };
+    if (
+      !isServiceabilityModalOpen &&
+      selectedAddress &&
+      isOpenPending.current
+    ) {
+      handlePlaceSelection();
+    }
+  }, [selectedAddress, isServiceabilityModalOpen]);
+
+  useEffect(() => {
+    if (!isServiceabilityModalOpen) {
+      isOpenPending.current = false;
+    }
+  }, [isServiceabilityModalOpen]);
+
   return {
     isOpen,
     isLoading,
@@ -428,25 +538,24 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
     deliverInfoProps: useMemo(
       () => ({
         pincode: currentPincode,
-        tat: productData?.productPrice?.delivery_promise,
+        setPincode: setCurrentPincode,
+        tatMessage,
+        isServiceability,
         pincodeErrorMessage,
-        setCurrentPincode: updatePincode,
-        checkPincode,
-        fpi,
         setPincodeErrorMessage,
+        availableFOCount: fulfillment_option?.count || 1,
+        checkPincode,
       }),
       [
         currentPincode,
-        productData?.productPrice,
+        tatMessage,
         pincodeErrorMessage,
-        updatePincode,
+        fulfillmentOptions,
         checkPincode,
-        fpi,
       ]
     ),
     selectedItemDetails,
     isCartUpdating,
-    isHyperlocal,
     cartUpdateHandler,
     maxCartQuantity,
     incrementDecrementUnit,
@@ -459,6 +568,11 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
     handleViewMore,
     handleCloseSizeGuide,
     handleShowSizeGuide,
+    fulfillmentOptions,
+    currentFO,
+    setCurrentFO,
+    availableFOCount: fulfillment_option?.count || 1,
+    getDeliveryPromise: getFormattedPromise,
   };
 };
 

@@ -6,7 +6,7 @@
   z-index: @header;
   &.stickyTransparentHeader {
     box-shadow: unset !important;
-    position: fixed !important;
+    // position: fixed !important;
     width: 100%;
   }
   &.transparentHeader {
@@ -17,11 +17,71 @@
   &:not(.listing) {
     box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.03);
   }
-  &.unsetBoxShadow {
+  &.stickyTransparentHeader {
     box-shadow: unset !important;
+    // position: fixed !important;
+    width: 100%;
+  }
+  &.transparentHeader {
+    box-shadow: unset !important;
+    position: absolute !important;
+    width: 100%;
   }
 }
-
+.back_button_container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  .icon {
+    div {
+      position: relative;
+      svg > path {
+        fill: @HeaderIcon;
+      }
+    }
+  }
+  &.desktopHeader {
+    padding: 12px 40px;
+    justify-content: space-between;
+  }
+  .singleRowIcon g > path {
+    fill: @HeaderIcon;
+  }
+  .count {
+    min-width: 16px;
+    min-height: 16px;
+    padding: 0 2px;
+    background-color: @HeaderIcon;
+    color: @HeaderBackground;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    inset-inline-end: 0;
+    top: 0;
+    transform: translate(50%, -50%);
+  }
+  .iconWrapper {
+    width: 24px;
+    height: 24px;
+    svg > path {
+      fill: @TextHeading;
+    }
+  }
+  .cartPadding {
+    padding: 0px 8px;
+  }
+  span {
+    color: @TextHeading;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%; /* 22.4px */
+  }
+}
 .header {
   position: relative;
   background-color: @HeaderBackground;
@@ -57,6 +117,7 @@
   .headerIcon {
     width: 24px;
     height: 24px;
+    color: @HeaderIcon;
     g > path {
       fill: @HeaderIcon;
     }
@@ -93,7 +154,19 @@
         display: flex;
       }
     }
+    &.leftLogo {
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+    }
     .middle {
+      &.visibilityNone {
+        visibility: hidden;
+      }
+      &.paddingRight {
+        flex: 1;
+        justify-content: center;
+        padding-right: 73.99px;
+      }
       .logo {
         max-height: 38px;
       }
@@ -162,10 +235,9 @@
   }
   .mobileBottom {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 2px;
+    align-items: center;
+    gap: 4px;
+    text-align: left;
     min-height: 51.6px;
     color: @HeaderIcon;
     padding: 8px 16px;
@@ -175,9 +247,30 @@
     &.unsetBorder {
       border: unset;
     }
-    .label {
+    .angleDownIcon,
+    .truckIcon {
+      font-size: 20px;
+      min-width: 20px;
+    }
+    .locationMeta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .promiseTat {
       font-size: 14px;
       font-weight: 600;
+      letter-spacing: -0.28px;
+      .text-line-clamp();
+    }
+
+    .label {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+      letter-spacing: -0.24px;
+      .text-line-clamp();
+      max-width: 100%;
     }
 
     .pincode {
@@ -194,5 +287,9 @@
   .mobileIcon {
     width: 24px;
     height: 24px;
+    color: @HeaderIcon;
+    g > path {
+      fill: @HeaderIcon;
+    }
   }
 }

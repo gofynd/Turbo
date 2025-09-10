@@ -39,8 +39,9 @@ function Card({ card, cardType, isImageFill, globalConfig, img_fill = false }) {
       return `/products/?brand=${card?.slug}`;
     }
     if (cardType === "CATEGORIES") {
-      return `/products?category=${card?.slug}&department=${card?.action?.page?.query?.department?.[0]
-        }`;
+      return `/products?category=${card?.slug}&department=${
+        card?.action?.page?.query?.department?.[0]
+      }`;
     }
     return `/products/?${card?.slug}`;
   }
@@ -49,8 +50,9 @@ function Card({ card, cardType, isImageFill, globalConfig, img_fill = false }) {
     <div>
       {card && (
         <div
-          className={`${styles.cardItem} ${styles.groupItemBox} ${styles[`${cardType}`]
-            }`}
+          className={`${styles.cardItem} ${styles.groupItemBox} ${
+            styles[`${cardType}`]
+          }`}
         >
           <FDKLink className={styles.displayBlock} to={getUrl()}>
             <FyImage
@@ -67,9 +69,10 @@ function Card({ card, cardType, isImageFill, globalConfig, img_fill = false }) {
               globalConfig={globalConfig}
             />
             <div
-              className={`${styles.cardDesc} ${styles.flexAlignCenter} ${(cardType === "COLLECTIONS" || cardType === "CATEGORIES") &&
+              className={`${styles.cardDesc} ${styles.flexAlignCenter} ${
+                (cardType === "COLLECTIONS" || cardType === "CATEGORIES") &&
                 styles.emergeCenter
-                } ${cardType === "BRANDS" && styles.BRANDS}`}
+              } ${cardType === "BRANDS" && styles.BRANDS}`}
             >
               {cardType === "BRANDS" && (
                 <div className={styles.cardLogo}>

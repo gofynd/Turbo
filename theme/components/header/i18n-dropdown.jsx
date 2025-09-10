@@ -236,6 +236,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
   };
 
   const openI18nModal = () => {
+    if (!showI18Dropdown) return;
     fpi.custom.setValue("isI18ModalOpen", true);
     fpi.custom.setValue("showLanguageDropdown", true);
   };
@@ -394,21 +395,23 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
 
   return (
     <div className={`${styles.internationalization}`}>
-      {(languageIscCode.length > 1 || (isInternational && showI18Dropdown)) && (
+      {(languageIscCode.length > 1 || isInternational) && (
         <button
           className={styles.internationalization__selected}
           onClick={openI18nModal}
         >
-          <InternationalIcon className={styles.internationalIcon} />
-          {currentCountry?.display_name && currentCurrency?.code ? (
+          {currentCountry?.display_name &&
+          currentCurrency?.code &&
+          showI18Dropdown ? (
             <>
+              <InternationalIcon className={styles.internationalIcon} />
               <span
                 className={`${styles.locationLabel} ${styles.locationLabelMobile}`}
               >
                 {t("resource.common.deliver_to")}{" "}
               </span>
               <span
-                className={`${styles.locationLabel} ${styles.languageDisplayContainer}`}
+                className={`${styles.locationLabel}`}
               >{`${currentCountry.display_name} - ${currentCurrency.code}`}</span>
             </>
           ) : (

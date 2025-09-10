@@ -8,6 +8,10 @@ import InfiniteLoader from "../components/infinite-loader/infinite-loader";
 import ScrollToTop from "../components/scroll-to-top/scroll-to-top";
 import { getConfigFromProps } from "../helper/utils";
 import EmptyState from "../components/empty-state/empty-state";
+import {
+  BrandsPageShimmer,
+  BrandsGridShimmer,
+} from "../components/core/skeletons";
 import { BRAND_LISTING } from "../queries/brandsQuery";
 
 export function Component({ props }) {
@@ -25,6 +29,19 @@ export function Component({ props }) {
   if (!isLoading && Boolean(brands) && !brands?.length) {
     return <EmptyState title={t("resource.brand.no_brand_found")} />;
   }
+
+  // Show shimmer when loading and no brands yet
+  if (isLoading && !brands?.length) {
+    return (
+      <BrandsPageShimmer
+        showTitle={!!title}
+        showDescription={!!description}
+        showBreadcrumbs={true}
+        brandCount={12}
+      />
+    );
+  }
+
   return (
     <div className={`${styles.brands} basePageContainer margin0auto fontBody`}>
       <div className={`${styles.brands__breadcrumbs} captionNormal`}>
@@ -59,6 +76,12 @@ export function Component({ props }) {
               globalConfig={globalConfig}
               isImageFill={img_fill}
             />
+            {/* Show shimmer when loading more */}
+            {isLoading && brands?.length > 0 && (
+              <div style={{ marginTop: "16px" }}>
+                <BrandsGridShimmer brandCount={4} />
+              </div>
+            )}
           </InfiniteLoader>
           {pageData?.has_next && !infinite_scroll && (
             <div className={`${styles.viewMoreBtnWrapper} flex-center`}>

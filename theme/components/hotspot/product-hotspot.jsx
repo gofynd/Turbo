@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { FDKLink } from "fdk-core/components";
+import { useNavigate } from "react-router-dom";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
-import { currencyFormat, isRunningOnClient, formatLocale } from "../../helper/utils";
+import {
+  currencyFormat,
+  isRunningOnClient,
+  formatLocale,
+} from "../../helper/utils";
 import styles from "./product-hotspot.less";
 import HotspotIcon from "../../assets/images/hotspot.svg";
 import ArrowDownIcon from "../../assets/images/arrow-down.svg";
@@ -17,8 +22,10 @@ const Hotspot = ({
   aspectRatio = 1,
 }) => {
   const fpi = useFPI();
-  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS) || {};
-  const locale = language?.locale || "en"
+  const navigate = useNavigate();
+  const { language, countryCode } =
+    useGlobalStore(fpi.getters.i18N_DETAILS) || {};
+  const locale = language?.locale || "en";
   const [isActive, setIsActive] = useState(false);
   const [tooltipClassDesktop, setTooltipClassDesktop] = useState("");
   const [tooltipClassMobile, setTooltipClassMobile] = useState("");
@@ -104,6 +111,18 @@ const Hotspot = ({
     ? `/product/${product?.slug}`
     : (redirect_link ?? "");
 
+  const handleClick = () => {
+    if (product?.slug) {
+      navigate(`/product/${product.slug}`, {
+        state: {
+          product,
+        },
+      });
+    } else if (redirect_link) {
+      window.open(redirect_link, "_self");
+    }
+  };
+
   return (
     <div
       className={styles.hotspot}
@@ -123,10 +142,9 @@ const Hotspot = ({
             ${isActive ? styles["hotspot__tooltip-wrapper--active"] : ""}
           `}
         >
-          <FDKLink
+          <div
             className={`${styles.hotspot__tooltip} ${styles.product}`}
-            to={redirectValue}
-            target="_self"
+            onClick={handleClick}
           >
             <FyImage
               customClass={`${styles.product__image} ${styles.fill}`}
@@ -165,7 +183,7 @@ const Hotspot = ({
                 <ArrowDownIcon className={styles["icon-right"]} />
               )}
             </div>
-          </FDKLink>
+          </div>
         </div>
       )}
     </div>

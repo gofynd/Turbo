@@ -15,7 +15,11 @@ import styles from "../page-layouts/profile/styles/profile-my-order-shipment-pag
 import useShipmentDetails from "../page-layouts/orders/useShipmentDetails";
 import EmptyState from "../components/empty-state/empty-state";
 import Loader from "../components/loader/loader";
-import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
+import {
+  useGlobalTranslation,
+  useNavigate,
+  useGlobalStore,
+} from "fdk-core/utils";
 import OrderDeliveryIcon from "../assets/images/order-delivery.svg";
 import CrossIcon from "../assets/images/cross-black.svg";
 import DefaultImage from "../assets/images/default-image.svg";
@@ -30,6 +34,7 @@ export function Component({ blocks, fpi }) {
   const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const location = useLocation();
+  const { fulfillment_option } = useGlobalStore(fpi.getters.APP_FEATURES);
   const { isLoading, shipmentDetails, invoiceDetails, getInvoice } =
     useShipmentDetails(fpi);
   const [initial, setInitial] = useState(true);
@@ -240,7 +245,7 @@ export function Component({ blocks, fpi }) {
                                                 img
                                               );
                                             }}
-                                             disablePictureInPicture
+                                            disablePictureInPicture
                                             aria-label={
                                               file.desc || `Video ${index + 1}`
                                             }
@@ -316,6 +321,8 @@ export function Component({ blocks, fpi }) {
                               shipmentInfo={shipmentDetails}
                               changeinit={toggelInit}
                               invoiceDetails={invoiceDetails}
+                              bagLength={getBag()?.length}
+                              availableFOCount={fulfillment_option?.count || 1}
                             ></ShipmentTracking>
                           </div>
                         )
@@ -424,7 +431,7 @@ export function Component({ blocks, fpi }) {
                       src={selectedMedia.url}
                       controls
                       autoPlay
-                       disablePictureInPicture
+                      disablePictureInPicture
                       onError={handleMediaError}
                     >
                       <source src={selectedMedia.url} type="video/mp4" />
@@ -468,6 +475,11 @@ export const settings = {
     {
       type: "shipment_medias",
       name: "t:resource.sections.order_details.shipment_medias",
+      props: [],
+    },
+    {
+      type: "shipment_medias",
+      name: "Shipment Medias",
       props: [],
     },
     {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { FDKLink } from "fdk-core/components";
-import Loader from "../components/loader/loader";
+import { CategoriesPageShimmer } from "../components/core/skeletons";
 import styles from "../styles/categories.less";
 import CardList from "../components/card-list/card-list";
 import useCategories from "../page-layouts/categories/useCategories";
@@ -53,15 +53,30 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     return <EmptyState title={t("resource.categories.empty_state")} />;
   }
 
+  // Show shimmer when loading and no categories yet
+  if (isLoading && !sortedCategories?.length) {
+    return (
+      <CategoriesPageShimmer
+        showTitle={!!heading}
+        showDescription={!!description}
+        showBreadcrumbs={true}
+        categoryCount={12}
+      />
+    );
+  }
+
   return (
     <div
       className={`${styles.categories} basePageContainer margin0auto fontBody`}
     >
       <div className={`${styles.categories__breadcrumbs} captionNormal`}>
         <span>
-          <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>&nbsp; / &nbsp;
+          <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>&nbsp;
+          / &nbsp;
         </span>
-        <span className={styles.active}>{t("resource.common.breadcrumb.categories")}</span>
+        <span className={styles.active}>
+          {t("resource.common.breadcrumb.categories")}
+        </span>
       </div>
 
       {!isLoading ? (
@@ -96,7 +111,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
           </div>
         </div>
       ) : (
-        <Loader />
+        <CategoriesPageShimmer
+          showTitle={!!heading}
+          showDescription={!!description}
+          showBreadcrumbs={false}
+          categoryCount={12}
+        />
       )}
       {!!back_top && <ScrollToTop />}
     </div>

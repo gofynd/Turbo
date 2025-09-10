@@ -9,6 +9,10 @@ import { useAccounts, useWishlist, useSnackbar } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
 import useHeader from "../../components/header/useHeader";
 import {
+  FULFILLMENT_OPTIONS,
+  PRODUCT_SIZE_PRICE,
+} from "../../queries/pdpQuery";
+import {
   useGlobalStore,
   useNavigate,
   useGlobalTranslation,
@@ -31,13 +35,9 @@ const useCart = (fpi, isActive = true) => {
   const CART = useGlobalStore(fpi.getters.CART);
   const appFeatures = useGlobalStore(fpi.getters.APP_FEATURES);
   const buybox = appFeatures?.buybox;
-  const i18nDetails = useGlobalStore(fpi.getters.i18N_DETAILS);
-  const THEME = useGlobalStore(fpi.getters.THEME);
-  const mode = THEME?.config?.list.find(
-    (f) => f.name === THEME?.config?.current
+  const { i18nDetails, countryDetails, deliveryLocationStr } = useInternational(
+    { fpi }
   );
-  const globalConfig = mode?.global_config?.custom?.props;
-  const { countryDetails } = useInternational({ fpi });
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
   const { cartItemCount } = useHeader(fpi);
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ const useCart = (fpi, isActive = true) => {
       setIsLoading(true);
       fetchCartDetails(fpi, { buyNow }).then(() => setIsLoading(false));
     }
-  }, [fpi, i18nDetails?.currency?.code]);
+  }, [fpi, i18nDetails?.currency?.code, deliveryLocationStr]);
 
   const isAnonymous = appFeatures?.landing_page?.continue_as_guest;
   const isGstInput =
@@ -125,7 +125,8 @@ const useCart = (fpi, isActive = true) => {
     itemIndex,
     operation,
     moveToWishList = false,
-    isSizeUpdate = false
+    isSizeUpdate = false,
+    foSlug = ""
   ) {
     if (event) {
       event.stopPropagation();
@@ -148,6 +149,8 @@ const useCart = (fpi, isActive = true) => {
               identifiers: {
                 identifier: itemDetails?.identifiers?.identifier,
               },
+              fulfillment_option_slug:
+                foSlug || itemDetails?.article?.fulfillment_option?.slug,
             },
           ],
           operation,
@@ -160,14 +163,16 @@ const useCart = (fpi, isActive = true) => {
           if (res?.data?.updateCart?.success) {
             if (!moveToWishList) {
               showSnackbar(
-                translateDynamicLabel(res?.data?.updateCart?.message, t) || t("resource.cart.cart_update_success"),
+                translateDynamicLabel(res?.data?.updateCart?.message, t) ||
+                  t("resource.cart.cart_update_success"),
                 "success"
               );
             }
             await fetchCartDetails(fpi, { buyNow }); // Wait for fetchCartDetails to complete
           } else if (!isSizeUpdate) {
             showSnackbar(
-              translateDynamicLabel(res?.data?.updateCart?.message, t) || t("resource.cart.cart_update_success"),
+              translateDynamicLabel(res?.data?.updateCart?.message, t) ||
+                t("resource.cart.cart_update_success"),
               "error"
             );
           }
@@ -187,7 +192,9 @@ const useCart = (fpi, isActive = true) => {
 
   function gotoCheckout() {
     if (cart_items?.id) {
-      navigate("/cart/checkout" + (cart_items?.id ? `?id=${cart_items.id}` : ""));
+      navigate(
+        "/cart/checkout" + (cart_items?.id ? `?id=${cart_items.id}` : "")
+      );
     } else {
       navigate("/cart/bag");
     }
@@ -263,6 +270,33 @@ const useCart = (fpi, isActive = true) => {
     fetchCartDetails(fpi, { buyNow });
   };
 
+  const getFulfillmentOptions = async (slug, selectedSize, pincode) => {
+    const values = {
+      slug,
+      size: selectedSize,
+      pincode: pincode?.toString() || "",
+    };
+
+    const res = await fpi.executeGQL(FULFILLMENT_OPTIONS, values);
+
+    return res?.data?.productsPriceWithFulfillmentOption?.items || [];
+  };
+
+  const fetchProductPrice = async (slug, selectedSize, pincode, foSlug) => {
+    const payload = {
+      slug,
+      size: selectedSize,
+      pincode: pincode.toString() || "",
+      fulfillmentOptionSlug: foSlug || "",
+    };
+
+    const res = await fpi.executeGQL(PRODUCT_SIZE_PRICE, payload, {
+      skipStoreUpdate: true,
+    });
+
+    return res?.data?.productPrice || {};
+  };
+
   return {
     isLoading,
     isCartUpdating,
@@ -283,6 +317,7 @@ const useCart = (fpi, isActive = true) => {
     isRemoveModalOpen,
     isPromoModalOpen,
     buybox,
+    availableFOCount: appFeatures?.fulfillment_option?.count || 1,
     onUpdateCartItems: updateCartItems,
     onGotoCheckout: gotoCheckout,
     onRemoveIconClick: openRemoveModal,
@@ -294,6 +329,8 @@ const useCart = (fpi, isActive = true) => {
     onOpenPromoModal,
     onClosePromoModal,
     customerCheckoutMode,
+    getFulfillmentOptions,
+    fetchProductPrice,
   };
 };
 

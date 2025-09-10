@@ -47,9 +47,9 @@ export const numberWithCommas = (number = 0) => {
     let no =
       num?.toString()?.split(".")?.[0]?.length > 3
         ? `${num
-            ?.toString()
-            ?.substring(0, num?.toString()?.split(".")[0].length - 3)
-            ?.replace(/\B(?=(\d{2})+(?!\d))/g, ",")},${num
+          ?.toString()
+          ?.substring(0, num?.toString()?.split(".")[0].length - 3)
+          ?.replace(/\B(?=(\d{2})+(?!\d))/g, ",")},${num
             ?.toString()
             ?.substring(num?.toString()?.split(".")?.[0]?.length - 3)}`
         : num?.toString();
@@ -359,13 +359,22 @@ export const getDirectionAdaptiveValue = (cssProperty, value) => {
   }
 };
 export function createFieldValidation(field, t) {
-  if (!field) return () => {};
-  const {
-    display_name,
-    required,
-    validation: { type, regex },
-  } = field;
-  return (value) => {
+  if (!field) return () => { };
+  const { slug, display_name, required, validation } = field;
+  const { type, regex } = validation || {};
+  if (slug === "phone") {
+    return (value) => {
+      if (required && !value?.mobile?.trim()) {
+        return `${display_name} ${t("resource.common.address.is_required")}`;
+      }
+      if (!value || !value.isValidNumber) {
+        return t("resource.common.address.invalid_phone_number");
+      }
+      return true;
+    };
+  }
+  return (v) => {
+    const value = v?.display_name || v;
     if (required && !value) {
       return `${display_name} ${t("resource.common.address.is_required")}.`;
     }
@@ -469,6 +478,64 @@ export function translateDynamicLabel(input, t) {
 
   return translated.split('.').pop() === safeInput ? input : translated;
 }
+export const getAddressStr = (item, isAddressTypeAvailable) => {
+  if (!item || typeof item !== "object") {
+    return "";
+  }
+  try {
+    const parts = [
+      item.address || "",
+      item.area || "",
+      item.landmark?.length > 0 ? item.landmark : "",
+      item.sector || "",
+      item.city || "",
+      item.state || "",
+    ].filter(Boolean);
+
+    if (isAddressTypeAvailable && item.address_type) {
+      parts.unshift(item.address_type);
+    }
+    let addressStr = parts.join(", ");
+    if (item.area_code) {
+      addressStr += ` ${item.area_code}`;
+    }
+    if (item.country) {
+      addressStr += `, ${item.country}`;
+    }
+    return addressStr;
+  } catch (error) {
+    console.error("Error constructing address string:", error);
+    return "";
+  }
+};
+
+export const getAddressFromComponents = (components, name) => {
+  const typeToName = Object.fromEntries(
+    components.flatMap(({ long_name, short_name, types }) =>
+      types.map((type) => [type, { short_name, long_name }])
+    )
+  );
+
+  const address = [
+    name,
+    typeToName.premise?.long_name || null,
+    typeToName.street_number?.long_name || null,
+    typeToName.route?.long_name || null,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  return {
+    address: address || null,
+    area: typeToName["sublocality_level_2"]?.long_name || null,
+    landmark: typeToName["sublocality_level_1"]?.long_name || null,
+    city: typeToName["locality"]?.long_name || null,
+    state: typeToName["administrative_area_level_1"]?.long_name || null,
+    area_code: typeToName["postal_code"]?.long_name || null,
+    country: typeToName["country"]?.long_name || null,
+    country_iso_code: typeToName["country"]?.short_name || null,
+  };
+};
 
 export function getDefaultLocale(locales) {
   const defaultLocaleObj = locales.find(item => item.is_default === true);
@@ -483,7 +550,7 @@ export function addLocaleToShareCartUrl(url, locale, supportedLocales) {
   try {
     // Extract valid locale codes from supportedLocales.items
     const validLocaleCodes = (supportedLocales?.items || []).map(item => item.locale);
-    
+
     if (!locale || locale === "en" || !validLocaleCodes.includes(locale)) return url;
 
     const parsedUrl = new URL(url);

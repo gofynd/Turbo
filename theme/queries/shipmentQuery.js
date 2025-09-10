@@ -26,6 +26,12 @@ export const GET_SHIPMENT_DETAILS = `query shipment(
       total_bags
       track_url
       traking_no
+      fulfillment_option {
+        name
+        slug
+        type
+        is_default
+      }
       bags {
         can_cancel
         can_return

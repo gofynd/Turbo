@@ -26,10 +26,8 @@ function StoreModal({
   const isDataLoading = !Object.keys(allStoresInfo || {}).length;
   const isSellerListing = buybox?.is_seller_buybox_enabled;
   const availableCounts = `${t("resource.common.available")} ${t("resource.common.in")} ${allStoresInfo?.items?.length} ${
-    isSellerListing 
-      ? t("resource.common.seller") 
-      : t("resource.common.store")
-    }${allStoresInfo?.items?.length > 1 ? "s" : ""}`;
+    isSellerListing ? t("resource.common.seller") : t("resource.common.store")
+  }${allStoresInfo?.items?.length > 1 ? "s" : ""}`;
 
   const listingItems = allStoresInfo?.items || [];
   const getListingItems = isViewMore
@@ -66,7 +64,9 @@ function StoreModal({
         <div className={`${styles.sidebarContainer} ${styles.fontBody}`}>
           <div className={styles.sidebarHeader}>
             <h3 className={`${styles.sellerLabel} ${styles.fontHeader}`}>
-              {isSellerListing ? t("resource.common.seller") : t("resource.common.store")}
+              {isSellerListing
+                ? t("resource.common.seller")
+                : t("resource.common.store")}
             </h3>
             <span onClick={closeDialog}>
               <CloseIcon className={styles.closeIcon} />
@@ -103,8 +103,9 @@ function StoreModal({
                     {allStoresInfo?.sort_on?.map((opt, index) => (
                       <li
                         key={index}
-                        className={`b1 ${opt.is_selected ? styles.selectedOption : ""
-                          }`}
+                        className={`b1 ${
+                          opt.is_selected ? styles.selectedOption : ""
+                        }`}
                         onClick={() => selectionChange(opt.value)}
                       >
                         {translateDynamicLabel(opt.name, t)}
@@ -148,19 +149,17 @@ function StoreModal({
                 )}
               </>
             )}
-          </div >
-        </div >
+          </div>
+        </div>
       )}
       {/* eslint-disable jsx-a11y/no-static-element-interactions */}
-      {
-        isOpen && (
-          <div
-            className={`${styles.overlay} ${styles.show}`}
-            onClick={closeDialog}
-          />
-        )
-      }
-    </div >
+      {isOpen && (
+        <div
+          className={`${styles.overlay} ${styles.show}`}
+          onClick={closeDialog}
+        />
+      )}
+    </div>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useGlobalStore } from "fdk-core/utils";
 import { GET_SHIPMENT_DETAILS } from "../queries/shipmentQuery";
 import useShipmentDetails from "../page-layouts/orders/useShipmentDetails";
 import useOrdersListing from "../page-layouts/orders/useOrdersListing";
@@ -13,6 +14,8 @@ function OrderTrackingDetails({ fpi }) {
   const [selectedShipmentBag, setSelectedShipmentBag] =
     useState(orderShipments);
   const [isShipmentLoading, setIsShipmentLoading] = useState(false);
+
+  const { fulfillment_option } = useGlobalStore(fpi.getters.APP_FEATURES);
 
   const getShipmentDetails = () => {
     if (params?.shipmentId) {
@@ -38,6 +41,7 @@ function OrderTrackingDetails({ fpi }) {
       }
     }
   };
+
   return (
     <OrderTrack
       invoiceDetails={invoiceDetails}
@@ -46,6 +50,7 @@ function OrderTrackingDetails({ fpi }) {
       getShipmentDetails={getShipmentDetails}
       selectedShipment={selectedShipmentBag}
       isShipmentLoading={isShipmentLoading}
+      availableFOCount={fulfillment_option?.count || 1}
       linkOrderDetails={linkOrderDetails}
     ></OrderTrack>
   );

@@ -21,9 +21,8 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
   const addCompareProducts = () => {
     if (!slug) return;
     const existingSlugs = isRunningOnClient()
-    ? JSON.parse(localStorage?.getItem("compare_slugs") || "[]")
-    : [];
-  
+      ? JSON.parse(localStorage?.getItem("compare_slugs") || "[]")
+      : [];
 
     if (existingSlugs.includes(slug)) {
       navigate("/compare");
@@ -41,7 +40,7 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
       if (action === "remove") {
         if (isRunningOnClient()) {
           localStorage.removeItem("compare_slug");
-        }        
+        }
         productsToBeCompared = [slug];
       } else if (action === "goToCompare") {
         navigate("/compare");
@@ -51,7 +50,9 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
           .executeGQL(PRODUCT_COMPARISON, { slug: productsToBeCompared })
           .then(({ data, errors }) => {
             if (errors) {
-              setWarning(t("resource.compare.cannot_compare_different_categories"));
+              setWarning(
+                t("resource.compare.cannot_compare_different_categories")
+              );
               setIsOpen(true);
               return;
             }
@@ -85,54 +86,56 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
         <CompareIcon className={styles.compareIcon} />
         {t("resource.compare.add_to_compare")}
       </button>
-      <Suspense fallback={<div/>}>
-      <Modal
-        isOpen={isOpen}
-        closeDialog={closeDialog}
-        hideHeader
-        modalType="center-modal"
-        containerClassName={styles.modal}
-      >
-        <div className={styles.compareModal}>
-          <button
-            type="button"
-            className={styles.crossBtn}
-            onClick={closeDialog}
-          >
-            <CloseIcon />
-          </button>
-          <div className={styles.modalBody}>
-            <div className={styles.modalContent}>
-              <div className={styles.image}>
-                <CompareWarningIcon />
-              </div>
-              <div className={`${styles["bold-md"]} ${styles["primary-text"]}`}>
-                {warning}
-              </div>
-            </div>
-            <div className={styles["button-container"]}>
-              <div>
-                <button
-                  type="button"
-                  className={`${styles.button} btnSecondary`}
-                  onClick={() => compareProducts({ action: "reset" })}
+      <Suspense fallback={<div />}>
+        <Modal
+          isOpen={isOpen}
+          closeDialog={closeDialog}
+          hideHeader
+          modalType="center-modal"
+          containerClassName={styles.modal}
+        >
+          <div className={styles.compareModal}>
+            <button
+              type="button"
+              className={styles.crossBtn}
+              onClick={closeDialog}
+            >
+              <CloseIcon />
+            </button>
+            <div className={styles.modalBody}>
+              <div className={styles.modalContent}>
+                <div className={styles.image}>
+                  <CompareWarningIcon />
+                </div>
+                <div
+                  className={`${styles["bold-md"]} ${styles["primary-text"]}`}
                 >
-                  {t("resource.facets.reset")}
-                </button>
+                  {warning}
+                </div>
               </div>
-              <div>
-                <button
-                  type="button"
-                  className={`${styles.button} btnPrimary ${styles.btnNoBorder}`}
-                  onClick={() => compareProducts({ action: "goToCompare" })}
-                >
-                  {t("resource.compare.go_to_compare")}
-                </button>
+              <div className={styles["button-container"]}>
+                <div>
+                  <button
+                    type="button"
+                    className={`${styles.button} btnSecondary`}
+                    onClick={() => compareProducts({ action: "reset" })}
+                  >
+                    {t("resource.facets.reset")}
+                  </button>
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    className={`${styles.button} btnPrimary ${styles.btnNoBorder}`}
+                    onClick={() => compareProducts({ action: "goToCompare" })}
+                  >
+                    {t("resource.compare.go_to_compare")}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div >
-      </Modal >
+        </Modal>
       </Suspense>
     </>
   );

@@ -27,6 +27,7 @@ function PicZoom({
   addToWishList,
   hideImagePreview = false,
   sources = [],
+  showWishlist = true,
 }) {
   const { t } = useGlobalTranslation("translation");
   const [isMounted, setIsMounted] = useState(false);
@@ -109,7 +110,7 @@ function PicZoom({
             aspectRatio={getProductImgAspectRatio(globalConfig)}
             globalConfig={globalConfig}
             sources={sources}
-            isImageFill = {globalConfig?.img_fill}
+            isImageFill={globalConfig?.img_fill}
             defer={false}
           />
         </div>
@@ -181,14 +182,16 @@ function PicZoom({
         </div>
       )}
       {/* </Suspense> */}
-      <button
-        type="button"
-        aria-label={t("resource.common.breadcrumb.wishlist")}
-        className={`${styles.wishlistIcon} ${followed ? styles.activeWishlist : ""}`}
-        onClick={(e) => (followed ? removeFromWishlist(e) : addToWishList(e))}
-      >
-        <WishlistIcon isActive={followed} />
-      </button>
+      {showWishlist && (
+        <button
+          type="button"
+          aria-label={t("resource.common.breadcrumb.wishlist")}
+          className={`${styles.wishlistIcon} ${followed ? styles.activeWishlist : ""}`}
+          onClick={(e) => (followed ? removeFromWishlist(e) : addToWishList(e))}
+        >
+          <WishlistIcon isActive={followed} />
+        </button>
+      )}
     </div>
   );
 }
@@ -200,6 +203,7 @@ PicZoom.propTypes = {
   currentIndex: PropTypes.number.isRequired,
   resumeVideo: PropTypes.bool,
   onClickImage: PropTypes.func.isRequired,
+  showWishlist: PropTypes.bool,
 };
 
 export default PicZoom;

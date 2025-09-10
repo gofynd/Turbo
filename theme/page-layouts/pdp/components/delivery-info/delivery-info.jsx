@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   convertUTCDateToLocalDate,
   formatLocale,
   translateDynamicLabel,
 } from "../../../../helper/utils";
-import { useHyperlocalTat, useSyncedState } from "../../../../helper/hooks";
+import {
+  useDeliverPromise,
+  useGoogleMapConfig,
+} from "../../../../helper/hooks";
 import styles from "./delivery-info.less"; // Import the module CSS
 import DeliveryIcon from "../../../../assets/images/delivery.svg";
 import LocationIcon from "../../../../assets/images/location-on.svg";
 import FyndLogoIcon from "../../../../assets/images/fynd-logo.svg";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
+import useHyperlocal from "../../../../components/header/location-modal/useHyperlocal";
+import Shimmer from "../../../../components/shimmer/shimmer";
 
 function DeliveryInfo({
   className,
+  isLoading,
   selectPincodeError,
   deliveryPromise,
   pincode,
@@ -25,13 +31,16 @@ function DeliveryInfo({
   isServiceabilityPincodeOnly,
   fpi,
   showLogo = false,
+  availableFOCount,
 }) {
   const { t } = useGlobalTranslation("translation");
   const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
   const locale = language?.locale;
   const [postCode, setPostCode] = useState(pincode || "");
   const [tatMessage, setTatMessage] = useState("");
-  const { isHyperlocal, convertUTCToHyperlocalTat } = useHyperlocalTat({ fpi });
+  const { getFormattedPromise } = useDeliverPromise({ fpi });
+  const { isServiceability, deliveryAddress } = useHyperlocal(fpi);
+  const { isHeaderMap } = useGoogleMapConfig({ fpi });
   const { displayName, maxLength, validatePincode } = pincodeInput;
 
   useEffect(() => {
@@ -50,6 +59,7 @@ function DeliveryInfo({
   }
 
   const handlePincodeSubmit = (pincode) => {
+    setTatMessage("");
     const result = validatePincode(pincode);
     if (result !== true) {
       setPincodeErrorMessage(result);
@@ -60,74 +70,7 @@ function DeliveryInfo({
   };
 
   const getDeliveryDate = () => {
-    const options = {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    };
-    const { min, max } = deliveryPromise || {};
-
-    if (!min) {
-      return false;
-    }
-
-    if (isHyperlocal) {
-      setTatMessage(convertUTCToHyperlocalTat(min));
-      return;
-    }
-
-    const minDate = convertUTCDateToLocalDate(
-      min,
-      options,
-      formatLocale(locale, countryCode,true)
-    );
-    const maxDate = convertUTCDateToLocalDate(
-      max,
-      options,
-      formatLocale(locale, countryCode,true)
-    );
-
-    const deliveryMessage =
-      min === max
-        ? t("resource.product.delivery_on", { date: minDate })
-        : t("resource.product.delivery_between", { minDate, maxDate });
-
-    setTimeout(() => {
-      setTatMessage(deliveryMessage);
-    }, 1000);
-  };
-
-  const openInternationalDropdown = () => {
-    fpi.custom.setValue("isI18ModalOpen", true);
-  };
-
-  const deliveryLocForIntlShipping = () => {
-    return (
-      <>
-        {!isValidDeliveryLocation ? (
-          <h4
-            className={`${styles.deliveryLabel} b2 ${styles.cursor}`}
-            onClick={openInternationalDropdown}
-          >
-            {t("resource.common.address.select_delivery_location")}
-          </h4>
-        ) : (
-          <span className={`${styles.flexAlignCenter}`}>
-            <span className={styles.deliveryLocation}>
-              <span className={styles.deliveryLocation__bold}>
-                {t("resource.product.delivery_at")}{" "}
-              </span>
-              <span
-                onClick={openInternationalDropdown}
-                className={styles.deliveryLocation__addrs}
-              >
-                {deliveryLocation}
-              </span>
-            </span>
-          </span>
-        )}
-      </>
-    );
+      setTatMessage(getFormattedPromise(deliveryPromise));
   };
 
   const deliveryLoc = () => {
@@ -160,24 +103,64 @@ function DeliveryInfo({
         </div>
         {selectPincodeError && !pincodeErrorMessage.length && (
           <div className={`captionNormal ${styles.emptyPincode}`}>
-            {t("resource.product.enter_valid_pincode")}
+            {t("resource.product.enter_valid_pincode", {
+              displayName: displayName,
+            })}
           </div>
         )}
       </>
     );
   };
 
+  const selectedLocation = useMemo(() => {
+    if (isServiceability) {
+      return deliveryAddress;
+    }
+    if (!isServiceabilityPincodeOnly && isValidDeliveryLocation) {
+      return deliveryLocation;
+    }
+    return "";
+  }, [
+    isServiceability,
+    deliveryAddress,
+    isServiceabilityPincodeOnly,
+    isValidDeliveryLocation,
+    deliveryLocation,
+  ]);
+
+  const getDeliveryField = () => {
+    if (isServiceability || !isServiceabilityPincodeOnly) {
+      return (
+        <DeliveryLocation
+          {...{
+            isServiceability,
+            isServiceabilityPincodeOnly,
+            selectedLocation,
+          }}
+        />
+      );
+    }
+    if (isServiceabilityPincodeOnly) {
+      return deliveryLoc();
+    }
+    return null;
+  };
+
+  if (isLoading) {
+    return (
+      <div className={`${styles.deliveryInfo} ${className}`}>
+        <Shimmer height="70px" />
+      </div>
+    );
+  }
+
   return (
     <div className={`${styles.deliveryInfo} ${className}`}>
-      <div
-        className={!isServiceabilityPincodeOnly ? styles.deliveryWrapper : ""}
-      >
-        {!isServiceabilityPincodeOnly && <LocationIcon />}
-        <div className={styles.deliveryInfoWrapper}>
-          {isServiceabilityPincodeOnly
-            ? deliveryLoc()
-            : deliveryLocForIntlShipping()}
-          {!pincodeErrorMessage && !selectPincodeError && (
+      <div className={styles.deliveryInfoWrapper}>
+        {getDeliveryField()}
+        {!pincodeErrorMessage &&
+          !selectPincodeError &&
+          availableFOCount === 1 && (
             <div
               className={`${styles.deliveryDate} ${styles.dateInfoContainer}`}
             >
@@ -200,9 +183,7 @@ function DeliveryInfo({
               )}
             </div>
           )}
-        </div>
       </div>
-
       {pincodeErrorMessage && (
         <div className={`captionNormal ${styles.error}`}>
           {translateDynamicLabel(pincodeErrorMessage, t)}
@@ -213,3 +194,67 @@ function DeliveryInfo({
 }
 
 export default DeliveryInfo;
+
+const DeliveryLocation = ({
+  isServiceability = true,
+  isServiceabilityPincodeOnly = true,
+  selectedLocation = "",
+}) => {
+  const { t } = useGlobalTranslation("translation");
+  const handleButtonClick = () => {
+    if (isServiceability) {
+      fpi.custom.setValue("isServiceabilityModalOpen", true);
+    } else if (!isServiceabilityPincodeOnly) {
+      fpi.custom.setValue("isI18ModalOpen", true);
+    }
+  };
+
+  const fetchDeliveryLocation = () => {
+    if (isServiceability) {
+      return (
+        <>
+          <div className={styles.currentLocation}>{selectedLocation}</div>
+          <button
+            className={styles.servicibilityCta}
+            onClick={handleButtonClick}
+          >
+            CHANGE
+          </button>
+        </>
+      );
+    }
+    if (!isServiceabilityPincodeOnly) {
+      return (
+        <span className={styles.deliveryLocation}>
+          <span className={styles.deliveryLocationBold}>
+            {t("resource.product.delivery_at")}
+          </span>
+          &nbsp;
+          <span
+            className={styles.deliveryLocationText}
+            onClick={handleButtonClick}
+          >
+            {selectedLocation}
+          </span>
+        </span>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className={styles.locationWrapper}>
+      <LocationIcon className={styles.locationPin} />
+      {!!selectedLocation ? (
+        fetchDeliveryLocation()
+      ) : (
+        <button
+          className={styles.emptySelectAddress}
+          onClick={handleButtonClick}
+        >
+          {t("resource.common.address.select_delivery_location")}
+        </button>
+      )}
+    </div>
+  );
+};

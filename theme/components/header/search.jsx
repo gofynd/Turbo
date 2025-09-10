@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   isRunningOnClient,
@@ -37,6 +37,18 @@ function Search({
   const inputRef = useRef(null);
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
   const isAlgoliaEnabled = globalConfig?.algolia_enabled;
+
+  useEffect(() => {
+    if (showSearch) {
+      document.body.classList.add("noscroll");
+    } else {
+      document.body.classList.remove("noscroll");
+    }
+    // Cleanup function to remove the class if the component unmounts while search is open
+    return () => {
+      document.body.classList.remove("noscroll");
+    };
+  }, [showSearch]);
 
   const openSearch = () => {
     setShowSearch(!showSearch);

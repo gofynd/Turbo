@@ -13,7 +13,9 @@ function Home({ numberOfSections, fpi }) {
   const { isEdit = false } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
   const { globalConfig } = useThemeConfig({ fpi });
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.home"));
+  const title = sanitizeHTMLTag(
+    seoData?.title || t("resource.common.page_titles.home")
+  );
   const { sections = [], error, isLoading } = page || {};
   const [visibleCount, setVisibleCount] = useState(3);
 

@@ -47,7 +47,10 @@ const useWishlistPage = ({ fpi }) => {
   });
 
   const breadcrumb = useMemo(
-    () => [{ label: t("resource.common.breadcrumb.home"), link: "/" }, { label: t("resource.common.breadcrumb.wishlist") }],
+    () => [
+      { label: t("resource.common.breadcrumb.home"), link: "/" },
+      { label: t("resource.common.breadcrumb.wishlist") },
+    ],
     []
   );
 

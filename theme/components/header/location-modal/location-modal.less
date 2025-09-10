@@ -1,0 +1,320 @@
+@import "../../../styles/main.less";
+
+@inline-padding: 24px;
+
+.locationModaContainer {
+  @media @desktop {
+    width: 450px;
+    &:not(.validationError) {
+      height: 70dvh;
+    }
+  }
+  @media @tablet {
+    height: 100dvh;
+  }
+  &.isMapView {
+    height: 90dvh;
+    @media @tablet {
+      height: 100dvh;
+    }
+  }
+}
+
+.locationmodalBody {
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  @media @tablet {
+    max-height: unset !important;
+  }
+}
+
+.placesInputWrapper, 
+.pincodeInputWrapper,
+.listWrapper,
+.errorText {
+  padding-inline: @inline-padding;
+}
+
+.errorText {
+  color: @ErrorText;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+}
+
+.locationInputWrapper {
+  padding-block: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  .modalHeader {
+    padding-inline: @inline-padding;
+    display: flex;
+    align-items: center;
+    @media @tablet {
+      gap: 8px;
+    }
+    .modalHeaderBackIcon {
+      color: @TextBody;
+      @media @desktop {
+        display: none;
+      }
+    }
+    .modalTitle {
+      color: @TextHeading;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: normal;
+      letter-spacing: -0.32px;
+    }
+  }
+  .modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .currentLocation {
+    padding-inline: @inline-padding;
+    color: @ButtonLink;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.24px;
+    text-decoration: underline;
+    text-transform: uppercase;
+    align-self: flex-start;
+  }
+}
+
+.suggestionsContainer {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-right: 7px;
+  scrollbar-gutter: stable;
+  scrollbar-width: unset;
+  & > * {
+    margin-right: -11px;
+  }
+  &::-webkit-scrollbar {
+    width: 4px;
+    border-radius: 20px;
+  }
+  &::-webkit-scrollbar-track {
+    background: @TextSecondary;
+    border-radius: 20px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: @ThemeAccentD3;
+    border-radius: 20px;
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+  }
+}
+
+.mapWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.mapHeader {
+  display: flex;
+  padding: 16px 24px;
+  align-items: center;
+  gap: 16px;
+  color: @TextBody;
+  @media @tablet {
+    gap: 8px;
+  }
+  .title, .mobileTitle {
+    color: @TextHeading;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 140%;
+    @media @tablet {
+      display: none;
+    }
+  }
+  .mobileTitle {
+    display: none;
+    @media @tablet {
+      display: block;
+    }
+  }
+}
+
+.mapContainer {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  .locateIconBtn {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    position: absolute;
+    bottom: 14px;
+    right: 24px;
+    transition: bottom 0.3s ease-in-out;
+    &.locationError {
+      bottom: 70px;
+    }
+  }
+  .countryError {
+    padding: 8px 16px;
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 16px;
+    border-radius: 8px;
+    background-color: @ErrorBackground;
+    color: @ErrorText;
+    font-size: 12px;
+    letter-spacing: -0.24px;
+  }
+  .markerIcon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -31px);
+    .markerLabel {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      min-width: 184px;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1f1f1f;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 140%;
+      .markerLabelText {
+        font-weight: 400;
+      }
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid #1f1f1f;
+      }
+    }
+  }
+}
+
+.mapFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+  @media @mobile {
+    padding: 16px;
+  }
+}
+
+.addressContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: @HighlightColor;
+  border-radius: @ButtonRadius;
+  .locationPinIcon {
+    color: @ButtonPrimary;
+  }
+  .address {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    .title {
+      color: @TextHeading;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 140%;
+      .text-line-clamp(2);
+    }
+    .subTitle {  
+      color: @TextBody;
+      text-overflow: ellipsis;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 140%;
+      .text-line-clamp(2);
+    }
+  }
+}
+
+.autocompleteWrapper {
+  height: 48px;
+  position: absolute;
+  z-index: 1;
+  top: 24px;
+  left: 24px;
+  right: 24px;
+  background: @PageBackground;
+  border: 1px solid @DividerStokes;
+  border-radius: @ButtonRadius;
+
+  .autocompleteIcon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+  }
+
+  .autocompleteInput {
+    width: 100%;
+    height: 100%;
+    padding: 8px 12px 8px 44px;
+    border: none;
+  }
+
+  // .autocompletePredictionsWrapper {
+  //   display: none;
+  //   position: absolute;
+  //   background: @PageBackground;
+  //   top: 100%;
+  //   left: 0;
+  //   right: 0;
+  // }
+  // .autocompletePredictionItem {
+  //   display: flex;
+  //   align-items: center;
+  //   gap: 8px;
+  //   cursor: pointer;
+  //   padding: 4px;
+  //   font-size: 14px;
+  //   font-weight: 400;
+  // }
+  // .autocompleteLocationPin {
+  //   min-width: 24px;
+  // }
+  // .autocompleteText {
+  //   overflow: hidden;
+  //   white-space: nowrap;
+  //   text-overflow: ellipsis;
+  // }
+}

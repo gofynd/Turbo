@@ -5,10 +5,11 @@ import styles from "../styles/sections/image-gallery.less";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import placeholderImage from "../assets/images/placeholder/image-gallery.png";
-import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
-import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
-import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, blocks = [], globalConfig = {}, preset }) {
   const {
@@ -168,8 +169,8 @@ const HorizontalLayout = ({
       autoplaySpeed,
       cssEase: "linear",
       // arrows: getGallery.length > item_count?.value || false,
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles}/>,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles}/>,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 800,
@@ -191,7 +192,7 @@ const HorizontalLayout = ({
   );
   const configMobile = useMemo(
     () => ({
-      dots: true,
+      dots: false,
       arrows: false,
       infinite: items?.length > colCountMobile,
       slidesToShow: colCountMobile,
@@ -208,9 +209,8 @@ const HorizontalLayout = ({
       draggable: false,
       touchMove: true,
       // arrows: getGallery.length > item_count?.value || false,
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
-      rtl: isRTL,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
     }),
     [items?.length, colCountMobile, autoplay, autoplaySpeed]
   );
@@ -352,7 +352,7 @@ export const settings = {
       type: "checkbox",
       id: "in_new_tab",
       label: "t:resource.common.open_product_in_new_tab",
-      default: true,
+      default: false,
       info: "t:resource.common.open_product_in_new_tab_desktop",
     },
     {
@@ -407,7 +407,7 @@ export const settings = {
           id: "link",
           label: "t:resource.common.redirect",
           default: "",
-          info: "t:resource.sections.image_gallery.search_link_type"
+          info: "t:resource.sections.image_gallery.search_link_type",
         },
       ],
     },

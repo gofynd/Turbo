@@ -6,8 +6,11 @@ import {
   capitalize,
   createLocalitiesPayload,
   translateDynamicLabel,
+  createFieldValidation,
 } from "../utils";
 import { useSnackbar } from "./hooks";
+import { useThemeFeature } from "./useThemeFeature";
+import { useGoogleMapConfig } from "./useGoogleMapConfig";
 
 export const useAddressFormSchema = ({
   fpi,
@@ -18,6 +21,7 @@ export const useAddressFormSchema = ({
   addressItem,
 }) => {
   const { t } = useGlobalTranslation("translation");
+  const { selectedAddress } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
   const [formFields, SetFormFields] = useState(null);
@@ -25,61 +29,14 @@ export const useAddressFormSchema = ({
   const [disableField, setDisableField] = useState(null);
 
   const { showSnackbar } = useSnackbar();
+  const { isServiceability } = useThemeFeature({ fpi });
+  const { isCheckoutMap } = useGoogleMapConfig({ fpi });
 
-  function createValidation(field) {
-    const { slug, display_name, required, validation } = field;
-    const result = {};
-    if (slug === "phone") {
-      result.validate = (value) => {
-        if (required && !value?.mobile?.trim()) {
-          return `${translateDynamicLabel(display_name, t)} ${t("resource.common.address.is_required")}`;
-        }
-        if (!value || !value.isValidNumber) {
-          return t("resource.common.address.invalid_phone_number");
-        }
-        // if (validation?.regex?.value) {
-        //   try {
-        //     const regex = new RegExp(validation.regex.value);
-        //     const isValid = regex.test(value.mobile);
-        //     if (!isValid) {
-        //       return error_text ?? "Invalid";
-        //     }
-        //   } catch (error) {}
-        // }
-        return true;
-      };
-      return result;
-    }
-
-    result.validate = (value) => {
-      if (required && !value?.trim()) {
-        return `${translateDynamicLabel(display_name, t)} ${t("resource.common.address.is_required")}`;
-      }
-
-      if (
-        (required || value) &&
-        validation?.type === "regex" &&
-        validation?.regex?.value
-      ) {
-        try {
-          const regex = new RegExp(validation.regex.value);
-          if (!regex.test(value)) {
-            return `${t("resource.common.invalid")} ${display_name}`;
-          }
-        } catch (error) {
-          return t("resource.common.invalid_regex");
-        }
-      }
-      const { min, max } = validation?.regex?.length || {};
-      if (
-        (required || value) &&
-        ((max && value.length > max) || (min && value.length < min))
-      ) {
-        return `${display_name} ${t("resource.common.validation_length", { min: min || 0, max: max || "∞" })}.`;
-      }
-      return true;
-    };
-    return result;
+  function isFieldAvailable({ key }) {
+    const tempAddressItem = !selectedAddress?.id
+      ? (selectedAddress ?? defaultAddressItem)
+      : defaultAddressItem;
+    return !!tempAddressItem?.[key];
   }
 
   const resetNextFieldRecursively = (slug, setValue) => {
@@ -94,7 +51,7 @@ export const useAddressFormSchema = ({
 
   const handleFieldChange =
     ({ next, slug }) =>
-    (value, { setValue, getValues }) => {
+    (_, { setValue, getValues }) => {
       if (!next) return;
       const key = next === "pincode" ? "area_code" : next;
       resetNextFieldRecursively(next, setValue);
@@ -186,13 +143,20 @@ export const useAddressFormSchema = ({
       slug,
       display_name: display,
       required,
-      validation,
-      error_text,
       next,
       prev,
       edit,
       values,
     } = field;
+
+    if (
+      isServiceability &&
+      isCheckoutMap &&
+      countryIso === "IN" &&
+      ["pincode", "state", "city"].includes(slug)
+    ) {
+      return;
+    }
 
     const type =
       input === "textbox" ? (slug === "phone" ? "mobile" : "text") : input;
@@ -204,7 +168,7 @@ export const useAddressFormSchema = ({
       type,
       required,
       fullWidth: false,
-      validation: createValidation(field),
+      validation: { validate: createFieldValidation(field, t) },
       disabled: addressItem?.[key]
         ? !addressItem[key]
         : locationDetails?.country_iso_code === countryIso &&
@@ -221,12 +185,7 @@ export const useAddressFormSchema = ({
       // formField.countryIso = countryIso?.toLowerCase();
     }
     if (type === "list") {
-      if (
-        !prev ||
-        !!addressItem?.[key] ||
-        (locationDetails?.country_iso_code === countryIso &&
-          locationDetails?.[slug])
-      ) {
+      if (!prev || !!addressItem?.[key] || isFieldAvailable({ key })) {
         getLocalityValues(
           slug,
           key,
@@ -235,9 +194,11 @@ export const useAddressFormSchema = ({
             addressFieldsMap,
             !!addressItem?.[key]
               ? addressItem
-              : locationDetails?.country_iso_code === countryIso
-                ? locationDetails
-                : {}
+              : !selectedAddress?.id
+                ? selectedAddress
+                : locationDetails?.country_iso_code === countryIso
+                  ? locationDetails
+                  : {}
           )
         );
       }
@@ -272,7 +233,7 @@ export const useAddressFormSchema = ({
           });
         }
       });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const renderTemplate = (template) => {
@@ -299,8 +260,10 @@ export const useAddressFormSchema = ({
         }
         const key = template.slice(i + 1, closingIndex);
         const obj = addressFieldsMap[key];
-
-        output[currentIndex]?.fields.push(convertField(obj));
+        const convertedField = convertField(obj);
+        if (convertedField) {
+          output[currentIndex]?.fields.push(convertedField);
+        }
         i = closingIndex;
       } else if (char === "_") {
         currentIndex++;
@@ -377,9 +340,13 @@ export const useAddressFormSchema = ({
 
   return {
     formSchema,
-    defaultAddressItem: {
-      ...defaultAddressItem,
-      ...(isLoggedIn && { is_default_address: true }),
-    },
+    defaultAddressItem:
+      selectedAddress && !selectedAddress.id
+        ? {
+            ...locationDetails,
+            ...selectedAddress,
+            ...(isLoggedIn && { is_default_address: true }),
+          }
+        : null,
   };
 };

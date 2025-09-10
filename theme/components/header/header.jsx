@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo, useRef, Suspense } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
+import React, { useEffect, useState, useMemo, useRef, Suspense } from "react";
 import { FDKLink } from "fdk-core/components";
 import {
   useGlobalStore,
@@ -21,16 +21,16 @@ import useHeader from "./useHeader";
 import styles from "./styles/header.less";
 import fallbackLogo from "../../assets/images/logo-header.png";
 import { useAccounts } from "../../helper/hooks";
-import useHyperlocal from "./useHyperlocal";
+import useHyperlocal from "./location-modal/useHyperlocal";
 import CartIcon from "../../assets/images/single-row-cart.svg";
 import AngleDownIcon from "../../assets/images/header-angle-down.svg";
-import "@gofynd/theme-template/components/location-modal/location-modal.css";
+import BackArrow from "../../assets/images/back.svg";
 import { LANGUAGES } from "../../queries/languageQuery";
 import I18Dropdown from "./i18n-dropdown";
-
+import Shimmer from "../shimmer/shimmer";
+import TruckIcon from "../../assets/images/truck.svg";
 const LocationModal = React.lazy(
-  () =>
-    import("@gofynd/theme-template/components/location-modal/location-modal")
+  () => import("./location-modal/location-modal")
 );
 
 function Header({ fpi }) {
@@ -40,7 +40,10 @@ function Header({ fpi }) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const CART_ITEMS = useGlobalStore(fpi?.getters?.CART);
-  const { headerHeight = 0 } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
+  const { headerHeight = 0, currentStep = null } = useGlobalStore(
+    fpi.getters.CUSTOM_VALUE
+  );
+
   const {
     globalConfig,
     cartItemCount,
@@ -51,9 +54,15 @@ function Header({ fpi }) {
   } = useHeader(fpi);
   const { openLogin } = useAccounts({ fpi });
   const shouldHide = location.pathname.startsWith("/payment/link/");
+  const hideNavList =
+    location.pathname.startsWith("/cart/") &&
+    (typeof globalConfig?.show_secondary_header_on_checkout === "boolean"
+      ? globalConfig?.show_secondary_header_on_checkout
+      : false);
   const { activeLocale } = useLocale();
   const i18N_DETAILS = useGlobalStore(fpi.getters.i18N_DETAILS);
   const { supportedLanguages } = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
+
   const [languageIscCode, setLanguageIscCode] = useState([]);
   const [scrolled, setScrolled] = useState(false);
 
@@ -75,6 +84,7 @@ function Header({ fpi }) {
     sections[0]?.name === "image-slideshow" ||
     sections[0]?.name === "hero-image" ||
     sections[0]?.name === "image-gallery";
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
 
@@ -92,15 +102,6 @@ function Header({ fpi }) {
     globalConfig?.sticky_header,
     isValidSection,
   ]);
-
-  useEffect(() => {
-    if (isRunningOnClient()) {
-      const header = document?.querySelector(".fdk-theme-header");
-      if (!globalConfig?.sticky_header) {
-        header.style.position = "unset";
-      }
-    }
-  }, [globalConfig?.sticky_header]);
 
   useEffect(() => {
     if (supportedLanguages?.items?.length > 0) {
@@ -191,6 +192,30 @@ function Header({ fpi }) {
 
   useEffect(() => {
     if (isRunningOnClient()) {
+      const header = document?.querySelector(".fdk-theme-header");
+      if (
+        globalConfig?.transparent_header &&
+        globalConfig?.sticky_header &&
+        isValidSection
+      ) {
+        header.style.position = "fixed";
+        header.style.width = "100%";
+      } else if (globalConfig?.sticky_header && !isValidSection) {
+        header.style.position = "sticky ";
+      } else if (!globalConfig?.sticky_header) {
+        header.style.position = "unset";
+      } else {
+        header.style.position = "sticky ";
+      }
+    }
+  }, [
+    globalConfig?.sticky_header,
+    globalConfig?.transparent_header,
+    isValidSection,
+  ]);
+
+  useEffect(() => {
+    if (isRunningOnClient()) {
       setTimeout(() => {}, 1000);
       const cssVariables = {
         "--headerHeight": `${headerHeight}px`,
@@ -241,24 +266,38 @@ function Header({ fpi }) {
   };
 
   const {
-    isHyperlocal,
+    isHeaderServiceability,
+    isServiceabilityMandatory,
+    deliveryPromise,
     isLoading,
-    pincode,
-    deliveryMessage,
-    servicibilityError,
-    isCurrentLocButton,
-    isLocationModalOpen,
-    handleLocationModalOpen,
-    handleLocationModalClose,
-    handleCurrentLocClick,
-    handlePincodeSubmit,
-  } = useHyperlocal(fpi);
+    isServiceabilityModalOpen,
+    deliveryAddress,
+    openServiceabilityModal,
+    closeServiceabilityModal,
+    handleLocationUpdate,
+  } = useHyperlocal(fpi, "header");
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isServiceabilityMandatory && !deliveryAddress) {
+        openServiceabilityModal();
+      }
+    }, 1000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [deliveryAddress, isServiceabilityMandatory]);
+  const query = new URLSearchParams(useLocation().search);
+  const checkoutId = query.get("id");
+  const defaultHeaderName =
+    hideNavList && checkoutId ? "Select Address" : "My Cart";
+  const cartBackNavigationList = ["Select Address", "Order Summary", "Payment"];
 
   return (
     <>
       {!isHeaderHidden && !shouldHide && (
         <div
-          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""}${globalConfig?.transparent_header && isValidSection && !globalConfig?.sticky_header ? styles.transparentHeader : ""} ${globalConfig?.transparent_header && isValidSection && globalConfig?.sticky_header ? styles.stickyTransparentHeader : ""}`}
+          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${globalConfig?.transparent_header && isValidSection && !globalConfig?.sticky_header ? styles.transparentHeader : ""} ${globalConfig?.transparent_header && isValidSection && globalConfig?.sticky_header ? styles.stickyTransparentHeader : ""}`}
           ref={headerRef}
         >
           <header
@@ -268,7 +307,7 @@ function Header({ fpi }) {
               className={`${styles.headerContainer} ${globalConfig?.transparent_header && isValidSection ? styles.paddingMobile : ""} basePageContainer margin0auto `}
             >
               <div
-                className={`${styles.desktop} ${globalConfig?.transparent_header && isValidSection ? styles.transparent_desktop : ""}`}
+                className={`${styles.desktop}  ${globalConfig?.transparent_header && isValidSection ? styles.transparent_desktop : ""}`}
               >
                 <HeaderDesktop
                   checkLogin={checkLogin}
@@ -280,12 +319,13 @@ function Header({ fpi }) {
                   navigation={HeaderNavigation}
                   wishlistCount={wishlistCount}
                   fpi={fpi}
-                  isHyperlocal={isHyperlocal}
                   isPromiseLoading={isLoading}
-                  pincode={pincode}
-                  deliveryMessage={deliveryMessage}
-                  onDeliveryClick={handleLocationModalOpen}
                   languageIscCode={languageIscCode}
+                  isServiceability={isHeaderServiceability}
+                  deliveryAddress={deliveryAddress}
+                  deliveryPromise={deliveryPromise}
+                  onServiceabilityClick={openServiceabilityModal}
+                  hideNavList={hideNavList}
                 />
               </div>
               <div
@@ -294,27 +334,77 @@ function Header({ fpi }) {
                 <div
                   className={`${styles.mobileTop} ${
                     styles[globalConfig.header_layout]
-                  } ${styles[globalConfig.logo_menu_alignment]} ${globalConfig?.transparent_header && isValidSection ? styles.transparent_mobile : ""}`}
+                  } ${styles[globalConfig.logo_menu_alignment]}  ${
+                    hideNavList &&
+                    defaultHeaderName === "My Cart" &&
+                    !cartBackNavigationList[currentStep] &&
+                    globalConfig?.logo_menu_alignment !== "layout_4"
+                      ? styles.leftLogo
+                      : ""
+                  }  ${globalConfig?.transparent_header && isValidSection ? styles.transparent_mobile : ""}`}
                 >
-                  <Navigation
-                    customClass={`${styles.left} ${styles.flexAlignCenter} ${
-                      styles[globalConfig.header_layout]
-                    }`}
-                    fallbackLogo={fallbackLogo}
-                    maxMenuLenght={12}
-                    reset
-                    isSidebarNav
-                    LoggedIn={loggedIn}
-                    navigationList={HeaderNavigation}
-                    appInfo={appInfo}
-                    globalConfig={globalConfig}
-                    checkLogin={checkLogin}
-                    languageIscCode={languageIscCode}
-                    fpi={fpi}
-                  />
+                  {!hideNavList ? (
+                    <Navigation
+                      customClass={`${styles.left} ${styles.flexAlignCenter} ${
+                        styles[globalConfig.header_layout]
+                      }`}
+                      fallbackLogo={fallbackLogo}
+                      maxMenuLenght={12}
+                      reset
+                      isSidebarNav
+                      LoggedIn={loggedIn}
+                      navigationList={HeaderNavigation}
+                      appInfo={appInfo}
+                      globalConfig={globalConfig}
+                      checkLogin={checkLogin}
+                      languageIscCode={languageIscCode}
+                      fpi={fpi}
+                    />
+                  ) : (
+                    <div
+                      className={`${styles.back_button_container} fontHeader`}
+                    >
+                      {checkoutId && (
+                        <span
+                          className={styles.iconWrapper}
+                          onClick={() => {
+                            if (currentStep > 0) {
+                              fpi.custom.setValue(
+                                "currentStep",
+                                currentStep - 1
+                              );
+                            } else if (currentStep === 0) {
+                              fpi.custom.setValue("currentStep", null);
+                              navigate("/cart/bag");
+                            }
+                          }}
+                        >
+                          <BackArrow />
+                        </span>
+                      )}
+                      <span
+                        className={
+                          defaultHeaderName === "My Cart"
+                            ? styles.cartPadding
+                            : ""
+                        }
+                      >
+                        {cartBackNavigationList[currentStep] ??
+                          defaultHeaderName}
+                      </span>
+                    </div>
+                  )}
+
                   <FDKLink
                     to="/"
-                    className={`${styles.middle} ${styles.flexAlignCenter}`}
+                    className={`${styles.middle} ${styles.flexAlignCenter} ${
+                      hideNavList &&
+                      !checkoutId &&
+                      globalConfig?.logo_menu_alignment === "layout_4" &&
+                      hideNavList
+                        ? styles.paddingRight
+                        : ""
+                    } ${hideNavList && checkoutId ? styles.visibilityNone : ""}`}
                   >
                     <img
                       style={{
@@ -325,81 +415,83 @@ function Header({ fpi }) {
                       alt={t("resource.refund_order.name_alt_text")}
                     />
                   </FDKLink>
-                  <div className={styles.right}>
-                    <div
-                      className={`${styles.icon} ${styles["right__icons--search"]}`}
-                    >
-                      <Search globalConfig={globalConfig} fpi={fpi} />
-                    </div>
-                    {!globalConfig?.disable_cart &&
-                      globalConfig?.button_options !== "none" && (
-                        <div>
-                          <button
-                            type="button"
-                            className={`${styles.headerIcon} ${styles["right__icons--bag"]}`}
-                            onClick={() => checkLogin("cart")}
-                            aria-label={`${cartItemCount ?? 0} ${t("resource.header.item_in_cart")}`}
-                          >
-                            <CartIcon
-                              className={`${styles.cart} ${styles.mobileIcon} ${styles.headerIcon}`}
-                            />
-                            {cartItemCount > 0 && (
-                              <span className={styles.cartCount}>
-                                {cartItemCount}
-                              </span>
-                            )}
-                          </button>
-                        </div>
-                      )}
-                  </div>
-                </div>
-                {isHyperlocal && (
-                  <button
-                    className={`${styles.mobileBottom} ${globalConfig?.transparent_header && isValidSection ? styles.unsetBorder : ""}`}
-                    onClick={handleLocationModalOpen}
-                  >
-                    {isLoading ? (
-                      t("resource.header.fetching")
-                    ) : (
-                      <>
-                        <div className={styles.label}>
-                          {pincode
-                            ? deliveryMessage
-                            : t("resource.header.pin_code")}
-                        </div>
-                        {pincode && (
-                          <div className={styles.pincode}>
-                            <span>{pincode}</span>
-                            <AngleDownIcon
-                              className={styles.headerAngleDownIcon}
-                            />
+                  {!hideNavList && (
+                    <div className={styles.right}>
+                      <div
+                        className={`${styles.icon} ${styles["right__icons--search"]}`}
+                      >
+                        <Search globalConfig={globalConfig} fpi={fpi} />
+                      </div>
+                      {!globalConfig?.disable_cart &&
+                        globalConfig?.button_options !== "none" && (
+                          <div>
+                            <button
+                              type="button"
+                              className={`${styles.headerIcon} ${styles["right__icons--bag"]}`}
+                              onClick={() => checkLogin("cart")}
+                              aria-label={`${cartItemCount ?? 0} ${t("resource.header.item_in_cart")}`}
+                            >
+                              <CartIcon
+                                className={`${styles.cart} ${styles.mobileIcon} ${styles.headerIcon}`}
+                              />
+                              {cartItemCount > 0 && (
+                                <span className={styles.cartCount}>
+                                  {cartItemCount}
+                                </span>
+                              )}
+                            </button>
                           </div>
                         )}
+                    </div>
+                  )}
+                </div>
+                {isHeaderServiceability && !hideNavList && (
+                  <button
+                    className={styles.mobileBottom}
+                    onClick={openServiceabilityModal}
+                  >
+                    {isLoading ? (
+                      <Shimmer width="100%" height="16px" />
+                    ) : (
+                      <>
+                        <TruckIcon className={styles.truckIcon} />
+                        <div className={styles.locationMeta}>
+                          {!!deliveryPromise && (
+                            <div className={styles.promiseTat}>
+                              {deliveryPromise}
+                            </div>
+                          )}
+                          <div className={styles.label}>
+                            {!!deliveryAddress
+                              ? deliveryAddress
+                              : t("resource.header.location_label")}
+                          </div>
+                        </div>
+                        <AngleDownIcon className={styles.angleDownIcon} />
                       </>
                     )}
                   </button>
                 )}
               </div>
             </div>
-            <div className={`${styles.mobile} ${styles.i18Wrapper}`}>
-              <I18Dropdown
-                fpi={fpi}
-                languageIscCode={languageIscCode}
-              ></I18Dropdown>
-            </div>
+            {!hideNavList && (
+              <div className={`${styles.mobile} ${styles.i18Wrapper}`}>
+                <I18Dropdown
+                  fpi={fpi}
+                  languageIscCode={languageIscCode}
+                ></I18Dropdown>
+              </div>
+            )}
           </header>
         </div>
       )}
-      {isLocationModalOpen && !shouldHide && (
+      {isServiceabilityModalOpen && !hideNavList && (
         <Suspense fallback={<div />}>
           <LocationModal
-            isOpen={isLocationModalOpen}
-            pincode={pincode}
-            error={servicibilityError}
-            isLocationButton={isCurrentLocButton}
-            onClose={handleLocationModalClose}
-            onSubmit={handlePincodeSubmit}
-            onCurrentLocationClick={handleCurrentLocClick}
+            fpi={fpi}
+            isOpen={isServiceabilityModalOpen}
+            onClose={closeServiceabilityModal}
+            onConfirm={handleLocationUpdate}
           />
         </Suspense>
       )}

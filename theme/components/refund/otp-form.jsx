@@ -42,8 +42,7 @@ function OtpForm({ loadSpinner, verifyPayment }) {
               type="text"
               {...register("otp", {
                 validate: (value) =>
-                  validateOTP(value) ||
-                  t("resource.common.enter_valid_otp"),
+                  validateOTP(value) || t("resource.common.enter_valid_otp"),
               })}
             />
           </div>
@@ -56,9 +55,7 @@ function OtpForm({ loadSpinner, verifyPayment }) {
         >
           {loadSpinner && <ButtonSpinnerIcon className={`${styles.spinner}`} />}
 
-          {!loadSpinner && (
-            <span>{t("resource.facets.verify")}</span>
-          )}
+          {!loadSpinner && <span>{t("resource.facets.verify")}</span>}
         </button>
       </form>
     </div>

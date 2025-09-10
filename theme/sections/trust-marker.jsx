@@ -7,7 +7,10 @@ import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
-import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, globalConfig, blocks, preset }) {
   const {
@@ -117,8 +120,8 @@ const HorizontalLayout = ({
       autoplay: false,
       centerMode: false,
       centerPadding: trustMarker?.length === 1 ? "0" : "152px",
-       nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles}  />,
+      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 1023,
@@ -133,7 +136,7 @@ const HorizontalLayout = ({
 
   const slickSettingMobile = useMemo(() => {
     return {
-      dots: trustMarker?.length > Number(colCountMobile),
+      dots: false,
       arrows: false,
       focusOnSelect: true,
       infinite: trustMarker?.length > Number(colCountMobile),
@@ -219,7 +222,6 @@ const Trustmark = ({ className = "", props = {}, globalConfig }) => {
     </div>
   );
 };
-
 
 export const settings = {
   label: "t:resource.sections.trust_marker.trust_marker",

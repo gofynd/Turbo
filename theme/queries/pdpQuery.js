@@ -1,29 +1,26 @@
-export const GET_PRODUCT_DETAILS = `query($slug: String!)  {
-  product(slug: $slug) {
-    brand {
-      action {
-        type
-        page {
-          params
-          query
-          type
-        }
-      }
-      description
-      logo {
-        alt
-        type
-        url
-      }
-      name
-      uid
+const ProductsPriceWithFulfillmentOption = `productsPriceWithFulfillmentOption(
+  slug: $slug
+  size: $size
+  storeId: $storeId
+  pincode: $pincode
+) {
+  items {
+    article_id
+    article_assignment {
+      level
+      strategy
     }
-    color
-    item_code
-    item_type
-    has_variant
-    uid
-    product_online_date
+    delivery_promise {
+      max
+      min
+    }
+    discount
+    discount_meta {
+      end
+      start
+      start_timer_in_minutes
+      timer
+    }
     grouped_attributes {
       title
       details {
@@ -32,280 +29,375 @@ export const GET_PRODUCT_DETAILS = `query($slug: String!)  {
         value
       }
     }
-    attributes
-    custom_config
-    media {
-      alt
-      meta {
-        source
-      }
-      type
-      url
-    }
-    sizes {
-      discount
-      multi_size
-      sellable
-      size_chart {
-        description
-        headers {
-          col_1 {
-            convertable
-            value
-          }
-          col_2 {
-            convertable
-            value
-          }
-          col_3 {
-            convertable
-            value
-          }
-          col_4 {
-            convertable
-            value
-          }
-          col_5 {
-            convertable
-            value
-          }
-          col_6 {
-            convertable
-            value
-          }
-          col_7 {
-            convertable
-            value
-          }
-          col_8 {
-            convertable
-            value
-          }
-          col_9 {
-            convertable
-            value
-          }
-          col_10 {
-            convertable
-            value
-          }
-        }
-        image
-        size_tip
-        sizes {
-          col_1
-          col_2
-          col_3
-          col_4
-          col_5
-          col_6 
-          col_7
-          col_8
-          col_9
-          col_10
-        }
-        title
-        unit
-      }
-      sizes:size_details {
-        dimension {
-          height
-          is_default
-          length
-          unit
-          width
-        }
-        display
-        is_available
-        quantity
-        seller_identifiers
-        value
-        weight {
-          is_default
-          shipping
-          unit
-        }
-      }
-      stores {
-        count
-      }
-      price {
-        effective {
-            currency_code
-            currency_symbol
-            max
-            min
-          }
-          marked {
-            currency_code
-            currency_symbol
-            max
-            min
-          }  
-      }
-    }
-    custom_order {
-      is_custom_order
-      manufacturing_time
-      manufacturing_time_unit
-    }
-    custom_meta {
-      key
-      value
-    }
-    description
-    discount
-    highlights
-    image_nature
-    is_dependent
-    moq {
-      increment_unit
-      maximum
-      minimum
-    }
-    name
-    net_quantity {
-      unit
-      value
-    }
-    price {
-      effective {
-        currency_code
-        currency_symbol
-        max
-        min
-      }
-      marked {
-        currency_code
-        currency_symbol
-        max
-        min
-      }
-    }
-    product_group_tag
-    product_online_date
-    rating
-    rating_count
-    seo {
-      description
+    is_cod
+    is_gift
+    item_type
+    long_lat
+    marketplace_attributes {
       title
-      image {
-        url
-      }
-    }
-    short_description
-    similars
-    slug
-    teaser_tag
-    tryouts
-    type
-    variants {
-      display_type
-      header
-      items {
-        _custom_meta {
-          key
-          value
-        }
-        color
-        color_name
-        is_available
-        medias {
-          alt
-          type
-          url
-        }
-        name
-        slug
-        uid
+      details {
+        key
+        type
         value
       }
-      key
     }
+    pincode
+    postal_code
+    price {
+      currency_code
+      currency_symbol
+      effective
+      marked
+      selling
+    }
+    price_per_piece {
+      currency_code
+      currency_symbol
+      effective
+      marked
+      selling
+    }
+    price_per_unit {
+      currency_code
+      currency_symbol
+      price
+      unit
+    }
+    quantity
+    return_config {
+      returnable
+      time
+      unit
+    }
+    seller {
+      count
+      name
+      uid
+    }
+    seller_count
+    set {
+      quantity
+      size_distribution {
+        sizes {
+          pieces
+          size
+        }
+      }
+    }
+    special_badge
+    store {
+      uid
+      name
+      count
+      code
+      long_lat
+      address {
+        address1
+        address2
+        city
+        country
+        landmark
+        latitude
+        longitude
+        pincode
+        postal_code
+        state
+        country_code
+        address_meta
+        lat_long {
+          coordinates
+          type
+        }
+      }
+    }
+    strategy_wise_listing {
+      distance
+      pincode
+      postal_code
+      quantity
+      tat
+    }
+    trader
+    is_serviceable
+    tags
+    _custom_json
+    inventory_updated_on
+    fulfillment_option {
+      name
+      slug
+      type
+      is_default
+    }
+  }
+}`;
+
+const Product = `product(slug: $slug) {
+  brand {
     action {
+      type
       page {
         params
         query
         type
       }
+    }
+    description
+    logo {
+      alt
+      type
+      url
+    }
+    name
+    uid
+  }
+  color
+  item_code
+  item_type
+  has_variant
+  uid
+  product_online_date
+  grouped_attributes {
+    title
+    details {
+      key
+      type
+      value
+    }
+  }
+  attributes
+  custom_config
+  media {
+    alt
+    meta {
+      source
+    }
+    type
+    url
+  }
+  sizes {
+    discount
+    multi_size
+    sellable
+    size_chart {
+      description
+      headers {
+        col_1 {
+          convertable
+          value
+        }
+        col_2 {
+          convertable
+          value
+        }
+        col_3 {
+          convertable
+          value
+        }
+        col_4 {
+          convertable
+          value
+        }
+        col_5 {
+          convertable
+          value
+        }
+        col_6 {
+          convertable
+          value
+        }
+        col_7 {
+            convertable
+            value
+          }
+        col_8 {
+            convertable
+            value
+          }
+        col_9 {
+            convertable
+            value
+          }
+        col_10 {
+            convertable
+            value
+        }
+      }
+      image
+      size_tip
+      sizes {
+        col_1
+        col_2
+        col_3
+        col_4
+        col_5
+        col_6
+        col_7
+        col_8
+        col_9
+        col_10
+      }
+      title
+      unit
+    }
+    sizes:size_details {
+      dimension {
+        height
+        is_default
+        length
+        unit
+        width
+      }
+      display
+      is_available
+      quantity
+      seller_identifiers
+      value
+      weight {
+        is_default
+        shipping
+        unit
+      }
+    }
+    stores {
+      count
+    }
+    price {
+      effective {
+          currency_code
+          currency_symbol
+          max
+          min
+        }
+        marked {
+          currency_code
+          currency_symbol
+          max
+          min
+        }  
+    }
+  }
+  custom_order {
+    is_custom_order
+    manufacturing_time
+    manufacturing_time_unit
+  }
+  custom_meta {
+    key
+    value
+  }
+  description
+  discount
+  highlights
+  image_nature
+  is_dependent
+  moq {
+    increment_unit
+    maximum
+    minimum
+  }
+  name
+  net_quantity {
+    unit
+    value
+  }
+  price {
+    effective {
+      currency_code
+      currency_symbol
+      max
+      min
+    }
+    marked {
+      currency_code
+      currency_symbol
+      max
+      min
+    }
+  }
+  product_group_tag
+  product_online_date
+  rating
+  rating_count
+  seo {
+    description
+    title
+    image {
+      url
+    }
+  }
+  short_description
+  similars
+  slug
+  teaser_tag
+  tryouts
+  type
+  variants {
+    display_type
+    header
+    items {
+      _custom_meta {
+        key
+        value
+      }
+      color
+      color_name
+      is_available
+      medias {
+        alt
+        type
+        url
+      }
+      name
+      slug
+      uid
+      value
+    }
+    key
+  }
+  action {
+    page {
+      params
+      query
       type
     }
-    categories {
-      description
-      name
-      uid
-      action {
+    type
+  }
+  categories {
+    description
+    name
+    uid
+    action {
+      type
+      page {
+        params
+        query
         type
-        page {
-          params
-          query
-          type
-        }
       }
     }
   }
-  promotions(slug: $slug, pageSize: 30) {
-    available_promotions {
-      buy_rules
-      description
-      discount_rules
-      id
-      offer_text
-      promotion_group
-      promotion_name
-      valid_till
-      free_gift_items {
-        item_brand_name
-        item_id
-        item_images_url
-        item_name
-        item_price_details {
-          currency
-          marked {
-              min
-              max
-          }
-          effective {
-              min
-              max
-          }
-        }
-        item_slug
-      }
-    }
-  }
-  coupons(productSlug : $slug) {
-    available_coupon_list {
-      coupon_amount
-      coupon_applicable_message
-      coupon_code
-      coupon_type
-      coupon_value
-      description
-      end_date
-      expires_on
-      is_applicable
-      is_applied
-      is_bank_offer
-      max_discount_value
-      message
-      minimum_cart_value
-      offer_text
-      start_date
-      sub_title
-      title
-      rule {
-        discounted_price
-      }
-    }
-    page {
-      current
-      has_next
-      has_previous
-      total
-      total_item_count
-    }
-  }
+}`;
+
+export const GET_PRODUCT_DETAILS = `query ($slug: String!) {
+  ${Product}
+}`;
+
+export const FULFILLMENT_OPTIONS = `query ProductsPriceWithFulfillmentOption(
+  $slug: String!
+  $size: String!
+  $storeId: Int
+  $pincode: String
+) {
+  ${ProductsPriceWithFulfillmentOption}
+}`;
+
+export const PRODUCT_DETAILS_WITH_SIZE = `query(
+  $slug: String!
+  $size: String!
+  $storeId: Int
+  $pincode: String
+) {
+  ${Product}
+  ${ProductsPriceWithFulfillmentOption}
 }`;
 
 export const OFFERS = `query Offers($slug: String!) {
@@ -374,8 +466,8 @@ export const OFFERS = `query Offers($slug: String!) {
   }
 }`;
 
-export const PRODUCT_SIZE_PRICE = `query ProductPrice($slug: String!, $size: String!,  $pincode: String!) {
-  productPrice(slug: $slug, size: $size,  pincode: $pincode) {
+export const PRODUCT_SIZE_PRICE = `query ProductPrice($slug: String!, $size: String!,  $pincode: String!, $fulfillmentOptionSlug: String) {
+  productPrice(slug: $slug, size: $size,  pincode: $pincode, fulfillmentOptionSlug: $fulfillmentOptionSlug) {
     article_id
     discount
     is_cod
@@ -759,6 +851,7 @@ export const PRODUCT_SELLERS = `query productSellers(
   $strategy: String
   $pageNo: Int
   $pageSize: Int
+  $fulfillmentOptionSlug: String
 ) {
   productSellers(
     size: $size
@@ -766,6 +859,7 @@ export const PRODUCT_SELLERS = `query productSellers(
     strategy: $strategy
     pageNo: $pageNo
     pageSize: $pageSize
+    fulfillmentOptionSlug: $fulfillmentOptionSlug
   ) {
     items {
       article_assignment {
@@ -802,6 +896,14 @@ export const PRODUCT_SELLERS = `query productSellers(
         name
         count
         uid
+        address {
+          address1
+          address2
+          landmark
+          city
+          state
+          country
+        }
       }
       trader
       is_serviceable
@@ -821,146 +923,6 @@ export const PRODUCT_SELLERS = `query productSellers(
       is_selected
       name
       value
-    }
-  }
-}`;
-
-export const FULFILLMENT_OPTIONS = `query ProductsPriceWithFulfillmentOption(
-  $slug: String!
-  $size: String!
-  $storeId: Int
-  $pincode: String
-) {
-  productsPriceWithFulfillmentOption(
-    slug: $slug
-    size: $size
-    storeId: $storeId
-    pincode: $pincode
-  ) {
-    items {
-      article_id
-      article_assignment {
-        level
-        strategy
-      }
-      delivery_promise {
-        max
-        min
-      }
-      discount
-      discount_meta {
-        end
-        start
-        start_timer_in_minutes
-        timer
-      }
-      grouped_attributes {
-        title
-        details {
-          key
-          type
-          value
-        }
-      }
-      is_cod
-      is_gift
-      item_type
-      long_lat
-      marketplace_attributes {
-        title
-        details {
-          key
-          type
-          value
-        }
-      }
-      pincode
-      postal_code
-      price {
-        currency_code
-        currency_symbol
-        effective
-        marked
-        selling
-      }
-      price_per_piece {
-        currency_code
-        currency_symbol
-        effective
-        marked
-        selling
-      }
-      price_per_unit {
-        currency_code
-        currency_symbol
-        price
-        unit
-      }
-      quantity
-      return_config {
-        returnable
-        time
-        unit
-      }
-      seller {
-        count
-        name
-        uid
-      }
-      seller_count
-      set {
-        quantity
-        size_distribution {
-          sizes {
-            pieces
-            size
-          }
-        }
-      }
-      special_badge
-      store {
-        uid
-        name
-        count
-        code
-        long_lat
-        address {
-          address1
-          address2
-          city
-          country
-          landmark
-          latitude
-          longitude
-          pincode
-          postal_code
-          state
-          country_code
-          address_meta
-          lat_long {
-            coordinates
-            type
-          }
-        }
-      }
-      strategy_wise_listing {
-        distance
-        pincode
-        postal_code
-        quantity
-        tat
-      }
-      trader
-      is_serviceable
-      tags
-      _custom_json
-      inventory_updated_on
-      fulfillment_option {
-        name
-        slug
-        type
-        is_default
-      }
     }
   }
 }`;

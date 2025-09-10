@@ -1,0 +1,38 @@
+@import "./main.less";
+
+.cart {
+  min-height: 50vh;
+}
+
+.cartContainer {
+  display: flex;
+  gap: 1rem;
+  padding: 0px 0px 24px;
+
+  @media @tablet {
+    padding: 0px;
+    flex-direction: column;
+  }
+
+  @media @tablet-range {
+    padding: 24px !important;
+  }
+  @media @mobile-up {
+    padding: 24px 40px 24px;
+  }
+
+  .leftPanel {
+    flex: 2;
+
+    @media @tablet {
+      flex: unset;
+    }
+  }
+  .rightPanel {
+    flex: 1;
+
+    @media @tablet {
+      flex: unset;
+    }
+  }
+}

@@ -1,8 +1,6 @@
 import React, { useMemo, useRef, useCallback } from "react";
 import { FDKLink } from "fdk-core/components";
 import Slider from "react-slick";
-import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
-import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import placeholderDesktop from "../assets/images/placeholder/image-slideshow-desktop.jpg";
@@ -12,9 +10,15 @@ import placeholderDesktop2 from "../assets/images/placeholder/slideshow-desktop2
 import placeholderMobile1 from "../assets/images/placeholder/slideshow-mobile1.jpg";
 import placeholderMobile2 from "../assets/images/placeholder/slideshow-mobile2.jpg";
 import styles from "../styles/sections/image-slideshow.less";
-import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import { useGlobalStore } from "fdk-core/utils";
-import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
+import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import { useWindowWidth } from "../helper/hooks";
+import { getDirectionAdaptiveValue } from "../helper/utils";
+import { DIRECTION_ADAPTIVE_CSS_PROPERTIES } from "../helper/constant";
 
 const placeholderImagesDesktop = [placeholderDesktop1, placeholderDesktop2];
 const placeholderImagesMobile = [placeholderMobile1, placeholderMobile2];
@@ -68,7 +72,7 @@ export function Component({ props, blocks, globalConfig, preset }) {
   } = props;
   const shouldOpenInNewTab =
     open_in_new_tab?.value === true || open_in_new_tab?.value === "true";
-
+  const windowWidth = useWindowWidth();
   const config = useMemo(
     () => ({
       speed: 500,
@@ -113,19 +117,21 @@ export function Component({ props, blocks, globalConfig, preset }) {
     <section className={`remove-horizontal-scroll`} style={dynamicStyles}>
       <Slider {...config} initialSlide={0} className={styles.slideshowSlider}>
         {blocksData?.map((block, index) => (
-          <FDKLink
-            to={block?.props?.redirect_link?.value ?? ""}
-            target={shouldOpenInNewTab ? "_blank" : "_self"}
-            key={index}
-          >
-            <FyImage
-              src={getDesktopImage(block, index)}
-              sources={getImgSrcSet(block, globalConfig, index)}
-              defer={index < 1 ? false : true}
-              alt={`slide-${index}`}
-              isFixedAspectRatio={false}
-            />
-          </FDKLink>
+          <div className={`${styles.blockItem} ${styles.imageContainer}`}>
+            <FDKLink
+              to={block?.props?.redirect_link?.value ?? ""}
+              target={shouldOpenInNewTab ? "_blank" : "_self"}
+              key={index}
+            >
+              <FyImage
+                src={getDesktopImage(block, index)}
+                sources={getImgSrcSet(block, globalConfig, index)}
+                defer={index < 1 ? false : true}
+                alt={`slide-${index}`}
+                isFixedAspectRatio={false}
+              />
+            </FDKLink>
+          </div>
         ))}
       </Slider>
     </section>
@@ -213,6 +219,28 @@ export const settings = {
       default: false,
       label: "t:resource.sections.image_slideshow.open_links_in_new_tab",
       info: "t:resource.sections.image_slideshow.open_links_in_new_tab_info",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Top padding",
+      default: 0,
+      info: "Top padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Bottom padding",
+      default: 16,
+      info: "Bottom padding for section",
     },
   ],
   preset: {

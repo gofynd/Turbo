@@ -1,0 +1,197 @@
+@import "../../styles/main.less";
+
+.cartItem {
+  padding: 24px;
+  border: 1px solid @DividerStokes;
+  border-top: 0 solid @DividerStokes;
+
+  @media @mobile {
+    padding: 16px;
+    border-width: 0 0 1px;
+  }
+
+  .eachItemContainer {
+    display: grid;
+    grid-template-columns: calc(18% - 12px) calc(82% - 12px);
+    column-gap: 24px;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "item_image item_details"
+      "item_image free_gift";
+    @media @tablet {
+      grid-template-columns: calc(25% - 12px) calc(75% - 12px);
+    }
+    @media @mobile {
+      grid-template-areas:
+        "item_image item_details"
+        "free_gift free_gift";
+    }
+    .itemImageContainer {
+      grid-area: item_image;
+      box-sizing: border-box;
+      display: flex;
+      a {
+        img {
+          width: 100%;
+          border-radius: 4px;
+        }
+      }
+    }
+    .eachItemDetailsContainer {
+      grid-area: item_details;
+      position: relative;
+      line-height: 140%;
+      box-sizing: border-box;
+      width: 100%;
+      .removeItemSvgContainer {
+        position: absolute;
+        top: 0;
+        inset-inline-end: 0;
+      }
+      .itemBrand {
+        color: var(--textHeading);
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .itemName {
+        color: @TextBody;
+        margin-top: 4px;
+        font-size: 14px;
+      }
+      .itemSellerName {
+        color: @TextLabel;
+        padding-inline-end: 90px;
+        margin-top: 4px;
+        font-size: 12px;
+        @media @mobile {
+          padding-inline-end: 30px;
+        }
+      }
+      .itemSizeQuantityContainer {
+        display: flex;
+        align-items: center;
+        margin-top: 16px;
+        position: relative;
+        flex-wrap: wrap;
+        column-gap: 12px;
+        .itemSizeQuantitySubContainer {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 0;
+          .sizeContainer {
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            align-items: center;
+            padding: 0 16px;
+            min-width: 80px;
+            max-width: 160px;
+            height: 36px;
+            border: 1px solid @DividerStokes;
+            border-radius: 4px;
+            line-height: 140%;
+            @media @mobile {
+              padding: 0 10px;
+              max-width: unset;
+            }
+            .sizeName {
+              font-size: 12px;
+              font-weight: 600;
+              color: @TextBody;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              max-width: 90%;
+              margin-inline-end: 3px;
+            }
+            .itemSvg {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+            }
+          }
+        }
+        .limitedQtyBox {
+          font-size: 10px;
+          font-weight: 500;
+          padding: 4px 12px;
+          border-radius: 4px;
+          line-height: 140%;
+          color: @ErrorText;
+          background-color: @ErrorBackground;
+          @media @mobile {
+            margin-top: 12px;
+          }
+        }
+      }
+      .itemTotalContainer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 16px;
+        @media @tablet {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .itemPrice {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          .effectivePrice {
+            color: @TextHeading;
+            font-size: 16px;
+            font-weight: 600;
+            margin-inline-end: 12px;
+          }
+          .markedPrice {
+            font-size: 12px;
+            text-decoration: line-through;
+            color: @TextLabel;
+            margin-inline-end: 12px;
+          }
+          .discount {
+            font-size: 12px;
+            font-weight: 500;
+            margin-inline-end: 12px;
+            color: @SaleDiscountText;
+          }
+        }
+        .deliveryDateWrapper {
+          display: flex;
+          height: 20px;
+          align-self: center;
+          @media @mobile {
+            align-self: flex-start;
+            margin-top: 12px;
+          }
+
+          .shippingLogo {
+            color: @SuccessText;
+          }
+
+          .deliveryDate {
+            font-weight: 500;
+            font-size: 12px;
+            text-align: end;
+            color: @SuccessText;
+            align-self: center;
+            margin-inline-start: 8px;
+            line-height: 140%;
+          }
+        }
+      }
+    }
+  }
+
+  .topSpacing {
+    margin-top: 16px;
+  }
+
+  .itemWrapper {
+    display: flex;
+    width: fit-content;
+    gap: 12px;
+  }
+}

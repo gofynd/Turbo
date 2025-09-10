@@ -58,3 +58,28 @@ export const STORE_HYPERLOCAL = `query store($locationId: Int!) {
         }
     }
 }`;
+
+export const VALIDATE_ADDRESS = `mutation validateAddress(
+  $countryIsoCode: String
+  $templateName: templateNameEnum
+  $validateAddressRequestInput: ValidateAddressRequestInput
+) {
+  validateAddress(
+    countryIsoCode: $countryIsoCode
+    templateName: $templateName
+    validateAddressRequestInput: $validateAddressRequestInput
+  ) {
+    address
+    address1
+    address2
+    area
+    landmark
+    pincode
+    sector
+    city
+    state
+    name
+    phone
+    email
+  }
+}`;

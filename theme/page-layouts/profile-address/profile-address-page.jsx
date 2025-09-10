@@ -24,7 +24,9 @@ import AddAddressIcon from "../../assets/images/add-address.svg";
 
 const DefaultAddress = () => {
   const { t } = useGlobalTranslation("translation");
-  return <span className={styles.defaultAdd}>{t("resource.common.default")}</span>;
+  return (
+    <span className={styles.defaultAdd}>{t("resource.common.default")}</span>
+  );
 };
 
 const ProfileAddressPage = ({ fpi }) => {
@@ -165,14 +167,18 @@ const ProfileAddressPage = ({ fpi }) => {
     setAddressLoader(true);
     addAddress(obj).then(async (res) => {
       if (res?.data?.addAddress?.success) {
-        showSnackbar(t("resource.common.address.address_addition_success"), "success");
+        showSnackbar(
+          t("resource.common.address.address_addition_success"),
+          "success"
+        );
         await fetchAddresses().then(() => {
           resetPage();
           setAddressLoader(false);
         });
       } else {
         showSnackbar(
-          res?.errors?.[0]?.message ?? t("resource.common.address.new_address_creation_failure"),
+          res?.errors?.[0]?.message ??
+            t("resource.common.address.new_address_creation_failure"),
           "error"
         );
       }
@@ -188,14 +194,18 @@ const ProfileAddressPage = ({ fpi }) => {
     setAddressLoader(true);
     updateAddress(obj, memoizedSelectedAdd?.id).then(async (res) => {
       if (res?.data?.updateAddress?.success) {
-        showSnackbar(t("resource.common.address.address_update_success"), "success");
+        showSnackbar(
+          t("resource.common.address.address_update_success"),
+          "success"
+        );
         await fetchAddresses().then(() => {
           resetPage();
           setAddressLoader(false);
         });
       } else {
         showSnackbar(
-          res?.errors?.[0]?.message ?? t("resource.common.address.address_update_failure"),
+          res?.errors?.[0]?.message ??
+            t("resource.common.address.address_update_failure"),
           "error"
         );
       }
@@ -209,13 +219,19 @@ const ProfileAddressPage = ({ fpi }) => {
     setAddressLoader(true);
     removeAddress(id).then(async (res) => {
       if (res?.data?.removeAddress?.is_deleted) {
-        showSnackbar(t("resource.common.address.address_deletion_success"), "success");
+        showSnackbar(
+          t("resource.common.address.address_deletion_success"),
+          "success"
+        );
         await fetchAddresses().then(() => {
           resetPage();
           setAddressLoader(false);
         });
       } else {
-        showSnackbar(t("resource.common.address.address_deletion_failure"), "error");
+        showSnackbar(
+          t("resource.common.address.address_deletion_failure"),
+          "error"
+        );
       }
       window.scrollTo({
         top: 0,
@@ -257,12 +273,14 @@ const ProfileAddressPage = ({ fpi }) => {
           return data;
         } else {
           showSnackbar(
-            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure"),
+            res?.errors?.[0]?.message ||
+              t("resource.common.address.pincode_verification_failure"),
             "error"
           );
           data.showError = true;
           data.errorMsg =
-            res?.errors?.[0]?.message || t("resource.common.address.pincode_verification_failure");
+            res?.errors?.[0]?.message ||
+            t("resource.common.address.pincode_verification_failure");
           return data;
         }
       });
@@ -336,7 +354,7 @@ const ProfileAddressPage = ({ fpi }) => {
           currency: countryInfo.currency.code,
         });
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const handleCountrySearch = (event) => {
@@ -367,11 +385,13 @@ const ProfileAddressPage = ({ fpi }) => {
           <div className={styles.addressContainer}>
             <div className={styles.addressHeader}>
               <div className={`${styles.title} ${styles["bold-md"]}`}>
-                  {t("resource.common.address.my_address")}
+                {t("resource.common.address.my_address")}
                 <span
                   className={`${styles.savedAddress} ${styles["bold-xxs"]}`}
                 >
-                  {allAddresses?.length ? `${allAddresses?.length} ${t("resource.profile.saved")}` : ""}{" "}
+                  {allAddresses?.length
+                    ? `${allAddresses?.length} ${t("resource.profile.saved")}`
+                    : ""}{" "}
                 </span>
               </div>
               {allAddresses && allAddresses.length > 0 && (
@@ -419,7 +439,9 @@ const ProfileAddressPage = ({ fpi }) => {
             <div className={styles.addressContainer}>
               <div className={styles.addressHeader}>
                 <div className={`${styles.title} ${styles["bold-md"]}`}>
-                  {isEditMode ? t("resource.common.address.update_address") : t("resource.common.address.add_new_address")}
+                  {isEditMode
+                    ? t("resource.common.address.update_address")
+                    : t("resource.common.address.add_new_address")}
                 </div>
               </div>
             </div>
@@ -461,7 +483,7 @@ const ProfileAddressPage = ({ fpi }) => {
           )}
         </>
       )}
-    </div >
+    </div>
   );
 };
 

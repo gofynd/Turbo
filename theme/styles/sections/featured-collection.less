@@ -324,7 +324,7 @@
 .placeholderContainer {
   overflow: hidden;
   margin-inline: @SectionInlinePaddingDesktop;
-  @media @tablet { 
+  @media @tablet {
     margin-inline: @SectionInlinePaddingTablet;
   }
   @media @mobile {
@@ -352,7 +352,7 @@
       @media @mobile {
         --col-count: var(--per-row-mobile);
       }
-    } 
+    }
   }
 }
 
@@ -390,5 +390,10 @@
   }
   .hideOnDesktop {
     display: block;
+  }
+}
+@media @mobile-up {
+  .hideOnTablet {
+    display: none;
   }
 }

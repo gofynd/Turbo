@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, Fragment } from "react";
+import styles from "../styles/sections/product-description.less";
 import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
 import { FDKLink, BlockRenderer } from "fdk-core/components";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useSearchParams } from "react-router-dom";
 import OutsideClickHandler from "react-outside-click-handler";
 import FyButton from "@gofynd/theme-template/components/core/fy-button/fy-button";
 import "@gofynd/theme-template/components/loader/loader.css";
@@ -19,7 +20,7 @@ import BreadCrumb from "../page-layouts/pdp/components/breadcrumb/breadcrumb";
 import Badges from "../page-layouts/pdp/components/badges/badges";
 import StickyAddToCart from "../page-layouts/pdp/components/sticky-addtocart/sticky-addtocart";
 import MoreOffers from "../page-layouts/pdp/components/offers/more-offers";
-import StoreModal from "../page-layouts/pdp/components/store/store-modal";
+// import StoreModal from "../page-layouts/pdp/components/store/store-modal";
 import EmptyState from "../components/empty-state/empty-state";
 import {
   isEmptyOrNull,
@@ -28,18 +29,22 @@ import {
   formatLocale,
 } from "../helper/utils";
 import { useSnackbar, useViewport } from "../helper/hooks";
-import styles from "../styles/sections/product-description.less";
-import { GET_PRODUCT_DETAILS } from "../queries/pdpQuery";
+import {
+  GET_PRODUCT_DETAILS,
+  PRODUCT_DETAILS_WITH_SIZE,
+  FULFILLMENT_OPTIONS,
+} from "../queries/pdpQuery";
 import QuantityController from "@gofynd/theme-template/components/quantity-control/quantity-control";
 import "@gofynd/theme-template/components/quantity-control/quantity-control.css";
 import useCart from "../page-layouts/cart/useCart";
 import { createPortal } from "react-dom";
-import Shimmer from "../components/shimmer/shimmer";
 import ShareDesktopIcon from "../assets/images/share-desktop.svg";
 import ArrowDownIcon from "../assets/images/arrow-down.svg";
 import CartIcon from "../assets/images/cart.svg";
 import BuyNowIcon from "../assets/images/buy-now.svg";
 import ScaleIcon from "../assets/images/scale.svg";
+import Fulfillment from "../page-layouts/pdp/components/fulfillment/fulfillment";
+import { Skeleton } from "../components/core/skeletons";
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
@@ -59,16 +64,20 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     img_resize_mobile,
     zoom_in,
     show_sale_tag,
+    display_mode,
   } = props;
 
   const addToCartBtnRef = useRef(null);
   const params = useParams();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   const isPDP = /^(?:\/[a-zA-Z-]+)?\/product\/[^/]+\/?$/i.test(
     location.pathname
   );
   const slug = isPDP ? params?.slug : product?.value;
+  const size = isPDP ? searchParams?.get("size") : "";
+  const cachedProductData = location?.state?.product || {};
 
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [showStoreModal, setShowStoreModal] = useState(false);
@@ -94,7 +103,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const blockProps = useMemo(() => {
     const currentProps = {
       size_guide: false,
-      preselect_size: false,
+      // preselect_size: false,
       hide_single_size: false,
       tax_label: "",
       mrp_label: false,
@@ -109,8 +118,8 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       }
 
       if (block.type === "size_wrapper") {
-        currentProps.preselect_size =
-          getBlockConfigValue(block, "preselect_size") || false;
+        // currentProps.preselect_size =
+        //   getBlockConfigValue(block, "preselect_size") || false;
         currentProps.hide_single_size =
           getBlockConfigValue(block, "hide_single_size") || false;
       }
@@ -141,10 +150,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const application = useGlobalStore(fpi.getters.APPLICATION);
 
   const {
+    isProductDataLoading,
     productDetails,
     isLoading,
     isLoadingPriceBySize,
     productPriceBySlug,
+    setProductPriceBySlug,
     productMeta,
     pincode,
     coupons,
@@ -160,6 +171,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     setPincodeErrorMessage,
     isPageLoading,
     pincodeInput,
+    isCountryDetailsLoading,
     isValidDeliveryLocation,
     deliveryLocation,
     isServiceabilityPincodeOnly,
@@ -171,7 +183,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     getProductSellers,
     isSellerLoading,
     buybox,
-  } = useProductDescription({ fpi, slug, props });
+    currentFO,
+    setCurrentFO,
+    fulfillmentOptions,
+    setFulfillmentOptions,
+    availableFOCount,
+  } = useProductDescription({ fpi, slug, size, props, cachedProductData });
 
   const { onUpdateCartItems, isCartUpdating, cartItems } = useCart(fpi, false);
 
@@ -180,7 +197,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
     if (currentSize?.value) {
       const cartItemsKey = Object.keys(cartItems || {});
-      const selectedItemKey = `${productDetails?.uid}_${currentSize.value}_standard-delivery_${productPriceBySlug?.store?.uid}`;
+      const selectedItemKey = `${productDetails?.uid}_${currentSize.value}_${currentFO?.slug}_${productPriceBySlug?.store?.uid}`;
 
       cartItemsKey.some((item, index) => {
         const itemKeyWithoutItemIndex = item.substring(
@@ -201,7 +218,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   }, [currentSize, cartItems, productDetails, productPriceBySlug]);
 
   const priceDataDefault = productMeta?.price;
-  const [selectedSize, setSelectedSize] = useState("");
+  const selectedSize = currentSize?.value || "";
   const [showSizeDropdown, setShowSizeDropdown] = useState(false);
   const [showMoreOffers, setShowMoreOffers] = useState(false);
   const [sidebarActiveTab, setSidebarActiveTab] = useState("coupons");
@@ -361,22 +378,10 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     if (size?.quantity === 0 && !isMto) {
       return;
     }
-    setSelectedSize(size?.value);
+    // setSelectedSize(size?.value);
     setCurrentSize(size);
     setShowSizeDropdown(false);
   };
-
-  useEffect(() => {
-    if (
-      isSizeCollapsed ||
-      (blockProps?.preselect_size && sizes !== undefined)
-    ) {
-      const firstAvailableSize = sizes?.sizes?.find(
-        (item) => item?.is_available
-      );
-      onSizeSelection(firstAvailableSize);
-    }
-  }, [isSizeCollapsed, blockProps?.preselect_size, sizes?.sizes]);
 
   // function getReviewRatingInfo() {
   //   const customMeta = productDetails?.custom_meta || [];
@@ -482,30 +487,30 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     }
   };
 
-  const toggleStoreModal = () => {
-    setShowStoreModal((modal) => {
-      const updatedModal = !modal;
+  // const toggleStoreModal = () => {
+  //   setShowStoreModal((modal) => {
+  //     const updatedModal = !modal;
 
-      if (typeof document !== "undefined") {
-        const classList = document.body?.classList;
+  //     if (typeof document !== "undefined") {
+  //       const classList = document.body?.classList;
 
-        if (updatedModal && classList) {
-          classList.add("remove-scroll");
-        } else {
-          classList.remove("remove-scroll");
-        }
-      }
+  //       if (updatedModal && classList) {
+  //         classList.add("remove-scroll");
+  //       } else {
+  //         classList.remove("remove-scroll");
+  //       }
+  //     }
 
-      return updatedModal;
-    });
-  };
+  //     return updatedModal;
+  //   });
+  // };
 
-  const onSellerClick = () => {
-    if (isAllowStoreSelection) {
-      toggleStoreModal();
-      getProductSellers();
-    }
-  };
+  // const onSellerClick = () => {
+  //   if (isAllowStoreSelection) {
+  //     toggleStoreModal();
+  //     getProductSellers();
+  //   }
+  // };
 
   const onMouseLeave = () => {
     setZoomData((prev) => ({ ...prev, show: false }));
@@ -513,28 +518,33 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   const onMouseMove = (event) => {
     const zoomWrapper = event.currentTarget; // This is the image-zoom-wrapper
-    const imageBox = zoomWrapper.querySelector(".fx-image"); // The image-box inside image-zoom-wrapper
+    const targetImageBox = event.target.closest(".fx-image"); // The specific image under cursor
 
-    // Check if the hover event is happening directly on the image-box
-    if (event.target === imageBox) {
-      // const imageElement = imageBox.querySelector('img');
-      if (imageBox && imageBox.src) {
-        const { left, top, width, height } = imageBox.getBoundingClientRect();
+    if (targetImageBox && zoomWrapper.contains(targetImageBox)) {
+      const imgElement =
+        targetImageBox.tagName === "IMG"
+          ? targetImageBox
+          : targetImageBox.querySelector("img");
+      const src = imgElement?.src || targetImageBox?.src;
+
+      if (imgElement && src) {
+        const { left, top, width, height } = imgElement.getBoundingClientRect();
         const x = ((event.clientX - left) / width) * 100;
         const y = ((event.clientY - top) / height) * 100;
 
-        // Set zoom data
+        // Set zoom data for the hovered image
         setZoomData({
           show: true,
-          imageSrc: imageBox.src,
+          imageSrc: src,
           offsetX: x,
           offsetY: y,
         });
+        return;
       }
-    } else {
-      // If the hover event is not on the image-box, hide the zoom
-      setZoomData((prev) => ({ ...prev, show: false }));
     }
+
+    // If not hovering on an image, hide zoom
+    setZoomData((prev) => ({ ...prev, show: false }));
   };
 
   const zoomStyles = useMemo(() => {
@@ -544,9 +554,13 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     };
   }, [zoomData?.offsetX, zoomData?.offsetY]);
 
-  if (isRunningOnClient() && isPageLoading) {
-    return <Shimmer />;
-  }
+  // if (
+  //   isRunningOnClient() &&
+  //   isPageLoading &&
+  //   isEmptyOrNull(cachedProductData)
+  // ) {
+  //   return <Shimmer />;
+  // }
 
   if (isProductNotFound) {
     return <EmptyState title={t("resource.common.no_product_found")} />;
@@ -562,25 +576,24 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
         />
         <div className={styles.productDescContainer}>
           <div className={styles.left}>
-            {media?.length > 0 && (
-              <div className={styles.imgWrap}>
-                <div onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
-                  <PdpImageGallery
-                    key={slug}
-                    images={media}
-                    iconColor={icon_color?.value || ""}
-                    globalConfig={globalConfig}
-                    followed={followed}
-                    imgSources={imgSources}
-                    removeFromWishlist={removeFromWishlist}
-                    addToWishList={addToWishList}
-                    isCustomOrder={isMto}
-                    handleShare={() => handleShare()}
-                    showSaleTag={show_sale_tag?.value}
-                  />
-                </div>
+            <div className={styles.imgWrap}>
+              <div onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
+                <PdpImageGallery
+                  isLoading={isProductDataLoading}
+                  key={slug}
+                  images={media}
+                  iconColor={icon_color?.value || ""}
+                  globalConfig={globalConfig}
+                  followed={followed}
+                  imgSources={imgSources}
+                  removeFromWishlist={removeFromWishlist}
+                  addToWishList={addToWishList}
+                  isCustomOrder={isMto}
+                  handleShare={() => handleShare()}
+                  displayMode={display_mode?.value}
+                />
               </div>
-            )}
+            </div>
           </div>
           <div className={styles.right}>
             {zoom_in?.value && zoomData?.show && (
@@ -606,130 +619,158 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   switch (block.type) {
                     case "product_name":
                       return (
-                        <div className={styles.titleBlock}>
-                          {getBlockConfigValue(block, "show_brand") && (
-                            <h3 className={`${styles.productBrand} fontHeader`}>
-                              {brand?.name || ""}
-                            </h3>
-                          )}
-                          <div className={styles.productTitleWrapper}>
-                            <h1
-                              className={`${styles.productTitle} ${styles.fontHeader} fontHeader h3`}
-                            >
-                              {name}
-                            </h1>
-                            <>
-                              <span
-                                className={styles.shareIcon}
-                                onClick={() => setShowSocialLinks(true)}
-                              >
-                                <ShareDesktopIcon />
-                              </span>
-                              {showSocialLinks && (
-                                <ShareItem
-                                  setShowSocialLinks={setShowSocialLinks}
-                                  handleShare={() => handleShare()}
-                                  description={`${t("resource.section.product.check_out_amazing_product_on")} ${application?.name}`}
-                                />
+                        <Fragment key="product_name">
+                          {isProductDataLoading ? (
+                            <Skeleton height={64.8} />
+                          ) : (
+                            <div className={styles.titleBlock}>
+                              {getBlockConfigValue(block, "show_brand") && (
+                                <h3
+                                  className={`${styles.productBrand} fontHeader`}
+                                >
+                                  {brand?.name}
+                                </h3>
                               )}
-                            </>
-                          </div>
-                        </div>
+                              <div className={styles.productTitleWrapper}>
+                                <h1
+                                  className={`${styles.productTitle} ${styles.fontHeader} fontHeader h3`}
+                                >
+                                  {name}
+                                </h1>
+                                <>
+                                  <span
+                                    className={styles.shareIcon}
+                                    onClick={() => setShowSocialLinks(true)}
+                                  >
+                                    <ShareDesktopIcon />
+                                  </span>
+                                  {showSocialLinks && (
+                                    <ShareItem
+                                      setShowSocialLinks={setShowSocialLinks}
+                                      handleShare={() => handleShare()}
+                                      description={`${t("resource.section.product.check_out_amazing_product_on")} ${application?.name}`}
+                                    />
+                                  )}
+                                </>
+                              </div>
+                            </div>
+                          )}
+                        </Fragment>
                       );
 
                     case "product_price":
                       return (
-                        <>
-                          {show_price && (
-                            <div className={styles.product__price}>
-                              {!isLoading && productMeta?.sellable && (
-                                <>
-                                  {getProductPrice("effective") &&
+                        <Fragment key="product_price">
+                          {show_price &&
+                            (isPageLoading ? (
+                              <div
+                                style={{
+                                  marginTop: "16px",
+                                }}
+                              >
+                                <Skeleton height={23} width="40%" />
+                              </div>
+                            ) : (
+                              <div className={styles.product__price}>
+                                {getProductPrice("effective") &&
+                                  getBlockConfigValue(block, "mrp_label") &&
+                                  getProductPrice("effective") ===
+                                    getProductPrice("marked") && (
+                                    <span
+                                      className={`${styles.mrpLabel} ${styles["mrpLabel--effective"]}`}
+                                      style={{ marginLeft: 0 }}
+                                    >
+                                      {t("resource.common.mrp")}:
+                                    </span>
+                                  )}
+                                <h4
+                                  className={
+                                    styles["product__price--effective"]
+                                  }
+                                >
+                                  {getProductPrice("effective")}
+                                </h4>
+                                <div className={styles.mrpStrike}>
+                                  {getProductPrice("marked") &&
                                     getBlockConfigValue(block, "mrp_label") &&
-                                    getProductPrice("effective") ===
+                                    getProductPrice("effective") !==
                                       getProductPrice("marked") && (
                                       <span
-                                        className={`${styles.mrpLabel} ${styles["mrpLabel--effective"]}`}
                                         style={{ marginInlineStart: 0 }}
+                                        className={`${styles.mrpLabel} ${styles["mrpLabel--marked"]}`}
                                       >
                                         {t("resource.common.mrp")}:
                                       </span>
                                     )}
-                                  <h4
-                                    className={
-                                      styles["product__price--effective"]
-                                    }
-                                  >
-                                    {getProductPrice("effective")}
-                                  </h4>
-                                  <div className={styles.mrpStrike}>
-                                    {getProductPrice("marked") &&
-                                      getBlockConfigValue(block, "mrp_label") &&
-                                      getProductPrice("effective") !==
-                                        getProductPrice("marked") && (
-                                        <span
-                                          className={`${styles.mrpLabel} ${styles["mrpLabel--marked"]}`}
-                                        >
-                                          {t("resource.common.mrp")}:
-                                        </span>
-                                      )}
-                                    {getProductPrice("effective") !==
-                                      getProductPrice("marked") && (
-                                      <span
-                                        className={
-                                          styles["product__price--marked"]
-                                        }
-                                      >
-                                        {getProductPrice("marked")}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {discountLabel && (
+                                  {getProductPrice("effective") !==
+                                    getProductPrice("marked") && (
                                     <span
                                       className={
-                                        styles["product__price--discount"]
+                                        styles["product__price--marked"]
                                       }
                                     >
-                                      {discountLabel}
+                                      {getProductPrice("marked")}
                                     </span>
                                   )}
-                                </>
-                              )}
-                            </div>
-                          )}
-                        </>
+                                </div>
+                                {discountLabel && (
+                                  <span
+                                    className={
+                                      styles["product__price--discount"]
+                                    }
+                                  >
+                                    {discountLabel}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                        </Fragment>
                       );
 
                     case "product_tax_label":
                       return (
-                        <>
+                        <Fragment key="product_tax_label">
                           {getBlockConfigValue(block, "tax_label") &&
+                          isPageLoading ? (
+                            <div className={`captionNormal ${styles.taxLabel}`}>
+                              <Skeleton width="30%" />
+                            </div>
+                          ) : (
                             productMeta?.sellable && (
                               <div
                                 className={`captionNormal ${styles.taxLabel}`}
                               >
                                 {getBlockConfigValue(block, "tax_label")}
                               </div>
-                            )}
-                        </>
+                            )
+                          )}
+                        </Fragment>
                       );
 
                     case "short_description":
                       return (
-                        <>
-                          {short_description?.length > 0 && (
+                        <Fragment key="short_description">
+                          {isProductDataLoading ? (
                             <p
                               className={`b2 ${styles.fontBody} ${styles.shortDescription}`}
                             >
-                              {short_description}
+                              <Skeleton lines={2} />
                             </p>
+                          ) : (
+                            short_description?.length > 0 && (
+                              <p
+                                className={`b2 ${styles.fontBody} ${styles.shortDescription}`}
+                              >
+                                {short_description}
+                              </p>
+                            )
                           )}
-                        </>
+                        </Fragment>
                       );
 
                     case "product_variants":
                       return (
-                        <>
+                        <Fragment key="product_variants">
                           {variants?.length > 0 && (
                             <div>
                               <ProductVariants
@@ -740,9 +781,11 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                               />
                             </div>
                           )}
-                        </>
+                        </Fragment>
                       );
 
+                    /**
+                     *  
                     case "seller_details":
                       return (
                         <>
@@ -806,10 +849,11 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                           />
                         </>
                       );
+                    */
 
                     case "size_wrapper":
                       return (
-                        <>
+                        <Fragment key="size_wrapper">
                           <div className={styles.sizeWrapperContainer}>
                             <div className={styles.sizeContainer}>
                               {isSizeSelectionBlock(block) &&
@@ -830,53 +874,64 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                           {t("resource.common.size")} :
                                         </span>
                                       </p>
-
                                       <div
                                         className={
                                           styles.sizeSelection__wrapper
                                         }
                                       >
-                                        {sizes?.sizes?.map((size) => (
-                                          <button
-                                            type="button"
-                                            key={`${size?.display}`}
-                                            className={`b2 ${
-                                              styles.sizeSelection__block
-                                            } ${
-                                              size.quantity === 0 &&
-                                              !isMto &&
-                                              styles[
-                                                "sizeSelection__block--disable"
-                                              ]
-                                            } ${
-                                              (size?.quantity !== 0 || isMto) &&
-                                              styles[
-                                                "sizeSelection__block--selectable"
-                                              ]
-                                            } ${
-                                              selectedSize === size?.value &&
-                                              styles[
-                                                "sizeSelection__block--selected"
-                                              ]
-                                            } `}
-                                            title={size?.value}
-                                            onClick={() =>
-                                              onSizeSelection(size)
-                                            }
-                                          >
-                                            {size?.display}
-                                            {size?.quantity === 0 && !isMto && (
-                                              <svg>
-                                                <line
-                                                  x1="0"
-                                                  y1="100%"
-                                                  x2="100%"
-                                                  y2="0"
-                                                />
-                                              </svg>
-                                            )}
-                                          </button>
-                                        ))}
+                                        {isPageLoading ? (
+                                          <Skeleton
+                                            height={55}
+                                            width={55}
+                                            spacing={12}
+                                            lines={sizes?.sizes?.length || 3}
+                                            direction="row"
+                                          />
+                                        ) : (
+                                          sizes?.sizes?.map((size) => (
+                                            <button
+                                              type="button"
+                                              key={`${size?.display}`}
+                                              className={`b2 ${
+                                                styles.sizeSelection__block
+                                              } ${
+                                                size.quantity === 0 &&
+                                                !isMto &&
+                                                styles[
+                                                  "sizeSelection__block--disable"
+                                                ]
+                                              } ${
+                                                (size?.quantity !== 0 ||
+                                                  isMto) &&
+                                                styles[
+                                                  "sizeSelection__block--selectable"
+                                                ]
+                                              } ${
+                                                selectedSize === size?.value &&
+                                                styles[
+                                                  "sizeSelection__block--selected"
+                                                ]
+                                              } `}
+                                              title={size?.value}
+                                              onClick={() =>
+                                                onSizeSelection(size)
+                                              }
+                                            >
+                                              {size?.display}
+                                              {size?.quantity === 0 &&
+                                                !isMto && (
+                                                  <svg>
+                                                    <line
+                                                      x1="0"
+                                                      y1="100%"
+                                                      x2="100%"
+                                                      y2="0"
+                                                    />
+                                                  </svg>
+                                                )}
+                                            </button>
+                                          ))
+                                        )}
                                       </div>
                                     </div>
                                   </div>
@@ -889,84 +944,107 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                   : ""
                               }`}
                             >
-                              {!isSizeSelectionBlock(block) &&
-                                productMeta?.sellable && (
-                                  <div
-                                    className={`${styles.sizeWrapper} ${
-                                      isSizeCollapsed &&
-                                      styles["sizeWrapper--collapse"]
-                                    }`}
-                                  >
-                                    <OutsideClickHandler
-                                      onOutsideClick={() => {
-                                        setShowSizeDropdown(false);
-                                      }}
+                              {!isSizeSelectionBlock(block) && (
+                                <>
+                                  {isPageLoading ? (
+                                    <div
+                                      className={`${styles.sizeWrapper} ${
+                                        isSizeCollapsed &&
+                                        styles["sizeWrapper--collapse"]
+                                      }`}
                                     >
+                                      <Skeleton
+                                        height={60}
+                                        width={200}
+                                        spacing={12}
+                                        lines={1}
+                                        direction="row"
+                                      />
+                                    </div>
+                                  ) : (
+                                    productMeta?.sellable && (
                                       <div
-                                        className={` ${styles.sizeButton} ${
-                                          styles.flexAlignCenter
-                                        } ${styles.justifyBetween} ${styles.fontBody} ${
-                                          sizes?.sizes?.length &&
-                                          styles.disabledButton
+                                        className={`${styles.sizeWrapper} ${
+                                          isSizeCollapsed &&
+                                          styles["sizeWrapper--collapse"]
                                         }`}
-                                        onClick={() =>
-                                          setShowSizeDropdown(!showSizeDropdown)
-                                        }
-                                        disabled={!sizes?.sizes?.length}
                                       >
-                                        <p
-                                          className={`${styles.buttonFont} ${styles.selectedSize}`}
-                                          title={
-                                            selectedSize
-                                              ? `${t("resource.common.size")} : ${selectedSize}`
-                                              : t(
-                                                  "resource.common.select_size_caps"
-                                                )
-                                          }
+                                        <OutsideClickHandler
+                                          onOutsideClick={() => {
+                                            setShowSizeDropdown(false);
+                                          }}
                                         >
-                                          {selectedSize
-                                            ? `${t("resource.common.size")}  : ${selectedSize}`
-                                            : t(
-                                                "resource.common.select_size_caps"
-                                              )}
-                                        </p>
-                                        <ArrowDownIcon
-                                          className={`${styles.dropdownArrow} ${
-                                            showSizeDropdown &&
-                                            styles.rotateArrow
-                                          }`}
-                                        />
-                                      </div>
-                                      <ul
-                                        className={styles.sizeDropdown}
-                                        style={{
-                                          display: showSizeDropdown
-                                            ? "block"
-                                            : "none",
-                                        }}
-                                      >
-                                        {sizes?.sizes?.map((size) => (
-                                          <li
-                                            onClick={() =>
-                                              onSizeSelection(size)
-                                            }
-                                            key={size?.value}
-                                            className={`${
-                                              selectedSize === size.display &&
-                                              styles.selected_size
-                                            } ${
-                                              size.quantity === 0 && !isMto
-                                                ? styles.disabled_size
-                                                : styles.selectable_size
+                                          <div
+                                            className={` ${styles.sizeButton} ${
+                                              styles.flexAlignCenter
+                                            } ${styles.justifyBetween} ${styles.fontBody} ${
+                                              sizes?.sizes?.length &&
+                                              styles.disabledButton
                                             }`}
+                                            onClick={() =>
+                                              setShowSizeDropdown(
+                                                !showSizeDropdown
+                                              )
+                                            }
+                                            disabled={!sizes?.sizes?.length}
                                           >
-                                            {size.display}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </OutsideClickHandler>
-                                  </div>
-                                )}
+                                            <p
+                                              className={`${styles.buttonFont} ${styles.selectedSize}`}
+                                              title={
+                                                selectedSize
+                                                  ? `${t("resource.common.size")} : ${selectedSize}`
+                                                  : t(
+                                                      "resource.common.select_size_caps"
+                                                    )
+                                              }
+                                            >
+                                              {selectedSize
+                                                ? `${t("resource.common.size")}  : ${selectedSize}`
+                                                : t(
+                                                    "resource.common.select_size_caps"
+                                                  )}
+                                            </p>
+                                            <ArrowDownIcon
+                                              className={`${styles.dropdownArrow} ${
+                                                showSizeDropdown &&
+                                                styles.rotateArrow
+                                              }`}
+                                            />
+                                          </div>
+                                          <ul
+                                            className={styles.sizeDropdown}
+                                            style={{
+                                              display: showSizeDropdown
+                                                ? "block"
+                                                : "none",
+                                            }}
+                                          >
+                                            {sizes?.sizes?.map((size) => (
+                                              <li
+                                                onClick={() =>
+                                                  onSizeSelection(size)
+                                                }
+                                                key={size?.value}
+                                                className={`${
+                                                  selectedSize ===
+                                                    size.display &&
+                                                  styles.selected_size
+                                                } ${
+                                                  size.quantity === 0 && !isMto
+                                                    ? styles.disabled_size
+                                                    : styles.selectable_size
+                                                }`}
+                                              >
+                                                {size.display}
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </OutsideClickHandler>
+                                      </div>
+                                    )
+                                  )}
+                                </>
+                              )}
 
                               <div
                                 className={`${styles.cartWrapper} ${
@@ -1049,7 +1127,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                     )}
                                   </>
                                 )}
-                                {!productMeta?.sellable && (
+                                {!isPageLoading && !productMeta?.sellable && (
                                   <button
                                     type="button"
                                     disabled
@@ -1127,30 +1205,34 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                 </div>
                               )}
                           </div>
-                        </>
+                        </Fragment>
                       );
                     //
                     case "size_guide":
                       return (
-                        <>
-                          {isSizeGuideAvailable && productMeta?.sellable && (
-                            <div>
-                              <button
-                                type="button"
-                                onClick={() => setShowSizeGuide(true)}
-                                className={`${styles["product__size--guide"]} ${styles.buttonFont} ${styles.fontBody}`}
-                              >
-                                <span>{t("resource.common.size_guide")}</span>
-                                <ScaleIcon className={styles.scaleIcon} />
-                              </button>
-                            </div>
+                        <Fragment key="size_guide">
+                          {isPageLoading ? (
+                            <Skeleton height={20} width="30%" />
+                          ) : (
+                            productMeta?.sellable && (
+                              <div>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowSizeGuide(true)}
+                                  className={`${styles["product__size--guide"]} ${styles.buttonFont} ${styles.fontBody}`}
+                                >
+                                  <span>{t("resource.common.size_guide")}</span>
+                                  <ScaleIcon className={styles.scaleIcon} />
+                                </button>
+                              </div>
+                            )
                           )}
-                        </>
+                        </Fragment>
                       );
 
                     case "custom_button":
                       return (
-                        <div className={styles.customBtn}>
+                        <div key="custom_button" className={styles.customBtn}>
                           {getBlockConfigValue(block, "custom_button_text") && (
                             <FDKLink
                               to={getBlockConfigValue(
@@ -1187,35 +1269,55 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
                     case "pincode":
                       return (
-                        <>
-                          {productMeta?.sellable && selectedSize && (
-                            <DeliveryInfo
-                              className={styles.deliveryInfoBlock}
-                              pincode={pincode}
-                              deliveryPromise={
-                                productPriceBySlug?.delivery_promise
-                              }
-                              selectPincodeError={selectPincodeError}
-                              pincodeErrorMessage={pincodeErrorMessage}
-                              setErrorMessage={setErrorMessage}
-                              checkPincode={checkPincode}
-                              fpi={fpi}
-                              pincodeInput={pincodeInput}
-                              isValidDeliveryLocation={isValidDeliveryLocation}
-                              deliveryLocation={deliveryLocation}
-                              isServiceabilityPincodeOnly={
-                                isServiceabilityPincodeOnly
-                              }
-                              setPincodeErrorMessage={setPincodeErrorMessage}
-                              showLogo={getBlockConfigValue(block, "show_logo")}
-                            />
+                        <Fragment key="pincode">
+                          {isPageLoading ? (
+                            // Show shimmer when loading or required data is missing
+                            <div className={styles.deliveryInfoBlock}>
+                              <div style={{ marginBottom: "8px" }}>
+                                <Skeleton height={20} width="30%" />
+                              </div>
+                              <Skeleton height={45} width="100%" />
+                            </div>
+                          ) : (
+                            selectedSize &&
+                            productMeta?.sellable &&
+                            productPriceBySlug && (
+                              <DeliveryInfo
+                                className={styles.deliveryInfoBlock}
+                                isLoading={isCountryDetailsLoading}
+                                pincode={pincode}
+                                deliveryPromise={
+                                  productPriceBySlug?.delivery_promise
+                                }
+                                selectPincodeError={selectPincodeError}
+                                pincodeErrorMessage={pincodeErrorMessage}
+                                setErrorMessage={setErrorMessage}
+                                checkPincode={checkPincode}
+                                fpi={fpi}
+                                pincodeInput={pincodeInput}
+                                isValidDeliveryLocation={
+                                  isValidDeliveryLocation
+                                }
+                                deliveryLocation={deliveryLocation}
+                                isServiceabilityPincodeOnly={
+                                  isServiceabilityPincodeOnly
+                                }
+                                setPincodeErrorMessage={setPincodeErrorMessage}
+                                showLogo={getBlockConfigValue(
+                                  block,
+                                  "show_logo"
+                                )}
+                                availableFOCount={availableFOCount}
+                              />
+                            )
                           )}
-                        </>
+                        </Fragment>
                       );
 
                     case "add_to_compare":
                       return (
                         <ProductCompareButton
+                          key="add_to_compare"
                           customClass={styles.compareBtn}
                           fpi={fpi}
                           slug={slug}
@@ -1224,7 +1326,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
                     case "offers":
                       return (
-                        <>
+                        <Fragment key="offers">
                           {productMeta?.sellable &&
                             getBlockConfigValue(block, "show_offers") && (
                               <Offers
@@ -1234,12 +1336,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                 setSidebarActiveTab={setSidebarActiveTab}
                               />
                             )}
-                        </>
+                        </Fragment>
                       );
 
                     case "prod_meta":
                       return (
-                        <>
+                        <Fragment key="prod_meta">
                           <ul
                             className={`${styles.productDetail} ${styles.fontBody}`}
                           >
@@ -1288,17 +1390,73 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                 </li>
                               )}
                           </ul>
-                        </>
+                        </Fragment>
                       );
 
                     case "trust_markers":
-                      return <Badges blockProps={block.props} />;
+                      return (
+                        <Badges key="trust_markers" blockProps={block.props} />
+                      );
+
+                    case "seller_details":
+                      return (
+                        <Fragment key="seller_details">
+                          {isPageLoading ? (
+                            // Show shimmer loader in all "loading or incomplete" cases
+                            <div
+                              style={{
+                                marginTop: "24px",
+                                marginBottom: "24px",
+                              }}
+                            >
+                              <Skeleton
+                                height={20}
+                                width="40%"
+                                style={{ marginTop: 8 }}
+                              />
+                            </div>
+                          ) : (
+                            selectedSize &&
+                            !isEmptyOrNull(productPriceBySlug) &&
+                            buybox?.show_name &&
+                            soldBy?.name && (
+                              <Fulfillment
+                                fpi={fpi}
+                                slug={slug}
+                                soldBy={soldBy}
+                                selectedSize={selectedSize}
+                                buybox={buybox}
+                                pincode={pincode}
+                                allStoresInfo={allStoresInfo}
+                                getProductSellers={getProductSellers}
+                                currentFO={currentFO}
+                                setCurrentFO={setCurrentFO}
+                                productPriceBySlug={productPriceBySlug}
+                                setProductPriceBySlug={setProductPriceBySlug}
+                                isAllowStoreSelection={isAllowStoreSelection}
+                                fulfillmentOptions={fulfillmentOptions}
+                                setFulfillmentOptions={setFulfillmentOptions}
+                                availableFOCount={availableFOCount}
+                              />
+                            )
+                          )}
+                        </Fragment>
+                      );
 
                     case "extension-binding":
-                      return <BlockRenderer block={block} />;
+                      return (
+                        <BlockRenderer
+                          key={`extension-binding_${index}`}
+                          block={block}
+                        />
+                      );
 
                     default:
-                      return <div>{t("resource.common.invalid_block")}</div>;
+                      return (
+                        <div key={`default_${index}`}>
+                          {t("resource.common.invalid_block")}
+                        </div>
+                      );
                   }
                 })}
 
@@ -1355,6 +1513,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       </div>
       {isRunningOnClient() &&
         document?.getElementById("sticky-add-to-cart") &&
+        !isPageLoading &&
         !disable_cart &&
         productMeta?.sellable &&
         isSizeWrapperAvailable &&
@@ -1375,6 +1534,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
             isMto={isMto}
             deliveryInfoProps={{
               fpi,
+              isLoading: isCountryDetailsLoading,
               pincode,
               deliveryPromise: productPriceBySlug?.delivery_promise,
               selectPincodeError,
@@ -1568,6 +1728,26 @@ export const settings = {
       ],
       default: "700",
     },
+    {
+      id: "display_mode",
+      label: "Image Display Mode",
+      type: "select",
+      options: [
+        {
+          value: "carousel",
+          text: "Carousel with Thumbnails",
+        },
+        {
+          value: "vertical",
+          text: "Vertical Stack",
+        },
+        {
+          value: "vertical-with-thumbnail",
+          text: "Vertical with Sidebar Thumbnails",
+        },
+      ],
+      default: "carousel",
+    },
   ],
   blocks: [
     {
@@ -1621,12 +1801,12 @@ export const settings = {
       type: "seller_details",
       name: "t:resource.sections.product_description.seller_details",
       props: [
-        {
-          type: "checkbox",
-          id: "show_seller",
-          label: "t:resource.common.show_seller",
-          default: true,
-        },
+        // {
+        //   type: "checkbox",
+        //   id: "show_seller",
+        //   label: "t:resource.common.show_seller",
+        //   default: true,
+        // },
       ],
     },
     {
@@ -1639,13 +1819,13 @@ export const settings = {
           label: "t:resource.common.hide_single_size",
           default: false,
         },
-        {
-          type: "checkbox",
-          id: "preselect_size",
-          label: "t:resource.common.preselect_size",
-          info: "t:resource.common.applicable_for_multiple_size_products",
-          default: true,
-        },
+        // {
+        //   type: "checkbox",
+        //   id: "preselect_size",
+        //   label: "t:resource.common.preselect_size",
+        //   info: "t:resource.common.applicable_for_multiple_size_products",
+        //   default: true,
+        // },
         {
           type: "radio",
           id: "size_selection_style",
@@ -1845,11 +2025,11 @@ export const settings = {
       { name: "t:resource.sections.product_description.product_price" },
       { name: "t:resource.sections.product_description.product_tax_label" },
       { name: "t:resource.sections.product_description.short_description" },
-      { name: "t:resource.sections.product_description.product_variants" },
-      { name: "t:resource.sections.product_description.seller_details" },
       { name: "t:resource.sections.product_description.size_guide" },
       { name: "t:resource.common.custom_button" },
       { name: "t:resource.sections.product_description.pincode" },
+      { name: "t:resource.sections.product_description.seller_details" },
+      { name: "t:resource.sections.product_description.product_variants" },
       { name: "t:resource.sections.product_description.add_to_compare" },
       { name: "t:resource.sections.product_description.offers" },
       { name: "t:resource.sections.product_description.prod_meta" },
@@ -1863,28 +2043,68 @@ export const settings = {
 Component.serverFetch = async ({ fpi, router, props }) => {
   const isPDP = /^(?:\/[a-zA-Z-]+)?\/product\/[^/]+\/?$/i.test(router.pathname);
   const slug = isPDP ? router?.params?.slug : props?.product?.value;
+  const size = isPDP ? router.filterQuery.size : "";
 
-  if (slug) {
+  if (!slug) return;
+
+  try {
     const values = { slug };
+    if (size) values.size = size;
+
+    const query = size ? PRODUCT_DETAILS_WITH_SIZE : GET_PRODUCT_DETAILS;
 
     fpi.custom.setValue("isPdpSsrFetched", true);
     fpi.custom.setValue("isProductNotFound", false);
 
-    return fpi.executeGQL(GET_PRODUCT_DETAILS, values).then((result) => {
-      if (
-        result?.data?.product == null ||
-        (typeof result?.data?.product === "object" &&
-          Object.keys(result.data.product).length === 0)
-      ) {
-        fpi.custom.setValue("isProductNotFound", true);
-      } else {
-        fpi.custom.setValue(
-          "productPromotions",
-          result?.data?.promotions || {}
+    const response = await fpi.executeGQL(query, values);
+    const { product } = response.data;
+    if (
+      product == null ||
+      (typeof product === "object" && Object.keys(product).length === 0)
+    ) {
+      fpi.custom.setValue("isProductNotFound", true);
+      return response;
+    }
+    if (size) {
+      const sizeToSelect = product?.sizes?.sizes?.find(
+        (item) => item?.value === size
+      );
+      fpi.custom.setValue("ssrSizeToSelect", sizeToSelect);
+      return response;
+    } else {
+      // Fallback: auto-select size and call fulfillment
+      const sizes = product?.sizes?.sizes || [];
+      if (sizes.length > 0) {
+        const isMto = product?.custom_order?.is_custom_order || false;
+
+        const firstAvailableSize = sizes.find(
+          (sizeOption) => sizeOption.quantity > 0 || isMto
         );
+
+        const sizeToSelect = firstAvailableSize || sizes[0];
+
+        if (sizeToSelect?.value) {
+          const payload = {
+            slug,
+            size: sizeToSelect.value.toString(),
+            pincode: "",
+          };
+
+          try {
+            await fpi.executeGQL(FULFILLMENT_OPTIONS, payload);
+            fpi.custom.setValue("ssrSizeToSelect", sizeToSelect);
+          } catch (e) {
+            console.error("FULFILLMENT_OPTIONS failed", e);
+          } finally {
+            return response;
+          }
+        }
       }
-      return result;
-    });
+    }
+    return response;
+  } catch (error) {
+    fpi.custom.setValue("isProductNotFound", true);
+    return null;
   }
 };
 

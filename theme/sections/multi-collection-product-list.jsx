@@ -24,10 +24,16 @@ import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide
 import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
 import useAddToCartModal from "../page-layouts/plp/useAddToCartModal";
 import { FDKLink } from "fdk-core/components";
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
+import { useNavigate } from "react-router-dom";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
-import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
+
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const { t } = useGlobalTranslation("translation");
+  const navigate = useNavigate();
   const fpi = useFPI();
   const { isInternational } = useThemeFeature({ fpi });
   const {
@@ -125,7 +131,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
       centerMode: false,
       cssEase: "ease-in-out",
       nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles}  />,
+      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
       responsive: [
         {
           breakpoint: 780,
@@ -243,8 +249,9 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
       <section className={styles.sectionWrapper} style={dynamicStyles}>
         {heading?.value && (
           <div
-            className={`${styles.titleBlock} ${position?.value === "center" ? styles.moveCenter : ""
-              } ${viewAll?.value ? styles.isViewAllCta : ""}`}
+            className={`${styles.titleBlock} ${
+              position?.value === "center" ? styles.moveCenter : ""
+            } ${viewAll?.value ? styles.isViewAllCta : ""}`}
           >
             <h2 className="fx-title fontHeader">{heading.value}</h2>
             {viewAll?.value && (
@@ -291,7 +298,16 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                     key={index}
                     className={styles.sliderView}
                   >
-                    <FDKLink to={`/product/${product.slug}`}>
+                    <div
+                      className={styles.productCardWrapper}
+                      onClick={() => {
+                        navigate?.(`/product/${product.slug}`, {
+                          state: {
+                            product,
+                          },
+                        });
+                      }}
+                    >
                       <ProductCard
                         product={product}
                         listingPrice={listingPrice}
@@ -304,13 +320,16 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                         onWishlistClick={handleWishlistToggle}
                         followedIdList={followedIdList}
                         showAddToCart={showAddToCart}
-                        actionButtonText={card_cta_text?.value ?? t("resource.common.add_to_cart")}
+                        actionButtonText={
+                          card_cta_text?.value ??
+                          t("resource.common.add_to_cart")
+                        }
                         handleAddToCart={handleAddToCart}
                         aspectRatio={getProductImgAspectRatio(globalConfig)}
                         imgSrcSet={imgSrcSet}
                         isSlider
                       />
-                    </FDKLink>
+                    </div>
                   </div>
                 ))}
               </Slider>
@@ -321,7 +340,15 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                     key={index}
                     className={styles.sliderView}
                   >
-                    <FDKLink to={`/product/${product.slug}`}>
+                    <div
+                      onClick={() => {
+                        navigate?.(`/product/${product.slug}`, {
+                          state: {
+                            product,
+                          },
+                        });
+                      }}
+                    >
                       <ProductCard
                         product={product}
                         listingPrice={listingPrice}
@@ -334,13 +361,16 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                         onWishlistClick={handleWishlistToggle}
                         followedIdList={followedIdList}
                         showAddToCart={showAddToCart}
-                        actionButtonText={card_cta_text?.value ?? t("resource.common.add_to_cart")}
+                        actionButtonText={
+                          card_cta_text?.value ??
+                          t("resource.common.add_to_cart")
+                        }
                         handleAddToCart={handleAddToCart}
                         aspectRatio={getProductImgAspectRatio(globalConfig)}
                         imgSrcSet={imgSrcSet}
                         isSlider
                       />
-                    </FDKLink>
+                    </div>
                   </div>
                 ))}
               </Slider>
@@ -417,7 +447,8 @@ const NavigationButtonContent = ({ icon, text }) => {
 };
 
 export const settings = {
-  label: "t:resource.sections.multi_collection_product_list.multi_collection_product_list",
+  label:
+    "t:resource.sections.multi_collection_product_list.multi_collection_product_list",
   props: [
     {
       type: "text",
@@ -432,7 +463,8 @@ export const settings = {
       max: 6,
       step: 1,
       unit: "",
-      label: "t:resource.sections.multi_collection_product_list.products_per_row",
+      label:
+        "t:resource.sections.multi_collection_product_list.products_per_row",
       default: 4,
       info: "t:resource.sections.multi_collection_product_list.max_products_per_row",
     },
@@ -450,11 +482,13 @@ export const settings = {
         },
       ],
       default: "left",
-      label: "t:resource.sections.multi_collection_product_list.header_position",
+      label:
+        "t:resource.sections.multi_collection_product_list.header_position",
     },
     {
       id: "img_resize",
-      label: "t:resource.sections.products_listing.image_size_for_tablet_desktop",
+      label:
+        "t:resource.sections.products_listing.image_size_for_tablet_desktop",
       type: "select",
       options: [
         {
@@ -509,6 +543,62 @@ export const settings = {
       default: "500",
     },
     {
+      id: "img_resize",
+      label: "Image size for Tablet/Desktop",
+      type: "select",
+      options: [
+        {
+          value: "300",
+          text: "300px",
+        },
+        {
+          value: "500",
+          text: "500px",
+        },
+        {
+          value: "700",
+          text: "700px",
+        },
+        {
+          value: "900",
+          text: "900px",
+        },
+        {
+          value: "1100",
+          text: "1100px",
+        },
+        {
+          value: "1300",
+          text: "1300px",
+        },
+      ],
+      default: "300",
+    },
+    {
+      id: "img_resize_mobile",
+      label: "Image size for Mobile",
+      type: "select",
+      options: [
+        {
+          value: "300",
+          text: "300px",
+        },
+        {
+          value: "500",
+          text: "500px",
+        },
+        {
+          value: "700",
+          text: "700px",
+        },
+        {
+          value: "900",
+          text: "900px",
+        },
+      ],
+      default: "500",
+    },
+    {
       type: "checkbox",
       id: "viewAll",
       default: false,
@@ -522,6 +612,14 @@ export const settings = {
       default: true,
       label: "t:resource.common.fit_image_to_container",
       info: "t:resource.common.clip_image_to_fit_container",
+    },
+    {
+      type: "checkbox",
+      id: "img_fill",
+      category: "Image Container",
+      default: true,
+      label: "Fit image to the container",
+      info: "If the image aspect ratio is different from the container, the image will be clipped to fit the container. The aspect ratio of the image will be maintained",
     },
     {
       type: "checkbox",
@@ -540,7 +638,8 @@ export const settings = {
       type: "text",
       id: "card_cta_text",
       label: "t:resource.common.button_text",
-      default: "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
+      default:
+        "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
     },
     {
       type: "checkbox",
@@ -599,7 +698,8 @@ export const settings = {
       props: [
         {
           type: "header",
-          value: "t:resource.sections.multi_collection_product_list.icon_or_navigation_name_mandatory",
+          value:
+            "t:resource.sections.multi_collection_product_list.icon_or_navigation_name_mandatory",
         },
         {
           type: "image_picker",
@@ -610,7 +710,8 @@ export const settings = {
         {
           type: "text",
           id: "navigation",
-          label: "t:resource.sections.multi_collection_product_list.navigation_name",
+          label:
+            "t:resource.sections.multi_collection_product_list.navigation_name",
           default: "",
         },
         {

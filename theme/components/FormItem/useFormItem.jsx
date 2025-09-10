@@ -31,7 +31,14 @@ export const useFormItem = ({ fpi }) => {
     const response = [];
     Object.entries(formValues).forEach(([key, value]) => {
       if (
-        (key === "mobile-number" || key === "phone" || key === "mobile") &&
+        (key === "mobile-number" ||
+          key === "mobile" ||
+          key === "mobilenumber" ||
+          key === "mobileNumber" ||
+          key === "phone" ||
+          key === "phone-number" ||
+          key === "phonenumber" ||
+          key === "phoneNumber") &&
         typeof value === "object"
       ) {
         response.push({

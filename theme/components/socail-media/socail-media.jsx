@@ -9,9 +9,10 @@ import SocailInstagram from "../../assets/images/socail-instagram.svg";
 import SocailLinkedin from "../../assets/images/socail-linkedin.svg";
 import SocailYoutube from "../../assets/images/socail-youtube.svg";
 import SocailPinterest from "../../assets/images/socail-pinterest.svg";
-import { FDKLink } from "fdk-core/components";
 import useHeader from "../header/useHeader";
+import { FDKLink } from "fdk-core/components";
 import { useFPI, useGlobalStore } from "fdk-core/utils";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 const iconMap = {
   social_twitter: SocailTwitter,
@@ -25,7 +26,8 @@ const iconMap = {
   social_linked_in: SocailLinkedin,
 };
 
-export default function SocailMedia({ social_links, customClassName}) {
+export default function SocailMedia({ social_links, customClassName }) {
+  const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
   const { globalConfig } = useHeader(fpi);
   const openSameTab = !!globalConfig.footer_social_open_same_tab;
@@ -38,8 +40,8 @@ export default function SocailMedia({ social_links, customClassName}) {
     <div className={`${styles.iconsContainer} ${customClassName}`}>
       {Object.entries(social_links).map(
         ([key, { link, title }]) =>
-          link && (
-            openSameTab ?(
+          link &&
+          (openSameTab ? (
             <a
               key={key}
               href={link}
@@ -47,9 +49,9 @@ export default function SocailMedia({ social_links, customClassName}) {
               className={styles.socialLink}
             >
               {getSocialIcon(`social_${key}`)}
-            </a>):
-            (
-              <FDKLink
+            </a>
+          ) : (
+            <FDKLink
               key={key}
               to={link}
               target="_blank"
@@ -58,8 +60,7 @@ export default function SocailMedia({ social_links, customClassName}) {
             >
               {getSocialIcon(`social_${key}`)}
             </FDKLink>
-            )
-          )
+          ))
       )}
     </div>
   );

@@ -22,7 +22,29 @@
       "min": 20,
       "max": 100,
       "unit": "px",
-      "default": 24
+      "default": 24,
+      "info": "t:resource.settings_schema.common.mobile_logo_max_height_info"
+    },
+    {
+      "type": "range",
+      "id": "desktop_logo_max_height",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.common.logo_header",
+      "min": 20,
+      "max": 100,
+      "unit": "px",
+      "default": 65
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_max_height_header",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.common.mobile_logo_header",
+      "min": 20,
+      "max": 100,
+      "unit": "px",
+      "default": 38,
+      "info": "t:resource.settings_schema.common.mobile_logo_header_info"
     },
     {
       "type": "range",
@@ -71,19 +93,35 @@
     },
     {
       "type": "checkbox",
+      "id": "show_secondary_header_on_checkout",
+      "default": false,
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.show_secondary_header_on_checkout",
+      "info": "t:resource.settings_schema.header.show_secondary_header_on_checkout_info"
+    },
+    {
+      "type": "checkbox",
       "id": "header_border",
       "default": true,
       "category": "t:resource.common.header",
       "label": "t:resource.settings_schema.header.show_border_on_desktop",
       "info": "t:resource.settings_schema.header.show_border_on_desktop_info"
     },
-     {
+    {
       "type": "checkbox",
       "id": "sticky_header",
       "default": true,
       "category": "t:resource.common.header",
       "label": "t:resource.settings_schema.header.sticky_header",
       "info": "t:resource.settings_schema.header.sticky_header_info"
+    },
+    {
+      "type": "checkbox",
+      "id": "header_border",
+      "default": true,
+      "category": "Header",
+      "label": "Show border on desktop",
+      "info": "It adds a border below header on desktop devices"
     },
     {
       "type": "select",
@@ -147,68 +185,6 @@
           "text": "t:resource.settings_schema.header.bold"
         }
       ]
-    },
-    {
-      "type": "checkbox",
-      "id": "is_hyperlocal",
-      "default": false,
-      "category": "t:resource.common.header",
-      "label": "t:resource.settings_schema.header.serviceability_check_in_header"
-    },
-    {
-      "type": "checkbox",
-      "id": "is_mandatory_pincode",
-      "category": "t:resource.common.header",
-      "label": "t:resource.settings_schema.header.mandatory_serviceability_check",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_minutes",
-      "default": false,
-      "category": "t:resource.common.header",
-      "label": "t:resource.settings_schema.header.minutes",
-      "info": "t:resource.settings_schema.header.show_delivery_promise_in_minutes"
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_min",
-      "label": "t:resource.settings_schema.header.minutes",
-      "category": "t:resource.common.header",
-      "default": "60",
-      "info": "t:resource.settings_schema.header.set_minute_threshold_for_promise"
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_hours",
-      "default": false,
-      "category": "t:resource.common.header",
-      "label": "t:resource.settings_schema.header.hours",
-      "info": "t:resource.settings_schema.header.show_delivery_promise_in_hours"
-    },
-    {
-      "type": "text",
-      "id": "max_delivery_hours",
-      "label": "t:resource.settings_schema.header.hours",
-      "category": "t:resource.common.header",
-      "default": "2",
-      "info": "t:resource.settings_schema.header.set_hour_threshold_for_promise"
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_day",
-      "default": false,
-      "category": "t:resource.common.header",
-      "label": "t:resource.settings_schema.header.today_tomorrow",
-      "info": "t:resource.settings_schema.header.today_tomorrow_info"
-    },
-    {
-      "type": "checkbox",
-      "id": "is_delivery_date",
-      "default": false,
-      "category": "t:resource.common.header",
-      "label": "t:resource.settings_schema.header.date_range",
-      "info": "t:resource.settings_schema.header.date_range_info"
     },
     {
       "type": "checkbox",
@@ -297,6 +273,49 @@
       "id": "footer_logo_max_height_desktop",
       "category": "t:resource.settings_schema.common.footer",
       "label": "t:resource.settings_schema.footer.footer_logo_max_height_desktop",
+      "min": 36,
+      "max": 100,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "checkbox",
+      "id": "footer_contact_background",
+      "default": true,
+      "category": "Footer",
+      "label": "Show Footer Contact Details Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "footer_social_open_same_tab",
+      "default": false,
+      "category": "Footer",
+      "label": "Open social links in same tab",
+      "info": "Check this to open social media links in the same tab instead of a new one."
+    },
+    {
+      "type": "text",
+      "id": "footer_social_text",
+      "default": "Social Media",
+      "category": "Footer",
+      "label": "Social media text label",
+      "info": "Show Label text for social media"
+    },
+    {
+      "type": "range",
+      "id": "footer_logo_max_height_mobile",
+      "category": "Footer",
+      "label": "Footer Logo Max Height (Mobile)",
+      "min": 25,
+      "max": 100,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "footer_logo_max_height_desktop",
+      "category": "Footer",
+      "label": "Footer Logo Max Height (Desktop)",
       "min": 36,
       "max": 100,
       "unit": "px",
@@ -480,11 +499,97 @@
     },
     {
       "type": "checkbox",
-      "id": "is_google_map",
+      "id": "enable_page_max_width",
+      "default": false,
+      "category": "t:resource.settings_schema.common.other_page_configuration",
+      "label": "Enable Page Max Width",
+      "info": "Sets a maximum width of 1440px for better layout on wide screens"
+    },
+    {
+      "type": "header",
+      "category": "Delivery Promise",
+      "value": "Delivery Promise Format"
+    },
+    {
+      "type": "range",
+      "category": "Delivery Promise",
+      "id": "serviceability_max_min",
+      "min": 1,
+      "max": 60,
+      "unit": "minutes",
+      "label": "Show Delivery Promise in Minutes upto",
+      "default": 59,
+      "info": "If the delivery promise is under this value, it will be shown in minutes."
+    },
+    {
+      "type": "range",
+      "category": "Delivery Promise",
+      "id": "serviceability_max_hour",
+      "min": 1,
+      "max": 24,
+      "unit": "hours",
+      "label": "Show Delivery Promise in Hours upto",
+      "default": 2,
+      "info": "If the delivery promise is above selected minutes but under this value, it will be shown in hours."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_serviceability",
+      "default": false,
+      "category": "Delivery Promise",
+      "label": "Serviceability check in header",
+      "info": "Allow users to enter location in header to check serviceability"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_serviceability_mandatory",
+      "category": "Delivery Promise",
+      "label": "Mandatory Serviceability check in Header",
+      "default": false,
+      "info": "Users must select a valid location to start browsing"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_delivery_promise",
+      "category": "Delivery Promise",
+      "label": "Show Delivery Promise in Header",
+      "default": false
+    },
+    {
+      "type": "radio",
+      "id": "delivery_promise_type",
+      "category": "Delivery Promise",
+      "default": "min",
+      "options": [
+        {
+          "value": "min",
+          "text": "Show Minimum delivery promise"
+        },
+        {
+          "value": "max",
+          "text": "Show Maximum delivery promise"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "category": "t:resource.settings_schema.common.google_maps",
+      "value": "Enable Google Maps & Places API in",
+      "info": "Enable address input and map display in Header or Cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_header_map",
       "category": "t:resource.settings_schema.common.google_maps",
       "default": false,
-      "label": "t:resource.settings_schema.google_maps.enable_google_maps",
-      "info": ""
+      "label": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_checkout_map",
+      "category": "t:resource.settings_schema.common.google_maps",
+      "default": false,
+      "label": "Checkout"
     },
     {
       "type": "text",

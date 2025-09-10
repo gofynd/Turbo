@@ -17,18 +17,18 @@ function CompareProducts({ fpi }) {
   );
 }
 
- const getCategoryUrl = (action) => {
-    let url = `/${action?.page?.type}`;
-    const { key, value } = getCategoryKeyValue(action);
-    url = `${url}?${key}=${value?.join?.(`&${key}=`)}`;
-    return url;
-  };
+const getCategoryUrl = (action) => {
+  let url = `/${action?.page?.type}`;
+  const { key, value } = getCategoryKeyValue(action);
+  url = `${url}?${key}=${value?.join?.(`&${key}=`)}`;
+  return url;
+};
 
- const getCategoryKeyValue = (action) => {
-    const key = Object.keys(action?.page?.query)?.[0];
-    const value = action?.page?.query[key];
-    return { key, value, firstValue: value?.[0] ?? "" };
-  };
+const getCategoryKeyValue = (action) => {
+  const key = Object.keys(action?.page?.query)?.[0];
+  const value = action?.page?.query[key];
+  return { key, value, firstValue: value?.[0] ?? "" };
+};
 CompareProducts.serverFetch = async ({ router, fpi }) => {
   try {
     if (router?.filterQuery?.id?.length !== 0) {
@@ -39,20 +39,20 @@ CompareProducts.serverFetch = async ({ router, fpi }) => {
       const items = res?.data?.productComparison?.items;
       const productItems = items ?? [];
       if (res?.data?.productComparison) {
-          let items = res?.data?.productComparison?.items;
-          const firstCategory = items[0]?.categories?.[0];
-          let categoryDetails = {};
+        let items = res?.data?.productComparison?.items;
+        const firstCategory = items[0]?.categories?.[0];
+        let categoryDetails = {};
 
-          if (Object.keys(firstCategory || {}).length) {
-            categoryDetails = {
-              url: getCategoryUrl(firstCategory?.action),
-              name: firstCategory?.name,
-              keyValue: getCategoryKeyValue(firstCategory?.action),
-            };
-          }
-          fpi.custom.setValue("compare_category_details", categoryDetails);
+        if (Object.keys(firstCategory || {}).length) {
+          categoryDetails = {
+            url: getCategoryUrl(firstCategory?.action),
+            name: firstCategory?.name,
+            keyValue: getCategoryKeyValue(firstCategory?.action),
+          };
         }
-    
+        fpi.custom.setValue("compare_category_details", categoryDetails);
+      }
+
       fpi.custom.setValue("compare_product_data", productItems);
       fpi.custom.setValue(
         "compare_product_attribute",

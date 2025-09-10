@@ -70,7 +70,7 @@ function PaymentLink({ fpi }) {
             <div className={styles.logoTextContainer}>
               <p className={`fontHeader`}>{t("resource.common.fynd")}</p>
               <div className={styles.gatewayContainer}>
-                <img src={GatewayIcon} />
+                <img src={GatewayIcon} alt="Gateway Icon" />
                 <p className={`${styles.headerChildText} fontBody`}>
                   {t("resource.common.fynd_trusted_gateway")}
                 </p>

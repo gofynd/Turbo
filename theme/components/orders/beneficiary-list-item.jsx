@@ -10,8 +10,9 @@ function BeneficiaryItem({ beneficiary, selectedBeneficiary, change }) {
   };
   const getSubtitle = () => {
     return beneficiary.transfer_mode === "bank"
-      ? `${t("resource.order.account_details")}: ${beneficiary.account_holder} | ${beneficiary.account_no
-      } ${beneficiary.bank_name ? `| ${beneficiary.bank_name}` : ""}`
+      ? `${t("resource.order.account_details")}: ${beneficiary.account_holder} | ${
+          beneficiary.account_no
+        } ${beneficiary.bank_name ? `| ${beneficiary.bank_name}` : ""}`
       : beneficiary.subtitle;
   };
 
@@ -40,10 +41,7 @@ function BeneficiaryItem({ beneficiary, selectedBeneficiary, change }) {
               <div
                 className={`${styles.beneficiarySubtitle} ${styles.regularxs}`}
               >
-                {t(
-                  "resource.common.ifsc_code"
-                )}
-                : {beneficiary.ifsc_code}
+                {t("resource.common.ifsc_code")}: {beneficiary.ifsc_code}
               </div>
             )}
           </div>

@@ -1,10 +1,16 @@
-import { useState, useEffect } from "react";
-import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
-import { useSearchParams, useParams, useNavigate } from "react-router-dom";
-
+import { useState, useEffect, useMemo } from "react";
 import {
+  useGlobalStore,
+  useGlobalTranslation,
+  useNavigate,
+} from "fdk-core/utils";
+import { useSearchParams, useParams } from "react-router-dom";
+import {
+  CREDIT_NOTE_BALANCE,
   PAYMENT_AGG,
+  PAYMENT_OPTIONS,
   SELECT_PAYMENT_MODE,
+  UPDATE_CART_BREAKUP,
   VALID_UPI,
 } from "../../../queries/checkoutQuery";
 import { numberWithCommas } from "../../../helper/utils";
@@ -21,6 +27,7 @@ import {
 } from "../../../queries/paymentLinkQuery";
 
 import { CART_DETAILS, VALIDATE_COUPON } from "../../../queries/cartQuery";
+import { fetchCartDetails } from "../../cart/useCart";
 import { useSnackbar } from "../../../helper/hooks";
 
 const usePayment = (fpi) => {
@@ -34,12 +41,19 @@ const usePayment = (fpi) => {
   const [isQrCodeLoading, setIsQrCodeLoading] = useState(false);
   const [isUPIError, setUPIError] = useState(false);
   const [showUpiRedirectionModal, setShowUpiRedirectionModal] = useState(false);
+  const [partialPaymentOption, setPartialPaymentOption] = useState(undefined);
+  const [breakUpValues, setBreakupValues] = useState([]);
+  const cart = useGlobalStore(fpi.getters.CART) || {};
+
+  const { user_id = "" } = useGlobalStore(fpi.getters.USER_DATA) || {};
 
   const [searchParams] = useSearchParams();
   const { id } = useParams();
   const cart_id = searchParams.get("id");
+  const billing_address_id = searchParams.get("billing_address_id");
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
   const address_id = searchParams.get("address_id");
+
   const disbaleCheckout = useGlobalStore(fpi?.getters?.SHIPMENTS);
   const [errorMessage, setErrorMessage] = useState("");
   const [linkPaymentOptions, setLinkPaymentOptions] = useState([]);
@@ -47,6 +61,8 @@ const usePayment = (fpi) => {
   const [enableLinkPaymentOption, setEnableLinkPaymentOption] = useState(false);
   const [paymentLinkData, setPaymentLinkData] = useState([]);
   const [isApiLoading, setIsApiLoading] = useState(true);
+  const [creditUpdating, setCreditUpdating] = useState(false);
+  const [callOnce, setCallOnce] = useState(false);
   const { showSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -73,11 +89,15 @@ const usePayment = (fpi) => {
   };
 
   const selectPaymentMode = async (payload) => {
-    await fpi.executeGQL(SELECT_PAYMENT_MODE, {
+    const response = await fpi.executeGQL(SELECT_PAYMENT_MODE, {
       id: cart_id,
       buyNow,
       updateCartPaymentRequestInput: payload,
+      buyNow,
     });
+    const [mrpTotal, subTotal, storeCredit, total] =
+      response.data.selectPaymentMode.breakup_values.display;
+    setBreakupValues([mrpTotal, subTotal, storeCredit, total]);
 
     const cartPayload = {
       buyNow,
@@ -142,9 +162,27 @@ const usePayment = (fpi) => {
     return queryParams;
   }
 
+  const getTotalValue = () => {
+    // Implement the logic to calculate the total value
+    if (enableLinkPaymentOption) {
+      return paymentLinkData?.amount;
+    }
+    const totalObj = bagData?.breakup_values?.display?.find(
+      (item) => item.key === "total"
+    );
+    return totalObj?.value;
+  };
   const selectedTabData = enableLinkPaymentOption
-    ? linkPaymentOptions?.find((optn) => optn.name === selectedTab)
-    : paymentOption?.payment_option?.find((optn) => optn.name === selectedTab);
+    ? linkPaymentOptions?.find((optn) =>
+        getTotalValue?.() === 0
+          ? optn.name === "PP" || optn.name === "COD"
+          : optn.name === selectedTab
+      )
+    : paymentOption?.payment_option?.find((optn) =>
+        getTotalValue?.() === 0
+          ? optn.name === "PP" || optn.name === "COD"
+          : optn.name === selectedTab
+      );
 
   const selectedUPIData = enableLinkPaymentOption
     ? linkPaymentOptions?.filter((optn) => optn.name === "UPI")[0]?.list[0]
@@ -253,6 +291,37 @@ const usePayment = (fpi) => {
     });
   }
 
+  const storeCreditApplied = useMemo(() => {
+    const isApplied = partialPaymentOption?.list?.some(
+      (option) => option?.balance?.is_applied
+    );
+    const isFullyApplied = isApplied && !getTotalValue();
+    const PriceBreakup = bagData?.breakup_values?.display ?? null;
+    if (PriceBreakup?.length > 0) {
+      const obj = {};
+      for (let i = 0; i < PriceBreakup.length; i++) {
+        obj[PriceBreakup[i].key] = PriceBreakup[i].value;
+      }
+      setBreakupValues(obj);
+    }
+    return {
+      isApplied,
+      isFullyApplied,
+    };
+  }, [partialPaymentOption, bagData]);
+
+  const getCurrentModeOfPayment = (payload, currentSelection, vpa) => {
+    return {
+      mode: payload.payment_mode,
+      name: payload.payment_mode,
+      payment: "required",
+      payment_meta: {
+        merchant_code: currentSelection?.merchant_code,
+        payment_gateway: currentSelection?.aggregator_name,
+        payment_identifier: vpa ? vpa : (currentSelection?.code ?? ""),
+      },
+    };
+  };
   const proceedToPay = async (mode, paymentPayload = {}) => {
     const {
       selectedCard,
@@ -281,7 +350,14 @@ const usePayment = (fpi) => {
       selectedCard,
       selectedCardData,
     ].some((method) => method && Object.keys(method).length > 0);
-    if (!hasValidPayment && mode !== "QR" && mode !== "COD") {
+    if (
+      !hasValidPayment &&
+      mode !== "QR" &&
+      mode !== "COD" &&
+      mode !== "newCARD" &&
+      mode !== "CREDITNOTE" &&
+      mode !== "PP"
+    ) {
       showSnackbar(t("resource.common.select_payment_option"), "error");
       return;
     }
@@ -289,8 +365,78 @@ const usePayment = (fpi) => {
     if (disbaleCheckout?.message) {
       return;
     }
+
     // Implement the logic to proceed with the payment
-    if (mode === "newCARD") {
+
+    // const a = {
+    //   address_id: "67a1da51ce832dc4d253a6ca",
+    //   billing_address_id: "67a1da51ce832dc4d253a6ca",
+    //   aggregator: "creditnote",
+    //   merchant_code: "CREDITNOTE",
+    //   payment_mode: "CREDITNOTE",
+    //   payment_methods: [
+    //     {
+    //       mode: "CREDITNOTE",
+    //       name: "CREDITNOTE",
+    //       payment: "required",
+    //       payment_identifier: "CREDITNOTE",
+    //       payment_meta: {
+    //         merchant_code: "CREDITNOTE",
+    //         payment_gateway: "creditnote",
+    //         payment_identifier: "CREDITNOTE",
+    //       },
+    //     },
+    //   ],
+    //   payment_identifier: "CREDITNOTE",
+    // };
+
+    let { mrp_total, store_credit, subtotal = 0, total } = breakUpValues;
+    const isStoreCreditApplied =
+      Math.abs(store_credit) &&
+      Math.abs(store_credit) > 0 &&
+      Math.abs(total) > 0 &&
+      storeCreditApplied?.isApplied;
+    const storeCreditPayment = {
+      mode: partialPaymentOption?.name,
+      name: partialPaymentOption?.name,
+      payment: "blocked",
+      payment_identifier: partialPaymentOption?.name,
+      payment_meta: {
+        merchant_code: partialPaymentOption?.name,
+        payment_gateway: partialPaymentOption?.list[0]?.aggregator_name,
+        payment_identifier: partialPaymentOption?.name,
+      },
+      amount: Math.abs(store_credit),
+    };
+    if (mode === "CREDITNOTE") {
+      setIsLoading(true);
+      const { merchant_code, code, aggregator_name } =
+        partialPaymentOption?.list[0] || {};
+
+      addParamsToLocation({
+        ...getQueryParams(),
+        aggregator_name,
+        payment_mode: code ?? "",
+        payment_identifier: code ?? "",
+        merchant_code,
+      });
+
+      if (storeCreditApplied?.isFullyApplied) {
+        const checkoutPayload = {
+          payment: partialPaymentOption?.list[0],
+          id: cart_id,
+          buy_now: buyNow,
+          address_id,
+          billing_address_id: billing_address_id || address_id,
+          payment_mode: code ?? "",
+          aggregator_name,
+          payment_identifier: code ?? "",
+          merchant_code,
+        };
+
+        const res = await fpi.payment.checkoutPayment(checkoutPayload);
+      }
+    } else if (mode === "newCARD") {
       // if (!isCardSecure) {
       //     openRbiGuidelineDialog = true;
       //     return;
@@ -369,7 +515,11 @@ const usePayment = (fpi) => {
             address_id,
           };
           const { id, is_redirection, ...options } = payload;
-          const res = await fpi.payment.checkoutPayment({
+          const currentModeOfPayment = getCurrentModeOfPayment(
+            payload,
+            selectedNewCardData
+          );
+          const paymentPayload = {
             ...options,
             aggregator_name: selectedNewCardData.aggregator_name,
             payment: {
@@ -384,14 +534,22 @@ const usePayment = (fpi) => {
                 item.aggregator_key === selectedNewCardData?.aggregator_name
             ),
             buy_now: buyNow,
-          });
+            ...(isStoreCreditApplied && {
+              payment_methods: isStoreCreditApplied
+                ? [currentModeOfPayment, storeCreditPayment]
+                : [],
+            }),
+          };
+          const res = await fpi.payment.checkoutPayment(paymentPayload);
           if (res?.meta?.requestStatus === "rejected") {
             setIsLoading(false);
             return res?.payload;
           }
+          return res?.payload?.data?.checkoutCart;
         }
       } catch (error) {
         console.log(error);
+        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }
@@ -419,7 +577,7 @@ const usePayment = (fpi) => {
           address_id,
         };
         const { id, is_redirection, ...options } = payload;
-        const res = await fpi.payment.checkoutPayment({
+        const paymentPayload = {
           ...options,
           aggregator_name: selectedCard.aggregator_name,
           payment_identifier: selectedCard.card_id,
@@ -436,7 +594,13 @@ const usePayment = (fpi) => {
             (item) => item.aggregator_key === selectedCard?.aggregator_name
           ),
           buy_now: buyNow,
-        });
+          ...(isStoreCreditApplied && {
+            payment_methods: ["store_credits", mode],
+            store_credit,
+            partialPaymentOption,
+          }),
+        };
+        const res = await fpi.payment.checkoutPayment(paymentPayload);
         if (res?.meta?.requestStatus === "rejected") {
           setIsLoading(false);
           return res?.payload;
@@ -518,26 +682,34 @@ const usePayment = (fpi) => {
         };
         setIsLoading(true);
         const { id, is_redirection, ...options } = payload;
-        fpi.payment
-          .checkoutPayment({
-            ...options,
-            aggregator_name: selectedWallet.aggregator_name,
-            payment_identifier: selectedWallet.code ?? "",
-            merchant_code: selectedWallet.merchant_code,
-            payment: selectedWallet,
-            address_id,
-            billing_address_id: address_id,
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === selectedWallet?.aggregator_name
-            ),
-            buy_now: buyNow,
-          })
-          .then((res) => {
-            setIsLoading(false);
-            if (res?.error?.message) {
-              setErrorMessage(res?.payload?.message);
-            }
-          });
+        const currentModeOfPayment = getCurrentModeOfPayment(
+          payload,
+          selectedWallet
+        );
+        const paymentPayload = {
+          ...options,
+          aggregator_name: selectedWallet.aggregator_name,
+          payment_identifier: selectedWallet.code ?? "",
+          merchant_code: selectedWallet.merchant_code,
+          payment: selectedWallet,
+          address_id,
+          billing_address_id: address_id,
+          paymentflow: paymentOption?.aggregator_details?.find(
+            (item) => item.aggregator_key === selectedWallet?.aggregator_name
+          ),
+          buy_now: buyNow,
+          ...(isStoreCreditApplied && {
+            payment_methods: isStoreCreditApplied
+              ? [currentModeOfPayment, storeCreditPayment]
+              : [],
+          }),
+        };
+        fpi.payment.checkoutPayment(paymentPayload).then((res) => {
+          setIsLoading(false);
+          if (res?.error?.message) {
+            setErrorMessage(res?.payload?.message);
+          }
+        });
       }
     } else if (mode === "UPI") {
       setIsLoading(true);
@@ -566,7 +738,6 @@ const usePayment = (fpi) => {
             !res?.data?.validateVPA?.data?.is_valid
           ) {
             setUPIError(true);
-            // setIsLoading(false);
             return { isUPIError: true };
           }
         }
@@ -627,7 +798,6 @@ const usePayment = (fpi) => {
           });
           if (finalres?.meta?.requestStatus === "rejected") {
             setShowUpiRedirectionModal(false);
-            // setIsLoading(false);
             return finalres?.payload;
           }
           return {
@@ -636,28 +806,56 @@ const usePayment = (fpi) => {
           };
         } else {
           const { id, is_redirection, ...options } = payload;
-          const finalres = await fpi.payment.checkoutPayment({
-            ...options,
-            upi_app: selectedUpiIntentApp,
-            payment_identifier: vpa,
-            payment_extra_identifiers: {
-              consent: upiSaveForLaterChecked,
-            },
-            payment: {
-              ...selectedUPIData,
-              upi: vpa,
-            },
-            address_id,
-            billing_address_id: address_id,
-            aggregator_name: selectedUPIData.aggregator_name,
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === selectedUPIData?.aggregator_name
-            ),
-            buy_now: buyNow,
-          });
+          const currentModeOfPayment = getCurrentModeOfPayment(
+            payload,
+            selectedUPIData,
+            vpa
+          );
+          const finalres = isStoreCreditApplied
+            ? await fpi.payment.checkoutPayment({
+                ...options,
+                upi_app: selectedUpiIntentApp,
+                payment_identifier: vpa,
+                payment_extra_identifiers: {
+                  consent: upiSaveForLaterChecked,
+                },
+                payment: {
+                  ...selectedUPIData,
+                  upi: vpa,
+                },
+                address_id,
+                billing_address_id: address_id,
+                aggregator_name: selectedUPIData.aggregator_name,
+                paymentflow: paymentOption?.aggregator_details?.find(
+                  (item) =>
+                    item.aggregator_key === selectedUPIData?.aggregator_name
+                ),
+                buy_now: buyNow,
+                payment_methods: [currentModeOfPayment, storeCreditPayment],
+              })
+            : await fpi.payment.checkoutPayment({
+                ...options,
+                upi_app: selectedUpiIntentApp,
+                payment_identifier: vpa,
+                payment_extra_identifiers: {
+                  consent: upiSaveForLaterChecked,
+                },
+                payment: {
+                  ...selectedUPIData,
+                  upi: vpa,
+                },
+                address_id,
+                billing_address_id: address_id,
+                aggregator_name: selectedUPIData.aggregator_name,
+                paymentflow: paymentOption?.aggregator_details?.find(
+                  (item) =>
+                    item.aggregator_key === selectedUPIData?.aggregator_name
+                ),
+                buy_now: buyNow,
+                payment_methods: [],
+              });
           if (finalres?.meta?.requestStatus === "rejected") {
             setShowUpiRedirectionModal(false);
-            // setIsLoading(false);
             return finalres?.payload;
           }
           return {
@@ -729,22 +927,46 @@ const usePayment = (fpi) => {
             address_id,
           };
           const { id, is_redirection, ...options } = payload;
-          const res = await fpi.payment.checkoutPayment({
-            ...options,
-            aggregator_name: selectedQrData.aggregator_name,
-            payment_identifier: selectedQrData.code ?? "",
-            merchant_code: selectedQrData.merchant_code,
-            payment_mode: mode,
-            payment: {
-              ...selectedQrData,
-            },
-            address_id,
-            billing_address_id: address_id,
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === selectedQrData?.aggregator_name
-            ),
-            buy_now: buyNow,
-          });
+          const currentModeOfPayment = getCurrentModeOfPayment(
+            payload,
+            selectedQrData
+          );
+          const res = isStoreCreditApplied
+            ? await fpi.payment.checkoutPayment({
+                ...options,
+                aggregator_name: selectedQrData.aggregator_name,
+                payment_identifier: selectedQrData.code ?? "",
+                merchant_code: selectedQrData.merchant_code,
+                payment_mode: mode,
+                payment: {
+                  ...selectedQrData,
+                },
+                address_id,
+                billing_address_id: address_id,
+                paymentflow: paymentOption?.aggregator_details?.find(
+                  (item) =>
+                    item.aggregator_key === selectedQrData?.aggregator_name
+                ),
+                buy_now: buyNow,
+                payment_methods: [currentModeOfPayment, storeCreditPayment],
+              })
+            : await fpi.payment.checkoutPayment({
+                ...options,
+                aggregator_name: selectedQrData.aggregator_name,
+                payment_identifier: selectedQrData.code ?? "",
+                merchant_code: selectedQrData.merchant_code,
+                payment_mode: mode,
+                payment: {
+                  ...selectedQrData,
+                },
+                address_id,
+                billing_address_id: address_id,
+                paymentflow: paymentOption?.aggregator_details?.find(
+                  (item) =>
+                    item.aggregator_key === selectedQrData?.aggregator_name
+                ),
+                buy_now: buyNow,
+              });
           if (res?.meta?.requestStatus === "rejected") {
             return res?.payload;
           }
@@ -824,61 +1046,94 @@ const usePayment = (fpi) => {
         };
         setIsLoading(true);
         const { id, is_redirection, ...options } = payload;
-        fpi.payment
-          .checkoutPayment({
-            ...options,
-            aggregator_name: selectedNB.aggregator_name,
-            payment_identifier: selectedNB.code ?? "",
-            merchant_code: selectedNB.merchant_code,
-            queryParams: getQueryParams(),
-            payment: selectedNB,
-            address_id,
-            billing_address_id: address_id,
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === options?.aggregator_name
-            ),
-            buy_now: buyNow,
-          })
-          .then((res) => {
-            setIsLoading(false);
-            if (res?.error?.message) {
-              setErrorMessage(res?.payload?.message);
-            }
-          });
+        const currentModeOfPayment = getCurrentModeOfPayment(
+          payload,
+          selectedNB
+        );
+        const paymentPayload = {
+          ...options,
+          aggregator_name: selectedNB.aggregator_name,
+          payment_identifier: selectedNB.code ?? "",
+          merchant_code: selectedNB.merchant_code,
+          queryParams: getQueryParams(),
+          payment: selectedNB,
+          address_id,
+          billing_address_id: address_id,
+          paymentflow: paymentOption?.aggregator_details?.find(
+            (item) => item.aggregator_key === options?.aggregator_name
+          ),
+          buy_now: buyNow,
+          ...(isStoreCreditApplied && {
+            payment_methods: isStoreCreditApplied
+              ? [currentModeOfPayment, storeCreditPayment]
+              : [],
+          }),
+        };
+        fpi.payment.checkoutPayment(paymentPayload).then((res) => {
+          setIsLoading(false);
+          if (res?.error?.message) {
+            setErrorMessage(res?.payload?.message);
+          }
+        });
       }
-    } else if (mode === "COD") {
+    } else if (mode === "COD" || mode === "PP") {
       const payload = {
-        payment_mode: "COD",
+        payment_mode: mode,
         id: cart_id,
         address_id,
       };
       setIsLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
-        aggregator_name: selectedTabData.aggregator_name,
+        aggregator_name: selectedTabData?.aggregator_name,
         payment_mode: mode,
         payment_identifier: `${selectedTabData?.payment_mode_id}`,
       });
       const { id, is_redirection, ...options } = payload;
-      fpi.payment
-        .checkoutPayment({
-          ...options,
-          aggregator_name: selectedTabData.aggregator_name,
-          queryParams: getQueryParams(),
-          payment: selectedTabData,
-          address_id,
-          billing_address_id: address_id,
-          paymentflow: paymentOption?.aggregator_details?.find(
-            (item) => item.aggregator_key === selectedTabData?.aggregator_name
-          ),
-          buy_now: buyNow,
-        })
-        .then((res) => {
-          if (res?.error?.message) {
-            setIsLoading(false);
-            setErrorMessage(res?.payload?.message);
-          }
-        });
+      if (isStoreCreditApplied) {
+        fpi.payment
+          .checkoutPayment({
+            ...options,
+            aggregator_name: selectedTabData?.aggregator_name,
+            queryParams: getQueryParams(),
+            payment: selectedTabData,
+            address_id,
+            billing_address_id: address_id,
+            paymentflow: paymentOption?.aggregator_details?.find(
+              (item) => item.aggregator_key === selectedTabData?.aggregator_name
+            ),
+            buy_now: buyNow,
+            payment_methods: ["store_credits", mode],
+            store_credit,
+            partialPaymentOption,
+          })
+          .then((res) => {
+            if (res?.error?.message) {
+              setIsLoading(false);
+              setErrorMessage(res?.payload?.message);
+            }
+          });
+      } else {
+        fpi.payment
+          .checkoutPayment({
+            ...options,
+            aggregator_name: selectedTabData?.aggregator_name,
+            queryParams: getQueryParams(),
+            payment: selectedTabData,
+            address_id,
+            billing_address_id: address_id,
+            paymentflow: paymentOption?.aggregator_details?.find(
+              (item) => item.aggregator_key === selectedTabData?.aggregator_name
+            ),
+            buy_now: buyNow,
+          })
+          .then((res) => {
+            if (res?.error?.message) {
+              setIsLoading(false);
+              setErrorMessage(res?.payload?.message);
+            }
+          });
+      }
     } else if (mode === "PL") {
       setIsLoading(true);
       addParamsToLocation({
@@ -952,28 +1207,60 @@ const usePayment = (fpi) => {
         setIsLoading(true);
 
         const { id, is_redirection, ...options } = payload;
-        fpi.payment
-          .checkoutPayment({
-            ...options,
-            aggregator_name: selectedPayLater.aggregator_name,
-            payment_identifier: selectedPayLater.code ?? "",
-            merchant_code: selectedPayLater.merchant_code,
-            queryParams: getQueryParams(),
-            payment: selectedPayLater,
-            address_id,
-            billing_address_id: address_id,
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) =>
-                item.aggregator_key === selectedPayLater?.aggregator_name
-            ),
-            buy_now: buyNow,
-          })
-          .then((res) => {
-            setIsLoading(false);
-            if (res?.error?.message) {
-              setErrorMessage(res?.payload?.message);
-            }
-          });
+        const currentModeOfPayment = getCurrentModeOfPayment(
+          payload,
+          selectedPayLater
+        );
+        if (isStoreCreditApplied) {
+          fpi.payment
+            .checkoutPayment({
+              ...options,
+              aggregator_name: selectedPayLater.aggregator_name,
+              payment_identifier: selectedPayLater.code ?? "",
+              merchant_code: selectedPayLater.merchant_code,
+              queryParams: getQueryParams(),
+              payment: selectedPayLater,
+              address_id,
+              billing_address_id: address_id,
+              paymentflow: paymentOption?.aggregator_details?.find(
+                (item) =>
+                  item.aggregator_key === selectedPayLater?.aggregator_name
+              ),
+              buy_now: buyNow,
+              payment_methods: isStoreCreditApplied
+                ? [currentModeOfPayment, storeCreditPayment]
+                : [],
+            })
+            .then((res) => {
+              setIsLoading(false);
+              if (res?.error?.message) {
+                setErrorMessage(res?.payload?.message);
+              }
+            });
+        } else {
+          fpi.payment
+            .checkoutPayment({
+              ...options,
+              aggregator_name: selectedPayLater.aggregator_name,
+              payment_identifier: selectedPayLater.code ?? "",
+              merchant_code: selectedPayLater.merchant_code,
+              queryParams: getQueryParams(),
+              payment: selectedPayLater,
+              address_id,
+              billing_address_id: address_id,
+              paymentflow: paymentOption?.aggregator_details?.find(
+                (item) =>
+                  item.aggregator_key === selectedPayLater?.aggregator_name
+              ),
+              buy_now: buyNow,
+            })
+            .then((res) => {
+              setIsLoading(false);
+              if (res?.error?.message) {
+                setErrorMessage(res?.payload?.message);
+              }
+            });
+        }
       }
     } else if (mode === "CARDLESS_EMI") {
       setIsLoading(true);
@@ -1036,28 +1323,35 @@ const usePayment = (fpi) => {
         };
 
         const { id, is_redirection, ...options } = payload;
-        fpi.payment
-          .checkoutPayment({
-            queryParams: getQueryParams(),
-            ...options,
-            aggregator_name: selectedCardless.aggregator_name,
-            payment_identifier: selectedCardless.code ?? "",
-            merchant_code: selectedCardless.merchant_code,
-            payment: selectedCardless,
-            address_id,
-            billing_address_id: address_id,
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) =>
-                item.aggregator_key === selectedCardless?.aggregator_name
-            ),
-            buy_now: buyNow,
-          })
-          .then((res) => {
-            setIsLoading(false);
-            if (res?.error?.message) {
-              setErrorMessage(res?.payload?.message);
-            }
-          });
+        const currentModeOfPayment = getCurrentModeOfPayment(
+          payload,
+          selectedCardless
+        );
+        const paymentPayload = {
+          queryParams: getQueryParams(),
+          ...options,
+          aggregator_name: selectedCardless.aggregator_name,
+          payment_identifier: selectedCardless.code ?? "",
+          merchant_code: selectedCardless.merchant_code,
+          payment: selectedCardless,
+          address_id,
+          billing_address_id: address_id,
+          paymentflow: paymentOption?.aggregator_details?.find(
+            (item) => item.aggregator_key === selectedCardless?.aggregator_name
+          ),
+          buy_now: buyNow,
+          ...(isStoreCreditApplied && {
+            payment_methods: isStoreCreditApplied
+              ? [currentModeOfPayment, storeCreditPayment]
+              : [],
+          }),
+        };
+        fpi.payment.checkoutPayment(paymentPayload).then((res) => {
+          setIsLoading(false);
+          if (res?.error?.message) {
+            setErrorMessage(res?.payload?.message);
+          }
+        });
       }
     } else if (mode === "Other") {
       setIsLoading(true);
@@ -1081,8 +1375,8 @@ const usePayment = (fpi) => {
                 payment_gateway: selectedOtherPayment.aggregator_name,
                 payment_identifier: selectedOtherPayment.code ?? "",
               },
-              payment_mode: selectedOtherPayment.code ?? "",
-              name: selectedOtherPayment.code ?? "",
+              mode: selectedOtherPayment.code ?? "",
+              name: selectedOtherPayment.name,
             },
           },
         };
@@ -1094,14 +1388,14 @@ const usePayment = (fpi) => {
             merchant_code: selectedOtherPayment.merchant_code,
             payment_gateway: selectedOtherPayment.aggregator_name,
             aggregator_name: selectedOtherPayment.aggregator_name,
-            payment_identifier: selectedOtherPayment.code,
+            payment_identifier: selectedOtherPayment.code ?? "",
             payment_mode: selectedOtherPayment.code ?? "",
             name: selectedOtherPayment.code ?? "",
             payment: selectedOtherPayment,
             queryParams: getQueryParams(),
             data: res?.data,
-            enableLinkPaymentOption: enableLinkPaymentOption,
             success: linkOrderInfo?.success,
+            enableLinkPaymentOption: enableLinkPaymentOption,
             paymentflow: linkDataOption?.aggregator_details?.find(
               (item) =>
                 item.aggregator_key === selectedOtherPayment?.aggregator_name
@@ -1124,6 +1418,10 @@ const usePayment = (fpi) => {
         };
 
         const { id, is_redirection, ...options } = payload;
+        const currentModeOfPayment = getCurrentModeOfPayment(
+          payload,
+          selectedOtherPayment
+        );
         fpi.payment
           .checkoutPayment({
             ...options,
@@ -1138,6 +1436,11 @@ const usePayment = (fpi) => {
                 item.aggregator_key === selectedOtherPayment?.aggregator_name
             ),
             buy_now: buyNow,
+            ...(isStoreCreditApplied && {
+              payment_methods: isStoreCreditApplied
+                ? [currentModeOfPayment, storeCreditPayment]
+                : [],
+            }),
           })
           .then((res) => {
             if (res?.error?.message) {
@@ -1164,17 +1467,6 @@ const usePayment = (fpi) => {
     return fpi.executeGQL(RESEND_OR_CANCEL_PAYMENT, {
       resendOrCancelPaymentRequestInput: payload,
     });
-  };
-
-  const getTotalValue = () => {
-    // Implement the logic to calculate the total value
-    if (enableLinkPaymentOption) {
-      return paymentLinkData?.amount;
-    }
-    const totalObj = bagData?.breakup_values?.display?.find(
-      (item) => item.key === "total"
-    );
-    return totalObj?.value;
   };
 
   const PaymentOptionsList = () => {
@@ -1215,6 +1507,34 @@ const usePayment = (fpi) => {
     return tempOpt;
   };
 
+  const fetchCreditNoteBalance = async (aggregator = "creditnote") => {
+    try {
+      const payload = {
+        customerAndCreditSummary: {
+          user_id,
+          cart_id,
+          transaction_amount:
+            bagData?.breakup_values?.display[
+              bagData?.breakup_values?.display?.length - 1
+            ]?.value,
+          aggregator,
+        },
+      };
+      const { data, errors } = await fpi.executeGQL(
+        CREDIT_NOTE_BALANCE,
+        payload
+      );
+
+      if (errors) {
+        throw errors;
+      }
+
+      return data?.validateCustomerAndCreditSummary;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   function otherOptions() {
     const otherPaymentOptions =
       linkPaymentOptions?.length > 0
@@ -1235,6 +1555,110 @@ const usePayment = (fpi) => {
     optn = optn?.filter?.((opt) => opt.flow === "standard");
     return optn?.length > 0 ? optn : [];
   }
+
+  const updatePartialPayment = async () => {
+    try {
+      setIsLoading(true);
+      let option = paymentOption?.payment_option?.find(
+        ({ name }) => name === "CREDITNOTE"
+      );
+
+      option = { ...option };
+
+      const list = [];
+
+      if (option?.list?.length > 0) {
+        for (let i = 0; i < option?.list?.length; i++) {
+          const { partial_payment_allowed, aggregator_name } = option?.list[i];
+          if (partial_payment_allowed && !option.list[i].balance) {
+            // eslint-disable-next-line no-await-in-loop
+            const data = await fetchCreditNoteBalance(aggregator_name);
+            list.push({ ...option.list[i], balance: data });
+            option.list = list;
+          }
+        }
+        setPartialPaymentOption(option);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateStoreCredits = async (store_credit = false) => {
+    setPartialPaymentOption((prev) => ({
+      ...prev,
+      list: [
+        {
+          ...prev.list[0],
+          balance: {
+            ...prev.list[0].balance,
+            is_applied: store_credit,
+          },
+        },
+      ],
+    }));
+    const payload = {
+      b: true,
+      buyNow,
+      id: cart_id,
+      updateCartBreakupRequestInput: {
+        store_credit,
+      },
+    };
+    try {
+      setCreditUpdating(true);
+      const { data, errors } = await fpi.executeGQL(
+        UPDATE_CART_BREAKUP,
+        payload
+      );
+
+      if (errors) {
+        throw errors;
+      }
+
+      await fetchCartDetails(fpi, { buyNow }).then(async ({ data, errors }) => {
+        const amount =
+          data?.cart?.breakup_values?.display?.find(
+            (item) => item.key === "total"
+          )?.value * 100 || 0;
+
+        // if (amount) {
+        const paymentPayload = {
+          pincode: localStorage?.getItem("pincode") || "",
+          cartId: cart_id,
+          checkoutMode: "self",
+          amount,
+        };
+        await fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload);
+        // }
+      });
+
+      return data;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setCreditUpdating(false);
+    }
+  };
+
+  useEffect(() => {
+    if (paymentOption?.payment_option?.length > 0) {
+      if (
+        bagData?.breakup_values?.display[
+          bagData?.breakup_values?.display?.length - 1
+        ]?.value > 0
+      ) {
+        setCallOnce((prev) => {
+          if (prev === false) {
+            updatePartialPayment();
+            return true;
+          }
+        });
+      }
+    }
+  }, [paymentOption, bagData]);
 
   return {
     selectedTab,
@@ -1264,6 +1688,9 @@ const usePayment = (fpi) => {
     validateCoupon,
     selectPaymentMode,
     validateCardDetails,
+    partialPaymentOption,
+    updateStoreCredits,
+    storeCreditApplied,
     setShowUpiRedirectionModal,
     errorMessage,
     setErrorMessage,
@@ -1273,6 +1700,7 @@ const usePayment = (fpi) => {
     paymentLinkData,
     isApiLoading,
     getLinkOrderDetails,
+    creditUpdating,
   };
 };
 

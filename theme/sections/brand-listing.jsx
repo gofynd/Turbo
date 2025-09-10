@@ -11,7 +11,10 @@ import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import { useWindowWidth } from "../helper/hooks";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
-import { SliderNextArrow, SliderPrevArrow } from "../components/slider-arrow/slider-arrow";
+import {
+  SliderNextArrow,
+  SliderPrevArrow,
+} from "../components/slider-arrow/slider-arrow";
 
 export function Component({ props, globalConfig, blocks, id: sectionId }) {
   const fpi = useFPI();
@@ -637,6 +640,28 @@ export const settings = {
       label: "t:resource.sections.categories.bottom_padding",
       default: 16,
       info: "t:resource.sections.categories.bottom_padding_for_section",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Top padding",
+      default: 16,
+      info: "Top padding for section",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "Bottom padding",
+      default: 16,
+      info: "Bottom padding for section",
     },
   ],
   blocks: [

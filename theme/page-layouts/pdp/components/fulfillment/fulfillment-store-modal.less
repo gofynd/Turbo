@@ -1,0 +1,181 @@
+@import "../../../../styles/main.less";
+
+@iconWidth: 14px;
+@productNameMargin: 16px;
+
+.storeItems {
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(20, 19, 14, 0.6);
+  opacity: 0;
+  transition: all 0.4s;
+  z-index: 100;
+  visibility: hidden;
+}
+
+.show {
+  opacity: 0.5;
+  visibility: visible;
+}
+
+.sidebarContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 540px;
+  height: 100%;
+  z-index: 101;
+  background: @DialogBackground;
+  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+
+  @media @tablet {
+    width: 100%;
+  }
+
+  .sidebarHeader {
+    background-color: @ThemeAccent;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @media @tablet {
+      padding: 16px;
+    }
+
+    .sellerLabel {
+      color: @TextHeading;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: -0.56px;
+
+      @media @tablet {
+        font-size: 24px;
+        letter-spacing: -0.48px;
+      }
+    }
+
+    .closeIcon {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+  }
+
+  .sidebarBody {
+    padding: 24px;
+    height: calc(100% - 160px);
+    overflow-y: auto;
+
+    @media @mobile {
+      padding: 16px;
+    }
+  }
+
+  .sidebarFooter {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 24px;
+    background: @DialogBackground;
+    box-shadow: 0px -2px 4px 0px rgba(0, 0, 0, 0.09);
+    width: 100%;
+
+    @media @tablet {
+      padding: 16px;
+    }
+  }
+}
+
+.sortWrapper {
+  position: relative;
+  margin-bottom: 24px;
+
+  .sortButton {
+    padding: 16px;
+    border: 1px solid @DividerStokes;
+    border-radius: 4px;
+    width: 100%;
+    height: 100%;
+
+    .selectedOption {
+      color: @TextHeading;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 20px;
+      letter-spacing: -0.32px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: calc(100% - 24px);
+      text-align: left;
+    }
+
+    .dropdownArrow {
+      height: 24px;
+      width: 24px;
+    }
+
+    .rotateArrow {
+      transform: rotate(180deg);
+    }
+  }
+  .sortDropdown {
+    position: absolute;
+    width: 100%;
+    top: calc(100% + 5px);
+    padding: 8px;
+    z-index: 1;
+    border-radius: 4px;
+    border: 1px solid @DividerStokes;
+    background: @ThemeAccentL5;
+    box-shadow:
+      0px 4px 4px 0px rgba(0, 0, 0, 0.15),
+      0px 12px 16px 0px rgba(0, 0, 0, 0.16);
+
+    li {
+      color: @TextBody;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 20px;
+      letter-spacing: -0.32px;
+      padding: 8px 12px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: @HighlightColor;
+      }
+    }
+
+    .selectedOption {
+      background-color: @ThemeAccentL3;
+    }
+  }
+}
+
+.viewMoreWrapper {
+  margin-top: 32px;
+
+  .viewMoreBtn {
+    color: @ButtonPrimary;
+    background: none;
+    border: none;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    font-size: 14px;
+    line-height: 16px;
+
+    @media @mobile {
+      font-size: 12px;
+      line-height: 14px;
+    }
+  }
+}

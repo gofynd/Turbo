@@ -34,7 +34,10 @@ const useSetPassword = ({ fpi }) => {
         })
         .catch((err) => {
           const queryParams = new URLSearchParams();
-          navigate("/auth/login" + (queryParams?.toString() ? `?${queryParams.toString()}` : ""));
+          navigate(
+            "/auth/login" +
+              (queryParams?.toString() ? `?${queryParams.toString()}` : "")
+          );
         });
     };
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
@@ -50,7 +53,9 @@ const useSetPassword = ({ fpi }) => {
         showSnackbar(t("resource.common.password_reset_successful"), "success");
       })
       .catch((err) => {
-        setError({ message: err?.message || t("resource.common.error_message") });
+        setError({
+          message: err?.message || t("resource.common.error_message"),
+        });
       });
 
   return { error, onSetPasswordSubmit: handleSetPassword };

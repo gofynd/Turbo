@@ -1,0 +1,62 @@
+@import "../../../../../styles/main.less";
+
+.productGridShimmer {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+
+  // Desktop grid layouts
+  &[data-grid-desktop="4"] {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  &[data-grid-desktop="3"] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  &[data-grid-desktop="2"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  &[data-grid-desktop="1"] {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Tablet View
+@media (max-width: 1023px) {
+  .productGridShimmer {
+    gap: 14px;
+
+    // Tablet grid layouts
+    &[data-grid-tablet="3"] {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    &[data-grid-tablet="2"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &[data-grid-tablet="1"] {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Mobile View
+@media (max-width: 767px) {
+  .productGridShimmer {
+    gap: 12px;
+
+    // Mobile grid layouts
+    &[data-grid-mobile="2"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    &[data-grid-mobile="1"] {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Small Mobile View
+@media (max-width: 480px) {
+  .productGridShimmer {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

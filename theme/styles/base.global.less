@@ -25,7 +25,11 @@ a {
 }
 
 .fontBody {
-  font-family: var(--font-body) !important;
+  font-family: var(--font-body);
+}
+
+body.noscroll {
+  overflow: hidden;
 }
 
 .fontHeader {
@@ -51,7 +55,8 @@ body {
 }
 
 .fdk-theme-header {
-  position: sticky;
+  position: var(--headerPosition, sticky);
+  width: 100%;
   top: 0;
   z-index: @header;
 }
@@ -354,7 +359,7 @@ button {
   overflow-y: hidden !important;
 }
 
-.remove-horizontal-scroll{
+.remove-horizontal-scroll {
   overflow-x: hidden !important;
 }
 
@@ -439,22 +444,6 @@ img::selection {
   height: 100%;
 }
 
-.testimonial-slider {
-  .slick-next {
-    right: 10px !important;
-    inset-inline-start: unset !important;
-  }
-  .slick-prev {
-    inset-inline-start: -20px !important;
-  }
-
-  .slick-prev::before,
-  .slick-next::before {
-    display: none !important;
-    content: none !important;
-  }
-}
-
 // Override slick slider style
 .slick-slider {
   &:has(.slick-dots) {
@@ -488,6 +477,10 @@ img::selection {
     inset-inline-end: calc(50% - var(--slick-dots) / 2);
     padding: 2px;
   }
+
+  &::before {
+    content: none !important;
+  }
 }
 .slick-prev {
   transform: translate(-100%, 100%);
@@ -496,6 +489,10 @@ img::selection {
     right: unset !important;
     inset-inline-start: calc(50% - var(--slick-dots) / 2);
     padding: 1px;
+  }
+
+  &::before {
+    content: none !important;
   }
 }
 .slick-dots {
@@ -576,15 +573,6 @@ img::selection {
   @keyframes slideInRight {
     from {
       transform: translateX(100%); /* Start off-screen from the right */
-    }
-    to {
-      transform: translateX(0); /* Move into the viewport */
-    }
-  }
-
-  @keyframes slideInLeft {
-    from {
-      transform: translateX(-100%); /* Start off-screen from the right */
     }
     to {
       transform: translateX(0); /* Move into the viewport */

@@ -1,0 +1,36 @@
+@import "./main.less";
+
+.checkoutContainer {
+  display: flex;
+  gap: 1rem;
+  padding: 20px;
+
+  @media @tablet-range {
+    justify-content: center;
+  }
+
+  @media @tablet {
+    display: block;
+    padding: 0px;
+    padding-bottom: 104px;
+  }
+
+  @media @tablet {
+    flex-direction: column;
+  }
+
+  .leftPanel {
+    flex: 2;
+
+    @media @tablet {
+      flex: unset;
+    }
+  }
+  .rightPanel {
+    flex: 1;
+
+    @media @tablet {
+      flex: unset;
+    }
+  }
+}

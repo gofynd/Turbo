@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 
 import { FDKLink } from "fdk-core/components";
 import Loader from "../components/loader/loader";
+import {
+  CollectionsPageShimmer,
+  CollectionsGridShimmer,
+} from "../components/core/skeletons";
 import styles from "../styles/collections.less";
 import CardList from "../components/card-list/card-list";
 import useCollections from "../page-layouts/collections/useCollections";
@@ -40,7 +44,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       className={`${styles.collections} basePageContainer margin0auto fontBody`}
     >
       {isLoading && !collections?.length ? (
-        <Loader />
+        <CollectionsPageShimmer
+          showTitle={!!title}
+          showDescription={!!description}
+          showBreadcrumbs={true}
+          collectionCount={12}
+        />
       ) : (
         <>
           <div className={`${styles.collections__breadcrumbs} captionNormal`}>
@@ -79,6 +88,15 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   isImageFill={img_fill}
                   globalConfig={globalConfig}
                 />
+                {/* Show shimmer cards when loading more */}
+                {isLoading && collections?.length > 0 && (
+                  <div
+                    className={`${styles.collections} basePageContainer margin0auto fontBody`}
+                    style={{ padding: 0, minHeight: "auto" }}
+                  >
+                    <CollectionsGridShimmer collectionCount={4} />
+                  </div>
+                )}
               </InfiniteLoader>
             </div>
           </div>

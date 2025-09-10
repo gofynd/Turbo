@@ -21,6 +21,7 @@ export function ThemeProvider({ children }) {
   const title = sanitizeHTMLTag(seoData?.title);
   const description = sanitizeHTMLTag(seoData?.description);
   const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
+  const sections = useGlobalStore(fpi.getters.PAGE)?.sections || [];
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -56,6 +57,28 @@ export function ThemeProvider({ children }) {
 
   const [searchParams] = useSearchParams();
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
+
+  const isValidSection =
+    sections[0]?.name === "application-banner" ||
+    sections[0]?.name === "image-slideshow" ||
+    sections[0]?.name === "hero-image" ||
+    sections[0]?.name === "image-gallery";
+
+  const headerPosition = useMemo(() => {
+    if (
+      globalConfig?.transparent_header &&
+      globalConfig?.sticky_header &&
+      isValidSection
+    ) {
+      return "fixed";
+    } else if (globalConfig?.sticky_header && !isValidSection) {
+      return "sticky ";
+    } else if (!globalConfig?.sticky_header) {
+      return "unset";
+    } else {
+      return "sticky ";
+    }
+  }, [globalConfig]);
 
   const fontStyles = useMemo(() => {
     let styles = "";
@@ -133,6 +156,7 @@ export function ThemeProvider({ children }) {
         --buttonLinkL1: #${buttonLinkShade.tint(20).hex};
         --buttonLinkL2: #${buttonLinkShade.tint(40).hex};
         --page-max-width: ${globalConfig?.enable_page_max_width ? "1440px" : "unset"};
+        --header-position: ${headerPosition};
         ${accentDarkShades?.reduce((acc, color, index) => acc.concat(`--themeAccentD${index + 1}: #${color.hex};`), "")}
         ${accentLightShades?.reduce((acc, color, index) => acc.concat(`--themeAccentL${index + 1}: #${color.hex};`), "")}
       }`
@@ -202,6 +226,26 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     return () =>
       setTimeout(() => {
+        // Check if current page is PLP or PDP related
+        const currentPath = location?.pathname;
+        const isPLPOrPDP =
+          currentPath.startsWith("/product") ||
+          currentPath === "/products" ||
+          currentPath.startsWith("/products") ||
+          currentPath.startsWith("/collection/") ||
+          currentPath.startsWith("/brands/") ||
+          currentPath.startsWith("/categories/");
+
+        // If navigating away from PLP/PDP, clean up scroll states
+        if (!isPLPOrPDP) {
+          Object.keys(sessionStorage).forEach((key) => {
+            if (key.startsWith("plp_scroll_")) {
+              sessionStorage.removeItem(key);
+            }
+          });
+        }
+
+        // Standard scroll to top behavior
         window?.scrollTo?.(0, 0);
       }, 0);
   }, [location?.pathname]);

@@ -412,6 +412,7 @@ function Navigation({
                           closeSidebarNav();
                         }
                       }}
+                      className={styles.textEllipsis}
                     >
                       {nav.display}
                     </span>
@@ -443,7 +444,9 @@ function Navigation({
                   <ArrowDownIcon
                     className={`${styles.arrowLeftIcon} ${styles.sidebarIcon} ${styles.menuIcon}`}
                   />
-                  <span>{sidebarl2Nav.title}</span>
+                  <span className={styles.textEllipsis}>
+                    {sidebarl2Nav.title}
+                  </span>
                 </li>
                 {sidebarl2Nav.navigation.map((nav, index) => (
                   <li
@@ -454,7 +457,7 @@ function Navigation({
                   >
                     {convertActionToUrl(nav?.action) ? (
                       <FDKLink
-                        className={styles.navLink}
+                        className={`${styles.navLink} ${styles.textEllipsis}`}
                         action={nav?.action}
                         onClick={() => {
                           goBack("l1");
@@ -473,6 +476,7 @@ function Navigation({
                             closeSidebarNav();
                           }
                         }}
+                        className={styles.textEllipsis}
                       >
                         {nav.display}
                       </span>
@@ -509,7 +513,9 @@ function Navigation({
                     }}
                   />
 
-                  <span>{sidebarl3Nav.title}</span>
+                  <span className={styles.textEllipsis}>
+                    {sidebarl3Nav.title}
+                  </span>
                 </li>
                 {sidebarl3Nav.navigation.map((nav, index) => (
                   <li
@@ -536,6 +542,7 @@ function Navigation({
                           goBack("l2");
                           closeSidebarNav();
                         }}
+                        className={styles.textEllipsis}
                       >
                         {nav.display}
                       </button>

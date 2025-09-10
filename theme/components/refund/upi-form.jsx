@@ -42,8 +42,7 @@ function UpiForm({ loadSpinner, addvpa }) {
               type="text"
               {...register("upi", {
                 validate: (value) =>
-                  validateVPA(value) ||
-                  t("resource.order.enter_valid_upi_id"),
+                  validateVPA(value) || t("resource.order.enter_valid_upi_id"),
               })}
             />
           </div>
@@ -56,9 +55,7 @@ function UpiForm({ loadSpinner, addvpa }) {
         >
           {loadSpinner && <ButtonSpinnerIcon className={`${styles.spinner}`} />}
 
-          {!loadSpinner && (
-            <span>{t("resource.facets.add")}</span>
-          )}
+          {!loadSpinner && <span>{t("resource.facets.add")}</span>}
         </button>
       </form>
     </div>

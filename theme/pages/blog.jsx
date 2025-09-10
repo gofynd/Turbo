@@ -5,7 +5,7 @@ import { getHelmet } from "../providers/global-provider";
 import { sanitizeHTMLTag } from "../helper/utils";
 
 function Blog({ fpi }) {
-   const { t } = useGlobalTranslation("translation");
+  const { t } = useGlobalTranslation("translation");
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const THEME = useGlobalStore(fpi.getters.THEME);
 
@@ -15,7 +15,9 @@ function Blog({ fpi }) {
   const globalConfig = mode?.global_config?.custom?.props;
   const { sections = [] } = page || {};
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.blog"));
+  const title = sanitizeHTMLTag(
+    seoData?.title || t("resource.common.page_titles.blog")
+  );
   const description = sanitizeHTMLTag(
     seoData?.description || t("resource.blog.seo_description")
   );
@@ -23,20 +25,20 @@ function Blog({ fpi }) {
 
   console.log({ mergedSeo });
 
- return (
-   <>
-     {page?.value === "blog" && (
-       <>
-         {getHelmet({ seo: mergedSeo })}
-         <SectionRenderer
-           sections={sections}
-           fpi={fpi}
-           globalConfig={globalConfig}
-         />
-       </>
-     )}
-   </>
- );
+  return (
+    <>
+      {page?.value === "blog" && (
+        <>
+          {getHelmet({ seo: mergedSeo })}
+          <SectionRenderer
+            sections={sections}
+            fpi={fpi}
+            globalConfig={globalConfig}
+          />
+        </>
+      )}
+    </>
+  );
 }
 export const sections = JSON.stringify([
   {

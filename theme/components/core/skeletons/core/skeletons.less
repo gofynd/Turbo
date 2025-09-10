@@ -1,0 +1,86 @@
+@import "../../../../styles/main.less";
+
+// Base skeleton styles
+.skeleton {
+  background-color: #f0f0f0;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  // line-height: 1;
+  width: 100%;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    //  background: linear-gradient(
+    //     146deg,
+    //     #f1efef -2.45%,
+    //     #e2e2e2 52.69%,
+    //     #f1efef 100.52%
+    //   );
+    background: linear-gradient(
+      90deg,
+      @ThemeAccentL4 25%,
+      @ThemeAccentL3 50%,
+      @ThemeAccentL4 75%
+    );
+    background-size: 200% 100%;
+    animation: skeletonWave 1.5s ease-in-out infinite;
+  }
+}
+
+// Skeleton group for multiple lines
+.skeletonGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+// Animations
+// @keyframes skeletonWave {
+//   0% {
+//      background: linear-gradient(
+//     146deg,
+//     #f1efef -2.45%,
+//     #e2e2e2 52.69%,
+//     #f1efef 100.52%
+//   );
+//   }
+//   25% {
+//       background: linear-gradient(
+//     146deg,
+//      #e2e2e2 -2.45%,
+//     #f1efef 52.69%,
+//     #f1efef 100.52%
+//   );
+//   }
+//   75% {
+//       background: linear-gradient(
+//     146deg,
+//     #f1efef -2.45%,
+//     #f1efef 52.69%,
+//     #e2e2e2 100.52%
+//   );
+//   }
+//   100% {
+//      background: linear-gradient(
+//     146deg,
+//      #f1efef -2.45%,
+//     #e2e2e2 52.69%,
+//     #f1efef 100.52%
+//   );
+//   }
+// }
+
+@keyframes skeletonWave {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
