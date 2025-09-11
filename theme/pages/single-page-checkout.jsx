@@ -78,7 +78,14 @@ function SingleCheckoutPage({ fpi }) {
       setShowShipment(false);
       showPaymentHandler(true);
 
-      const finalAmount = amount || checkoutAmount;
+      let finalAmount = 0;
+      if (amount !== undefined && amount !== null) {
+        finalAmount = amount;
+      } else if (checkoutAmount !== undefined && checkoutAmount !== null) {
+        finalAmount = checkoutAmount;
+      } else if (breakupValues && breakupValues.length > 0) {
+        finalAmount = breakupValues[breakupValues.length - 1]?.value || 0;
+      }
 
       const paymentPayload = {
         pincode: localStorage?.getItem("pincode") || "",
