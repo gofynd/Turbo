@@ -478,6 +478,30 @@ export const FEATURED_COLLECTION = `query Collection($slug: String!, $first:Int,
             min
           }
         }
+        variants {
+          display_type
+          header
+          items {
+            _custom_meta {
+              key
+              value
+            }
+            color
+            color_name
+            is_available
+            medias {
+              alt
+              type
+              url
+            }
+            name
+            slug
+            uid
+            value
+          }
+          key
+          total
+        }
       }
     }
   }
