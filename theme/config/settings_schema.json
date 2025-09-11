@@ -498,14 +498,6 @@
       "info": "Sets a maximum width of 1440px for better layout on wide screens"
     },
     {
-      "type": "checkbox",
-      "id": "enable_page_max_width",
-      "default": false,
-      "category": "t:resource.settings_schema.common.other_page_configuration",
-      "label": "Enable Page Max Width",
-      "info": "Sets a maximum width of 1440px for better layout on wide screens"
-    },
-    {
       "type": "header",
       "category": "Delivery Promise",
       "value": "Delivery Promise Format"

@@ -1402,19 +1402,35 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                       return (
                         <Fragment key="seller_details">
                           {isPageLoading ? (
-                            // Show shimmer loader in all "loading or incomplete" cases
-                            <div
-                              style={{
-                                marginTop: "24px",
-                                marginBottom: "24px",
-                              }}
-                            >
-                              <Skeleton
-                                height={20}
-                                width="40%"
-                                style={{ marginTop: 8 }}
-                              />
-                            </div>
+                            <>
+                              <div style={{ marginBottom: "24px" }}>
+                                <Skeleton height={20} width={120} />
+                              </div>
+                              <div
+                                style={{
+                                  marginBottom: "24px",
+                                  minWidth: 200,
+                                  height: "80px",
+                                }}
+                              >
+                                <div>
+                                  <div style={{ marginBottom: 12 }}>
+                                    <Skeleton
+                                      height={20}
+                                      width="80%"
+                                      style={{ borderRadius: 4 }}
+                                    />
+                                  </div>
+                                  <div style={{ marginBottom: 12 }}>
+                                    <Skeleton
+                                      height={20}
+                                      width="60%"
+                                      style={{ borderRadius: 4 }}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </>
                           ) : (
                             selectedSize &&
                             !isEmptyOrNull(productPriceBySlug) &&

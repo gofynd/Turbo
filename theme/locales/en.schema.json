@@ -161,8 +161,8 @@
         "transparent_header_info": "Only works with a top Application banner, image slideshow and hero image.",
         "sticky_header": "Sticky Header",
         "sticky_header_info": "Enable/Disable Sticky Header",
-        "show_secondary_header_on_checkout": "Show Checkout Header",
-        "show_secondary_header_on_checkout_info": "When enabled, the header will be visible on the checkout page."
+        "show_secondary_header_on_checkout": "Simplify Header on Cart/Checkout",
+        "show_secondary_header_on_checkout_info": "Hide Navigation and make header simple and user friendly. It Hides Navigation search, account icon etc"
       },
       "algolia_configuration": {
         "enable_algolia": "Enable Algolia"
