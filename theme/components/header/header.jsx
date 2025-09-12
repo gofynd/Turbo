@@ -122,25 +122,41 @@ function Header({ fpi }) {
     }
   }, []);
 
+  const LOCALE_SYNC_FLAG = "localeSyncedTo";
+
   useEffect(() => {
     if (!isRunningOnClient()) return;
+    if (!supportedLanguages?.items?.length || !i18N_DETAILS) return;
 
-    const currentLocale = i18N_DETAILS?.language?.locale;
-    const validLocale = isLocalePresent(activeLocale, supportedLanguages?.items)
+    const currentLocale = i18N_DETAILS.language?.locale;
+    const validLocale = isLocalePresent(activeLocale, supportedLanguages.items)
       ? activeLocale
-      : getDefaultLocale(supportedLanguages?.items);
+      : getDefaultLocale(supportedLanguages.items);
 
-    if (!i18N_DETAILS || currentLocale === validLocale) return;
+    // Nothing to do if we're already on the right locale
+    if (!validLocale || currentLocale === validLocale) return;
 
+    // Prevent infinite reloads: if we've already synced to this locale in this session, don't reload again
+    const alreadySyncedTo = sessionStorage.getItem(LOCALE_SYNC_FLAG);
+    if (alreadySyncedTo === validLocale) return;
+
+    // Update i18n details
     fpi.setI18nDetails({
       ...i18N_DETAILS,
       language: {
         ...i18N_DETAILS.language,
-        locale: validLocale || "en",
+        locale: validLocale,
       },
     });
-    window.location.reload();
-  }, [activeLocale, i18N_DETAILS, supportedLanguages]);
+
+    // Record that we've reloaded for this locale once this session
+    sessionStorage.setItem(LOCALE_SYNC_FLAG, validLocale);
+
+    // If your app truly needs a full refresh to pick up the new i18n wiring, reload once.
+    // Using replace avoids history spam.
+    window.location.replace(window.location.href);
+    // NOTE: If a full reload is not strictly required, remove the line above and let React re-render instead.
+  }, [activeLocale]); // <-- only when the selected locale changes
 
   useEffect(() => {
     if (

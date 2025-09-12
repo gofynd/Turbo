@@ -343,7 +343,7 @@ export const useAddressFormSchema = ({
     defaultAddressItem:
       selectedAddress && !selectedAddress.id
         ? {
-            ...locationDetails,
+            ...defaultAddressItem,
             ...selectedAddress,
             ...(isLoggedIn && { is_default_address: true }),
           }
