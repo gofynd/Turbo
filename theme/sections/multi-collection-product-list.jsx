@@ -543,62 +543,6 @@ export const settings = {
       default: "500",
     },
     {
-      id: "img_resize",
-      label: "Image size for Tablet/Desktop",
-      type: "select",
-      options: [
-        {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
-        {
-          value: "700",
-          text: "700px",
-        },
-        {
-          value: "900",
-          text: "900px",
-        },
-        {
-          value: "1100",
-          text: "1100px",
-        },
-        {
-          value: "1300",
-          text: "1300px",
-        },
-      ],
-      default: "300",
-    },
-    {
-      id: "img_resize_mobile",
-      label: "Image size for Mobile",
-      type: "select",
-      options: [
-        {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
-        {
-          value: "700",
-          text: "700px",
-        },
-        {
-          value: "900",
-          text: "900px",
-        },
-      ],
-      default: "500",
-    },
-    {
       type: "checkbox",
       id: "viewAll",
       default: false,
@@ -612,14 +556,6 @@ export const settings = {
       default: true,
       label: "t:resource.common.fit_image_to_container",
       info: "t:resource.common.clip_image_to_fit_container",
-    },
-    {
-      type: "checkbox",
-      id: "img_fill",
-      category: "Image Container",
-      default: true,
-      label: "Fit image to the container",
-      info: "If the image aspect ratio is different from the container, the image will be clipped to fit the container. The aspect ratio of the image will be maintained",
     },
     {
       type: "checkbox",

@@ -353,23 +353,6 @@ export const settings = {
       ],
     },
     {
-      type: "select",
-      id: "name_placement",
-      label: "Collection Title & Button Placement",
-      default: "inside",
-      info: "Place collection title and button inside or outside the image",
-      options: [
-        {
-          value: "inside",
-          text: "Inside the image",
-        },
-        {
-          value: "outside",
-          text: "Outside the image",
-        },
-      ],
-    },
-    {
       type: "text",
       id: "button_text",
       default: "t:resource.default_values.shop_now",
@@ -423,28 +406,6 @@ export const settings = {
       label: "t:resource.sections.categories.bottom_padding",
       default: 16,
       info: "t:resource.sections.categories.bottom_padding_for_section",
-    },
-    {
-      type: "range",
-      id: "padding_top",
-      min: 0,
-      max: 100,
-      step: 1,
-      unit: "px",
-      label: "Top padding",
-      default: 16,
-      info: "Top padding for section",
-    },
-    {
-      type: "range",
-      id: "padding_bottom",
-      min: 0,
-      max: 100,
-      step: 1,
-      unit: "px",
-      label: "Bottom padding",
-      default: 16,
-      info: "Bottom padding for section",
     },
   ],
   blocks: [

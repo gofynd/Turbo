@@ -1009,62 +1009,6 @@ export const settings = {
       default: "500",
     },
     {
-      id: "img_resize",
-      label: "Image size for Tablet/Desktop",
-      type: "select",
-      options: [
-        {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
-        {
-          value: "700",
-          text: "700px",
-        },
-        {
-          value: "900",
-          text: "900px",
-        },
-        {
-          value: "1100",
-          text: "1100px",
-        },
-        {
-          value: "1300",
-          text: "1300px",
-        },
-      ],
-      default: "300",
-    },
-    {
-      id: "img_resize_mobile",
-      label: "Image size for Mobile",
-      type: "select",
-      options: [
-        {
-          value: "300",
-          text: "300px",
-        },
-        {
-          value: "500",
-          text: "500px",
-        },
-        {
-          value: "700",
-          text: "700px",
-        },
-        {
-          value: "900",
-          text: "900px",
-        },
-      ],
-      default: "500",
-    },
-    {
       type: "color",
       id: "img_container_bg",
       category: "t:resource.common.image_container",
@@ -1175,23 +1119,6 @@ export const settings = {
       default: "below_description",
       label: "t:resource.sections.blog.button_position",
       info: "t:resource.sections.blog.button_position_info",
-    },
-    {
-      id: "button_position",
-      type: "select",
-      options: [
-        {
-          value: "below_description",
-          text: "Below description",
-        },
-        {
-          value: "below_products",
-          text: "Below products",
-        },
-      ],
-      default: "below_description",
-      label: "Button Position",
-      info: "Applicable for only desktop view",
     },
     {
       type: "range",

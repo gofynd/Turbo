@@ -47,26 +47,6 @@
       "info": "t:resource.settings_schema.common.mobile_logo_header_info"
     },
     {
-      "type": "range",
-      "id": "desktop_logo_max_height",
-      "category": "t:resource.common.header",
-      "label": "t:resource.settings_schema.common.logo_header",
-      "min": 20,
-      "max": 100,
-      "unit": "px",
-      "default": 65
-    },
-    {
-      "type": "range",
-      "id": "mobile_logo_max_height_header",
-      "category": "t:resource.common.header",
-      "label": "t:resource.settings_schema.common.mobile_logo_header",
-      "min": 20,
-      "max": 100,
-      "unit": "px",
-      "default": 38
-    },
-    {
       "type": "select",
       "id": "header_layout",
       "default": "single",
@@ -300,26 +280,6 @@
       "category": "Footer",
       "label": "Social media text label",
       "info": "Show Label text for social media"
-    },
-    {
-      "type": "range",
-      "id": "footer_logo_max_height_mobile",
-      "category": "Footer",
-      "label": "Footer Logo Max Height (Mobile)",
-      "min": 25,
-      "max": 100,
-      "unit": "px",
-      "default": 25
-    },
-    {
-      "type": "range",
-      "id": "footer_logo_max_height_desktop",
-      "category": "Footer",
-      "label": "Footer Logo Max Height (Desktop)",
-      "min": 36,
-      "max": 100,
-      "unit": "px",
-      "default": 36
     },
     {
       "type": "header",

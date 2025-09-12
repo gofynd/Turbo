@@ -641,28 +641,6 @@ export const settings = {
       default: 16,
       info: "t:resource.sections.categories.bottom_padding_for_section",
     },
-    {
-      type: "range",
-      id: "padding_top",
-      min: 0,
-      max: 100,
-      step: 1,
-      unit: "px",
-      label: "Top padding",
-      default: 16,
-      info: "Top padding for section",
-    },
-    {
-      type: "range",
-      id: "padding_bottom",
-      min: 0,
-      max: 100,
-      step: 1,
-      unit: "px",
-      label: "Bottom padding",
-      default: 16,
-      info: "Bottom padding for section",
-    },
   ],
   blocks: [
     {

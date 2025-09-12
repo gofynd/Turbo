@@ -387,6 +387,8 @@
         "autoplay_slide_duration": "Autoplay slide duration",
         "top_margin": "Top Margin",
         "top_margin_info": "Top margin for section",
+        "top_padding": "Top Padding",
+        "top_padding_info": "Top Padding for section",
         "open_links_in_new_tab": "Open Links in New Tab",
         "open_links_in_new_tab_info": "Enable to open slide links in a new tab"
       },
