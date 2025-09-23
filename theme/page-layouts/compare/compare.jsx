@@ -1,18 +1,86 @@
-import React from "react";
+import React, { useState, Suspense, useEffect } from "react";
 import useCompare from "./useCompare";
 import styles from "./compare.less";
 import Compare from "@gofynd/theme-template/page-layouts/compare/compare";
 import "@gofynd/theme-template/page-layouts/compare/compare.css";
 import { PRODUCT_COMPARISON } from "../../queries/compareQuery";
+import useAddToCartModal from "../plp/useAddToCartModal";
+import { useThemeConfig } from "../../helper/hooks";
+const AddToCart = React.lazy(
+  () =>
+    import(
+      "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart"
+    )
+);
+const Modal = React.lazy(
+  () => import("@gofynd/theme-template/components/core/modal/modal")
+);
 
 function CompareProducts({ fpi }) {
   const compareProps = useCompare(fpi);
+  const { globalConfig } = useThemeConfig({ fpi });
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window?.innerWidth;
+      setIsTablet(width >= 768 && width <= 1024);
+    };
+
+    handleResize();
+
+    window?.addEventListener("resize", handleResize);
+    return () => {
+      window?.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const addToCartConfigs = {
+    mandatory_pincode: false,
+    hide_single_size: false,
+    preselect_size: false,
+  };
+
+  const addToCartModalProps = useAddToCartModal({
+    fpi,
+    pageConfig: addToCartConfigs,
+  });
+
+  const {
+    handleAddToCart,
+    isOpen: isAddToCartOpen,
+    showSizeGuide,
+    handleCloseSizeGuide,
+    ...restAddToModalProps
+  } = addToCartModalProps;
 
   return (
     <div
       className={`${styles.compare} basePageContainer margin0auto ${styles.fontBody}`}
     >
-      <Compare {...compareProps} />
+      <Compare {...compareProps} handleAddToCart={handleAddToCart} />
+      {isAddToCartOpen && (
+        <Suspense fallback={<div />}>
+          <Modal
+            isOpen={isAddToCartOpen}
+            hideHeader={!isTablet}
+            bodyClassName={styles.addToCartBody}
+            closeDialog={restAddToModalProps?.handleClose}
+            containerClassName={styles.addToCartContainer}
+          >
+            <AddToCart {...restAddToModalProps} globalConfig={globalConfig} />
+          </Modal>
+        </Suspense>
+      )}
+      {showSizeGuide && (
+        <Suspense fallback={<div />}>
+          <SizeGuide
+            isOpen={showSizeGuide}
+            onCloseDialog={handleCloseSizeGuide}
+            productMeta={restAddToModalProps?.productData?.product?.sizes}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

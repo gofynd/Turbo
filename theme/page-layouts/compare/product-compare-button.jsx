@@ -5,7 +5,7 @@ import { PRODUCT_COMPARISON } from "../../queries/compareQuery";
 import { useSnackbar } from "../../helper/hooks";
 import styles from "./compare.less";
 import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
-import CompareWarningIcon from "../../assets/images/compare-warning.svg";
+import CompareWarningIcon from "../../assets/images/compare-warning-image.png";
 import CloseIcon from "../../assets/images/close.svg";
 import CompareIcon from "../../assets/images/compare-icon.svg";
 import { isRunningOnClient } from "../../helper/utils";
@@ -105,7 +105,7 @@ const ProductCompareButton = ({ slug, fpi, customClass }) => {
             <div className={styles.modalBody}>
               <div className={styles.modalContent}>
                 <div className={styles.image}>
-                  <CompareWarningIcon />
+                  <img src={CompareWarningIcon} alt="Compare Warning" />
                 </div>
                 <div
                   className={`${styles["bold-md"]} ${styles["primary-text"]}`}

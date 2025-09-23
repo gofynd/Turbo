@@ -527,7 +527,7 @@
       "removed_success": "removed successfully",
       "updated_success": "Updated Successfully",
       "ticket_success": "Ticket created successfully",
-      "form_success":  "Form Submitted Successfully",
+      "form_success": "Form Submitted Successfully",
       "error_occurred_submitting_form": "An error occurred while submitting the form",
       "other": "Other",
       "other_plural": "Others",
@@ -950,7 +950,9 @@
       "compare_products": "Compare Products",
       "add_products_to_compare": "Add Products To Compare",
       "max_four_products_allowed": "You can only add four products at a time",
-      "search_product_here": "Search Product here"
+      "search_product_here": "Search Product here",
+      "no_product_found": "No product found",
+      "select_product": "Select product"
     },
     "product": {
       "enter_valid_pincode": "Please enter a valid {{displayName}} before Add to Cart/Buy Now",

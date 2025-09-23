@@ -72,6 +72,24 @@ export const SEARCH_PRODUCT = `query products(
       }
       name
       slug
+      discount
+      price {
+        effective {
+          currency_code
+          currency_symbol
+          max
+          min
+        }
+        marked {
+          currency_code
+          currency_symbol
+          max
+          min
+        }
+      }
+      brand {
+        name
+      }
     }
   }
 }

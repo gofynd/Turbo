@@ -39,6 +39,7 @@ const useCompare = (fpi) => {
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [attributes, setAttributes] = useState({});
+  const [debouncedSearchText, setDebouncedSearchText] = useState("");
   const [category, setCategory] = useState(compare_category_details || {});
   const [existingSlugs, setExistingSlugs] = useState(initializeSlugs);
   const [showSearch, setShowSearch] = useState(false);
@@ -55,6 +56,13 @@ const useCompare = (fpi) => {
     const value = action?.page?.query[key];
     return { key, value, firstValue: value?.[0] ?? "" };
   };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 200);
+    return () => clearTimeout(timeoutId);
+  }, [searchText]);
 
   const getCategoryUrl = (action) => {
     let url = `/${action?.page?.type}`;
@@ -96,9 +104,8 @@ const useCompare = (fpi) => {
           );
           // setAttributes(res?.data?.productComparison?.attributes_metadata);
         } else {
-          showSnackbar(
-            res?.errors?.[0]?.message ?? t("resource.common.error_message"),
-            "error"
+          console.log(
+            res?.errors?.[0]?.message ?? t("resource.common.error_message")
           );
         }
       })
@@ -113,7 +120,7 @@ const useCompare = (fpi) => {
 
     try {
       const values = { enableFilter: true };
-      if (searchText) values.search = searchText;
+      if (debouncedSearchText) values.search = debouncedSearchText;
       if (category?.keyValue?.firstValue)
         values.filterQuery = `${category.keyValue.key}:${category.keyValue.firstValue}`;
 
@@ -184,19 +191,19 @@ const useCompare = (fpi) => {
 
   useEffect(() => {
     if (!isSsrFetched) {
-      if (existingSlugs.length) {
-        fetchCompareProduct();
-      }
-      const query = existingSlugs.join("&id=");
-      navigate(`${location.pathname}${query ? `?id=${query}` : ""}`, {
-        replace: true,
-      });
+    if (existingSlugs.length) {
+    fetchCompareProduct();
+    }
+    const query = existingSlugs.join("&id=");
+    navigate(`${location.pathname}${query ? `?id=${query}` : ""}`, {
+      replace: true,
+    });
     }
   }, [existingSlugs]);
 
   useEffect(() => {
     fetchSuggestions();
-  }, [category?.keyValue?.firstValue, searchText]);
+  }, [category?.keyValue?.firstValue, debouncedSearchText]);
 
   useEffect(() => {
     const items = suggestions?.filter?.(
@@ -234,7 +241,7 @@ const useCompare = (fpi) => {
     setShowSearch,
     handleAdd,
     handleRemove,
-    handleInputChange,
+    handleInputChange: (value) => setSearchText(value),
     isDifferentAttr,
     getAttribute,
     checkHtml,
