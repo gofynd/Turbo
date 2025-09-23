@@ -141,6 +141,23 @@ export const GLOBAL_DATA = `query ApplicationConfiguration {
       background_color
       card_position
     }
+       social_tokens {
+      google {
+        app_id
+      }
+      facebook {
+        app_id
+      }
+      accountkit {
+        app_id
+      }
+    }
+    social {
+      facebook
+      google
+      apple
+      account_kit
+    }
     meta {
       fynd_default
     }

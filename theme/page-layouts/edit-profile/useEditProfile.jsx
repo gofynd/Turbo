@@ -14,7 +14,9 @@ const useEditProfile = (fpi) => {
   const location = useLocation();
 
   const platformData = useGlobalStore(fpi.getters.PLATFORM_DATA);
-  const userData = useGlobalStore(fpi.getters.USER_DATA);
+  const userData = useGlobalStore(
+    fpi.getters.USER_DATA || fpi.getters.CUSTOM_VALUE?.user_Data
+  );
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
 
   const [isFormSubmitSuccess, setIsFormSubmitSuccess] = useState(false);
@@ -106,7 +108,10 @@ const useEditProfile = (fpi) => {
         if (verifyEmailLink) {
           const queryParams = new URLSearchParams(location.search);
           queryParams.set("email", email);
-          navigate("/auth/verify-email-link" + (queryParams?.toString() ? `?${queryParams.toString()}` : ""));
+          navigate(
+            "/auth/verify-email-link" +
+              (queryParams?.toString() ? `?${queryParams.toString()}` : "")
+          );
           return;
         }
         if (verifyMobileOtp || verifyEmailOtp) {
