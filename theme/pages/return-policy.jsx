@@ -6,7 +6,6 @@ import ScrollToTop from "../components/scroll-to-top/scroll-to-top";
 function ReturnPolicy() {
   const fpi = useFPI();
   const { returns } = useGlobalStore(fpi?.getters?.LEGAL_DATA);
-
   return (
     <div className="basePageContainer margin0auto policyPageContainer">
       <HTMLContent content={returns} />

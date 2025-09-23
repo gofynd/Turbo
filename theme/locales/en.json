@@ -527,7 +527,7 @@
       "removed_success": "removed successfully",
       "updated_success": "Updated Successfully",
       "ticket_success": "Ticket created successfully",
-      "form_success": "Form Submitted Successfully",
+      "form_success":  "Form Submitted Successfully",
       "error_occurred_submitting_form": "An error occurred while submitting the form",
       "other": "Other",
       "other_plural": "Others",
