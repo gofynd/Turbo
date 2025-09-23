@@ -4,6 +4,7 @@ import {
   CART_DETAILS,
   CART_UPDATE,
   CART_META_UPDATE,
+  APPLY_REWARD_POINTS,
 } from "../../queries/cartQuery";
 import { useAccounts, useWishlist, useSnackbar } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
@@ -45,6 +46,9 @@ const useCart = (fpi, isActive = true) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCartUpdating, setIsCartUpdating] = useState(false);
   const [modeLoading, setIsModeLoading] = useState(false);
+  const [applyRewardResponse, setApplyRewardResponse] = useState(null);
+  const [currentCartId, setCurrentCartId] = useState(null);
+  const [isRewardApplied, setIsRewardApplied] = useState(false); // ← NEW
   const { buy_now_cart_items, cart_items, cart_items_count } = CART || {};
   const {
     breakup_values,
@@ -81,6 +85,14 @@ const useCart = (fpi, isActive = true) => {
     setCustomerCheckoutMode(checkoutMode);
   }, [cart_items]);
 
+  useEffect(() => {
+      if (cartId && cartId !== currentCartId) {
+        setCurrentCartId(cartId);
+        setIsRewardApplied(false);
+        localStorage.removeItem(`loyaltyToastShown_${cartId}`);
+      }
+  }, [cartId]);
+
   const cartItemsByItemId = useMemo(() => {
     if (items?.length > 0) {
       const cartItemsObj = {};
@@ -116,6 +128,64 @@ const useCart = (fpi, isActive = true) => {
     () => cart_items?.currency?.symbol || "₹",
     [cart_items]
   );
+
+    const onApplyLoyaltyPoints = async (isChecked, showToast = true) => {
+      setIsLoyaltyLoading(true);
+      setIsCartUpdating(true);
+
+      const payload = {
+        includeItems: true,
+        includeBreakup: true,
+        cartId: cartId,
+        redeemPoints: { redeem_points: isChecked },
+      };
+
+      try {
+        const res = await fpi.executeGQL(APPLY_REWARD_POINTS, payload, {
+          skipStoreUpdate: false,
+        });
+
+        const data = res?.data?.applyLoyaltyPoints;
+        setApplyRewardResponse(data);
+
+        if (data?.success) {
+          setIsRewardApplied(isChecked);
+
+          const toastKey = `loyaltyToastShown_${cartId}`;
+
+          if (isChecked) {
+            if (showToast && !localStorage.getItem(toastKey)) {
+              showSnackbar(
+                data.message || "Reward points applied successfully",
+                "success"
+              );
+              localStorage.setItem(toastKey, "true");
+            }
+          } else {
+            if (showToast) {
+              showSnackbar("Reward points removed", "success");
+            }
+            localStorage.removeItem(toastKey);
+          }
+
+          await fetchCartDetails(fpi);
+        } else {
+          let errorMsg = "Could not update reward points";
+          if (Array.isArray(res?.errors) && res.errors.length > 0) {
+            errorMsg = res.errors[0]?.message || errorMsg;
+          } else if (Array.isArray(data?.errors) && data.errors.length > 0) {
+            errorMsg = data.errors[0]?.message || errorMsg;
+          }
+          showSnackbar(errorMsg, "error");
+        }
+      } catch (err) {
+        console.error("ApplyRewardPoints error", err);
+        showSnackbar("Something went wrong", "error");
+      } finally {
+        setIsCartUpdating(false);
+        setIsLoyaltyLoading(false);
+      }
+    };
 
   function updateCartItems(
     event,
@@ -169,6 +239,9 @@ const useCart = (fpi, isActive = true) => {
               );
             }
             await fetchCartDetails(fpi, { buyNow }); // Wait for fetchCartDetails to complete
+            if (isRewardApplied) {
+              await onApplyLoyaltyPoints(true, false);
+            }
           } else if (!isSizeUpdate) {
             showSnackbar(
               translateDynamicLabel(res?.data?.updateCart?.message, t) ||
@@ -239,6 +312,8 @@ const useCart = (fpi, isActive = true) => {
       openLogin();
     }
   };
+  const [isLoyaltyLoading, setIsLoyaltyLoading] = useState(false);
+
   function onOpenPromoModal() {
     setIsPromoModalOpen(true);
   }
@@ -298,6 +373,8 @@ const useCart = (fpi, isActive = true) => {
   };
 
   return {
+    onApplyLoyaltyPoints,
+    isLoyaltyLoading,
     isLoading,
     isCartUpdating,
     isLoggedIn,
@@ -317,6 +394,7 @@ const useCart = (fpi, isActive = true) => {
     isRemoveModalOpen,
     isPromoModalOpen,
     buybox,
+    applyRewardResponse,
     availableFOCount: appFeatures?.fulfillment_option?.count || 1,
     onUpdateCartItems: updateCartItems,
     onGotoCheckout: gotoCheckout,

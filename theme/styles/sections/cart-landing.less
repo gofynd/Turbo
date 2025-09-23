@@ -238,3 +238,69 @@
     display: flex;
   }
 }
+
+.loyaltyWrapper {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--divider-color, #e0e0e0);
+}
+
+.loyaltyCard {
+  padding: 24px;
+  border-bottom: 1px solid var(--divider-color, #e0e0e0);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.rewardsTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-heading, #1f1f1f);
+}
+
+.rewardsContainer {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+
+  svg {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    cursor: pointer;
+  }
+}
+
+.loyaltyMainText {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading, #1f1f1f);
+  margin-bottom: 8px;
+}
+
+.loyaltySubText {
+  font-size: 14px;
+  color: var(--text-body, #4f4f4f);
+}
+
+.loyaltyPointsTitle {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  gap: 12px;
+}
+
+.loyaltyCheckbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent-color, #000);
+}
+
+.loyaltyPointsInfo {
+  font-size: 12px;
+  margin-left: 32px;
+  color: @SuccessText;
+}

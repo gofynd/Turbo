@@ -21,6 +21,9 @@ import useCartGst from "../page-layouts/cart/useCartGst";
 import useCartCoupon from "../page-layouts/cart/useCartCoupon";
 import { useThemeFeature, useDeliverPromise } from "../helper/hooks";
 import EmptyCartIcon from "../assets/images/empty-cart.svg";
+import RewardIcon from "../assets/images/rewards.svg";
+import RewardBagIcon from "../assets/images/reward-bag.svg";
+import StarIcon from "../assets/images/starIcon.svg";
 import RadioIcon from "../assets/images/radio";
 import { translateDynamicLabel } from "../helper/utils";
 import { Skeleton } from "../components/core/skeletons";
@@ -33,6 +36,7 @@ export function Component({ globalConfig = {}, blocks }) {
   const { getFormattedPromise } = useDeliverPromise({ fpi });
   const {
     isLoading,
+    isLoyaltyLoading,
     cartData,
     currencySymbol,
     isCartUpdating,
@@ -53,6 +57,8 @@ export function Component({ globalConfig = {}, blocks }) {
     checkoutMode,
     buybox = {},
     availableFOCount,
+    applyRewardResponse,
+    onApplyLoyaltyPoints,
     onGotoCheckout = () => {},
     onRemoveIconClick = () => {},
     onRemoveButtonClick = () => {},
@@ -77,11 +83,65 @@ export function Component({ globalConfig = {}, blocks }) {
   const [sizeModal, setSizeModal] = useState(null);
   const [currentSizeModalSize, setCurrentSizeModalSize] = useState(null);
   const [removeItemData, setRemoveItemData] = useState(null);
+  const [isLoyaltyChecked, setIsLoyaltyChecked] = useState(false);
   const navigate = useNavigate();
 
   const redirectToLogin = () => {
     navigate("/auth/login?redirectUrl=/cart/bag");
   };
+
+    useEffect(() => {
+      if (!cartData?.id) return;
+
+      const savedLoyaltyChecked = localStorage.getItem(
+        `isLoyaltyChecked_${cartData.id}`
+      );
+
+      if (savedLoyaltyChecked === "true") {
+        setIsLoyaltyChecked(true);
+        onApplyLoyaltyPoints(true, false) // 👈 false = silent, no toast
+          .then((res) => {
+            if (res?.applyRewardPoints?.success) {
+              setApplyRewardResponse(res);
+            }
+          })
+          .catch((err) => {
+            console.error("Failed to apply reward points on mount:", err);
+            setIsLoyaltyChecked(false);
+            localStorage.removeItem(`isLoyaltyChecked_${cartData.id}`);
+          });
+      }
+    }, [cartData?.id]);
+
+    useEffect(() => {
+      if (cartData?.id) {
+        // Clear loyalty state from old carts
+        Object.keys(localStorage).forEach((key) => {
+          if (
+            key.startsWith("isLoyaltyChecked_") &&
+            key !== `isLoyaltyChecked_${cartData.id}`
+          ) {
+            localStorage.removeItem(key);
+          }
+        });
+      }
+    }, [cartData?.id]);
+
+    useEffect(() => {}, [cartData]);
+    const handleLoyaltyCheckboxChange = async (event) => {
+      const checked = event.target.checked;
+      setIsLoyaltyChecked(checked);
+      if (cartData?.id) {
+        localStorage.setItem(`isLoyaltyChecked_${cartData.id}`, checked);
+      }
+
+      try {
+        const response = await onApplyLoyaltyPoints(checked);
+      } catch (error) {
+        console.error("Failed to apply reward points:", error);
+        setIsLoyaltyChecked(false);
+      }
+    };
 
   const cartItemsArray = Object.keys(cartItems || {});
   const sizeModalItemValue = cartItems && sizeModal && cartItems[sizeModal];
@@ -251,6 +311,84 @@ export function Component({ globalConfig = {}, blocks }) {
                     />
                     // )
                   );
+                case "loyalty_points":
+                  return (
+                    <div className={styles.loyaltyWrapper}>
+                      <div className={styles.loyaltyCard}>
+                        <section className={styles.rewardsTitle}>
+                          LOYALTY BENEFITS
+                        </section>
+                        <div className={styles.rewardsContainer}>
+                          <RewardIcon className={styles.Icon} />
+                          <div>
+                            <div className={styles.loyaltyMainText}>
+                              {
+                                cartData?.breakup_values?.loyalty_points
+                                  ?.earn_title
+                              }
+                            </div>
+                            <div className={styles.loyaltySubText}>
+                              You’ll earn{" "}
+                              {cartData?.breakup_values?.loyalty_points
+                                ?.earn_points || 0}{" "}
+                              points from this order!
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={styles.loyaltyCard}>
+                        <div className={styles.rewardsContainer}>
+                          <StarIcon className={styles.Icon} />
+                          <div>
+                            <div className={styles.loyaltyMainText}>
+                              You’ve{" "}
+                              {
+                                cartData?.breakup_values?.loyalty_points
+                                  ?.total_points
+                              }{" "}
+                              points
+                            </div>
+                            <div className={styles.loyaltySubText}>
+                              Save additional ₹
+                              {cartData?.breakup_values?.loyalty_points?.amount}
+                            </div>
+                          </div>
+                        </div>
+
+                        <label className={styles.loyaltyPointsTitle}>
+                          <input
+                            type="checkbox"
+                            checked={isLoyaltyChecked}
+                            onChange={handleLoyaltyCheckboxChange}
+                            className={styles.loyaltyCheckbox}
+                            disabled={
+                              !isLoggedIn ||
+                              cartData?.breakup_values?.loyalty_points
+                                ?.total_points <= 0
+                            }
+                          />
+                          Redeem all available points
+                        </label>
+                      </div>
+                      <div className={styles.loyaltyCard}>
+                        <div className={styles.rewardsContainer}>
+                          <RewardBagIcon className={styles.Icon} />
+                          <div>
+                            <div className={styles.loyaltyMainText}>
+                              {cartData?.breakup_values?.loyalty_points?.title}
+                            </div>
+                            <div className={styles.loyaltySubText}>
+                              You’ll redeem{" "}
+                              {cartData?.breakup_values?.loyalty_points?.points}{" "}
+                              points for this order and save ₹
+                              {cartData?.breakup_values?.loyalty_points?.amount}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
                 case "comment":
                   return <Comment key={key} {...cartComment} />;
 
@@ -410,6 +548,11 @@ export const settings = {
       props: [],
     },
     {
+      type: "loyalty_points",
+      name: "t:resource.sections.cart_landing.loyalty_points",
+      props: [],
+    },
+    {
       type: "comment",
       name: "t:resource.sections.cart_landing.comment",
       props: [],
@@ -449,6 +592,9 @@ export const settings = {
     blocks: [
       {
         name: "t:resource.sections.cart_landing.coupon",
+      },
+      {
+        name: "t:resource.sections.cart_landing.loyalty_points",
       },
       {
         name: "t:resource.sections.cart_landing.comment",

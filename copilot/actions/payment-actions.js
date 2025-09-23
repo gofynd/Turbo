@@ -121,7 +121,12 @@ export const paymentActions = [
 
         // Step 5: Get required parameters for PAYMENT_OPTIONS query
         const breakupValues = cartData.breakup_values?.display || [];
-        const totalAmount = breakupValues[breakupValues.length - 1]?.value || 0;
+        // Always take the 'total' key value and handle negative values
+        let totalAmount = 0;
+        const totalBreakup = breakupValues.find((item) => item.key === "total");
+        if (totalBreakup && typeof totalBreakup.value === "number") {
+          totalAmount = Math.abs(totalBreakup.value);
+        }
         const amountInPaise = totalAmount * 100; // Convert to paise as required by API
 
         // Get pincode from localStorage or address_id if available
@@ -409,7 +414,12 @@ export const paymentActions = [
 
         // Get required parameters for PAYMENT_OPTIONS query
         const breakupValues = cartData.breakup_values?.display || [];
-        const totalAmount = breakupValues[breakupValues.length - 1]?.value || 0;
+        // Always take the 'total' key value and handle negative values
+        let totalAmount = 0;
+        const totalBreakup = breakupValues.find((item) => item.key === "total");
+        if (totalBreakup && typeof totalBreakup.value === "number") {
+          totalAmount = Math.abs(totalBreakup.value);
+        }
         const amountInPaise = totalAmount * 100;
 
         // Get pincode
@@ -906,8 +916,14 @@ export const paymentActions = [
 
         const cartData = cartResult.data.cart;
         const cartBreakupValues = cartData.breakup_values?.display || [];
+        // Always take the 'total' key value and handle negative values
+        const totalBreakup = cartBreakupValues.find(
+          (item) => item.key === "total"
+        );
         totalAmount =
-          cartBreakupValues[cartBreakupValues.length - 1]?.value || 0;
+          totalBreakup && typeof totalBreakup.value === "number"
+            ? Math.abs(totalBreakup.value)
+            : 0;
         amountInPaise = totalAmount * 100;
 
         // Get payment options to find selected payment method details

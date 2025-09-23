@@ -79,12 +79,18 @@ function SingleCheckoutPage({ fpi }) {
       showPaymentHandler(true);
 
       let finalAmount = 0;
+
       if (amount !== undefined && amount !== null) {
         finalAmount = amount;
       } else if (checkoutAmount !== undefined && checkoutAmount !== null) {
         finalAmount = checkoutAmount;
-      } else if (breakupValues && breakupValues.length > 0) {
-        finalAmount = breakupValues[breakupValues.length - 1]?.value || 0;
+      } else if (breakupValues && Array.isArray(breakupValues)) {
+        // Always use the 'total' key in breakupValues and handle negative values
+        const totalItem = breakupValues.find((item) => item.key === "total");
+        finalAmount =
+          totalItem && typeof totalItem.value === "number"
+            ? Math.abs(totalItem.value)
+            : 0;
       }
 
       const paymentPayload = {
@@ -114,10 +120,14 @@ function SingleCheckoutPage({ fpi }) {
         const res = await fpi.executeGQL(CHECKOUT_LANDING, payload);
 
         const breakupValues = res?.data?.cart?.breakup_values?.display;
-        const amount =
-          breakupValues && breakupValues.length > 0
-            ? breakupValues[breakupValues.length - 1]?.value
-            : 0;
+        // Always take the total as amount, and ensure non-negative
+        let amount = 0;
+        if (Array.isArray(breakupValues)) {
+          const totalItem = breakupValues.find((item) => item.key === "total");
+          amount = totalItem ? totalItem.value : 0;
+        }
+        // If amount is negative, set to 0
+        amount = amount < 0 ? 0 : amount;
         setCheckoutAmount(amount);
         if (error && amount) {
           showPaymentOptions(amount);

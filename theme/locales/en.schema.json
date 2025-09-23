@@ -260,7 +260,9 @@
         "price_breakup": "Price Breakup",
         "behalf_of_customer": "Behalf of customer",
         "login_checkout_buttons": "Log-In/Checkout Buttons",
-        "share_cart": "Share Cart"
+        "share_cart": "Share Cart",
+        "loyalty_points": "Loyalty Points",
+        "loyalty_points_check": "Enable Loyalty Points"
       },
       "categories_listing": {
         "categories_listing": "Categories Listing",

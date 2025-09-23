@@ -238,6 +238,14 @@ const CART_BREAKUP_VALUES = `breakup_values {
     description
     is_applied
     total
+    points
+    amount
+    earn_points
+    earn_points_amount
+    is_applied
+    total_points
+    title
+    earn_title
   }
   raw {
     cod_charge
@@ -255,6 +263,7 @@ const CART_BREAKUP_VALUES = `breakup_values {
     vog
     you_saved
     total_charge
+    engage_amount
   }
 }`;
 
@@ -541,3 +550,106 @@ export const GET_URL_QR_CODE = `mutation getUrlQRCode($url: String!) {
     svg
   }
 }`;
+
+export const APPLY_REWARD_POINTS = `
+  mutation applyLoyaltyPoints(
+    $includeItems: Boolean,
+    $cartId: String,
+    $includeBreakup: Boolean,
+    $redeemPoints: RedeemLoyaltyPoints!
+  ) {
+    applyLoyaltyPoints(includeItems: $includeItems, cartId: $cartId, includeBreakup: $includeBreakup, redeemPoints: $redeemPoints){
+        cart_id
+        checkout_mode
+        comment
+        coupon_text
+    delivery_charge_info
+    gstin
+    id
+    is_valid
+    message
+    restrict_checkout
+    uid
+    
+    ${CART_ITEMS}
+    ${CART_DELIVERY_PROMISE}
+    ${CART_COUPON}
+    ${CART_APPLIED_PROMO_DETAILS}
+    currency {
+      code
+      symbol
+    }
+        breakup_values {
+            raw {
+                cod_charge
+                convenience_fee
+                coupon
+                delivery_charge
+                discount
+                fynd_cash
+                store_credit
+                gift_card
+                gst_charges
+                mop_total
+                mrp_total
+                subtotal
+                total
+                vog
+                you_saved
+                total_charge
+                engage_amount    
+             }
+            loyalty_points {
+              points
+              amount
+              earn_points
+              earn_points_amount
+              is_applied
+              total_points
+            }
+            display {
+                currency_code
+                currency_symbol
+                display
+                key
+                message
+                preset
+                value
+                attr
+                original
+            }
+            coupon {
+                code
+                coupon_type
+                coupon_value
+                description
+                is_applied
+                max_discount_value
+                message
+                minimum_cart_value
+                sub_title
+                title
+                type
+                uid
+                value
+            }
+        }
+        items {
+            coupon_message
+            custom_order
+            discount
+            is_set
+            key
+            message
+            moq
+            parent_item_identifiers
+            product_ean_id
+            quantity
+            bulk_offer
+        }
+        success
+        buy_now
+        
+    }
+  }
+`;
