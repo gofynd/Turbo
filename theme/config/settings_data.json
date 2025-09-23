@@ -476,6 +476,26 @@
                 "type": "checkbox",
                 "value": true
               },
+               "card_cta_text": {
+                "type": "text",
+                "value": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart"
+              },
+                            "show_add_to_cart": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_wishlist_icon": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_badge": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_view_all": {
+                "type": "checkbox",
+                "value": true
+              },
               "desktop_layout": {
                 "type": "select",
                 "value": "horizontal"

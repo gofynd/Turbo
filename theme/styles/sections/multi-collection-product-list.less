@@ -109,7 +109,12 @@
         font-weight: 400;
         line-height: 18px;
         letter-spacing: -0.28px;
-        color: @TextBody;
+        background-color: @PageBackground;
+        color: @ButtonLink;
+        &:hover {
+          background-color: @ButtonPrimaryL1;
+          color: @ButtonSecondary;
+        }
 
         .iconImage {
           border-radius: @ButtonRadius;
@@ -127,8 +132,13 @@
       }
 
       .activeLink {
-        background-color: @ButtonPrimary;
-        color: @ButtonSecondary;
+        background-color: @ThemeAccentL2;
+        color: @ButtonLink;
+        &:hover {
+          background-color: @ThemeAccentL2;
+          color: @ButtonLink;
+          border: 1px solid @DividerStokes;
+        }
       }
     }
   }
