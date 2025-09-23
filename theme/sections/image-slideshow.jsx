@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useCallback } from "react";
-import { FDKLink } from "fdk-core/components";
+import { FDKLink, BlockRenderer } from "fdk-core/components";
 import Slider from "react-slick";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
@@ -116,23 +116,35 @@ export function Component({ props, blocks, globalConfig, preset }) {
   return (
     <section className={`remove-horizontal-scroll`} style={dynamicStyles}>
       <Slider {...config} initialSlide={0} className={styles.slideshowSlider}>
-        {blocksData?.map((block, index) => (
+        {blocksData?.map((block, index) => {
+          // Handle gallery blocks
+          if (block?.type === "gallery") {
+            return (
           <div className={`${styles.blockItem} ${styles.imageContainer}`}>
-            <FDKLink
-              to={block?.props?.redirect_link?.value ?? ""}
-              target={shouldOpenInNewTab ? "_blank" : "_self"}
-              key={index}
-            >
-              <FyImage
-                src={getDesktopImage(block, index)}
-                sources={getImgSrcSet(block, globalConfig, index)}
-                defer={index < 1 ? false : true}
-                alt={`slide-${index}`}
-                isFixedAspectRatio={false}
-              />
-            </FDKLink>
+                <FDKLink
+                  to={block?.props?.redirect_link?.value ?? ""}
+                  target={shouldOpenInNewTab ? "_blank" : "_self"}
+                  key={index}
+                >
+                  <FyImage
+                    src={getDesktopImage(block, index)}
+                    sources={getImgSrcSet(block, globalConfig, index)}
+                    defer={index < 1 ? false : true}
+                    alt={`slide-${index}`}
+                    isFixedAspectRatio={false}
+                  />
+                </FDKLink>
           </div>
-        ))}
+            );
+          }
+          
+          // Handle all other block types (including customSection) with BlockRenderer
+          return (
+            <div key={index} className="block-renderer-slide">
+              <BlockRenderer block={block} />
+            </div>
+          );
+        })}
       </Slider>
     </section>
   );

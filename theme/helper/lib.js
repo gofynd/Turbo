@@ -30,32 +30,58 @@ export async function globalDataResolver({ fpi, applicationID }) {
     return response;
   } catch (error) {
     fpi.custom.setValue("globalDataResolverError", error);
-    console.error("globalDataResolverError:", error);
     return null;
   }
 }
 
 export async function pageDataResolver({ fpi, router, themeId }) {
-  const state = fpi.store.getState();
-  const pageValue = getPageSlug(router);
-  fpi.executeGQL(USER_DATA_QUERY);
-  const APIs = [];
-  const currentPageInStore = fpi.getters.PAGE(state)?.value ?? null;
-  const query = router?.filterQuery;
-  const filters = !query.isEdit || query.isEdit.toString() !== "true";
-  fpi.custom.setValue("isEdit", !filters);
-  const sectionPreviewHash = router.filterQuery?.sectionPreviewHash || "";
-  const company = parseInt(fpi.getters.THEME(state)?.company_id, 10);
-  if (pageValue && pageValue !== currentPageInStore) {
-    const values = {
-      themeId,
-      pageValue,
-      filters,
-      sectionPreviewHash,
-      company,
-    };
+	const state = fpi.store.getState();
+	const pageValue = getPageSlug(router);
+	fpi.executeGQL(USER_DATA_QUERY);
+	const APIs = [];
+	const currentPageInStore = fpi.getters.PAGE(state)?.value ?? null;
+	const query = router?.filterQuery;
+	const isEdit = query?.isEdit;
+	const filters = !(isEdit === true || isEdit === 'true'); //filters will be off (false) for blitz if isEdit = true
 
-    APIs.push(fpi.executeGQL(THEME_DATA, values));
-  }
-  return Promise.all(APIs);
+  if (typeof state.custom?.isEdit === 'undefined' || filters === false) {
+		fpi.custom.setValue("isEdit", !filters); //store will save opposite of filter means orignal value of isEdit
+	}
+	const sectionPreviewHash = query?.sectionPreviewHash || "";
+	const company = parseInt(fpi.getters.THEME(state)?.company_id, 10);
+  	const updatedState = fpi.store.getState();
+	if ((pageValue && pageValue !== currentPageInStore)) {
+		// Extract URL parameters for dynamic variables
+		let urlParams = {};
+		
+		// Add path parameters (from router.params)
+		if (router?.params && typeof router.params === 'object') {
+			Object.keys(router.params).forEach(key => {
+				urlParams[key] = router.params[key];
+			});
+		}
+		// Add query parameters (from router.filterQuery)
+		if (router?.filterQuery && typeof router.filterQuery === 'object') {
+			Object.keys(router.filterQuery).forEach(key => {
+				// Skip internal query params
+				if (!key.startsWith('__') && key !== 'isEdit' && key !== 'sectionPreviewHash' && key!=="urlParams") {
+					urlParams[key] = router.filterQuery[key];
+				}
+			});
+		}
+		urlParams = JSON.stringify(urlParams);
+		const values = {
+			themeId,
+			pageValue,
+			filters: !(updatedState.custom?.isEdit),//filters will be propogated with opposite of stored value od 
+			sectionPreviewHash,
+			company,
+			urlParams, // Pass URL parameters to GraphQL query
+		};
+		
+		APIs.push(fpi.executeGQL(THEME_DATA, values));
+	}
+	return Promise.all(APIs);
 }
+
+

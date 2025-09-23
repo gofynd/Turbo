@@ -47,9 +47,9 @@ export const USER_DATA_QUERY = `query User {
   }
 }`;
 
-export const THEME_DATA = `query Theme($themeId: String!, $pageValue: String!){
+export const THEME_DATA = `query Theme($themeId: String!, $pageValue: String!, $filters: Boolean, $urlParams: String) {
   theme(themeId: $themeId) {
-    theme_page_detail(pageValue: $pageValue) {
+    theme_page_detail(pageValue: $pageValue, filters: $filters, urlParams: $urlParams) {
       id
       path
       props

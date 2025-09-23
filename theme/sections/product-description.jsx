@@ -1468,11 +1468,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                       );
 
                     default:
-                      return (
-                        <div key={`default_${index}`}>
-                          {t("resource.common.invalid_block")}
-                        </div>
-                      );
+                      return <BlockRenderer block={block} />;
                   }
                 })}
 
