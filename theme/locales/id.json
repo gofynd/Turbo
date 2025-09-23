@@ -320,7 +320,26 @@
       "zipcode": "Kode Zip",
       "zone_number": "Nomor zona",
       "sorry_invalid_coupon": "Maaf!Kupon tidak valid",
-      "invalid_gstin_number": "Nomor Gstin tidak valid"
+      "invalid_gstin_number": "Nomor Gstin tidak valid",
+      "payment_mode_is_not_valid_for_applied_coupon": "Mode pembayaran tidak berlaku untuk kupon terapan",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "Toko pemesanan tidak berlaku untuk kupon yang diterapkan",
+      "coupon_usage_limit_has_been_reached": "Batas penggunaan kupon telah tercapai",
+      "login_required_to_apply_this_coupon": "Login diperlukan untuk menerapkan kupon ini",
+      "coupon_not_applicable_for_the_user": "Kupon tidak berlaku untuk pengguna",
+      "cart_is_empty": "Keranjang kosong",
+      "coupon_expired": "Kupon kedaluwarsa",
+      "sorry_invalid_platform_coupon": "Maaf!Kupon platform tidak valid",
+      "sorry_coupon_expired": "Maaf!Kupon kedaluwarsa",
+      "sorry_coupon_not_applicable": "Maaf!Kupon tidak berlaku.",
+      "sorry_coupon_not_applicable_for_these_items": "Maaf!Kupon tidak berlaku untuk barang -barang ini.",
+      "sorry_coupon_already_used": "Maaf!Kupon sudah digunakan.",
+      "coupon_successfully_removed": "Kupon berhasil dihapus",
+      "no_coupon_is_applied": "Tidak ada kupon yang diterapkan",
+      "coupon_not_applicable_on_this_order": "Kupon tidak berlaku pada pesanan ini",
+      "cod_not_available_on_applied_promocode": "Cod tidak tersedia di promocode yang diterapkan",
+      "coupon_applicable_for_new_users_only": "Kupon hanya berlaku untuk pengguna baru",
+      "please_login_to_use_this_coupon": "Harap masuk untuk menggunakan kupon ini.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "Kode kupon tidak berlaku, item sudah dengan harga terbaik"
     },
     "auth": {
       "account_deletion_notice": "Sesuai permintaan Anda, akun Anda akan segera dihapus. Jika Anda ingin memulihkan akun Anda, silakan hubungi alamat email dukungan di bawah ini",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "Silakan masukkan nomor telepon Anda",
       "please_enter_a_valid_email_address": "Harap masukkan alamat email yang valid",
       "please_enter_your_email_address": "Silakan masukkan alamat email Anda",
-      "seo_description": "Menjangkau kami untuk mendapatkan dukungan atau pertanyaan apa pun.Kami di sini untuk membantu pesanan, pengembalian, atau pertanyaan produk Anda - dengan cepat dan efisien."
+      "seo_description": "Menjangkau kami untuk mendapatkan dukungan atau pertanyaan apa pun.Kami di sini untuk membantu pesanan, pengembalian, atau pertanyaan produk Anda - dengan cepat dan efisien.",
+      "entered_msg_greater_than_500_char": "Pesan yang dimasukkan lebih dari 500 karakter"
     },
     "faq": {
       "no_frequently_asked_questions_found": "Tidak Ditemukan Pertanyaan yang Sering Diajukan",

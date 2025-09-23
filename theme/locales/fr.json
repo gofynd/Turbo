@@ -320,7 +320,26 @@
       "zipcode": "Code postal",
       "zone_number": "Numéro de zone",
       "sorry_invalid_coupon": "Désolé!Coupon non valide",
-      "invalid_gstin_number": "Numéro GSTIN non valide"
+      "invalid_gstin_number": "Numéro GSTIN non valide",
+      "payment_mode_is_not_valid_for_applied_coupon": "Le mode de paiement n'est pas valable pour le coupon appliqué",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "La commande de commande n'est pas valable pour le coupon appliqué",
+      "coupon_usage_limit_has_been_reached": "La limite d'utilisation du coupon a été atteinte",
+      "login_required_to_apply_this_coupon": "Connexion requise pour appliquer ce coupon",
+      "coupon_not_applicable_for_the_user": "Coupon non applicable à l'utilisateur",
+      "cart_is_empty": "Le chariot est vide",
+      "coupon_expired": "Coupon expiré",
+      "sorry_invalid_platform_coupon": "Désolé!Coupon de plate-forme non valide",
+      "sorry_coupon_expired": "Désolé!Coupon expiré",
+      "sorry_coupon_not_applicable": "Désolé!Coupon non applicable.",
+      "sorry_coupon_not_applicable_for_these_items": "Désolé!Coupon non applicable pour ces articles.",
+      "sorry_coupon_already_used": "Désolé!Coupon déjà utilisé.",
+      "coupon_successfully_removed": "Coupon avec succès supprimé",
+      "cod_not_available_on_applied_promocode": "Morue non disponible sur le promocode appliqué",
+      "coupon_applicable_for_new_users_only": "Coupon applicable pour les nouveaux utilisateurs uniquement",
+      "please_login_to_use_this_coupon": "Veuillez vous connecter pour utiliser ce coupon.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "Code de coupon non applicable, les articles sont déjà au meilleur prix",
+      "no_coupon_is_applied": "Aucun coupon n'est appliqué",
+      "coupon_not_applicable_on_this_order": "Coupon non applicable sur cette commande"
     },
     "auth": {
       "account_deletion_notice": "Suite à votre demande, votre compte sera bientôt supprimé. Si vous souhaitez le restaurer, veuillez nous contacter à l'adresse e-mail ci-dessous.",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "Veuillez entrer votre numéro de téléphone",
       "please_enter_a_valid_email_address": "S'il vous plaît, mettez une adresse email valide",
       "please_enter_your_email_address": "Veuillez entrer votre adresse e-mail",
-      "seo_description": "Contactez-nous pour tout soutien ou questions.Nous sommes ici pour vous aider avec vos commandes, vos rendements ou vos demandes de produits - rapidement et efficacement."
+      "seo_description": "Contactez-nous pour tout soutien ou questions.Nous sommes ici pour vous aider avec vos commandes, vos rendements ou vos demandes de produits - rapidement et efficacement.",
+      "entered_msg_greater_than_500_char": "Le message entré est plus de 500 caractères"
     },
     "faq": {
       "no_frequently_asked_questions_found": "Aucune question fréquemment posée trouvée",

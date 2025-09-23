@@ -320,7 +320,26 @@
       "zipcode": "الرمز البريدي",
       "zone_number": "رقم المنطقة",
       "sorry_invalid_coupon": "آسف!قسيمة غير صالحة",
-      "invalid_gstin_number": "رقم GSTIN غير صالح"
+      "invalid_gstin_number": "رقم GSTIN غير صالح",
+      "payment_mode_is_not_valid_for_applied_coupon": "وضع الدفع غير صالح للكوبون المطبق",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "متجر الطلب غير صالح للقسيمة المطبقة",
+      "coupon_usage_limit_has_been_reached": "تم الوصول إلى حد استخدام القسيمة",
+      "login_required_to_apply_this_coupon": "تسجيل الدخول المطلوب لتطبيق هذه القسيمة",
+      "coupon_not_applicable_for_the_user": "القسيمة لا تنطبق على المستخدم",
+      "cart_is_empty": "العربة فارغة",
+      "coupon_expired": "انتهت صلاحية القسيمة",
+      "sorry_invalid_platform_coupon": "آسف!قسيمة منصة غير صالحة",
+      "sorry_coupon_expired": "آسف!انتهت صلاحية القسيمة",
+      "sorry_coupon_not_applicable": "آسف!القسيمة غير قابلة للتطبيق.",
+      "sorry_coupon_not_applicable_for_these_items": "آسف!قسيمة لا تنطبق على هذه العناصر.",
+      "sorry_coupon_already_used": "آسف!القسيمة المستخدمة بالفعل.",
+      "coupon_successfully_removed": "قسيمة تمت إزالتها بنجاح",
+      "no_coupon_is_applied": "لا يتم تطبيق قسيمة",
+      "coupon_not_applicable_on_this_order": "القسيمة لا تنطبق على هذا الطلب",
+      "cod_not_available_on_applied_promocode": "سمك القد غير متوفر على الرمز الباريق التطبيقي",
+      "coupon_applicable_for_new_users_only": "قسيمة قابلة للتطبيق على المستخدمين الجدد فقط",
+      "please_login_to_use_this_coupon": "يرجى تسجيل الدخول لاستخدام هذه القسيمة.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "رمز القسيمة غير قابل للتطبيق ، العناصر بالفعل بأفضل سعر"
     },
     "auth": {
       "account_deletion_notice": "حسب طلبك ، سيتم حذف حسابك قريبًا.إذا كنت ترغب في استعادة حسابك ، فيرجى الاتصال على معرف البريد الإلكتروني للدعم أدناه",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "الرجاء إدخال رقم هاتفك",
       "please_enter_a_valid_email_address": "يرجى إدخال عنوان بريد إلكتروني صالح",
       "please_enter_your_email_address": "الرجاء إدخال عنوان بريدك الإلكتروني",
-      "seo_description": "تواصل معنا للحصول على أي دعم أو أسئلة.نحن هنا للمساعدة في طلباتك أو إرجاعك أو استفسارات المنتج - بشكل سريع وكفاءة."
+      "seo_description": "تواصل معنا للحصول على أي دعم أو أسئلة.نحن هنا للمساعدة في طلباتك أو إرجاعك أو استفسارات المنتج - بشكل سريع وكفاءة.",
+      "entered_msg_greater_than_500_char": "الرسالة التي تم إدخالها أكثر من 500 حرف"
     },
     "faq": {
       "no_frequently_asked_questions_found": "لم يتم العثور على أسئلة متكررة بشكل متكرر",

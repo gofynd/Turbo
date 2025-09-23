@@ -320,7 +320,26 @@
       "zipcode": "ZipCode",
       "zone_number": "Số khu vực",
       "sorry_invalid_coupon": "Lấy làm tiếc!Phiếu giảm giá không hợp lệ",
-      "invalid_gstin_number": "Số GSTIN không hợp lệ"
+      "invalid_gstin_number": "Số GSTIN không hợp lệ",
+      "payment_mode_is_not_valid_for_applied_coupon": "Chế độ thanh toán không hợp lệ cho phiếu giảm giá được áp dụng",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "Cửa hàng đặt hàng không có giá trị cho phiếu giảm giá được áp dụng",
+      "coupon_usage_limit_has_been_reached": "Đã đạt được giới hạn sử dụng phiếu giảm giá",
+      "login_required_to_apply_this_coupon": "Đăng nhập cần thiết để áp dụng phiếu giảm giá này",
+      "coupon_not_applicable_for_the_user": "Phiếu giảm giá không áp dụng cho người dùng",
+      "cart_is_empty": "Giỏ hàng trống rỗng",
+      "coupon_expired": "Phiếu giảm giá đã hết hạn",
+      "sorry_invalid_platform_coupon": "Lấy làm tiếc!Phiếu giảm giá nền tảng không hợp lệ",
+      "sorry_coupon_expired": "Lấy làm tiếc!Phiếu giảm giá đã hết hạn",
+      "sorry_coupon_not_applicable": "Lấy làm tiếc!Phiếu giảm giá không áp dụng.",
+      "sorry_coupon_not_applicable_for_these_items": "Lấy làm tiếc!Phiếu giảm giá không áp dụng cho các mặt hàng này.",
+      "sorry_coupon_already_used": "Lấy làm tiếc!Phiếu giảm giá đã được sử dụng.",
+      "coupon_successfully_removed": "Phiếu giảm giá đã được gỡ bỏ thành công",
+      "no_coupon_is_applied": "Không có phiếu giảm giá nào được áp dụng",
+      "coupon_not_applicable_on_this_order": "Phiếu giảm giá không áp dụng cho đơn đặt hàng này",
+      "cod_not_available_on_applied_promocode": "COD không có sẵn trên mã quảng cáo được áp dụng",
+      "coupon_applicable_for_new_users_only": "Phiếu giảm giá chỉ áp dụng cho người dùng mới",
+      "please_login_to_use_this_coupon": "Vui lòng đăng nhập để sử dụng phiếu giảm giá này.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "Mã phiếu giảm giá không áp dụng, các mặt hàng đã ở mức giá tốt nhất"
     },
     "auth": {
       "account_deletion_notice": "Theo yêu cầu của bạn, tài khoản của bạn sẽ sớm bị xóa. Nếu bạn muốn khôi phục tài khoản của mình, vui lòng liên hệ theo địa chỉ email hỗ trợ bên dưới",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "Vui lòng nhập số điện thoại của bạn",
       "please_enter_a_valid_email_address": "Vui lòng nhập địa chỉ email hợp lệ",
       "please_enter_your_email_address": "Vui lòng nhập địa chỉ email của bạn",
-      "seo_description": "Liên hệ với chúng tôi để có bất kỳ hỗ trợ hoặc câu hỏi.Chúng tôi ở đây để hỗ trợ các đơn đặt hàng, trả lại hoặc yêu cầu sản phẩm của bạn, nhanh chóng và hiệu quả."
+      "seo_description": "Liên hệ với chúng tôi để có bất kỳ hỗ trợ hoặc câu hỏi.Chúng tôi ở đây để hỗ trợ các đơn đặt hàng, trả lại hoặc yêu cầu sản phẩm của bạn, nhanh chóng và hiệu quả.",
+      "entered_msg_greater_than_500_char": "Tin nhắn đã nhập là hơn 500 ký tự"
     },
     "faq": {
       "no_frequently_asked_questions_found": "Không tìm thấy câu hỏi thường gặp",

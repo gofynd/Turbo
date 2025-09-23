@@ -320,7 +320,26 @@
       "zipcode": "ZIPCode",
       "zone_number": "លេខតំបន់",
       "sorry_invalid_coupon": "សុំទោស!គូប៉ុងមិនត្រឹមត្រូវ",
-      "invalid_gstin_number": "លេខ GSTIN មិនត្រឹមត្រូវ"
+      "invalid_gstin_number": "លេខ GSTIN មិនត្រឹមត្រូវ",
+      "payment_mode_is_not_valid_for_applied_coupon": "របៀបបង់ប្រាក់មិនមានសុពលភាពសម្រាប់ប័ណ្ណដែលបានអនុវត្ត",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "ហាងបញ្ជាទិញមិនមានសុពលភាពសម្រាប់ប័ណ្ណដែលបានអនុវត្តទេ",
+      "coupon_usage_limit_has_been_reached": "ដែនកំណត់នៃការប្រើប្រាស់គូប៉ុងត្រូវបានឈានដល់",
+      "login_required_to_apply_this_coupon": "ចូលតម្រូវឱ្យអនុវត្តប័ណ្ណនេះ",
+      "coupon_not_applicable_for_the_user": "គូប៉ុងមិនអាចអនុវត្តបានសម្រាប់អ្នកប្រើប្រាស់ទេ",
+      "cart_is_empty": "រទេះគឺទទេ",
+      "coupon_expired": "ប័ណ្ណផុតកំណត់",
+      "sorry_invalid_platform_coupon": "សុំទោស!ប័ណ្ណវេទិកាមិនត្រឹមត្រូវ",
+      "sorry_coupon_expired": "សុំទោស!ប័ណ្ណផុតកំណត់",
+      "sorry_coupon_not_applicable": "សុំទោស!គូប៉ុងមិនអាចអនុវត្តបានទេ។",
+      "sorry_coupon_not_applicable_for_these_items": "សុំទោស!គូប៉ុងមិនអាចអនុវត្តបានសម្រាប់របស់ទាំងនេះទេ។",
+      "sorry_coupon_already_used": "សុំទោស!គូប៉ុងប្រើរួចហើយ។",
+      "coupon_successfully_removed": "គូប៉ុងដកចេញដោយជោគជ័យ",
+      "no_coupon_is_applied": "មិនមានគូប៉ុងត្រូវបានអនុវត្តទេ",
+      "coupon_not_applicable_on_this_order": "គូប៉ុងមិនអនុវត្តតាមលំដាប់នេះទេ",
+      "cod_not_available_on_applied_promocode": "លេខមិនមាននៅលើការផ្សព្វផ្សាយដែលបានអនុវត្ត",
+      "coupon_applicable_for_new_users_only": "គូប៉ុងដែលអាចអនុវត្តបានសម្រាប់តែអ្នកប្រើប្រាស់ថ្មីប៉ុណ្ណោះ",
+      "please_login_to_use_this_coupon": "សូមចូលដើម្បីប្រើប័ណ្ណនេះ។",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "លេខកូដគូប៉ុងមិនអាចអនុវត្តបានទេធាតុដែលមានតំលៃល្អបំផុត"
     },
     "auth": {
       "account_deletion_notice": "តាមសំណើរបស់អ្នក គណនីរបស់អ្នកនឹងត្រូវបានលុបក្នុងពេលឆាប់ៗនេះ។ ប្រសិនបើអ្នកចង់ស្តារគណនីរបស់អ្នកឡើងវិញ សូមទាក់ទងលេខសម្គាល់អ៊ីមែលជំនួយខាងក្រោម",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "សូមបញ្ចូលលេខទូរស័ព្ទរបស់អ្នក។",
       "please_enter_a_valid_email_address": "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែលត្រឹមត្រូវ។",
       "please_enter_your_email_address": "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែលរបស់អ្នក។",
-      "seo_description": "ឈោងចាប់យើងសម្រាប់ការគាំទ្រឬសំណួរណាមួយ។យើងនៅទីនេះដើម្បីជួយដល់ការបញ្ជាទិញត្រឡប់មកវិញរបស់អ្នកត្រឡប់មកវិញឬការសាកសួរផលិតផល - យ៉ាងឆាប់រហ័សនិងមានប្រសិទ្ធិភាព។"
+      "seo_description": "ឈោងចាប់យើងសម្រាប់ការគាំទ្រឬសំណួរណាមួយ។យើងនៅទីនេះដើម្បីជួយដល់ការបញ្ជាទិញត្រឡប់មកវិញរបស់អ្នកត្រឡប់មកវិញឬការសាកសួរផលិតផល - យ៉ាងឆាប់រហ័សនិងមានប្រសិទ្ធិភាព។",
+      "entered_msg_greater_than_500_char": "សារដែលបានបញ្ចូលគឺច្រើនជាង 500 តួអក្សរ"
     },
     "faq": {
       "no_frequently_asked_questions_found": "រកមិនឃើញសំណួរដែលគេសួរញឹកញាប់ទេ។",

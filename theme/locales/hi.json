@@ -320,7 +320,26 @@
       "zipcode": "ज़िप कोड",
       "zone_number": "क्षेत्र संख्या",
       "sorry_invalid_coupon": "क्षमा मांगना!अमान्य कूपन",
-      "invalid_gstin_number": "अमान्य gstin नंबर"
+      "invalid_gstin_number": "अमान्य gstin नंबर",
+      "payment_mode_is_not_valid_for_applied_coupon": "भुगतान मोड लागू कूपन के लिए मान्य नहीं है",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "ऑर्डरिंग स्टोर लागू कूपन के लिए मान्य नहीं है",
+      "login_required_to_apply_this_coupon": "इस कूपन को लागू करने के लिए आवश्यक लॉगिन करें",
+      "cart_is_empty": "कार्ट खाली है",
+      "coupon_expired": "कूपन समाप्त हो गया",
+      "sorry_invalid_platform_coupon": "क्षमा मांगना!अमान्य प्लेटफ़ॉर्म कूपन",
+      "sorry_coupon_expired": "क्षमा मांगना!कूपन समाप्त हो गया",
+      "sorry_coupon_not_applicable": "क्षमा मांगना!कूपन लागू नहीं है।",
+      "sorry_coupon_not_applicable_for_these_items": "क्षमा मांगना!इन वस्तुओं के लिए कूपन लागू नहीं है।",
+      "sorry_coupon_already_used": "क्षमा मांगना!कूपन पहले से ही उपयोग किया गया था।",
+      "coupon_successfully_removed": "कूपन सफलतापूर्वक हटा दिया गया",
+      "no_coupon_is_applied": "कोई कूपन लागू नहीं होता है",
+      "coupon_not_applicable_on_this_order": "इस आदेश पर कूपन लागू नहीं है",
+      "cod_not_available_on_applied_promocode": "कॉड लागू प्रोमोकोड पर उपलब्ध नहीं है",
+      "coupon_applicable_for_new_users_only": "केवल नए उपयोगकर्ताओं के लिए लागू कूपन",
+      "please_login_to_use_this_coupon": "कृपया इस कूपन का उपयोग करने के लिए लॉगिन करें।",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "कूपन कोड लागू नहीं है, आइटम पहले से ही सर्वोत्तम मूल्य पर हैं",
+      "coupon_usage_limit_has_been_reached": "कूपन उपयोग की सीमा तक पहुंच गई है",
+      "coupon_not_applicable_for_the_user": "कूपन उपयोगकर्ता के लिए लागू नहीं है"
     },
     "auth": {
       "account_deletion_notice": "आपके अनुरोध के अनुसार, आपका खाता जल्द ही हटा दिया जाएगा।यदि आप अपना खाता पुनर्स्थापित करना चाहते हैं, तो कृपया नीचे सहायता ईमेल आईडी पर संपर्क करें",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "कृपया अपना फोन नंबर दर्ज करें",
       "please_enter_a_valid_email_address": "कृपया एक मान्य ईमेल पता प्रविष्ट करें",
       "please_enter_your_email_address": "कृपया अपना ईमेल एड्रेस इंटर करें",
-      "seo_description": "किसी भी समर्थन या प्रश्न के लिए हमारे पास पहुंचें।हम यहां आपके आदेशों, रिटर्न, या उत्पाद पूछताछ के साथ सहायता करने के लिए हैं - जल्दी से और कुशलता से।"
+      "seo_description": "किसी भी समर्थन या प्रश्न के लिए हमारे पास पहुंचें।हम यहां आपके आदेशों, रिटर्न, या उत्पाद पूछताछ के साथ सहायता करने के लिए हैं - जल्दी से और कुशलता से।",
+      "entered_msg_greater_than_500_char": "दर्ज संदेश 500 से अधिक वर्ण हैं"
     },
     "faq": {
       "no_frequently_asked_questions_found": "कोई अक्सर पूछे जाने वाले प्रश्न नहीं मिले",

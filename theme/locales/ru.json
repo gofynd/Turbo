@@ -320,7 +320,26 @@
       "zipcode": "Почтовый индекс",
       "zone_number": "Номер зоны",
       "sorry_invalid_coupon": "Извини!Неверный купон",
-      "invalid_gstin_number": "Недопустимый номер GSTIN"
+      "invalid_gstin_number": "Недопустимый номер GSTIN",
+      "payment_mode_is_not_valid_for_applied_coupon": "Режим оплаты не является действительным для прикладного купона",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "Магазин заказы не действителен для прикладного купона",
+      "coupon_usage_limit_has_been_reached": "Лимит использования купона был достигнут",
+      "login_required_to_apply_this_coupon": "Войдите, необходимый для применения этого купона",
+      "coupon_not_applicable_for_the_user": "Купон не применим для пользователя",
+      "cart_is_empty": "Тележка пуста",
+      "coupon_expired": "Купон истек",
+      "sorry_invalid_platform_coupon": "Извини!Неверный купон платформы",
+      "sorry_coupon_expired": "Извини!Купон истек",
+      "sorry_coupon_not_applicable": "Извини!Купон не применим.",
+      "sorry_coupon_not_applicable_for_these_items": "Извини!Купон не применим для этих предметов.",
+      "sorry_coupon_already_used": "Извини!Купон уже использован.",
+      "coupon_successfully_removed": "Купон успешно удален",
+      "no_coupon_is_applied": "Купон не применяется",
+      "coupon_not_applicable_on_this_order": "Купон не применим в этом заказе",
+      "cod_not_available_on_applied_promocode": "CoD недоступна на примененном промокоде",
+      "coupon_applicable_for_new_users_only": "Купон, применимый только для новых пользователей",
+      "please_login_to_use_this_coupon": "Пожалуйста, войдите, чтобы использовать этот купон.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "Код купона не применимо, предметы уже по лучшей цене"
     },
     "auth": {
       "account_deletion_notice": "По вашему запросу ваш аккаунт будет скоро удален. Если вы хотите восстановить свой аккаунт, пожалуйста, свяжитесь с нами по адресу электронной почты поддержки ниже",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "Пожалуйста, введите ваш номер телефона",
       "please_enter_a_valid_email_address": "Пожалуйста, введите действительный адрес электронной почты",
       "please_enter_your_email_address": "Пожалуйста, введите ваш адрес электронной почты",
-      "seo_description": "Обратитесь к нам за любыми поддержкой или вопросами.Мы здесь, чтобы помочь с вашим заказом, возвращением или запросами на продукцию - громко и эффективно."
+      "seo_description": "Обратитесь к нам за любыми поддержкой или вопросами.Мы здесь, чтобы помочь с вашим заказом, возвращением или запросами на продукцию - громко и эффективно.",
+      "entered_msg_greater_than_500_char": "Введенное сообщение составляет более 500 символов"
     },
     "faq": {
       "no_frequently_asked_questions_found": "Часто задаваемые вопросы не найдены",

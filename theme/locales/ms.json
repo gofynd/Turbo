@@ -320,7 +320,26 @@
       "zipcode": "ZipCode",
       "zone_number": "Nombor zon",
       "sorry_invalid_coupon": "Maaf!Kupon tidak sah",
-      "invalid_gstin_number": "Nombor gstin yang tidak sah"
+      "invalid_gstin_number": "Nombor gstin yang tidak sah",
+      "payment_mode_is_not_valid_for_applied_coupon": "Mod pembayaran tidak sah untuk kupon yang digunakan",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "Kedai pesanan tidak sah untuk kupon yang digunakan",
+      "coupon_usage_limit_has_been_reached": "Had penggunaan kupon telah dicapai",
+      "login_required_to_apply_this_coupon": "Log masuk diperlukan untuk menggunakan kupon ini",
+      "coupon_not_applicable_for_the_user": "Kupon tidak berkenaan untuk pengguna",
+      "cart_is_empty": "Kereta kosong",
+      "coupon_expired": "Kupon tamat",
+      "sorry_invalid_platform_coupon": "Maaf!Kupon platform tidak sah",
+      "sorry_coupon_expired": "Maaf!Kupon tamat",
+      "sorry_coupon_not_applicable": "Maaf!Kupon tidak berkenaan.",
+      "sorry_coupon_not_applicable_for_these_items": "Maaf!Kupon tidak berkenaan untuk item ini.",
+      "sorry_coupon_already_used": "Maaf!Kupon sudah digunakan.",
+      "coupon_successfully_removed": "Kupon berjaya dikeluarkan",
+      "no_coupon_is_applied": "Tiada kupon digunakan",
+      "coupon_not_applicable_on_this_order": "Kupon tidak berkenaan dengan pesanan ini",
+      "cod_not_available_on_applied_promocode": "COD tidak tersedia di promocode yang digunakan",
+      "coupon_applicable_for_new_users_only": "Kupon terpakai untuk pengguna baru sahaja",
+      "please_login_to_use_this_coupon": "Sila log masuk untuk menggunakan kupon ini.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "Kod kupon tidak berkenaan, item sudah pada harga terbaik"
     },
     "auth": {
       "account_deletion_notice": "Mengikut permintaan anda, akaun anda akan dipadamkan tidak lama lagi. Jika anda ingin memulihkan akaun anda, sila hubungi id e-mel sokongan di bawah",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "Sila masukkan nombor telefon anda",
       "please_enter_a_valid_email_address": "Sila masukkan alamat e-mel yang sah",
       "please_enter_your_email_address": "Sila masukkan alamat e-mel anda",
-      "seo_description": "Hubungi kami untuk sebarang sokongan atau pertanyaan.Kami berada di sini untuk membantu pesanan, pulangan, atau pertanyaan produk anda -dengan pantas dan cekap."
+      "seo_description": "Hubungi kami untuk sebarang sokongan atau pertanyaan.Kami berada di sini untuk membantu pesanan, pulangan, atau pertanyaan produk anda -dengan pantas dan cekap.",
+      "entered_msg_greater_than_500_char": "Mesej yang dimasukkan lebih daripada 500 aksara"
     },
     "faq": {
       "no_frequently_asked_questions_found": "Tiada Soalan Lazim Ditemui",

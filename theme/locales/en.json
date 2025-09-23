@@ -320,7 +320,26 @@
       "zipcode": "Zipcode",
       "zone_number": "Zone number",
       "sorry_invalid_coupon": "Sorry! Invalid coupon",
-      "invalid_gstin_number": "Invalid gstin number"
+      "invalid_gstin_number": "Invalid gstin number",
+      "payment_mode_is_not_valid_for_applied_coupon": "Payment mode is not valid for applied coupon",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "Ordering store is not valid for the applied coupon",
+      "coupon_usage_limit_has_been_reached": "Coupon usage limit has been reached",
+      "login_required_to_apply_this_coupon": "Login required to apply this coupon",
+      "coupon_not_applicable_for_the_user": "Coupon not applicable for the user",
+      "cart_is_empty": "Cart is empty",
+      "coupon_expired": "Coupon expired",
+      "sorry_invalid_platform_coupon": "Sorry! Invalid platform coupon",
+      "sorry_coupon_expired": "Sorry! Coupon Expired",
+      "sorry_coupon_not_applicable": "Sorry! Coupon not applicable.",
+      "sorry_coupon_not_applicable_for_these_items": "Sorry! Coupon not applicable for these items.",
+      "sorry_coupon_already_used": "Sorry! Coupon already used.",
+      "coupon_successfully_removed": "Coupon successfully removed",
+      "no_coupon_is_applied": "No coupon is applied",
+      "coupon_not_applicable_on_this_order": "Coupon not applicable on this order",
+      "cod_not_available_on_applied_promocode": "COD not available on applied promocode",
+      "coupon_applicable_for_new_users_only": "Coupon applicable for new users only",
+      "please_login_to_use_this_coupon": "Please login to use this coupon.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "Coupon code not applicable, items are already at the best price"
     },
     "auth": {
       "account_deletion_notice": "As per your request, your account will be deleted soon. If you wish to restore your account, please contact on below support email id",
@@ -508,7 +527,7 @@
       "removed_success": "removed successfully",
       "updated_success": "Updated Successfully",
       "ticket_success": "Ticket created successfully",
-      "form_success":  "Form Submitted Successfully",
+      "form_success": "Form Submitted Successfully",
       "error_occurred_submitting_form": "An error occurred while submitting the form",
       "other": "Other",
       "other_plural": "Others",
@@ -1191,7 +1210,9 @@
       "save_this_card_rbi_guidelines": "Save this card as per RBI Guidelines",
       "improve_your_card_security": "Improve your card security",
       "card_consent_request_1": "Your bank/card network will securely save your card info via tokenization if you give consent for the same.",
-      "card_consent_request_2": "In case you choose to not tokenize, you will have to enter the card details every time you pay."
+      "card_consent_request_2": "In case you choose to not tokenize, you will have to enter the card details every time you pay.",
+      "no_payment_methods_available_heading": "Payment methods not available",
+      "no_payment_methods_available_desc": "Unfortunately, we are unable to process your order right now because no payment method is currently available. Please try again later or contact the store owner for assistance."
     },
     "contact_us": {
       "please_enter_your_name": "Please enter your name",

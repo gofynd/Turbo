@@ -320,7 +320,26 @@
       "zipcode": "Zipcode",
       "zone_number": "Zone -nummer",
       "sorry_invalid_coupon": "Sorry!Ongeldige coupon",
-      "invalid_gstin_number": "Ongeldig GSTIN -nummer"
+      "invalid_gstin_number": "Ongeldig GSTIN -nummer",
+      "payment_mode_is_not_valid_for_applied_coupon": "Betalingsmodus is niet geldig voor de toegepaste coupon",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "Bestelstore is niet geldig voor de toegepaste coupon",
+      "coupon_usage_limit_has_been_reached": "Coupongebruikslimiet is bereikt",
+      "login_required_to_apply_this_coupon": "Inloggen vereist om deze coupon toe te passen",
+      "coupon_not_applicable_for_the_user": "Coupon niet van toepassing op de gebruiker",
+      "cart_is_empty": "Kar is leeg",
+      "coupon_expired": "Coupon verlopen",
+      "sorry_invalid_platform_coupon": "Sorry!Ongeldige platformcoupon",
+      "sorry_coupon_expired": "Sorry!Coupon verlopen",
+      "sorry_coupon_not_applicable": "Sorry!Coupon niet van toepassing.",
+      "sorry_coupon_not_applicable_for_these_items": "Sorry!Coupon niet van toepassing op deze items.",
+      "sorry_coupon_already_used": "Sorry!Coupon al gebruikt.",
+      "coupon_successfully_removed": "Coupon met succes verwijderd",
+      "no_coupon_is_applied": "Er wordt geen coupon toegepast",
+      "coupon_not_applicable_on_this_order": "Coupon niet van toepassing op deze bestelling",
+      "cod_not_available_on_applied_promocode": "Kabeljauw niet beschikbaar op toegepaste promocode",
+      "please_login_to_use_this_coupon": "Log in om deze coupon te gebruiken.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "Couponcode niet van toepassing, artikelen zijn al voor de beste prijs",
+      "coupon_applicable_for_new_users_only": "Coupon die alleen van toepassing is voor nieuwe gebruikers"
     },
     "auth": {
       "account_deletion_notice": "Op uw verzoek wordt uw account binnenkort verwijderd. Als u uw account wilt herstellen, neem dan contact op met het onderstaande support-e-mailadres.",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "Voer uw telefoonnummer in",
       "please_enter_a_valid_email_address": "Voer een geldig e-mailadres in",
       "please_enter_your_email_address": "Vul uw e-mailadres in",
-      "seo_description": "Neem contact met ons op voor ondersteuning of vragen.We zijn hier om te helpen met uw bestellingen, retouren of productvragen - goed en efficiënt."
+      "seo_description": "Neem contact met ons op voor ondersteuning of vragen.We zijn hier om te helpen met uw bestellingen, retouren of productvragen - goed en efficiënt.",
+      "entered_msg_greater_than_500_char": "Ingevoerd bericht is meer dan 500 tekens"
     },
     "faq": {
       "no_frequently_asked_questions_found": "Geen veelgestelde vragen gevonden",

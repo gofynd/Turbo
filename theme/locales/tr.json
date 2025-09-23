@@ -320,7 +320,26 @@
       "zipcode": "Posta kodu",
       "zone_number": "Bölge numarası",
       "sorry_invalid_coupon": "Üzgünüm!Geçersiz Kupon",
-      "invalid_gstin_number": "Geçersiz Gstin Numarası"
+      "invalid_gstin_number": "Geçersiz Gstin Numarası",
+      "payment_mode_is_not_valid_for_applied_coupon": "Ödeme modu uygulanan kupon için geçerli değil",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "Sipariş mağazası uygulanan kupon için geçerli değildir",
+      "coupon_usage_limit_has_been_reached": "Kupon kullanım sınırına ulaşıldı",
+      "login_required_to_apply_this_coupon": "Bu kuponu uygulamak için Giriş Gerekir",
+      "coupon_not_applicable_for_the_user": "Kupon kullanıcı için geçerli değil",
+      "cart_is_empty": "Sepet boş",
+      "coupon_expired": "Kupon süresi doldu",
+      "sorry_invalid_platform_coupon": "Üzgünüm!Geçersiz Platform Kuponu",
+      "sorry_coupon_expired": "Üzgünüm!Kupon süresi doldu",
+      "sorry_coupon_not_applicable": "Üzgünüm!Kupon uygulanamaz.",
+      "sorry_coupon_not_applicable_for_these_items": "Üzgünüm!Bu öğeler için kupon uygulanamaz.",
+      "sorry_coupon_already_used": "Üzgünüm!Kupon zaten kullanılmış.",
+      "coupon_successfully_removed": "Kupon başarıyla kaldırıldı",
+      "no_coupon_is_applied": "Kupon uygulanmadı",
+      "coupon_not_applicable_on_this_order": "Kupon bu siparişte uygulanamaz",
+      "cod_not_available_on_applied_promocode": "COD Uygulamalı Promokode Mevcut Değil",
+      "coupon_applicable_for_new_users_only": "Yalnızca yeni kullanıcılar için uygulanabilir kupon",
+      "please_login_to_use_this_coupon": "Lütfen bu kuponu kullanmak için giriş yapın.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "Kupon kodu uygulanamaz, öğeler zaten en iyi fiyata"
     },
     "auth": {
       "account_deletion_notice": "Talebiniz doğrultusunda hesabınız yakında silinecektir. Hesabınızı geri yüklemek isterseniz lütfen aşağıdaki destek e-posta kimliğiyle iletişime geçin.",
@@ -1181,7 +1200,8 @@
       "please_enter_your_phone_number": "Lütfen telefon numaranızı giriniz",
       "please_enter_a_valid_email_address": "Geçerli bir e",
       "please_enter_your_email_address": "Lütfen e-posta adresinizi giriniz",
-      "seo_description": "Herhangi bir destek veya soru için bize ulaşın.Siparişlerinize, iadelerinize veya ürün sorularınıza yardımcı olmak için buradayız - quick ve verimli bir şekilde."
+      "seo_description": "Herhangi bir destek veya soru için bize ulaşın.Siparişlerinize, iadelerinize veya ürün sorularınıza yardımcı olmak için buradayız - quick ve verimli bir şekilde.",
+      "entered_msg_greater_than_500_char": "Girilen mesaj 500'den fazla karakter"
     },
     "faq": {
       "no_frequently_asked_questions_found": "Sıkça Sorulan Sorular Bulunamadı",

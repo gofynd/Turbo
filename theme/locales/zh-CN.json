@@ -320,7 +320,26 @@
       "zipcode": "邮政编码",
       "zone_number": "区域号",
       "sorry_invalid_coupon": "对不起！无效的优惠券",
-      "invalid_gstin_number": "无效的GSTIN编号"
+      "invalid_gstin_number": "无效的GSTIN编号",
+      "payment_mode_is_not_valid_for_applied_coupon": "付款模式对应用优惠券无效",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "订购商店对应用优惠券无效",
+      "coupon_usage_limit_has_been_reached": "优惠券的使用限额已达到",
+      "login_required_to_apply_this_coupon": "应用此优惠券需要登录",
+      "coupon_not_applicable_for_the_user": "优惠券不适用于用户",
+      "cart_is_empty": "购物车是空的",
+      "coupon_expired": "优惠券过期",
+      "sorry_invalid_platform_coupon": "对不起！无效的平台优惠券",
+      "sorry_coupon_expired": "对不起！优惠券过期",
+      "sorry_coupon_not_applicable": "对不起！优惠券不适用。",
+      "sorry_coupon_not_applicable_for_these_items": "对不起！优惠券不适用于这些项目。",
+      "sorry_coupon_already_used": "对不起！优惠券已经使用了。",
+      "coupon_successfully_removed": "优惠券成功删除",
+      "no_coupon_is_applied": "没有优惠券",
+      "coupon_not_applicable_on_this_order": "优惠券不适用此订单",
+      "cod_not_available_on_applied_promocode": "鳕鱼在应用的杂货交易中不可用",
+      "coupon_applicable_for_new_users_only": "仅适用于新用户的优惠券",
+      "please_login_to_use_this_coupon": "请登录使用此优惠券。",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "优惠券代码不适用，项目已经以最优惠的价格"
     },
     "auth": {
       "account_deletion_notice": "根据您的请求，您的帐户即将被删除。如果您希望恢复帐户，请通过以下支持邮箱联系",
@@ -1182,7 +1201,8 @@
       "please_enter_your_phone_number": "请输入您的电话号码",
       "please_enter_a_valid_email_address": "请输入有效的电子邮件地址",
       "please_enter_your_email_address": "请输入您的电子邮件地址",
-      "seo_description": "与我们联系以寻求任何支持或问题。我们在这里为您的订单，退货或产品查询提供协助，质量高效。"
+      "seo_description": "与我们联系以寻求任何支持或问题。我们在这里为您的订单，退货或产品查询提供协助，质量高效。",
+      "entered_msg_greater_than_500_char": "输入的消息超过500个字符"
     },
     "faq": {
       "no_frequently_asked_questions_found": "未找到常见问题解答",

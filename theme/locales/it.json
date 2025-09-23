@@ -321,7 +321,26 @@
       "zipcode": "Cap",
       "zone_number": "Numero di zona",
       "sorry_invalid_coupon": "Scusa!Coupon non valido",
-      "invalid_gstin_number": "Numero GSTIN non valido"
+      "invalid_gstin_number": "Numero GSTIN non valido",
+      "payment_mode_is_not_valid_for_applied_coupon": "La modalità di pagamento non è valida per il coupon applicato",
+      "ordering_store_is_not_valid_for_the_applied_coupon": "Il negozio di ordini non è valido per il coupon applicato",
+      "coupon_usage_limit_has_been_reached": "È stato raggiunto il limite di utilizzo coupon",
+      "login_required_to_apply_this_coupon": "Accesso richiesto per applicare questo coupon",
+      "coupon_not_applicable_for_the_user": "Coupon non applicabile per l'utente",
+      "cart_is_empty": "Il carrello è vuoto",
+      "coupon_expired": "Coupon scaduto",
+      "sorry_invalid_platform_coupon": "Scusa!Coupon della piattaforma non valida",
+      "sorry_coupon_expired": "Scusa!Coupon scaduto",
+      "sorry_coupon_not_applicable": "Scusa!Coupon non applicabile.",
+      "sorry_coupon_not_applicable_for_these_items": "Scusa!Coupon non applicabile per questi articoli.",
+      "sorry_coupon_already_used": "Scusa!Coupon già usato.",
+      "coupon_successfully_removed": "Coupon rimosso con successo",
+      "no_coupon_is_applied": "Non viene applicato alcun coupon",
+      "coupon_not_applicable_on_this_order": "Coupon non applicabile su questo ordine",
+      "cod_not_available_on_applied_promocode": "COD non disponibile su Promocodice applicato",
+      "coupon_applicable_for_new_users_only": "Coupon applicabile solo per i nuovi utenti",
+      "please_login_to_use_this_coupon": "Accedi per utilizzare questo coupon.",
+      "coupon_code_not_applicable_items_are_already_at_the_best_price": "Codice coupon non applicabile, gli articoli sono già al miglior prezzo"
     },
     "auth": {
       "account_deletion_notice": "Come da tua richiesta, il tuo account verrà eliminato a breve. Se desideri ripristinarlo, contatta l'assistenza all'indirizzo email indicato di seguito.",
@@ -1182,7 +1201,8 @@
       "please_enter_your_phone_number": "Inserisci il tuo numero di telefono",
       "please_enter_a_valid_email_address": "Si prega di inserire un indirizzo email valido",
       "please_enter_your_email_address": "Inserisci il tuo indirizzo email",
-      "seo_description": "Contattaci per qualsiasi supporto o domanda.Siamo qui per assistere con i tuoi ordini, resi o richieste di prodotto, ravvemente ed efficiente."
+      "seo_description": "Contattaci per qualsiasi supporto o domanda.Siamo qui per assistere con i tuoi ordini, resi o richieste di prodotto, ravvemente ed efficiente.",
+      "entered_msg_greater_than_500_char": "Il messaggio inserito è più di 500 caratteri"
     },
     "faq": {
       "no_frequently_asked_questions_found": "Nessuna domanda frequente trovata",
