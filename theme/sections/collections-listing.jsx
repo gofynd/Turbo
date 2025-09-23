@@ -237,14 +237,14 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
         >
           <Slider {...config} className={`${styles.hideOnMobile}`}>
             {collectionsForScrollView?.map(
-              ({ type, data: card, slug }, index) =>
+              ({ type, data, slug }, index) =>
                 type !== "collection-item" ? (
-                  <BlockRenderer key={slug} block={card} />
+                  <BlockRenderer key={slug} block={data} />
                 ) : (
                   <CollectionItem
                     className={styles.sliderItem}
-                    key={`${card?.data?.collection?.name}_${index}`}
-                    collection={card?.data?.collection}
+                    key={`${data?.collection?.name || slug}_${index}`}
+                    collection={data?.collection}
                     props={props}
                     srcset={getImgSrcSet()}
                     defer={index >= itemsPerRow}
@@ -254,14 +254,14 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
           </Slider>
           <Slider {...configMobile} className={`${styles.showOnMobile}`}>
             {collectionsForScrollView?.map(
-              ({ type, data: card, slug }, index) =>
+              ({ type, data, slug }, index) =>
                 type !== "collection-item" ? (
-                  <BlockRenderer key={slug} block={card} />
+                  <BlockRenderer key={slug} block={data} />
                 ) : (
                   <CollectionItem
                     className={styles.sliderItem}
-                    key={`${card?.data?.collection?.name}_${index}`}
-                    collection={card?.data?.collection}
+                    key={`${data?.collection?.name || slug}_${index}`}
+                    collection={data?.collection}
                     props={props}
                     srcset={getImgSrcSet()}
                     defer={index >= 1}
