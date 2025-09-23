@@ -365,13 +365,8 @@ export function Component({ blocks, fpi }) {
                         )
                       );
 
-                    case "extension-binding":
-                      return <BlockRenderer block={block} key={key} />;
-
                     default:
-                      return (
-                        <h1 key={key}>{t("resource.common.invalid_block")}</h1>
-                      );
+                      return <BlockRenderer block={block} key={key} />;
                   }
                 })}
               </div>

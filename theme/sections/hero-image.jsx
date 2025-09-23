@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FDKLink } from "fdk-core/components";
+import { BlockRenderer, FDKLink } from "fdk-core/components";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import { getDirectionAdaptiveValue, getLocaleDirection } from "../helper/utils";
@@ -133,7 +133,8 @@ export function Component({ props, globalConfig, blocks }) {
                 ? VERTICAL_SPACING_TABLET
                 : VERTICAL_SPACING_DESKTOP;
             positions[`--left-position-${view}`] = "50%";
-            positions[`--transform-${view}`] = `translateX(${getLocaleDirection(fpi)==="ltr" ? "-" : ""}50%)`;
+            positions[`--transform-${view}`] =
+              `translateX(${getLocaleDirection(fpi) === "ltr" ? "-" : ""}50%)`;
           }
 
           break;
@@ -171,7 +172,8 @@ export function Component({ props, globalConfig, blocks }) {
             positions[`--transform-${view}`] = "translateY(-50%)";
           } else {
             positions[`--left-position-${view}`] = "50%";
-            positions[`--transform-${view}`] = `translate(${getLocaleDirection(fpi)==="ltr" ? "-" : ""}50%, -50%)`;
+            positions[`--transform-${view}`] =
+              `translate(${getLocaleDirection(fpi) === "ltr" ? "-" : ""}50%, -50%)`;
           }
 
           break;
@@ -211,7 +213,8 @@ export function Component({ props, globalConfig, blocks }) {
                 ? VERTICAL_SPACING_TABLET
                 : VERTICAL_SPACING_DESKTOP;
             positions[`--left-position-${view}`] = "50%";
-            positions[`--transform-${view}`] = `translateX(${getLocaleDirection(fpi)==="ltr" ? "-" : ""}50%)`;
+            positions[`--transform-${view}`] =
+              `translateX(${getLocaleDirection(fpi) === "ltr" ? "-" : ""}50%)`;
           }
 
           break;
@@ -261,8 +264,12 @@ export function Component({ props, globalConfig, blocks }) {
 
   const getHotspots = () => {
     return {
-      desktop: blocks?.filter((block) => block?.type === "hotspot_desktop"),
-      mobile: blocks?.filter((block) => block?.type === "hotspot_mobile"),
+      desktop: blocks?.filter(
+        (block) => block?.type && block?.type !== "hotspot_mobile"
+      ),
+      mobile: blocks?.filter(
+        (block) => block?.type && block?.type !== "hotspot_desktop"
+      ),
     };
   };
 
@@ -309,6 +316,10 @@ export function Component({ props, globalConfig, blocks }) {
         </div>
         {!isMobile &&
           getHotspots()?.desktop?.map((hotspot, index) => {
+            if (hotspot.type !== "hotspot_desktop") {
+              return <BlockRenderer key={index} block={hotspot} />;
+            }
+
             return hotspot?.props?.pointer_type?.value !== "box" ? (
               <Hotspot
                 className={styles["hotspot--desktop"]}
@@ -341,6 +352,10 @@ export function Component({ props, globalConfig, blocks }) {
           })}
         {isMobile &&
           getHotspots()?.mobile?.map((hotspot, index) => {
+            if (hotspot.type !== "hotspot_mobile") {
+              return <BlockRenderer key={index} block={hotspot} />;
+            }
+
             return hotspot?.props?.pointer_type?.value !== "box" ? (
               <Hotspot
                 className={styles["hotspot--mobile"]}

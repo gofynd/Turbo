@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "../styles/sections/brand-listing.less";
 import Slider from "react-slick";
-import { FDKLink } from "fdk-core/components";
+import { FDKLink, BlockRenderer } from "fdk-core/components";
 import { BRAND_DETAILS } from "../queries/brandsQuery";
 import placeholderImage from "../assets/images/placeholder/brand-listing.png";
 import { useGlobalStore, useFPI } from "fdk-core/utils";
@@ -40,23 +40,36 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
   const brandCustomValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) ?? {};
   const brandIds = useMemo(() => {
     return (
-      blocks?.reduce((acc, b) => {
-        if (b?.props?.brand?.value?.id)
-          return [...acc, b?.props?.brand?.value?.id];
-        return acc;
-      }, []) ?? []
+      blocks
+        ?.map((block, index) => ({
+          type: block?.type,
+          slug:
+            block?.type !== "category"
+              ? `${block?.type}_${index}`
+              : block?.props?.brand?.value?.id,
+          block,
+        }))
+        ?.filter(({ slug }) => slug) ?? []
     );
   }, [blocks]);
-  const customSectionId = brandIds?.join?.("__");
+  const customSectionId = brandIds?.map(({ slug }) => slug)?.join?.("__");
   const brands = brandCustomValue[`brandData-${customSectionId}`];
 
   useEffect(() => {
     const fetchBrands = async () => {
       if (!brands?.length && brandIds?.length) {
         try {
-          const promisesArr = brandIds?.map((slug) =>
-            fpi.executeGQL(BRAND_DETAILS, { slug })
-          );
+          const promisesArr = brandIds?.map(async ({ type, slug, block }) => {
+            const listingData = { type };
+            if (type !== "category") {
+              listingData["data"] = block;
+            } else {
+              const response = await fpi.executeGQL(BRAND_DETAILS, { slug });
+              listingData["data"] = response?.data || {};
+            }
+
+            return listingData;
+          });
           const responses = await Promise.all(promisesArr);
           fpi.custom.setValue(`brandData-${customSectionId}`, responses);
         } catch (err) {
@@ -264,52 +277,60 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
           } ${styles[`card-count-${per_row?.value}`]} ${styles[alignment?.value]}`}
           style={{ "--brand-item": per_row?.value }}
         >
-          {getBrandCount()?.map((card, index) => (
-            <div
-              key={index}
-              //   className={`${styles["animation-fade-up"]}`}
-              style={{ "--delay": `${150 * (index + 1)}ms` }}
-            >
-              <FDKLink to={`/products/?brand=${card?.data?.brand?.slug}`}>
-                <div data-cardtype="BRANDS" className={styles["pos-relative"]}>
-                  <FyImage
-                    backgroundColor={img_container_bg?.value}
-                    customClass={
-                      !logoOnly?.value ? styles["brand-image"] : styles.imgRad
-                    }
-                    isImageFill={img_fill?.value || logoOnly?.value}
-                    src={getImgSrc(card)}
-                    alt={card?.data?.brand?.name || ""}
-                    aspectRatio={logoOnly?.value ? "1" : "0.8"}
-                    mobileAspectRatio={logoOnly?.value ? "1" : "0.8"}
-                    sources={getImgSrcSet()}
-                  />
-                  {card?.data?.brand?.name?.length > 0 && !logoOnly?.value && (
-                    <div className={styles["brand-info"]}>
-                      <div className={styles["brand-logo"]}>
-                        <FyImage
-                          src={
-                            card?.data?.brand?.logo?.url
-                              ? card?.data?.brand?.logo?.url
-                              : placeholderImage
-                          }
-                          alt={card?.data?.brand?.name || ""}
-                          aspectRatio="1"
-                          mobileAspectRatio="1"
-                          sources={[{ width: 100 }]}
-                        />
-                      </div>
-                      <span
-                        className={`${styles.fontBody} ${styles.brandNameSec}`}
-                      >
-                        {card?.data?.brand?.name}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </FDKLink>
-            </div>
-          ))}
+          {getBrandCount()?.map(({ type, data: card }, index) =>
+            type !== "category" ? (
+              <BlockRenderer key={index} block={card} />
+            ) : (
+              <div
+                key={index}
+                //   className={`${styles["animation-fade-up"]}`}
+                style={{ "--delay": `${150 * (index + 1)}ms` }}
+              >
+                <FDKLink to={`/products/?brand=${card?.data?.brand?.slug}`}>
+                  <div
+                    data-cardtype="BRANDS"
+                    className={styles["pos-relative"]}
+                  >
+                    <FyImage
+                      backgroundColor={img_container_bg?.value}
+                      customClass={
+                        !logoOnly?.value ? styles["brand-image"] : styles.imgRad
+                      }
+                      isImageFill={img_fill?.value || logoOnly?.value}
+                      src={getImgSrc(card)}
+                      alt={card?.data?.brand?.name || ""}
+                      aspectRatio={logoOnly?.value ? "1" : "0.8"}
+                      mobileAspectRatio={logoOnly?.value ? "1" : "0.8"}
+                      sources={getImgSrcSet()}
+                    />
+                    {card?.data?.brand?.name?.length > 0 &&
+                      !logoOnly?.value && (
+                        <div className={styles["brand-info"]}>
+                          <div className={styles["brand-logo"]}>
+                            <FyImage
+                              src={
+                                card?.data?.brand?.logo?.url
+                                  ? card?.data?.brand?.logo?.url
+                                  : placeholderImage
+                              }
+                              alt={card?.data?.brand?.name || ""}
+                              aspectRatio="1"
+                              mobileAspectRatio="1"
+                              sources={[{ width: 100 }]}
+                            />
+                          </div>
+                          <span
+                            className={`${styles.fontBody} ${styles.brandNameSec}`}
+                          >
+                            {card?.data?.brand?.name}
+                          </span>
+                        </div>
+                      )}
+                  </div>
+                </FDKLink>
+              </div>
+            )
+          )}
         </div>
       )}
       {showScrollView() && getBrandCount()?.length > 0 && (
@@ -331,54 +352,58 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
               {...slickSetting}
             >
               {!isLoading &&
-                getBrandCount()?.map((card, index) => (
-                  <div key={index} className={styles["custom-slick-slide"]}>
-                    <div
-                      // className={`${styles["animation-fade-up"]}`}
-                      style={{ "--delay": `${150 * (index + 1)}ms` }}
-                    >
-                      <FDKLink
-                        to={`/products/?brand=${card?.data?.brand?.slug}`}
+                getBrandCount()?.map(({ type, data: card }, index) =>
+                  type !== "category" ? (
+                    <BlockRenderer key={index} block={card} />
+                  ) : (
+                    <div key={index} className={styles["custom-slick-slide"]}>
+                      <div
+                        // className={`${styles["animation-fade-up"]}`}
+                        style={{ "--delay": `${150 * (index + 1)}ms` }}
                       >
-                        <div
-                          data-cardtype="BRANDS"
-                          style={{ position: "relative" }}
-                          // className={`${logoOnly?.value ? styles["logo-carousel"] : ""}`}
+                        <FDKLink
+                          to={`/products/?brand=${card?.data?.brand?.slug}`}
                         >
-                          <FyImage
-                            backgroundColor={img_container_bg?.value}
-                            customClass={styles["brand-image"]}
-                            isImageFill={img_fill?.value || logoOnly?.value}
-                            src={getImgSrc(card)}
-                            aspectRatio={logoOnly?.value ? 1 : 0.8}
-                            mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
-                            sources={getImgSrcSet()}
-                          />
-                          {card?.data?.brand?.name?.length > 0 &&
-                            !logoOnly?.value && (
-                              <div className={styles["brand-info"]}>
-                                <div className={styles["brand-logo"]}>
-                                  <FyImage
-                                    src={
-                                      card?.data?.brand?.logo?.url
-                                        ? card?.data?.brand?.logo?.url
-                                        : placeholderImage
-                                    }
-                                    aspectRatio={1}
-                                    mobileAspectRatio={1}
-                                    sources={[{ width: 100 }]}
-                                  />
+                          <div
+                            data-cardtype="BRANDS"
+                            style={{ position: "relative" }}
+                            // className={`${logoOnly?.value ? styles["logo-carousel"] : ""}`}
+                          >
+                            <FyImage
+                              backgroundColor={img_container_bg?.value}
+                              customClass={styles["brand-image"]}
+                              isImageFill={img_fill?.value || logoOnly?.value}
+                              src={getImgSrc(card)}
+                              aspectRatio={logoOnly?.value ? 1 : 0.8}
+                              mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
+                              sources={getImgSrcSet()}
+                            />
+                            {card?.data?.brand?.name?.length > 0 &&
+                              !logoOnly?.value && (
+                                <div className={styles["brand-info"]}>
+                                  <div className={styles["brand-logo"]}>
+                                    <FyImage
+                                      src={
+                                        card?.data?.brand?.logo?.url
+                                          ? card?.data?.brand?.logo?.url
+                                          : placeholderImage
+                                      }
+                                      aspectRatio={1}
+                                      mobileAspectRatio={1}
+                                      sources={[{ width: 100 }]}
+                                    />
+                                  </div>
+                                  <span className={styles["font-body"]}>
+                                    {card?.data?.brand?.name}
+                                  </span>
                                 </div>
-                                <span className={styles["font-body"]}>
-                                  {card?.data?.brand?.name}
-                                </span>
-                              </div>
-                            )}
-                        </div>
-                      </FDKLink>
+                              )}
+                          </div>
+                        </FDKLink>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                )}
             </Slider>
           </div>
           <div
@@ -398,54 +423,58 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
               {...slickSettingsMobile}
             >
               {!isLoading &&
-                getBrandCount()?.map((card, index) => (
-                  <div key={index} className={styles["custom-slick-slide"]}>
-                    <div
-                      // className={`${styles["animation-fade-up"]}`}
-                      style={{ "--delay": `${150 * (index + 1)}ms` }}
-                    >
-                      <FDKLink
-                        to={`/products/?brand=${card?.data?.brand?.slug}`}
+                getBrandCount()?.map(({ type, data: card }, index) =>
+                  type !== "category" ? (
+                    <BlockRenderer key={index} block={card} />
+                  ) : (
+                    <div key={index} className={styles["custom-slick-slide"]}>
+                      <div
+                        // className={`${styles["animation-fade-up"]}`}
+                        style={{ "--delay": `${150 * (index + 1)}ms` }}
                       >
-                        <div
-                          data-cardtype="BRANDS"
-                          style={{ position: "relative" }}
-                          // className={`${logoOnly?.value ? styles["logo-carousel"] : ""}`}
+                        <FDKLink
+                          to={`/products/?brand=${card?.data?.brand?.slug}`}
                         >
-                          <FyImage
-                            backgroundColor={img_container_bg?.value}
-                            customClass={styles["brand-image"]}
-                            isImageFill={img_fill?.value || logoOnly?.value}
-                            src={getImgSrc(card)}
-                            aspectRatio={logoOnly?.value ? 1 : 0.8}
-                            mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
-                            sources={getImgSrcSet()}
-                          />
-                          {card?.data?.brand?.name?.length > 0 &&
-                            !logoOnly?.value && (
-                              <div className={styles["brand-info"]}>
-                                <div className={styles["brand-logo"]}>
-                                  <FyImage
-                                    src={
-                                      card?.data?.brand?.logo?.url
-                                        ? card?.data?.brand?.logo?.url
-                                        : placeholderImage
-                                    }
-                                    aspectRatio={1}
-                                    mobileAspectRatio={1}
-                                    sources={[{ width: 100 }]}
-                                  />
+                          <div
+                            data-cardtype="BRANDS"
+                            style={{ position: "relative" }}
+                            // className={`${logoOnly?.value ? styles["logo-carousel"] : ""}`}
+                          >
+                            <FyImage
+                              backgroundColor={img_container_bg?.value}
+                              customClass={styles["brand-image"]}
+                              isImageFill={img_fill?.value || logoOnly?.value}
+                              src={getImgSrc(card)}
+                              aspectRatio={logoOnly?.value ? 1 : 0.8}
+                              mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
+                              sources={getImgSrcSet()}
+                            />
+                            {card?.data?.brand?.name?.length > 0 &&
+                              !logoOnly?.value && (
+                                <div className={styles["brand-info"]}>
+                                  <div className={styles["brand-logo"]}>
+                                    <FyImage
+                                      src={
+                                        card?.data?.brand?.logo?.url
+                                          ? card?.data?.brand?.logo?.url
+                                          : placeholderImage
+                                      }
+                                      aspectRatio={1}
+                                      mobileAspectRatio={1}
+                                      sources={[{ width: 100 }]}
+                                    />
+                                  </div>
+                                  <span className={styles["font-body"]}>
+                                    {card?.data?.brand?.name}
+                                  </span>
                                 </div>
-                                <span className={styles["font-body"]}>
-                                  {card?.data?.brand?.name}
-                                </span>
-                              </div>
-                            )}
-                        </div>
-                      </FDKLink>
+                              )}
+                          </div>
+                        </FDKLink>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                )}
             </Slider>
           </div>
         </>
@@ -677,8 +706,12 @@ Component.serverFetch = async ({ fpi, blocks, id }) => {
   try {
     const promisesArr = [];
     const ids = [];
-    blocks?.map(async (block) => {
-      if (block?.props?.brand?.value) {
+
+    blocks?.map((block, index) => {
+      if (block.type !== "category") {
+        ids.push(`${block.type}_${index}`);
+        promisesArr.push(block);
+      } else if (block?.props?.brand?.value) {
         const slug = block.props.brand.value.id;
         ids.push(slug);
         const res = fpi.executeGQL(BRAND_DETAILS, {
@@ -689,6 +722,7 @@ Component.serverFetch = async ({ fpi, blocks, id }) => {
         }
       }
     });
+
     const responses = await Promise.all(promisesArr);
     return fpi.custom.setValue(`brandData-${ids?.join("__")}`, responses);
   } catch (err) {

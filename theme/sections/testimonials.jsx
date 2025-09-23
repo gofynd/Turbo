@@ -10,6 +10,7 @@ import {
 } from "../components/slider-arrow/slider-arrow";
 import { useGlobalTranslation } from "fdk-core/utils";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import { BlockRenderer } from "fdk-core/components";
 
 export function Component({ props, globalConfig, blocks, preset }) {
   const { isRTL } = useLocaleDirection();
@@ -23,6 +24,7 @@ export function Component({ props, globalConfig, blocks, preset }) {
       blocksData.length !== 0 &&
       blocksData.filter(
         (block) =>
+          block.type !== "testimonial" ||
           block.props.author_image ||
           block.props.author_testimonial ||
           block.props.author_name ||
@@ -113,27 +115,35 @@ export function Component({ props, globalConfig, blocks, preset }) {
         {testimonialsList?.length > 0 && (
           <>
             <Slider className={`${styles.hideOnMobile}`} {...slickSetting()}>
-              {testimonialsList.map((block, index) => (
-                <TestimonialItem
-                  key={`desktop_${index}`}
-                  className={styles.sliderItem}
-                  testimonial={block.props}
-                  globalConfig={globalConfig}
-                />
-              ))}
+              {testimonialsList.map((block, index) =>
+                block?.type === "testimonial" ? (
+                  <TestimonialItem
+                    key={`desktop_${index}`}
+                    className={styles.sliderItem}
+                    testimonial={block.props}
+                    globalConfig={globalConfig}
+                  />
+                ) : (
+                  <BlockRenderer key={`desktop_${index}`} block={block} />
+                )
+              )}
             </Slider>
             <Slider
               className={`${styles.hideOnDesktop}`}
               {...slickSettingMobile()}
             >
-              {testimonialsList.map((block, index) => (
-                <TestimonialItem
-                  key={`mobile_${index}`}
-                  className={styles.sliderItem}
-                  testimonial={block.props}
-                  globalConfig={globalConfig}
-                />
-              ))}
+              {testimonialsList.map((block, index) =>
+                block?.type === "testimonial" ? (
+                  <TestimonialItem
+                    key={`mobile_${index}`}
+                    className={styles.sliderItem}
+                    testimonial={block.props}
+                    globalConfig={globalConfig}
+                  />
+                ) : (
+                  <BlockRenderer key={`mobile_${index}`} block={block} />
+                )
+              )}
             </Slider>
           </>
         )}

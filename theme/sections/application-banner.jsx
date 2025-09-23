@@ -3,7 +3,7 @@ import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import placeholderDesktop from "../assets/images/placeholder/application-banner-desktop.png";
 import placeholderMobile from "../assets/images/placeholder/application-banner-mobile.png";
-import { FDKLink } from "fdk-core/components";
+import { BlockRenderer, FDKLink } from "fdk-core/components";
 import styles from "../styles/sections/application-banner.less";
 import Hotspot from "../components/hotspot/product-hotspot";
 import { useViewport } from "../helper/hooks";
@@ -55,8 +55,12 @@ export function Component({ props, blocks, globalConfig }) {
 
   const getHotspots = () => {
     return {
-      desktop: blocks?.filter((block) => block?.type === "hotspot_desktop"),
-      mobile: blocks?.filter((block) => block?.type === "hotspot_mobile"),
+      desktop: blocks?.filter(
+        (block) => block?.type && block?.type !== "hotspot_mobile"
+      ),
+      mobile: blocks?.filter(
+        (block) => block?.type && block?.type !== "hotspot_desktop"
+      ),
     };
   };
 
@@ -94,6 +98,10 @@ export function Component({ props, blocks, globalConfig }) {
 
       {!isMobile &&
         getHotspots()?.desktop?.map((hotspot, index) => {
+          if (hotspot.type !== "hotspot_desktop") {
+            return <BlockRenderer key={index} block={hotspot} />;
+          }
+
           return hotspot?.props?.pointer_type?.value !== "box" ? (
             <Hotspot
               className={styles["hotspot--desktop"]}
@@ -123,6 +131,10 @@ export function Component({ props, blocks, globalConfig }) {
         })}
       {isMobile &&
         getHotspots()?.mobile?.map((hotspot, index) => {
+          if (hotspot.type !== "hotspot_mobile") {
+            return <BlockRenderer key={index} block={hotspot} />;
+          }
+
           return hotspot?.props?.pointer_type?.value !== "box" ? (
             <Hotspot
               className={styles["hotspot--mobile"]}

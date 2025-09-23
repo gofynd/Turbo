@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import Slider from "react-slick";
+import { BlockRenderer } from "fdk-core/components";
 import styles from "../styles/sections/collections-listing.less";
 import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
 import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
@@ -29,28 +30,46 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const itemsPerRow = Number(per_row?.value ?? 3);
 
   const customValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) ?? {};
+
   const collectionIds = useMemo(() => {
     return (
-      blocks?.reduce(
-        (acc, b) =>
-          b?.props?.collection?.value
-            ? [...acc, b?.props?.collection?.value]
-            : acc,
-        []
-      ) || []
+      blocks
+        ?.map((block, index) => ({
+          type: block?.type,
+          slug:
+            block?.type !== "collection-item"
+              ? `${block?.type}_${index}`
+              : block?.props?.collection?.value,
+          block,
+        }))
+        ?.filter(({ slug }) => slug) ?? []
     );
   }, [blocks]);
-  const customSectionId = collectionIds?.join("__");
+
+  const customSectionId = collectionIds?.map(({ slug }) => slug).join("__");
   const collections = customValue[`collectionData-${customSectionId}`] || [];
 
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const promisesArr = collectionIds?.map((slug) =>
-          fpi.executeGQL(COLLECTION, {
-            slug: slug.split(" ").join("-"),
-          })
+        const promisesArr = collectionIds?.map(
+          async ({ type, slug, block }) => {
+            const listingData = { type };
+
+            if (type !== "collection-item") {
+              listingData["data"] = block;
+            } else {
+              const response = await fpi.executeGQL(COLLECTION, {
+                slug: slug.split(" ").join("-"),
+              });
+
+              listingData["data"] = response?.data || {};
+            }
+
+            return listingData;
+          }
         );
+
         const responses = await Promise.all(promisesArr);
         fpi.custom.setValue(`collectionData-${customSectionId}`, responses);
       } catch (err) {
@@ -193,15 +212,20 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
           className={`${styles.collectionGrid} ${stackViewClassName}`}
           style={{ "--grid-columns": itemsPerRow }}
         >
-          {collectionsForStackedView?.map((card, index) => (
-            <CollectionItem
-              key={`${card?.data?.collection?.name}_${index}`}
-              collection={card?.data?.collection}
-              props={props}
-              srcset={getImgSrcSet()}
-              defer={index >= itemsPerRow}
-            />
-          ))}
+          {collectionsForStackedView?.map(
+            ({ type, data: card, slug }, index) =>
+              type !== "collection-item" ? (
+                <BlockRenderer key={slug} block={card} />
+              ) : (
+                <CollectionItem
+                  key={`${card?.data?.collection?.name}_${index}`}
+                  collection={card?.data?.collection}
+                  props={props}
+                  srcset={getImgSrcSet()}
+                  defer={index >= itemsPerRow}
+                />
+              )
+          )}
         </div>
       )}
       {isHorizontalView && !!collectionsForScrollView.length && (
@@ -212,28 +236,38 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
           }}
         >
           <Slider {...config} className={`${styles.hideOnMobile}`}>
-            {collectionsForScrollView?.map((card, index) => (
-              <CollectionItem
-                className={styles.sliderItem}
-                key={`${card?.data?.collection?.name}_${index}`}
-                collection={card?.data?.collection}
-                props={props}
-                srcset={getImgSrcSet()}
-                defer={index >= itemsPerRow}
-              />
-            ))}
+            {collectionsForScrollView?.map(
+              ({ type, data: card, slug }, index) =>
+                type !== "collection-item" ? (
+                  <BlockRenderer key={slug} block={card} />
+                ) : (
+                  <CollectionItem
+                    className={styles.sliderItem}
+                    key={`${card?.data?.collection?.name}_${index}`}
+                    collection={card?.data?.collection}
+                    props={props}
+                    srcset={getImgSrcSet()}
+                    defer={index >= itemsPerRow}
+                  />
+                )
+            )}
           </Slider>
           <Slider {...configMobile} className={`${styles.showOnMobile}`}>
-            {collectionsForScrollView?.map((card, index) => (
-              <CollectionItem
-                className={styles.sliderItem}
-                key={`${card?.data?.collection?.name}_${index}`}
-                collection={card?.data?.collection}
-                props={props}
-                srcset={getImgSrcSet()}
-                defer={index >= 1}
-              />
-            ))}
+            {collectionsForScrollView?.map(
+              ({ type, data: card, slug }, index) =>
+                type !== "collection-item" ? (
+                  <BlockRenderer key={slug} block={card} />
+                ) : (
+                  <CollectionItem
+                    className={styles.sliderItem}
+                    key={`${card?.data?.collection?.name}_${index}`}
+                    collection={card?.data?.collection}
+                    props={props}
+                    srcset={getImgSrcSet()}
+                    defer={index >= 1}
+                  />
+                )
+            )}
           </Slider>
         </div>
       )}
@@ -440,9 +474,13 @@ Component.serverFetch = async ({ fpi, blocks, id }) => {
   try {
     const ids = [];
     const promisesArr = blocks?.map(async (block) => {
-      if (block.props?.collection?.value) {
+      if (block.type !== "collection-item") {
+        ids.push(`${block.type}_${index}`);
+        return block;
+      } else if (block.props?.collection?.value) {
         const slug = block.props.collection.value;
         ids.push(slug);
+
         return fpi.executeGQL(COLLECTION, {
           slug: slug.split(" ").join("-"),
         });

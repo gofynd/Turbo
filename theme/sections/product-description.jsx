@@ -1459,16 +1459,13 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                         </Fragment>
                       );
 
-                    case "extension-binding":
+                    default:
                       return (
                         <BlockRenderer
-                          key={`extension-binding_${index}`}
+                          key={`block-binding_${index}`}
                           block={block}
                         />
                       );
-
-                    default:
-                      return <BlockRenderer block={block} />;
                   }
                 })}
 

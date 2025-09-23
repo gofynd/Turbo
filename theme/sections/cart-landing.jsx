@@ -505,11 +505,8 @@ export function Component({ globalConfig = {}, blocks }) {
                     </div>
                   );
 
-                case "extension-binding":
-                  return <BlockRenderer key={key} block={block} />;
-
                 default:
-                  return <div key={key}>Invalid block</div>;
+                  return <BlockRenderer key={key} block={block} />;
               }
             })}
           </div>

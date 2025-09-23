@@ -116,35 +116,27 @@ export function Component({ props, blocks, globalConfig, preset }) {
   return (
     <section className={`remove-horizontal-scroll`} style={dynamicStyles}>
       <Slider {...config} initialSlide={0} className={styles.slideshowSlider}>
-        {blocksData?.map((block, index) => {
-          // Handle gallery blocks
-          if (block?.type === "gallery") {
-            return (
-          <div className={`${styles.blockItem} ${styles.imageContainer}`}>
-                <FDKLink
-                  to={block?.props?.redirect_link?.value ?? ""}
-                  target={shouldOpenInNewTab ? "_blank" : "_self"}
-                  key={index}
-                >
-                  <FyImage
-                    src={getDesktopImage(block, index)}
-                    sources={getImgSrcSet(block, globalConfig, index)}
-                    defer={index < 1 ? false : true}
-                    alt={`slide-${index}`}
-                    isFixedAspectRatio={false}
-                  />
-                </FDKLink>
-          </div>
-            );
-          }
-          
-          // Handle all other block types (including customSection) with BlockRenderer
-          return (
-            <div key={index} className="block-renderer-slide">
-              <BlockRenderer block={block} />
+        {blocksData?.map((block, index) =>
+          block.type === "gallery" ? (
+            <div className={`${styles.blockItem} ${styles.imageContainer}`}>
+              <FDKLink
+                to={block?.props?.redirect_link?.value ?? ""}
+                target={shouldOpenInNewTab ? "_blank" : "_self"}
+                key={index}
+              >
+                <FyImage
+                  src={getDesktopImage(block, index)}
+                  sources={getImgSrcSet(block, globalConfig, index)}
+                  defer={index < 1 ? false : true}
+                  alt={`slide-${index}`}
+                  isFixedAspectRatio={false}
+                />
+              </FDKLink>
             </div>
-          );
-        })}
+          ) : (
+            <BlockRenderer key={index} block={block} />
+          )
+        )}
       </Slider>
     </section>
   );
@@ -156,7 +148,6 @@ export const settings = {
     {
       name: "t:resource.common.image_card",
       type: "gallery",
-
       props: [
         {
           type: "image_picker",

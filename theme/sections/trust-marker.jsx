@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { FDKLink } from "fdk-core/components";
+import { FDKLink, BlockRenderer } from "fdk-core/components";
 import Slider from "react-slick";
 import styles from "../styles/trust-marker.less";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
@@ -160,24 +160,32 @@ const HorizontalLayout = ({
       }}
     >
       <Slider className={`${styles.hideOnMobile}`} {...slickSetting}>
-        {trustMarker?.map(({ props }, i) => (
-          <Trustmark
-            key={i}
-            className={styles.horizontalItem}
-            props={props}
-            globalConfig={globalConfig}
-          />
-        ))}
+        {trustMarker?.map((block, i) =>
+          block?.type !== "trustmarker" ? (
+            <BlockRenderer key={i} block={block} />
+          ) : (
+            <Trustmark
+              key={i}
+              className={styles.horizontalItem}
+              props={block.props}
+              globalConfig={globalConfig}
+            />
+          )
+        )}
       </Slider>
       <Slider className={`${styles.showOnMobile}`} {...slickSettingMobile}>
-        {trustMarker?.map(({ props }, i) => (
-          <Trustmark
-            key={i}
-            className={styles.horizontalItem}
-            props={props}
-            globalConfig={globalConfig}
-          />
-        ))}
+        {trustMarker?.map((block, i) =>
+          block?.type !== "trustmarker" ? (
+            <BlockRenderer key={i} block={block} />
+          ) : (
+            <Trustmark
+              key={i}
+              className={styles.horizontalItem}
+              props={block.props}
+              globalConfig={globalConfig}
+            />
+          )
+        )}
       </Slider>
     </div>
   );

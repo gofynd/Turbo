@@ -6,7 +6,7 @@ import { getProductImgAspectRatio } from "../helper/utils";
 import Hotspot from "../components/hotspot/product-hotspot";
 import { FEATURE_PRODUCT_DETAILS } from "../queries/featureProductQuery";
 import { useViewport } from "../helper/hooks";
-import { FDKLink } from "fdk-core/components";
+import { BlockRenderer, FDKLink } from "fdk-core/components";
 import placeholderDesktop from "../assets/images/placeholder/media-with-text-desktop.jpg";
 import placeholderMobile from "../assets/images/placeholder/media-with-text-mobile.jpg";
 import { MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT } from "../helper/constant";
@@ -134,10 +134,15 @@ export function Component({ props, globalConfig, blocks, fpi }) {
       return acc;
     }, {});
   };
+
   const getHotspots = () => {
     return {
-      desktop: blocks?.filter((block) => block?.type === "hotspot_desktop"),
-      mobile: blocks?.filter((block) => block?.type === "hotspot_mobile"),
+      desktop: blocks?.filter(
+        (block) => block?.type && block?.type !== "hotspot_mobile"
+      ),
+      mobile: blocks?.filter(
+        (block) => block?.type && block?.type !== "hotspot_desktop"
+      ),
     };
   };
 
@@ -225,32 +230,44 @@ export function Component({ props, globalConfig, blocks, fpi }) {
           isFixedAspectRatio={false}
         />
         {!isMobile &&
-          getHotspots()?.desktop?.map((hotspot, index) => (
-            <Hotspot
-              className={styles["hotspot--desktop"]}
-              key={index}
-              hotspot={hotspot}
-              product={
-                getFormattedProducts()?.[hotspot?.props?.product?.value] ??
-                MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT
-              }
-              aspectRatio={getProductImgAspectRatio(globalConfig)}
-            />
-          ))}
+          getHotspots()?.desktop?.map((hotspot, index) => {
+            if (hotspot.type !== "hotspot_desktop") {
+              return <BlockRenderer key={index} block={hotspot} />;
+            }
+
+            return (
+              <Hotspot
+                className={styles["hotspot--desktop"]}
+                key={index}
+                hotspot={hotspot}
+                product={
+                  getFormattedProducts()?.[hotspot?.props?.product?.value] ??
+                  MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT
+                }
+                aspectRatio={getProductImgAspectRatio(globalConfig)}
+              />
+            );
+          })}
         {isMobile &&
-          getHotspots()?.mobile?.map((hotspot, index) => (
-            <Hotspot
-              className={styles["hotspot--mobile"]}
-              key={index}
-              hotspot={hotspot}
-              isMobile={isMobile}
-              product={
-                getFormattedProducts()?.[hotspot?.props?.product?.value] ??
-                MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT
-              }
-              aspectRatio={getProductImgAspectRatio(globalConfig)}
-            />
-          ))}
+          getHotspots()?.mobile?.map((hotspot, index) => {
+            if (hotspot.type !== "hotspot_mobile") {
+              return <BlockRenderer key={index} block={hotspot} />;
+            }
+
+            return (
+              <Hotspot
+                className={styles["hotspot--mobile"]}
+                key={index}
+                hotspot={hotspot}
+                isMobile={isMobile}
+                product={
+                  getFormattedProducts()?.[hotspot?.props?.product?.value] ??
+                  MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT
+                }
+                aspectRatio={getProductImgAspectRatio(globalConfig)}
+              />
+            );
+          })}
       </div>
       <div
         className={styles.media_text__info}

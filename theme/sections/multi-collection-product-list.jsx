@@ -23,7 +23,7 @@ import SizeGuide from "@gofynd/theme-template/page-layouts/plp/Components/size-g
 import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide.css";
 import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
 import useAddToCartModal from "../page-layouts/plp/useAddToCartModal";
-import { FDKLink } from "fdk-core/components";
+import { FDKLink, BlockRenderer } from "fdk-core/components";
 import {
   SliderNextArrow,
   SliderPrevArrow,
@@ -179,7 +179,9 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const navigationsAndCollections = useMemo(
     () =>
       (blocks ?? []).reduce((result, block) => {
-        if (
+        if (block.type !== "collection-item") {
+          result.push(block);
+        } else if (
           block?.props?.navigation?.value ||
           block?.props?.icon_image?.value
         ) {
@@ -284,97 +286,108 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
           </div>
         </div>
         <div className={styles.productContainer}>
-          {activeCollectionItems?.length > 0 && (
-            <div
-              className={`remove-horizontal-scroll ${styles.slideWrap}`}
-              style={{
-                "--slick-dots": `${Math.ceil(activeCollectionItems?.length / per_row?.value) * 22 + 10}px`,
-              }}
-            >
-              <Slider className={`${styles.hideOnMobile}`} {...config}>
-                {activeCollectionItems?.map((product, index) => (
-                  <div
-                    data-cardtype="'Products'"
-                    key={index}
-                    className={styles.sliderView}
+          {!!navigationsAndCollections?.[activeLink]?.type &&
+          navigationsAndCollections?.[activeLink]?.type !==
+            "collection-item" ? (
+            <BlockRenderer block={navigationsAndCollections?.[activeLink]} />
+          ) : (
+            <>
+              {activeCollectionItems?.length > 0 && (
+                <div
+                  className={`remove-horizontal-scroll ${styles.slideWrap}`}
+                  style={{
+                    "--slick-dots": `${Math.ceil(activeCollectionItems?.length / per_row?.value) * 22 + 10}px`,
+                  }}
+                >
+                  <Slider className={`${styles.hideOnMobile}`} {...config}>
+                    {activeCollectionItems?.map((product, index) => (
+                      <div
+                        data-cardtype="'Products'"
+                        key={index}
+                        className={styles.sliderView}
+                      >
+                        <div
+                          className={styles.productCardWrapper}
+                          onClick={() => {
+                            navigate?.(`/product/${product.slug}`, {
+                              state: {
+                                product,
+                              },
+                            });
+                          }}
+                        >
+                          <ProductCard
+                            product={product}
+                            listingPrice={listingPrice}
+                            isSaleBadge={enable_sales_badge?.value}
+                            isWishlistDisplayed={false}
+                            isWishlistIcon={show_wishlist_icon?.value}
+                            columnCount={columnCount}
+                            isPrice={globalConfig?.show_price}
+                            isImageFill={img_fill?.value}
+                            onWishlistClick={handleWishlistToggle}
+                            followedIdList={followedIdList}
+                            showAddToCart={showAddToCart}
+                            actionButtonText={
+                              card_cta_text?.value ??
+                              t("resource.common.add_to_cart")
+                            }
+                            handleAddToCart={handleAddToCart}
+                            aspectRatio={getProductImgAspectRatio(globalConfig)}
+                            imgSrcSet={imgSrcSet}
+                            isSlider
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </Slider>
+                  <Slider
+                    className={`${styles.showOnMobile}`}
+                    {...configMobile}
                   >
-                    <div
-                      className={styles.productCardWrapper}
-                      onClick={() => {
-                        navigate?.(`/product/${product.slug}`, {
-                          state: {
-                            product,
-                          },
-                        });
-                      }}
-                    >
-                      <ProductCard
-                        product={product}
-                        listingPrice={listingPrice}
-                        isSaleBadge={enable_sales_badge?.value}
-                        isWishlistDisplayed={false}
-                        isWishlistIcon={show_wishlist_icon?.value}
-                        columnCount={columnCount}
-                        isPrice={globalConfig?.show_price}
-                        isImageFill={img_fill?.value}
-                        onWishlistClick={handleWishlistToggle}
-                        followedIdList={followedIdList}
-                        showAddToCart={showAddToCart}
-                        actionButtonText={
-                          card_cta_text?.value ??
-                          t("resource.common.add_to_cart")
-                        }
-                        handleAddToCart={handleAddToCart}
-                        aspectRatio={getProductImgAspectRatio(globalConfig)}
-                        imgSrcSet={imgSrcSet}
-                        isSlider
-                      />
-                    </div>
-                  </div>
-                ))}
-              </Slider>
-              <Slider className={`${styles.showOnMobile}`} {...configMobile}>
-                {activeCollectionItems?.map((product, index) => (
-                  <div
-                    data-cardtype="'Products'"
-                    key={index}
-                    className={styles.sliderView}
-                  >
-                    <div
-                      onClick={() => {
-                        navigate?.(`/product/${product.slug}`, {
-                          state: {
-                            product,
-                          },
-                        });
-                      }}
-                    >
-                      <ProductCard
-                        product={product}
-                        listingPrice={listingPrice}
-                        isSaleBadge={enable_sales_badge?.value}
-                        isWishlistDisplayed={false}
-                        isWishlistIcon={show_wishlist_icon?.value}
-                        columnCount={columnCount}
-                        isPrice={globalConfig?.show_price}
-                        isImageFill={img_fill?.value}
-                        onWishlistClick={handleWishlistToggle}
-                        followedIdList={followedIdList}
-                        showAddToCart={showAddToCart}
-                        actionButtonText={
-                          card_cta_text?.value ??
-                          t("resource.common.add_to_cart")
-                        }
-                        handleAddToCart={handleAddToCart}
-                        aspectRatio={getProductImgAspectRatio(globalConfig)}
-                        imgSrcSet={imgSrcSet}
-                        isSlider
-                      />
-                    </div>
-                  </div>
-                ))}
-              </Slider>
-            </div>
+                    {activeCollectionItems?.map((product, index) => (
+                      <div
+                        data-cardtype="'Products'"
+                        key={index}
+                        className={styles.sliderView}
+                      >
+                        <div
+                          onClick={() => {
+                            navigate?.(`/product/${product.slug}`, {
+                              state: {
+                                product,
+                              },
+                            });
+                          }}
+                        >
+                          <ProductCard
+                            product={product}
+                            listingPrice={listingPrice}
+                            isSaleBadge={enable_sales_badge?.value}
+                            isWishlistDisplayed={false}
+                            isWishlistIcon={show_wishlist_icon?.value}
+                            columnCount={columnCount}
+                            isPrice={globalConfig?.show_price}
+                            isImageFill={img_fill?.value}
+                            onWishlistClick={handleWishlistToggle}
+                            followedIdList={followedIdList}
+                            showAddToCart={showAddToCart}
+                            actionButtonText={
+                              card_cta_text?.value ??
+                              t("resource.common.add_to_cart")
+                            }
+                            handleAddToCart={handleAddToCart}
+                            aspectRatio={getProductImgAspectRatio(globalConfig)}
+                            imgSrcSet={imgSrcSet}
+                            isSlider
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </Slider>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
@@ -405,13 +418,19 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
 
 const NavigationButton = ({ navigation, isActive, onClick = () => {} }) => {
   const { collection = "", icon = "", text, link = "" } = navigation || {};
-  if (collection) {
+  const isCustomBlock =
+    !!navigation?.type && navigation?.type !== "collection-item";
+
+  if (collection || isCustomBlock) {
     return (
       <button
         className={`fx-nav-button ${styles.navigation} ${isActive ? styles.activeLink : ""}`}
         onClick={onClick}
       >
-        <NavigationButtonContent icon={icon} text={text} />
+        <NavigationButtonContent
+          icon={icon}
+          text={isCustomBlock ? navigation?.label : text}
+        />
       </button>
     );
   }

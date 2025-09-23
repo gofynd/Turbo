@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { FDKLink } from "fdk-core/components";
+import { FDKLink, BlockRenderer } from "fdk-core/components";
 import Slider from "react-slick";
 import styles from "../styles/sections/image-gallery.less";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
@@ -224,40 +224,48 @@ const HorizontalLayout = ({
       }}
     >
       <Slider {...config} className={styles.hideOnMobile}>
-        {items.map(({ props: block }, index) => (
-          <div key={index} className={styles.sliderItem}>
-            <FDKLink
-              to={block?.link?.value || ""}
-              target={in_new_tab?.value ? "_blank" : "_self"}
-            >
-              <FyImage
-                customClass={styles.imageGallery}
-                src={block?.image?.value || placeholderImage}
-                sources={sources}
-                globalConfig={globalConfig}
-                isFixedAspectRatio={false}
-              />
-            </FDKLink>
-          </div>
-        ))}
+        {items.map((block, index) =>
+          block.type === "gallery" ? (
+            <div key={index} className={styles.sliderItem}>
+              <FDKLink
+                to={block?.props?.link?.value || ""}
+                target={in_new_tab?.value ? "_blank" : "_self"}
+              >
+                <FyImage
+                  customClass={styles.imageGallery}
+                  src={block?.props?.image?.value || placeholderImage}
+                  sources={sources}
+                  globalConfig={globalConfig}
+                  isFixedAspectRatio={false}
+                />
+              </FDKLink>
+            </div>
+          ) : (
+            <BlockRenderer key={index} block={block} />
+          )
+        )}
       </Slider>
       <Slider {...configMobile} className={styles.showOnMobile}>
-        {items.map(({ props: block }, index) => (
-          <div key={index} className={styles.sliderItem}>
-            <FDKLink
-              to={block?.link?.value || ""}
-              target={in_new_tab?.value ? "_blank" : "_self"}
-            >
-              <FyImage
-                customClass={styles.imageGallery}
-                src={block?.image?.value || placeholderImage}
-                sources={sources}
-                globalConfig={globalConfig}
-                isFixedAspectRatio={false}
-              />
-            </FDKLink>
-          </div>
-        ))}
+        {items.map((block, index) =>
+          block.type === "gallery" ? (
+            <div key={index} className={styles.sliderItem}>
+              <FDKLink
+                to={block?.props?.link?.value || ""}
+                target={in_new_tab?.value ? "_blank" : "_self"}
+              >
+                <FyImage
+                  customClass={styles.imageGallery}
+                  src={block?.props?.image?.value || placeholderImage}
+                  sources={sources}
+                  globalConfig={globalConfig}
+                  isFixedAspectRatio={false}
+                />
+              </FDKLink>
+            </div>
+          ) : (
+            <BlockRenderer key={index} block={block} />
+          )
+        )}
       </Slider>
     </div>
   );
