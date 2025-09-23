@@ -274,14 +274,6 @@
       "info": "Check this to open social media links in the same tab instead of a new one."
     },
     {
-      "type": "text",
-      "id": "footer_social_text",
-      "default": "Social Media",
-      "category": "Footer",
-      "label": "Social media text label",
-      "info": "Show Label text for social media"
-    },
-    {
       "type": "header",
       "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "value": "Cart Options"

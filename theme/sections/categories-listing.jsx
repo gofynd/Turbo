@@ -195,6 +195,9 @@ export function Component({ props, blocks, preset, globalConfig }) {
   );
 
   useEffect(() => {
+    // Only run on client side to avoid SSR issues
+    if (typeof window === "undefined") return;
+
     const fetchAllCategories = async () => {
       let accumulatedCategories = [];
 
@@ -202,17 +205,19 @@ export function Component({ props, blocks, preset, globalConfig }) {
         if (accumulatedCategories.length >= 12) break;
         /* eslint-disable-next-line no-await-in-loop */
         const newCategories = await getCategoriesByDepartment(department);
-        accumulatedCategories = [
-          ...accumulatedCategories,
-          ...newCategories.slice(0, 12 - accumulatedCategories.length),
-        ];
+        if (newCategories) {
+          accumulatedCategories = [
+            ...accumulatedCategories,
+            ...newCategories.slice(0, 12 - accumulatedCategories.length),
+          ];
+        }
       }
       fpi.custom.setValue(
         `categories-listing-${departments?.join("__")}`,
         sortCategoriesByPriority(accumulatedCategories)
       );
     };
-    if (categories?.length === 0) {
+    if (categories?.length === 0 && departments?.length > 0) {
       fetchAllCategories();
     }
   }, [departments]);
@@ -229,15 +234,15 @@ export function Component({ props, blocks, preset, globalConfig }) {
     <section style={dynamicStyles}>
       {(!!title?.value || !!cta_text?.value) && (
         <div className={`fx-title-block ${styles.titleBlock}`}>
-          {!!title?.value && (
-            <h2 className={`fx-title fontHeader`}>{title?.value}</h2>
+          {title?.value && (
+            <h2 className="fx-title fontHeader">{title?.value}</h2>
           )}
-          {!!cta_text?.value && (
-            <p className={`fx-description b2`}>{cta_text?.value}</p>
+          {cta_text?.value && (
+            <p className="fx-description b2">{cta_text?.value}</p>
           )}
         </div>
       )}
-      {!!categories?.length > 0 && showScrollView() && (
+      {categories?.length > 0 && showScrollView() && (
         <div
           className={`remove-horizontal-scroll ${styles.categoryListingSlider} ${styles.categorySlider} ${imagesForScrollView?.length === 1 ? styles.singleItem : ""}`}
           style={{
@@ -278,7 +283,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
           </Slider>
         </div>
       )}
-      {!!categories?.length && showStackedView() && (
+      {categories?.length && showStackedView() && (
         <div
           className={`${styles.categoryGrid} ${
             imagesForStackedView.length === 1 && styles.singleItem
@@ -638,6 +643,17 @@ export const settings = {
 
 Component.serverFetch = async ({ fpi, blocks }) => {
   try {
+    // Define sortCategoriesByPriority function for server-side use
+    const sortCategoriesByPriority = (categoriesList) => {
+      if (!categoriesList) return [];
+      return [...categoriesList]
+        .sort((a, b) => (a?.priority ?? Infinity) - (b?.priority ?? Infinity))
+        .map((category) => ({
+          ...category,
+          childs: sortCategoriesByPriority(category?.childs),
+        }));
+    };
+
     const getCategoriesByDepartment = async (department) => {
       const res = await fpi.executeGQL(CATEGORIES_LISTING, { department });
 
@@ -648,13 +664,14 @@ Component.serverFetch = async ({ fpi, blocks }) => {
           .flat()
           .flatMap((i) => i?.childs);
 
-        return categoriesList;
+        return categoriesList || [];
       }
+      return [];
     };
 
     let accumulatedCategories = [];
     let departments = blocks?.reduce((acc, m) => {
-      if (m?.props?.department.value) {
+      if (m?.props?.department?.value) {
         acc.push(m?.props?.department.value);
       }
       return acc;
@@ -665,10 +682,12 @@ Component.serverFetch = async ({ fpi, blocks }) => {
       if (accumulatedCategories.length >= 12) break;
       /* eslint-disable-next-line no-await-in-loop */
       const newCategories = await getCategoriesByDepartment(department);
-      accumulatedCategories = [
-        ...accumulatedCategories,
-        ...newCategories.slice(0, 12 - accumulatedCategories.length),
-      ];
+      if (newCategories && newCategories.length > 0) {
+        accumulatedCategories = [
+          ...accumulatedCategories,
+          ...newCategories.slice(0, 12 - accumulatedCategories.length),
+        ];
+      }
     }
     const sortedCategories = sortCategoriesByPriority(accumulatedCategories);
     fpi.custom.setValue(
@@ -677,7 +696,10 @@ Component.serverFetch = async ({ fpi, blocks }) => {
     );
     return sortedCategories;
   } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("Error in categories listing serverFetch:", err);
     fpi.custom.setValue("error-section", err);
+    return [];
   }
 };
 
