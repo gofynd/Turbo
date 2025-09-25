@@ -41,6 +41,7 @@ function SingleCheckoutPage({ fpi }) {
   const buy_now = searchParams.get("buy_now") || false;
   const address_id = searchParams.get("address_id");
   const error = searchParams.get("error");
+  const transactionFailed = searchParams.get("failed");
   const cartCoupon = useCartCoupon({ fpi, cartData: bagData });
   const cartComment = useCartComment({ fpi, cartData: bagData });
   const { setIsLoading, ...payment } = usePayment(fpi);
@@ -129,7 +130,7 @@ function SingleCheckoutPage({ fpi }) {
         // If amount is negative, set to 0
         amount = amount < 0 ? 0 : amount;
         setCheckoutAmount(amount);
-        if (error && amount) {
+        if ((error || transactionFailed) && amount) {
           showPaymentOptions(amount);
         }
       } catch (err) {
