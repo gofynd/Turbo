@@ -22,6 +22,7 @@ const useCompare = (fpi) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
+
   const initializeSlugs = () => {
     try {
       const storedSlugs = JSON.parse(localStorage?.getItem("compare_slugs"));
@@ -30,16 +31,17 @@ const useCompare = (fpi) => {
       return [];
     }
   };
+
   const {
     compare_product_data,
     compare_product_attribute,
     isCompareSsrFetched,
     compare_category_details,
   } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
+
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [attributes, setAttributes] = useState({});
-  const [debouncedSearchText, setDebouncedSearchText] = useState("");
   const [category, setCategory] = useState(compare_category_details || {});
   const [existingSlugs, setExistingSlugs] = useState(initializeSlugs);
   const [showSearch, setShowSearch] = useState(false);
@@ -47,22 +49,18 @@ const useCompare = (fpi) => {
   const [suggestions, setSuggestions] = useState([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [isSsrFetched, setIsSsrFetched] = useState(isCompareSsrFetched);
-  const [searchLoading, setSearchLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
+
   const latestRequest = useRef(0);
   const isFirstRender = useRef(true);
+  const searchTimeoutRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   const getCategoryKeyValue = (action) => {
     const key = Object.keys(action?.page?.query)?.[0];
     const value = action?.page?.query[key];
     return { key, value, firstValue: value?.[0] ?? "" };
   };
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setDebouncedSearchText(searchText);
-    }, 200);
-    return () => clearTimeout(timeoutId);
-  }, [searchText]);
 
   const getCategoryUrl = (action) => {
     let url = `/${action?.page?.type}`;
@@ -92,7 +90,6 @@ const useCompare = (fpi) => {
           setCategory(categoryDetails);
 
           const productItems = items ?? [];
-          // setProducts(productItems);
           fpi.custom.setValue("compare_product_data", productItems);
 
           if (!productItems?.length) {
@@ -102,7 +99,6 @@ const useCompare = (fpi) => {
             "compare_product_attribute",
             res?.data?.productComparison?.attributes_metadata
           );
-          // setAttributes(res?.data?.productComparison?.attributes_metadata);
         } else {
           console.log(
             res?.errors?.[0]?.message ?? t("resource.common.error_message")
@@ -113,32 +109,58 @@ const useCompare = (fpi) => {
         setIsLoading(false);
       });
   };
-  const fetchSuggestions = () => {
-    const requestId = Date.now(); // Generate a unique ID for request
+
+  const fetchSuggestions = async (searchQuery) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    abortControllerRef.current = new AbortController();
+
+    const requestId = Date.now();
     latestRequest.current = requestId;
     setSearchLoading(true);
 
     try {
       const values = { enableFilter: true };
-      if (debouncedSearchText) values.search = debouncedSearchText;
-      if (category?.keyValue?.firstValue)
-        values.filterQuery = `${category.keyValue.key}:${category.keyValue.firstValue}`;
 
-      fpi
-        .executeGQL(SEARCH_PRODUCT, values, { skipStoreUpdate: true })
-        .then((res) => {
-          if (latestRequest.current === requestId) {
-            setSuggestions(res?.data?.products?.items);
-          }
-        });
+      if (searchQuery && searchQuery.trim()) {
+        values.search = searchQuery.trim();
+      }
+
+      if (category?.keyValue?.firstValue) {
+        values.filterQuery = `${category.keyValue.key}:${category.keyValue.firstValue}`;
+      }
+
+      const res = await fpi.executeGQL(SEARCH_PRODUCT, values, {
+        skipStoreUpdate: true,
+        signal: abortControllerRef.current.signal,
+      });
+
+      if (
+        latestRequest.current === requestId &&
+        !abortControllerRef.current.signal.aborted
+      ) {
+        setSuggestions(res?.data?.products?.items || []);
+        setSearchLoading(false);
+      }
     } catch (error) {
-      showSnackbar(t("resource.compare.fetch_suggestion_failure"), "error");
+      if (error.name !== "AbortError" && latestRequest.current === requestId) {
+        showSnackbar(t("resource.compare.fetch_suggestion_failure"), "error");
+        setSearchLoading(false);
+      }
     }
   };
 
-  const handleInputChange = debounce((t) => {
-    setSearchText(t);
-  }, 200);
+  const debouncedFetchSuggestions = useRef(
+    debounce((searchQuery) => {
+      fetchSuggestions(searchQuery);
+    }, 400)
+  ).current;
+
+  const handleInputChange = (value) => {
+    setSearchText(value);
+  };
 
   const handleAdd = (slug) => {
     setIsSsrFetched(false);
@@ -191,19 +213,29 @@ const useCompare = (fpi) => {
 
   useEffect(() => {
     if (!isSsrFetched) {
-    if (existingSlugs.length) {
-    fetchCompareProduct();
-    }
-    const query = existingSlugs.join("&id=");
-    navigate(`${location.pathname}${query ? `?id=${query}` : ""}`, {
-      replace: true,
-    });
+      if (existingSlugs.length) {
+        fetchCompareProduct();
+      }
+      const query = existingSlugs.join("&id=");
+      navigate(`${location.pathname}${query ? `?id=${query}` : ""}`, {
+        replace: true,
+      });
     }
   }, [existingSlugs]);
 
   useEffect(() => {
-    fetchSuggestions();
-  }, [category?.keyValue?.firstValue, debouncedSearchText]);
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    setSearchLoading(true);
+    debouncedFetchSuggestions(searchText.trim());
+  }, [searchText]);
+
+  useEffect(() => {
+    if (category?.keyValue?.firstValue) {
+      fetchSuggestions("");
+    }
+  }, [category?.keyValue?.firstValue]);
 
   useEffect(() => {
     const items = suggestions?.filter?.(
@@ -213,13 +245,15 @@ const useCompare = (fpi) => {
   }, [suggestions, existingSlugs]);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    setSearchLoading(false);
-  }, [filteredSuggestions]);
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return {
     isLoading,
@@ -229,7 +263,7 @@ const useCompare = (fpi) => {
     showSearch,
     searchLoading,
     searchText,
-    setSearchText,
+    setSearchText: handleInputChange,
     filteredSuggestions,
     cardProps: {
       isSaleBadge: false,
@@ -241,7 +275,7 @@ const useCompare = (fpi) => {
     setShowSearch,
     handleAdd,
     handleRemove,
-    handleInputChange: (value) => setSearchText(value),
+    handleInputChange,
     isDifferentAttr,
     getAttribute,
     checkHtml,
