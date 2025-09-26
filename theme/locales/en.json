@@ -1086,6 +1086,7 @@
       "delivery_time_hours": "Delivery in {{hr}} Hours",
       "delivery_today_by_time": "Delivery today by {{time}}",
       "delivery_tomorrow_by_time": "Delivery tomorrow by {{time}}",
+      "get_it_by": "Get it by {{time}} ",
       "geolocation_not_available": "Geolocation is not available.",
       "api_key_not_available": "API key not available.",
       "contact": "Contact",

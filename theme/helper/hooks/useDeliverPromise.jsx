@@ -39,7 +39,8 @@ export const useDeliverPromise = ({ fpi }) => {
   } = globalConfig;
 
   const getDeliveryPromise = useCallback(
-    (timestamp) => {
+    (key, promise) => {
+      const timestamp = key == "min" ? promise?.min : promise?.max;
       if (!timestamp) {
         return t("resource.localization.provide_valid_time");
       }
@@ -70,6 +71,19 @@ export const useDeliverPromise = ({ fpi }) => {
 
       const maxDeliveryMinutes = Number(serviceability_max_min) || 0;
       const maxDeliveryHours = Number(serviceability_max_hour) || 0;
+      if (key === "range" && promise?.min < promise?.max) {
+        return `${t("resource.header.get_it_by", {
+          time: ` ${convertUTCDateToLocalDate(
+            promise?.min,
+            { weekday: "short", day: "numeric", month: "short" },
+            formatLocale(locale, countryCode, true)
+          )}  -  ${convertUTCDateToLocalDate(
+            promise?.max,
+            { weekday: "short", day: "numeric", month: "short" },
+            formatLocale(locale, countryCode, true)
+          )}`,
+        })}`;
+      }
 
       if (diffInMins > 0 && diffInMins <= maxDeliveryMinutes) {
         return t(
@@ -105,31 +119,19 @@ export const useDeliverPromise = ({ fpi }) => {
     // [globalConfig, locale, countryCode, t]
   );
 
-  const getServiceabilityPromise = useCallback(
+  const getFormattedPromise = useCallback(
     (promise) => {
-      const { min, max } = promise || {};
-      if (delivery_promise_type === "min" && min) {
-        return getDeliveryPromise(min);
+      
+      if (!promise) {
+        return;
       }
 
-      if (delivery_promise_type === "max" && max) {
-        return getDeliveryPromise(max);
-      }
-
-      return;
+      return getDeliveryPromise(delivery_promise_type, promise);
     },
     [delivery_promise_type, getDeliveryPromise]
   );
 
-  const getFormattedPromise = useCallback(
-    (promise) => {
-      return getServiceabilityPromise(promise);
-    },
-    [getServiceabilityPromise]
-  );
-
   return {
-    getServiceabilityPromise,
     getFormattedPromise,
   };
 };

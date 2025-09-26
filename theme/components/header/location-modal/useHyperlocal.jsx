@@ -32,7 +32,7 @@ const useHyperlocal = (fpi) => {
     }
   );
   const { globalConfig } = useThemeConfig({ fpi });
-  const { getServiceabilityPromise } = useDeliverPromise({ fpi });
+  const { getFormattedPromise } = useDeliverPromise({ fpi });
 
   const { isServiceability, isServiceabilityMandatory } = useThemeFeature({
     fpi,
@@ -143,7 +143,7 @@ const useHyperlocal = (fpi) => {
     if (isServicibilityError) {
       return t("resource.header.not_serviceable");
     }
-    return getServiceabilityPromise(deliveryTat);
+    return getFormattedPromise(deliveryTat);
   }, [deliveryTat, isServicibilityError]);
 
   useEffect(() => {

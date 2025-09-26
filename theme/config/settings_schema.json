@@ -512,6 +512,10 @@
         {
           "value": "max",
           "text": "Show Maximum delivery promise"
+        },
+        {
+          "value": "range",
+          "text": "Show Minimum to Maximum Range of delivery promise"
         }
       ]
     },
