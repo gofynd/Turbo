@@ -124,8 +124,10 @@ export const useRichText = (htmlContent) => {
       const markedContent = marked(processedContent);
       const sanitizedHtml = DOMPurify.sanitize(markedContent);
       setClientMarkedContent(sanitizedHtml);
+    } else {
+      setClientMarkedContent("");
     }
-  }, []);
+  }, [htmlContent]);
 
   return clientMarkedContent;
 };
