@@ -14,12 +14,14 @@ import CarouselNavArrowIcon from "../../../../assets/images/carousel-nav-arrow.s
 import ArrowLeftIcon from "../../../../assets/images/arrow-left.svg";
 import ArrowRightIcon from "../../../../assets/images/arrow-right.svg";
 import { useGlobalTranslation } from "fdk-core/utils";
+import { Skeleton } from "../../../../components/core/skeletons";
 
 const LightboxImage = React.lazy(
   () => import("../lightbox-image/lightbox-image")
 );
 
 function PdpImageGallery({
+  isLoading,
   images = [],
   displayThumbnail = true,
   isCustomOrder = false,
@@ -206,6 +208,9 @@ function PdpImageGallery({
           <CarouselNavArrowIcon />
         </div>
         <div className={styles.imageBox}>
+          {isLoading ? (
+            <Skeleton width={"100%"} aspectRatio={getProductImgAspectRatio(globalConfig)}  />
+          ) : (
           <PicZoom
             customClass={styles.imageItem}
             source={currentMedia.src}
@@ -221,6 +226,7 @@ function PdpImageGallery({
             addToWishList={addToWishList}
             hideImagePreview={hideImagePreview}
           />
+          )}
           {isCustomOrder && (
             <div className={`${styles.badge} ${styles.b4}`}>
               {t("resource.product.made_to_order")}
@@ -267,7 +273,10 @@ function PdpImageGallery({
               } ${images && images?.length < 5 ? styles.fitContent : ""}`}
             >
               {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
-              {images.map((item, index) => (
+              {images.map((item, index) => 
+               isLoading ? (
+                  <Skeleton  width={"100%"} aspectRatio={getProductImgAspectRatio(globalConfig)} />
+                ) : (
                 <li
                   key={index}
                   onClick={(e) => setMainImage(e, index)}

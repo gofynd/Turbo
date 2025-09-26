@@ -134,6 +134,7 @@ const useProductDescription = ({
   useEffect(() => {
     if (slug && (!isPdpSsrFetched || slug !== PRODUCT?.product_details?.slug)) {
       setIsLoading(true);
+      setIsPageLoading(true);
       const values = { slug };
       if (size) {
         values.size = size;
