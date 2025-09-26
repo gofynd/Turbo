@@ -478,9 +478,9 @@
               },
                "card_cta_text": {
                 "type": "text",
-                "value": "t:resource.settings_schema.cart_and_button_configuration.add_to_cart"
+                "value": "Add to Cart"
               },
-                            "show_add_to_cart": {
+              "show_add_to_cart": {
                 "type": "checkbox",
                 "value": true
               },
