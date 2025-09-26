@@ -5,6 +5,7 @@ import Compare from "@gofynd/theme-template/page-layouts/compare/compare";
 import "@gofynd/theme-template/page-layouts/compare/compare.css";
 import { PRODUCT_COMPARISON } from "../../queries/compareQuery";
 import useAddToCartModal from "../plp/useAddToCartModal";
+import ScrollToTop from "../../components/scroll-to-top/scroll-to-top";
 import { useThemeConfig } from "../../helper/hooks";
 const AddToCart = React.lazy(
   () =>
@@ -59,6 +60,7 @@ function CompareProducts({ fpi }) {
       className={`${styles.compare} basePageContainer margin0auto ${styles.fontBody}`}
     >
       <Compare {...compareProps} handleAddToCart={handleAddToCart} />
+      <ScrollToTop />
       {isAddToCartOpen && (
         <Suspense fallback={<div />}>
           <Modal
