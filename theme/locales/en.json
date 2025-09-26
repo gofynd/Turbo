@@ -1214,8 +1214,8 @@
       "improve_your_card_security": "Improve your card security",
       "card_consent_request_1": "Your bank/card network will securely save your card info via tokenization if you give consent for the same.",
       "card_consent_request_2": "In case you choose to not tokenize, you will have to enter the card details every time you pay.",
-      "no_payment_methods_available_heading": "Oops! Payment isn’t working right now.",
-      "no_payment_methods_available_desc": "It looks like our payment options are temporarily unavailable, so we can’t process your order right now. Please try again in a little while, or reach out to us—we’ll be happy to help."
+      "no_payment_methods_available_heading": "Payment methods not available",
+      "no_payment_methods_available_desc": "Unfortunately, we are unable to process your order right now because no payment method is currently available. Please try again later or contact the store owner for assistance."
     },
     "contact_us": {
       "please_enter_your_name": "Please enter your name",
