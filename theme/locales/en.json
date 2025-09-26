@@ -566,6 +566,7 @@
       "sale": "Sale",
       "ifsc_code": "IFSC Code",
       "enter_otp": "Enter OTP",
+      "complete_verification": "Complete Verification",
       "enter_valid_otp": "Please Enter Valid OTP",
       "mobile_number": "Mobile Number",
       "enter_valid_mobile_number": "Please Enter Valid Mobile Number",
@@ -654,6 +655,7 @@
       "first_name": "First Name",
       "please_enter_valid_first_name": "Please enter a valid first name",
       "last_name": "Last Name",
+      "sending": "SENDING...",
       "maximum_64_characters_allowed": "Please enter characters less than 64",
       "maximum_50_characters_allowed": "Please enter characters less than 50",
       "please_enter_valid_last_name": "Please enter a valid last name",
@@ -1056,7 +1058,7 @@
       "add_number": "Add Number",
       "verify_number": "Verify Number",
       "countdown_in_seconds": "in {{count}}s",
-      "send_otp": "Send OTP",
+      "send_otp": "SEND OTP",
       "enter_your_email_address": "Enter your email address",
       "no_email_address_added": "No Email Address Added",
       "add_email_address": "Add Email Address",
@@ -1214,8 +1216,8 @@
       "improve_your_card_security": "Improve your card security",
       "card_consent_request_1": "Your bank/card network will securely save your card info via tokenization if you give consent for the same.",
       "card_consent_request_2": "In case you choose to not tokenize, you will have to enter the card details every time you pay.",
-      "no_payment_methods_available_heading": "Payment methods not available",
-      "no_payment_methods_available_desc": "Unfortunately, we are unable to process your order right now because no payment method is currently available. Please try again later or contact the store owner for assistance."
+      "no_payment_methods_available_heading": "Oops! Payment isn’t working right now.",
+      "no_payment_methods_available_desc": "It looks like our payment options are temporarily unavailable, so we can’t process your order right now. Please try again in a little while, or reach out to us—we’ll be happy to help."
     },
     "contact_us": {
       "please_enter_your_name": "Please enter your name",
@@ -1258,6 +1260,7 @@
       "beneficiary_added": "Beneficiary Added",
       "invalid_refund_link": "Invalid refund link",
       "name_alt_text": "name",
+      "shipment_id":"Shipment ID",
       "select_refund_option": "Select Refund Option",
       "bank_account_transfer": "Bank Account Transfer",
       "recently_used": "Recently Used",
@@ -1269,9 +1272,12 @@
       "account_holders_name": "Account Holder's Name",
       "bank_account_no": "Bank Account No.",
       "order_id": "Order ID",
-      "otp_sent_to_phone": "One Time Password (OTP) successfully sent to the phone number",
+      "otp_sent_to_phone": "One Time Password (OTP) successfully sent to the phone number you entered",
       "verify_caps": "VERIFY",
-      "enter_bank_details": "Enter Bank Details"
+      "enter_bank_details": "Enter Bank Details",
+      "refund_amount": "Refund Amount",
+      "click_on_send_otp_to_processd": "Click on 'Send OTP' to proceed.",
+      "click_on_send_otp_to_proceed":"Click on 'Send OTP' to proceed."
     },
     "payment": {
       "payment_failed": "Payment Failed",

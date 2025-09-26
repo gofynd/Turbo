@@ -19,8 +19,9 @@ import BankForm from "../components/refund/bank-form";
 import BankVerifiedIcon from "../assets/images/bankVerified.svg";
 import RadioIcon from "../assets/images/radio";
 import CheckmarkFilledIcon from "../assets/images/checkmark-filled.svg";
+import Shimmer from "../components/shimmer/shimmer";
 
-import { useSnackbar } from "../helper/hooks";
+import { useSnackbar, useViewport } from "../helper/hooks";
 
 const TRANSFER_MODE = {
   BANK: "bank",
@@ -47,6 +48,11 @@ function Refund({ fpi }) {
   const [isValidOtp, setIsValidOtp] = useState(false);
   const [isBeneficiaryAdded, setIsBeneficiaryAdded] = useState(false);
   const [beneficiaryDetails, setBeneficiaryDetails] = useState(null);
+
+  const [isOtpSend, setIsOtpSend] = useState(false);
+  const [refundAmount, setRefundAmount] = useState(null);
+  const [currencySymbol, setCurrencySymbol] = useState("");
+  const [isAmountLoading, setIsAmountLoading] = useState(true);
 
   const { verifyIfscCode, addRefundBankAccountUsingOTP } =
     useRefundDetails(fpi);
@@ -84,6 +90,7 @@ function Refund({ fpi }) {
         setOtpResendTime(data.sendOtpForRefundBankDetails.resend_timer);
         timer(data.sendOtpForRefundBankDetails.resend_timer);
         sendOtpResponse.current = data.sendOtpForRefundBankDetails;
+        setIsOtpSend(true);
       })
       .catch((error) => {
         if (error?.errors && error?.errors?.length) {
@@ -159,13 +166,13 @@ function Refund({ fpi }) {
   ) => {
     //Section to map if the user is selecting from saved Banks
     if (selectedBank && selectedBankCheck) {
-      (ifscCode = selectedBank.ifsc_code),
+      ((ifscCode = selectedBank.ifsc_code),
         (accountNo = selectedBank.account_no),
         (accounHolder = selectedBank.account_holder),
         await verifyIfscCode(selectedBank.ifsc_code).then((data) => {
-          (verify_IFSC_code.bank_name = data.verify_IFSC_code.bank_name),
-            (verify_IFSC_code.branch_name = data.verify_IFSC_code.branch_name);
-        });
+          ((verify_IFSC_code.bank_name = data.verify_IFSC_code.bank_name),
+            (verify_IFSC_code.branch_name = data.verify_IFSC_code.branch_name));
+        }));
     }
     const beneficiaryDetails = {
       details: {
@@ -211,6 +218,8 @@ function Refund({ fpi }) {
     if (!shipmentId || !orderId) return;
 
     setIsLoading(true);
+    setIsAmountLoading(true);
+
     const values = {
       shipmentId: shipmentId || "",
       orderId: orderId || "",
@@ -221,24 +230,35 @@ function Refund({ fpi }) {
       .then((res) => {
         if (res?.data?.shipment) {
           const customerPhone = res?.data?.shipment?.customer_detail?.phone;
+          const refundAmount =
+            res?.data?.shipment?.detail?.prices?.refund_amount;
+          const currencySymbol =
+            res?.data?.shipment?.detail?.prices?.currency_symbol;
           setCustomerPhone(customerPhone);
-
-          //If phone number exists, fetch additional data
-          if (customerPhone) {
-            fetchAdditionalData({
-              orderId,
-              shipmentId,
-            });
-          }
+          setCurrencySymbol(currencySymbol);
+          setRefundAmount(refundAmount);
+          setIsAmountLoading(false);
         }
       })
       .catch((error) => {
         console.error("GraphQL Error:", error);
+        setIsAmountLoading(false);
       })
       .finally(() => {
         setIsLoading(false);
+        setIsAmountLoading(false);
       });
   }, [shipmentId, orderId]);
+
+  const handleSendOtp = () => {
+    console.log("clcik");
+    if (customerPhone) {
+      fetchAdditionalData({
+        orderId,
+        shipmentId,
+      });
+    }
+  };
 
   function maskAccountNumber(accNo) {
     if (!accNo) return "";
@@ -270,6 +290,8 @@ function Refund({ fpi }) {
       >
         {isBeneficiaryAdded ? (
           <BeneficiarySuccess
+            refundAmount={refundAmount}
+            currencySymbol={currencySymbol}
             orderId={orderId}
             shipmentId={shipmentId}
             beneficiaryDetails={beneficiaryDetails}
@@ -285,7 +307,13 @@ function Refund({ fpi }) {
                 alt={t("resource.refund_order.name_alt_text")}
               />
             </div>
-            <RefundDetails orderId={orderId} shipmentId={shipmentId} />
+            <RefundDetails
+              orderId={orderId}
+              shipmentId={shipmentId}
+              refundAmount={refundAmount}
+              currencySymbol={currencySymbol}
+              isLoading={isAmountLoading}
+            />
             {isValidOtp ? (
               showBeneficiaryPage ? (
                 <BeneficiaryForm
@@ -295,6 +323,9 @@ function Refund({ fpi }) {
                     setShowBeneficiaryAdditionPage
                   }
                   exisitingBankRefundOptions={exisitingBankRefundOptions}
+                  onSendOtp={handleSendOtp}
+                  isOtpSend={isOtpSend}
+                  isAdditionalLoading={isAdditionalLoading}
                 />
               ) : (
                 <div className={styles.outerContainer}>
@@ -392,6 +423,9 @@ function Refund({ fpi }) {
                 onSubmit={handleOtpSubmit}
                 onResendClick={handleOtpResend}
                 customerPhone={customerPhone}
+                onSendOtp={handleSendOtp}
+                isOtpSend={isOtpSend}
+                isAdditionalLoading={isAdditionalLoading}
               />
             )}
           </>
@@ -401,7 +435,12 @@ function Refund({ fpi }) {
   );
 }
 
-function BeneficiarySuccess({ orderId, shipmentId }) {
+function BeneficiarySuccess({
+  orderId,
+  shipmentId,
+  refundAmount,
+  currencySymbol,
+}) {
   const { t } = useGlobalTranslation("translation");
   return (
     <>
@@ -414,7 +453,12 @@ function BeneficiarySuccess({ orderId, shipmentId }) {
           </div>
         </div>
       </div>
-      <RefundDetails orderId={orderId} shipmentId={shipmentId} />
+      <RefundDetails
+        orderId={orderId}
+        shipmentId={shipmentId}
+        refundAmount={refundAmount}
+        currencySymbol={currencySymbol}
+      />
       {/* <div className={styles.beneficiaryDetails}>
         <div className={styles.detailItem}>
           <h5 className={styles.beneficiaryDetailsTitle}>
@@ -446,8 +490,17 @@ function RefundDetails({
   orderId = "ORDER_ID",
   shipmentId = "SHIPMENT_ID",
   refundAmount = 0,
+  currencySymbol = "",
+  isLoading = false,
 }) {
   const { t } = useGlobalTranslation("translation");
+
+  const isMobile = useViewport(0, 540);
+  const hasRefundAmount =
+    refundAmount !== null &&
+    refundAmount !== undefined &&
+    refundAmount !== "" &&
+    !isLoading;
   return (
     <div className={styles.refundDetails}>
       <div className={styles.refundDetailsItem}>
@@ -458,9 +511,20 @@ function RefundDetails({
         <span>{t("resource.common.shipment_id")}</span>
         <span>{shipmentId}</span>
       </div>
+
+      {/* Note - uncomment below code when amount issue resolved */}
       {/* <div className={styles.refundDetailsItem}>
-        <span>Refund Amount</span>
-        <span>{refundAmount}</span>
+        <span>{t("resource.refund_order.refund_amount")}</span>
+        {hasRefundAmount ? (
+          <span>
+            {currencySymbol}
+            {refundAmount}
+          </span>
+        ) : (
+          <span>
+            <Shimmer height="20px" width="35px" />
+          </span>
+        )}
       </div> */}
     </div>
   );
@@ -471,77 +535,186 @@ function OtpValidationForm({
   onSubmit,
   onResendClick,
   customerPhone,
+  onSendOtp,
+  isOtpSend,
+  isAdditionalLoading,
 }) {
   const { t } = useGlobalTranslation("translation");
   const {
     handleSubmit,
     register,
     formState: { isValid, errors },
+    watch,
+    setValue,
   } = useForm();
+
+  const [otp, setOtp] = useState(Array(4).fill(""));
+  const inputs = useRef([]);
+
+  const handleChange = (e, index) => {
+    const { value } = e.target;
+
+    if (value.match(/^\d$/) || value === "") {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+
+      const otpString = newOtp.join("");
+      setValue("otp", otpString);
+
+      if (value && index < 3) {
+        inputs.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
+      if (otp[index] === "" && index > 0) {
+        inputs.current[index - 1]?.focus();
+      } else {
+        const newOtp = [...otp];
+        newOtp[index] = "";
+        setOtp(newOtp);
+        setValue("otp", newOtp.join(""));
+      }
+    }
+  };
+
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text");
+
+    if (pastedData.match(/^\d{4}$/)) {
+      const newOtp = pastedData.split("").slice(0, 4);
+      setOtp(newOtp);
+      setValue("otp", pastedData);
+      inputs.current[3]?.focus();
+    }
+  };
+
+  const otpValue = watch("otp");
+  const isOtpValid =
+    otpValue && otpValue.length === 4 && /^[0-9]{4}$/.test(otpValue);
+
+  // Auto focus first input when OTP section becomes visible
+  useEffect(() => {
+    if (isOtpSend && inputs.current[0]) {
+      setTimeout(() => {
+        inputs.current[0]?.focus();
+      }, 100);
+    }
+  }, [isOtpSend]);
 
   return (
     <div className={styles.refundOtp}>
       <div className={styles.refundOtpHead}>
-        <h4>{t("resource.common.enter_otp")}</h4>
-        <div>
-          {t("resource.refund_order.otp_sent_to_phone")} {customerPhone || ""}
+        <h4>
+          {isOtpSend ? t("resource.common.enter_otp") : "Complete Verification"}
+        </h4>
+        <div className={styles.subText}>
+          {isOtpSend
+            ? ` ${t("resource.refund_order.otp_sent_to_phone")} ${customerPhone || ""} `
+            : "Click on 'Send OTP' to proceed."}
         </div>
       </div>
-      <form className={styles.refundOtpForm} onSubmit={handleSubmit(onSubmit)}>
-        <div className={styles.refundFormFieldWrapper}>
-          <Input
-            type="text"
-            label={t("resource.common.enter_otp")}
-            labelVariant="floating"
-            labelClassName={styles.otpInputLabel}
-            showAsterik
-            required
-            inputMode="numeric"
-            pattern="\d*"
-            maxLength={4}
-            onInput={(e) => {
-              e.target.value = e.target.value
-                .replace(/[^0-9]/g, "")
-                .slice(0, 4);
-            }}
-            {...register("otp", {
-              required: t("resource.refund_order.otp_is_required"),
-              pattern: {
-                value: /^[0-9]{4}$/, // Ensures only 4 digits are entered
-                message: t("resource.refund_order.otp_must_be_4_digits"),
-              },
-            })}
-            error={!!errors.otp}
-            errorMessage={errors?.otp?.message || ""}
-          />
-          <button
-            className={`${styles.formResendTimer} ${
-              otpResendTime === 0 ? styles.resendEnabled : ""
-            }`}
-            disabled={otpResendTime > 0}
-            type="button"
-            onClick={onResendClick}
-            style={{ cursor: otpResendTime > 0 ? "default" : "pointer" }}
-          >
-            {otpResendTime > 0
-              ? t("resource.refund_order.resend_otp_in_seconds", {
-                  time: otpResendTime,
-                })
-              : t("resource.refund_order.resend_otp")}
-          </button>
-        </div>
-        <Button
-          className={styles.refundOtpSubmitBtn}
-          variant="contained"
-          size="large"
-          color="primary"
-          fullWidth={true}
-          type="submit"
-          disabled={!isValid}
+      {!isOtpSend ? (
+        <form className={styles.refundOtpForm}>
+          {customerPhone ? (
+            <>
+              <div className={styles.refundFormFieldWrapper}>
+                <Input
+                  type="text"
+                  labelVariant="floating"
+                  labelClassName={styles.otpInputLabel}
+                  showAsterik
+                  required
+                  inputMode="numeric"
+                  disabled={true}
+                  value={customerPhone}
+                />
+              </div>
+              <Button
+                className={styles.refundOtpSubmitBtn}
+                variant="contained"
+                size="large"
+                color="primary"
+                fullWidth={true}
+                type="button"
+                disabled={isAdditionalLoading || !customerPhone}
+                onClick={onSendOtp}
+              >
+                {isAdditionalLoading
+                  ? t("resource.common.sending")
+                  : t("resource.profile.send_otp")}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Shimmer height="48px" width="100%" />
+              <Shimmer height="48px" width="100%" />
+            </>
+          )}
+        </form>
+      ) : (
+        <form
+          className={styles.refundOtpFormContainer}
+          onSubmit={handleSubmit(onSubmit)}
         >
-          {t("resource.refund_order.verify_caps")}
-        </Button>
-      </form>
+          <label>{t("resource.common.enter_otp")}</label>
+          <div className={styles.otpFieldWrapper}>
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                type="text"
+                value={digit}
+                ref={(el) => (inputs.current[index] = el)}
+                onChange={(e) => handleChange(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                onPaste={handlePaste}
+                inputMode="numeric"
+                pattern="\d*"
+                maxLength={1}
+                className={styles.otpInputItem}
+                autoComplete="off"
+              />
+            ))}
+          </div>
+
+          <div className={styles.otpTimerBtnContainer}>
+            <button
+              className={`${styles.formResendTimer} ${
+                otpResendTime === 0 ? styles.resendEnabled : ""
+              }`}
+              disabled={otpResendTime > 0}
+              type="button"
+              onClick={onResendClick}
+              style={{ cursor: otpResendTime > 0 ? "default" : "pointer" }}
+            >
+              {otpResendTime > 0
+                ? t("resource.refund_order.resend_otp_in_seconds", {
+                    time: otpResendTime,
+                  })
+                : t("resource.refund_order.resend_otp")}
+            </button>
+
+            {errors.otp && (
+              <div className={styles.errorMessage}>{errors.otp.message}</div>
+            )}
+          </div>
+          <Button
+            className={styles.refundOtpSubmitBtn}
+            variant="contained"
+            size="large"
+            color="primary"
+            fullWidth={true}
+            type="submit"
+            disabled={!isOtpValid}
+          >
+            {t("resource.refund_order.verify_caps")}
+          </Button>
+        </form>
+      )}
     </div>
   );
 }

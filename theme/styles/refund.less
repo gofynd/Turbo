@@ -16,16 +16,16 @@
     padding: 0;
     gap: 8px;
   }
-  
+
   @media @mobile-up {
-    &>*:nth-child(n + 3) {
-      margin-top: 16px;
+    & > *:nth-child(n + 3) {
+      margin-top: 10px;
     }
   }
 
   &.beneficiaryContainer {
     gap: 16px;
-    @media @mobile {  
+    @media @mobile {
       gap: 8px;
     }
   }
@@ -37,7 +37,7 @@
 .refundOtp,
 .beneficiaryForm {
   background-color: @PageBackground;
-  padding: 16px;
+  padding: 24px;
 
   @media @mobile {
     padding: 16px;
@@ -48,14 +48,14 @@
 }
 
 .ifscDiv,
-.accountNoDiv{
+.accountNoDiv {
   color: @TextHeading;
   font-weight: 500;
   font-size: 14px;
 }
 .ifscCodeValue,
-.accountNoValue{
-  color:@TextBody;
+.accountNoValue {
+  color: @TextBody;
   font-weight: 400;
   font-size: 14px;
 }
@@ -66,88 +66,85 @@
   justify-content: center;
   @media @mobile-up {
     border-radius: 4px 4px 0px 0px;
-    border-bottom: 1px solid @DividerStokes; 
+    border-bottom: 1px solid @DividerStokes;
   }
 }
 
-.accountHolder{
+.accountHolder {
   word-break: break-all;
 }
-.outerContainer{
+.outerContainer {
   display: flex;
-  padding:24px;
+  padding: 24px;
   flex-direction: column;
   height: 450px;
   overflow-y: scroll;
-  gap:16px;
-  .refundHeadertext{
+  gap: 16px;
+  .refundHeadertext {
     color: @TextHeading;
     font-size: 16px;
     font-weight: 700;
     font-style: normal;
   }
-  .mainContentSection{
+  .mainContentSection {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    .contentHeader{
+    .contentHeader {
       color: @TextHeading;
       font-weight: 600;
     }
-    .recentlyUsedSection{
+    .recentlyUsedSection {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      .recentlyUsedHeader{
+      .recentlyUsedHeader {
         color: @TextHeading;
         font-size: 14px;
         font-weight: 600;
       }
-      .addBankAccount{
+      .addBankAccount {
         cursor: pointer;
         color: @ButtonLink;
-
       }
     }
   }
 
-  .paymentContent{
+  .paymentContent {
     display: flex;
     flex-direction: column;
-    gap:16px;
-    .bankOptionItem{
+    gap: 16px;
+    .bankOptionItem {
       display: flex;
       align-items: flex-start;
-      border:1px solid @DividerStokes;
+      border: 1px solid @DividerStokes;
       padding: 16px;
       justify-content: space-between;
-      .bankDetails{
-        .bankdetailsHeader{
+      .bankDetails {
+        .bankdetailsHeader {
           display: flex;
-          gap:2px;
-          .bankName{
+          gap: 2px;
+          .bankName {
             color: @TextHeading;
             font-weight: 600;
             font-size: 16px;
-  
           }
-          .svgWrapper{
+          .svgWrapper {
             width: 20px;
             height: 20px;
           }
         }
-       .accountHolder{
+        .accountHolder {
           color: @TextHeading;
           font-weight: 500;
           font-size: 14px;
         }
       }
-
     }
   }
 
-  .submitButtonContent{
+  .submitButtonContent {
     .btn {
       padding: 15px;
       border-radius: 5px;
@@ -175,9 +172,9 @@
     }
   }
 
-  @media @mobile{
+  @media @mobile {
     padding: 16px;
-    .refundHeadertext{
+    .refundHeadertext {
       font-size: 14px;
       font-style: normal;
       font-weight: 600;
@@ -218,10 +215,17 @@
     color: @TextLabel;
 
     h4 {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
       line-height: 140%;
       color: @TextHeading;
+    }
+
+    .subText {
+      color: @TextLabel;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 140%;
     }
   }
 }
@@ -251,12 +255,12 @@
       font-weight: 400;
       color: @TextLabel !important;
     }
-        .resendEnabled {
-          color: @ButtonLink !important;
-          font-weight: 600;
-        }
+    .resendEnabled {
+      color: @ButtonLink !important;
+      font-weight: 600;
+    }
   }
- 
+
   .refundOtpSubmitBtn {
     color: @ButtonSecondary;
     font-size: 14px;
@@ -348,5 +352,61 @@
     font-weight: 600;
     line-height: 140%;
     color: @TextHeading;
+  }
+}
+
+.refundOtpFormContainer {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-size: 12px;
+    font-weight: 400;
+    margin-bottom: 8px !important;
+    color: @TextLabel;
+  }
+}
+
+.otpFieldWrapper {
+  display: flex;
+  padding-bottom: 25px;
+  gap: 16px;
+}
+
+.otpInputItem {
+  width: 48px;
+  height: 48px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 400;
+  border-radius: 4px;
+  border: 1px solid @DividerStokes;
+  background: var(--Accent-Color-L5, #fff);
+  outline: none;
+}
+
+.otpTimerBtnContainer {
+  margin-top: 12px;
+  margin-bottom: 16px;
+
+  .formResendTimer {
+    width: fit-content;
+    font-size: 14px;
+    font-weight: 400;
+    color: @TextLabel !important;
+    padding: 4px;
+
+    &.resendEnabled {
+      color: @ButtonLink !important;
+      font-weight: 500;
+    }
+  }
+
+  button {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%;
+    text-transform: uppercase;
   }
 }
