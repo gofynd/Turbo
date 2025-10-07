@@ -168,6 +168,7 @@
             "sticky_header": true,
             "show_secondary_header_on_checkout": false,
             "show_price": true,
+            "show_color_variants": false,
             "img_fill": true,
             "disable_cart": false,
             "is_delivery_minutes": false,

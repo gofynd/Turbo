@@ -699,6 +699,7 @@ const useProductListing = ({ fpi, props }) => {
     onLoadMoreProducts: handleLoadMoreProducts,
     // New function to handle product navigation
     onProductNavigation: handleProductNavigation,
+    showColorVariants: globalConfig?.show_color_variants,
   };
 };
 

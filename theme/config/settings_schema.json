@@ -363,6 +363,14 @@
       "info": "t:resource.settings_schema.product_card_configuration.hide_sale_badge"
     },
     {
+      "type": "checkbox",
+      "id": "show_color_variants",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
+      "default": false,
+      "label": "Display color variants",
+      "info": "Show color variant dots on product cards"
+    },
+    {
       "type": "range",
       "category": "t:resource.settings_schema.common.product_card_configuration",
       "id": "image_border_radius",
