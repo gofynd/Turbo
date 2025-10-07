@@ -15,6 +15,7 @@ import ArrowLeftIcon from "../../../../assets/images/arrow-left.svg";
 import ArrowRightIcon from "../../../../assets/images/arrow-right.svg";
 import { useGlobalTranslation } from "fdk-core/utils";
 import { Skeleton } from "../../../../components/core/skeletons";
+import { useGlobalStore, useFPI } from "fdk-core/utils";
 
 const LightboxImage = React.lazy(
   () => import("../lightbox-image/lightbox-image")
@@ -49,7 +50,10 @@ function PdpImageGallery({
   const thumbnailSidebarRef = useRef(null);
   const mainImagesRefs = useRef([]);
   const verticalContainerRef = useRef(null);
-
+  const fpi = useFPI();
+  const product = useGlobalStore(fpi.getters.PRODUCT);
+  const productDetails = product.product_details;
+  
   const handleVerticalContainerWheel = (event) => {
     const container = verticalContainerRef.current;
     if (!container) return;
@@ -195,6 +199,37 @@ function PdpImageGallery({
     setEnableLightBox(true);
   };
 
+  const renderTag = () => {
+   
+    // Check conditions in order of priority
+    if (!productDetails.sizes?.sellable) {
+      // Out of stock
+      return (
+        <div className={`${styles.saleTag} `}>
+          <span>{t("resource.common.out_of_stock")}</span>
+        </div>
+      );
+    } else if (productDetails.teaser_tag && showSaleTag) {
+      // Teaser tag
+      return (
+        <div className={styles.saleTag}>
+          <span>{productDetails.teaser_tag.substring(0, 14)}</span>
+        </div>
+      );
+    } else if (
+      (productDetails.discount || productDetails.attributes?.discount) &&
+      productDetails.sizes?.sellable &&
+      showSaleTag
+    ) {
+      // Sale badge
+      return (
+        <div className={`${styles.saleTag} `}>
+          <span>{t("resource.common.sale")}</span>
+        </div>
+      );
+    } 
+    return null;
+  };
   // Render Carousel Mode
   const renderCarouselMode = () => (
     <div className={`${styles.imageGallery} ${styles.desktop}`}>
@@ -227,6 +262,9 @@ function PdpImageGallery({
             hideImagePreview={hideImagePreview}
           />
           )}
+          <div>
+            {renderTag()}
+          </div>
           {isCustomOrder && (
             <div className={`${styles.badge} ${styles.b4}`}>
               {t("resource.product.made_to_order")}
@@ -362,13 +400,16 @@ function PdpImageGallery({
               showWishlist={images.length === 1 ? index === 0 : index === 1}
             />
             {/* Sale Tag - Configuration-based */}
-            {showSaleTag && (
+            {/* {showSaleTag && (
               <div>
                 <span className={styles.saleTag}>
                   {t("resource.common.sale")}
                 </span>
               </div>
-            )}
+            )} */}
+            <div>
+            {index === 0 && renderTag()}
+            </div>
             {isCustomOrder && index === 0 && (
               <div className={`${styles.badge} ${styles.b4}`}>
                 {t("resource.product.made_to_order")}
@@ -479,6 +520,9 @@ function PdpImageGallery({
                   addToWishList={addToWishList}
                   hideImagePreview={hideImagePreview}
                 />
+                <div>
+                {index === 0 && renderTag()}
+                </div>
                 {isCustomOrder && index === 0 && (
                   <div className={`${styles.badge} ${styles.b4}`}>
                     {t("resource.product.made_to_order")}
@@ -522,6 +566,7 @@ function PdpImageGallery({
           handleShare={handleShare}
           showShareIcon={showShareIcon}
           showSaleTag={showSaleTag}
+          renderTag={renderTag}
         />
       </div>
 

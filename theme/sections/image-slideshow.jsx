@@ -10,7 +10,7 @@ import placeholderDesktop2 from "../assets/images/placeholder/slideshow-desktop2
 import placeholderMobile1 from "../assets/images/placeholder/slideshow-mobile1.jpg";
 import placeholderMobile2 from "../assets/images/placeholder/slideshow-mobile2.jpg";
 import styles from "../styles/sections/image-slideshow.less";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore ,useNavigate} from "fdk-core/utils";
 import {
   SliderNextArrow,
   SliderPrevArrow,
@@ -107,11 +107,179 @@ export function Component({ props, blocks, globalConfig, preset }) {
     [autoplay?.value, slide_interval?.value, blocksData]
   );
 
+   const getOverlayPositionStyles = (block) => {
+    const positions = {};
+    const responsiveViews = ["mobile", "desktop"];
+
+    responsiveViews.forEach((view) => {
+      
+      const overlayPosition =
+        view === "mobile"
+          ? block?.props?.text_placement_mobile?.value
+          : block?.props?.text_placement_desktop?.value;
+
+      const contentAlignment =
+        view === "mobile"
+          ? block?.props?.text_alignment_mobile?.value
+          : block?.props?.text_alignment_desktop?.value;
+
+      const isMobileDevice = windowWidth <= 480;
+
+      const HORIZONTAL_SPACING_TABLET = "1.75rem";
+      const HORIZONTAL_SPACING_DESKTOP = "2.5rem";
+      const HORIZONTAL_SPACING_MOBILE = "1rem";
+      const VERTICAL_SPACING_MOBILE = "1rem";
+      const VERTICAL_SPACING_TABLET = "1.5rem";
+      const VERTICAL_SPACING_DESKTOP = "2.5rem";
+
+      if (contentAlignment) {
+        positions[`--content-alignment-${view}`] = getDirectionAdaptiveValue(
+          DIRECTION_ADAPTIVE_CSS_PROPERTIES.TEXT_ALIGNMENT,
+          contentAlignment
+        );
+      }
+
+      switch (overlayPosition) {
+        case "top_start":
+          if (view === "mobile" && isMobileDevice) {
+            positions[`--top-position-${view}`] = VERTICAL_SPACING_MOBILE;
+          } else {
+            positions[`--top-position-${view}`] =
+              view === "mobile"
+                ? VERTICAL_SPACING_TABLET
+                : VERTICAL_SPACING_DESKTOP;
+            positions[`--left-position-${view}`] =
+              view === "mobile"
+                ? HORIZONTAL_SPACING_TABLET
+                : HORIZONTAL_SPACING_DESKTOP;
+          }
+
+          break;
+
+        case "top_center":
+          if (view === "mobile" && isMobileDevice) {
+            positions[`--top-position-${view}`] = VERTICAL_SPACING_MOBILE;
+          } else {
+            positions[`--top-position-${view}`] =
+              view === "mobile"
+                ? VERTICAL_SPACING_TABLET
+                : VERTICAL_SPACING_DESKTOP;
+            positions[`--left-position-${view}`] = "50%";
+            positions[`--transform-${view}`] = "translateX(-50%)";
+          }
+
+          break;
+
+        case "top_end":
+          if (view === "mobile" && isMobileDevice) {
+            positions[`--top-position-${view}`] = VERTICAL_SPACING_MOBILE;
+          } else {
+            positions[`--top-position-${view}`] =
+              view === "mobile"
+                ? VERTICAL_SPACING_TABLET
+                : VERTICAL_SPACING_DESKTOP;
+            positions[`--right-position-${view}`] =
+              view === "mobile"
+                ? HORIZONTAL_SPACING_TABLET
+                : HORIZONTAL_SPACING_DESKTOP;
+          }
+
+          break;
+
+        case "center_start":
+          positions[`--top-position-${view}`] = "50%";
+          positions[`--transform-${view}`] = "translateY(-50%)";
+          positions[`--left-position-${view}`] =
+            view === "mobile"
+              ? HORIZONTAL_SPACING_TABLET
+              : HORIZONTAL_SPACING_DESKTOP;
+
+          break;
+
+        case "center_center":
+          positions[`--top-position-${view}`] = "50%";
+
+          if (view === "mobile" && isMobileDevice) {
+            positions[`--transform-${view}`] = "translateY(-50%)";
+          } else {
+            positions[`--left-position-${view}`] = "50%";
+            positions[`--transform-${view}`] = "translate(-50%, -50%)";
+          }
+
+          break;
+
+        case "center_end":
+          positions[`--top-position-${view}`] = "50%";
+          positions[`--transform-${view}`] = "translateY(-50%)";
+          positions[`--right-position-${view}`] =
+            view === "mobile"
+              ? HORIZONTAL_SPACING_TABLET
+              : HORIZONTAL_SPACING_DESKTOP;
+
+          break;
+
+        case "bottom_start":
+          if (view === "mobile" && isMobileDevice) {
+            positions[`--bottom-position-${view}`] = VERTICAL_SPACING_MOBILE;
+          } else {
+            positions[`--bottom-position-${view}`] =
+              view === "mobile"
+                ? VERTICAL_SPACING_TABLET
+                : VERTICAL_SPACING_DESKTOP;
+            positions[`--left-position-${view}`] =
+              view === "mobile"
+                ? HORIZONTAL_SPACING_TABLET
+                : HORIZONTAL_SPACING_DESKTOP;
+          }
+
+          break;
+
+        case "bottom_center":
+          if (view === "mobile" && isMobileDevice) {
+            positions[`--bottom-position-${view}`] = VERTICAL_SPACING_MOBILE;
+          } else {
+            positions[`--bottom-position-${view}`] =
+              view === "mobile"
+                ? VERTICAL_SPACING_TABLET
+                : VERTICAL_SPACING_DESKTOP;
+            positions[`--left-position-${view}`] = "50%";
+            positions[`--transform-${view}`] = "translateX(-50%)";
+          }
+
+          break;
+
+        case "bottom_end":
+          if (view === "mobile" && isMobileDevice) {
+            positions[`--bottom-position-${view}`] = VERTICAL_SPACING_MOBILE;
+            positions[`--right-position-${view}`] = HORIZONTAL_SPACING_MOBILE;
+          } else {
+            positions[`--bottom-position-${view}`] =
+              view === "mobile"
+                ? VERTICAL_SPACING_TABLET
+                : VERTICAL_SPACING_DESKTOP;
+            positions[`--right-position-${view}`] =
+              view === "mobile"
+                ? HORIZONTAL_SPACING_TABLET
+                : HORIZONTAL_SPACING_DESKTOP;
+          }
+
+          break;
+
+        default:
+          break;
+      }
+    });
+
+    return positions;
+  };
+
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 0}px`,
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
     "--slick-dots": `${blocksData?.length * 22 + 10}px`,
   };
+
+  const navigate = useNavigate();
 
   return (
     <section className={`remove-horizontal-scroll`} style={dynamicStyles}>
@@ -120,10 +288,44 @@ export function Component({ props, blocks, globalConfig, preset }) {
           block.type === "gallery" ? (
             <div className={`${styles.blockItem} ${styles.imageContainer}`}>
               <FDKLink
-                to={block?.props?.redirect_link?.value ?? ""}
+                 to={
+                !block?.props?.button_text?.value &&
+                block?.props?.redirect_link?.value
+                  ? block?.props?.redirect_link?.value
+                  : ""
+              }
                 target={shouldOpenInNewTab ? "_blank" : "_self"}
                 key={index}
               >
+                 <div
+                className={styles.overlayItems}
+                style={getOverlayPositionStyles(block)}
+              >
+                {block?.props?.image_text?.value}
+                {block?.props?.button_text?.value && (
+                  <>
+                    <div>
+                      <button
+                        type="button"
+                        className={`fx-button ${styles.cta_button} ${
+                          block?.props?.invert_button_color?.value
+                            ? "btnSecondary"
+                            : "btnPrimary"
+                        }`}
+                        disabled={
+                          !(block?.props?.redirect_link?.value?.length > 0)
+                        }
+                        onClick={() =>
+                          navigate(block?.props?.redirect_link?.value)
+                        }
+                      >
+                        {block?.props?.button_text?.value}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+
                 <FyImage
                   src={getDesktopImage(block, index)}
                   sources={getImgSrcSet(block, globalConfig, index)}
@@ -172,6 +374,153 @@ export const settings = {
           id: "redirect_link",
           label: "t:resource.sections.image_slideshow.slide_link",
         },
+         {
+          type: "text",
+          id: "image_text",
+          default: "Image Text",
+          label: "Image Text",
+        },
+        {
+          id: "text_placement_desktop",
+          type: "select",
+          options: [
+            {
+              value: "top_start",
+              text: "t:resource.sections.hero_image.top_start",
+            },
+            {
+              value: "top_center",
+              text: "t:resource.sections.hero_image.top_center",
+            },
+            {
+              value: "top_end",
+              text: "t:resource.sections.hero_image.top_end",
+            },
+            {
+              value: "center_start",
+              text: "t:resource.sections.hero_image.center_start",
+            },
+            {
+              value: "center_center",
+              text: "t:resource.sections.hero_image.center_center",
+            },
+            {
+              value: "center_end",
+              text: "t:resource.sections.hero_image.center_end",
+            },
+            {
+              value: "bottom_start",
+              text: "t:resource.sections.hero_image.bottom_start",
+            },
+            {
+              value: "bottom_center",
+              text: "t:resource.sections.hero_image.bottom_center",
+            },
+            {
+              value: "bottom_end",
+              text: "t:resource.sections.hero_image.bottom_end",
+            },
+          ],
+          default: "top_start",
+          label: "t:resource.sections.hero_image.text_placement_desktop",
+        },
+        {
+          id: "text_alignment_desktop",
+          type: "select",
+          options: [
+            {
+              value: "left",
+              text: "t:resource.common.start",
+            },
+            {
+              value: "center",
+              text: "t:resource.common.center",
+            },
+            {
+              value: "right",
+              text: "t:resource.common.end",
+            },
+          ],
+          default: "left",
+          label: "t:resource.common.text_alignment_desktop",
+        },
+        {
+          id: "text_placement_mobile",
+          type: "select",
+          options: [
+            {
+              value: "top_start",
+              text: "t:resource.sections.hero_image.top_start",
+            },
+            {
+              value: "top_center",
+              text: "t:resource.sections.hero_image.top_center",
+            },
+            {
+              value: "top_end",
+              text: "t:resource.sections.hero_image.top_end",
+            },
+            {
+              value: "center_start",
+              text: "t:resource.sections.hero_image.center_start",
+            },
+            {
+              value: "center_center",
+              text: "t:resource.sections.hero_image.center_center",
+            },
+            {
+              value: "center_end",
+              text: "t:resource.sections.hero_image.center_end",
+            },
+            {
+              value: "bottom_start",
+              text: "t:resource.sections.hero_image.bottom_start",
+            },
+            {
+              value: "bottom_center",
+              text: "t:resource.sections.hero_image.bottom_center",
+            },
+            {
+              value: "bottom_end",
+              text: "t:resource.sections.hero_image.bottom_end",
+            },
+          ],
+          default: "top_start",
+          label: "t:resource.sections.hero_image.text_placement_mobile",
+        },
+        {
+          id: "text_alignment_mobile",
+          type: "select",
+          options: [
+            {
+              value: "left",
+              text: "t:resource.common.start",
+            },
+            {
+              value: "center",
+              text: "t:resource.common.center",
+            },
+            {
+              value: "right",
+              text: "t:resource.common.end",
+            },
+          ],
+          default: "left",
+          label: "t:resource.common.text_alignment_mobile",
+        },
+        {
+          type: "text",
+          id: "button_text",
+          default: "button text",
+          label: "Button Text",
+        },
+        {
+          type: "checkbox",
+          id: "invert_button_color",
+          default: false,
+          label: "t:resource.sections.hero_image.invert_button_color",
+          info: "t:resource.sections.hero_image.primary_button_inverted_color",
+        },
       ],
     },
   ],
@@ -193,28 +542,6 @@ export const settings = {
       label: "t:resource.common.change_slides_every",
       default: 3,
       info: "t:resource.sections.image_slideshow.autoplay_slide_duration",
-    },
-    {
-      type: "range",
-      id: "top_padding",
-      min: 0,
-      max: 100,
-      step: 1,
-      unit: "px",
-      label: "t:resource.sections.image_slideshow.top_padding",
-      default: 0,
-      info: "t:resource.sections.image_slideshow.top_padding_info",
-    },
-    {
-      type: "range",
-      id: "padding_bottom",
-      min: 0,
-      max: 100,
-      step: 1,
-      unit: "px",
-      label: "t:resource.sections.categories.bottom_padding",
-      default: 16,
-      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
     {
       type: "checkbox",

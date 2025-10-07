@@ -591,6 +591,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   isCustomOrder={isMto}
                   handleShare={() => handleShare()}
                   displayMode={display_mode?.value}
+                  showSaleTag={show_sale_tag}
                 />
               </div>
             </div>
