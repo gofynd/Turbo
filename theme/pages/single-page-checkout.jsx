@@ -24,6 +24,7 @@ function SingleCheckoutPage({ fpi }) {
   const [showShipment, setShowShipment] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
+  const [mopPayload, setMopPayload] = useState("");
   const [isApiLoading, setIsApiLoading] = useState(true);
   const [checkoutAmount, setCheckoutAmount] = useState(0);
   const { onPriceDetailsClick, cartData } = useCart(fpi);
@@ -42,7 +43,6 @@ function SingleCheckoutPage({ fpi }) {
   const address_id = searchParams.get("address_id");
   const error = searchParams.get("error");
   const transactionFailed = searchParams.get("failed");
-  const cartCoupon = useCartCoupon({ fpi, cartData: bagData });
   const cartComment = useCartComment({ fpi, cartData: bagData });
   const { setIsLoading, ...payment } = usePayment(fpi);
   const { getTotalValue } = payment;
@@ -76,8 +76,8 @@ function SingleCheckoutPage({ fpi }) {
   async function showPaymentOptions(amount) {
     try {
       setIsLoading(true);
-      setShowShipment(false);
-      showPaymentHandler(true);
+      // setShowShipment(false);
+      // showPaymentHandler(true);
 
       let finalAmount = 0;
 
@@ -108,6 +108,20 @@ function SingleCheckoutPage({ fpi }) {
       setIsLoading(false);
     }
   }
+
+  const cartCoupon = useCartCoupon({
+    fpi,
+    cartData: bagData,
+    showPaymentOptions,
+    setShowShipment,
+    setShowPayment,
+    setIsLoading,
+    currentStepIdx,
+    setCheckoutAmount,
+    mopPayload,
+  });
+
+  const { isCouponValid, setIsCouponValid, inValidCouponData } = cartCoupon;
 
   useEffect(() => {
     setIsApiLoading(true);
@@ -228,6 +242,10 @@ function SingleCheckoutPage({ fpi }) {
         isCartValid={isCartValid}
         redirectPaymentOptions={redirectPaymentOptions}
         availableFOCount={fulfillment_option?.count || 1}
+        setMopPayload={setMopPayload}
+        isCouponValid={isCouponValid}
+        setIsCouponValid={setIsCouponValid}
+        inValidCouponData={inValidCouponData}
       />
       {/* <PriceBreakup breakUpValues={breakupValues}></PriceBreakup> */}
     </>

@@ -70,7 +70,7 @@ function DeliveryInfo({
   };
 
   const getDeliveryDate = () => {
-      setTatMessage(getFormattedPromise(deliveryPromise));
+    setTatMessage(getFormattedPromise(deliveryPromise));
   };
 
   const deliveryLoc = () => {
@@ -97,14 +97,14 @@ function DeliveryInfo({
           >
             <span className={`${styles.flexAlignCenter}`}>
               {t("resource.facets.check")}
-              <DeliveryIcon pincode className={`${styles.deliveryIcon}`} />
+              <DeliveryIcon pincode className={styles.deliveryIcon} />
             </span>
           </button>
         </div>
         {selectPincodeError && !pincodeErrorMessage.length && (
           <div className={`captionNormal ${styles.emptyPincode}`}>
             {t("resource.product.enter_valid_pincode", {
-              displayName: displayName,
+              displayName,
             })}
           </div>
         )}
@@ -136,6 +136,7 @@ function DeliveryInfo({
             isServiceability,
             isServiceabilityPincodeOnly,
             selectedLocation,
+            fpi,
           }}
         />
       );
@@ -199,6 +200,7 @@ const DeliveryLocation = ({
   isServiceability = true,
   isServiceabilityPincodeOnly = true,
   selectedLocation = "",
+  fpi,
 }) => {
   const { t } = useGlobalTranslation("translation");
   const handleButtonClick = () => {
@@ -243,17 +245,17 @@ const DeliveryLocation = ({
   };
 
   return (
-    <div className={styles.locationWrapper}>
+    <div
+      className={`${styles.locationWrapper} ${!selectedLocation ? styles.clickable : ""}`}
+      onClick={!selectedLocation ? handleButtonClick : undefined}
+    >
       <LocationIcon className={styles.locationPin} />
-      {!!selectedLocation ? (
+      {selectedLocation ? (
         fetchDeliveryLocation()
       ) : (
-        <button
-          className={styles.emptySelectAddress}
-          onClick={handleButtonClick}
-        >
+        <span className={styles.emptySelectAddress}>
           {t("resource.common.address.select_delivery_location")}
-        </button>
+        </span>
       )}
     </div>
   );
