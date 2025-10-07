@@ -52,12 +52,27 @@ function Header({ fpi }) {
     wishlistCount,
     loggedIn,
   } = useHeader(fpi);
+
+  // Destructure everything used from globalConfig (with safe fallbacks)
+  const {
+    sticky_header = true,
+    transparent_header = false,
+    header_border = false,
+    header_layout = "layout_1",
+    logo_menu_alignment = "layout_1",
+    show_secondary_header_on_checkout = false,
+    mobile_logo_max_height_header = 38,
+    disable_cart = false,
+    button_options = "all",
+    show_quantity_control = false,
+  } = globalConfig || {};
+
   const { openLogin } = useAccounts({ fpi });
   const shouldHide = location.pathname.startsWith("/payment/link/");
   const hideNavList =
     location.pathname.startsWith("/cart/") &&
-    (typeof globalConfig?.show_secondary_header_on_checkout === "boolean"
-      ? globalConfig?.show_secondary_header_on_checkout
+    (typeof show_secondary_header_on_checkout === "boolean"
+      ? show_secondary_header_on_checkout
       : false);
   const { activeLocale } = useLocale();
   const i18N_DETAILS = useGlobalStore(fpi.getters.i18N_DETAILS);
@@ -88,20 +103,12 @@ function Header({ fpi }) {
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
 
-    if (
-      globalConfig?.sticky_header &&
-      globalConfig?.transparent_header &&
-      isValidSection
-    ) {
+    if (sticky_header && transparent_header && isValidSection) {
       window.addEventListener("scroll", handleScroll);
     }
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [
-    globalConfig?.transparent_header,
-    globalConfig?.sticky_header,
-    isValidSection,
-  ]);
+  }, [transparent_header, sticky_header, isValidSection]);
 
   useEffect(() => {
     if (supportedLanguages?.items?.length > 0) {
@@ -120,7 +127,7 @@ function Header({ fpi }) {
         },
       });
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const LOCALE_SYNC_FLAG = "localeSyncedTo";
 
@@ -133,14 +140,11 @@ function Header({ fpi }) {
       ? activeLocale
       : getDefaultLocale(supportedLanguages.items);
 
-    // Nothing to do if we're already on the right locale
     if (!validLocale || currentLocale === validLocale) return;
 
-    // Prevent infinite reloads: if we've already synced to this locale in this session, don't reload again
     const alreadySyncedTo = sessionStorage.getItem(LOCALE_SYNC_FLAG);
     if (alreadySyncedTo === validLocale) return;
 
-    // Update i18n details
     fpi.setI18nDetails({
       ...i18N_DETAILS,
       language: {
@@ -149,20 +153,15 @@ function Header({ fpi }) {
       },
     });
 
-    // Record that we've reloaded for this locale once this session
     sessionStorage.setItem(LOCALE_SYNC_FLAG, validLocale);
-
-    // If your app truly needs a full refresh to pick up the new i18n wiring, reload once.
-    // Using replace avoids history spam.
     window.location.replace(window.location.href);
-    // NOTE: If a full reload is not strictly required, remove the line above and let React re-render instead.
   }, [activeLocale]); // <-- only when the selected locale changes
 
   useEffect(() => {
     if (
       isEmptyOrNull(CART_ITEMS?.cart_items) &&
       location.pathname !== "/cart/bag/" &&
-      !globalConfig?.show_quantity_control
+      !show_quantity_control
     ) {
       const payload = {
         includeAllItems: true,
@@ -203,32 +202,24 @@ function Header({ fpi }) {
     return () => {
       observers.forEach((observer) => observer.disconnect());
     };
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (isRunningOnClient()) {
       const header = document?.querySelector(".fdk-theme-header");
-      if (
-        globalConfig?.transparent_header &&
-        globalConfig?.sticky_header &&
-        isValidSection
-      ) {
+      if (transparent_header && sticky_header && isValidSection) {
         header.style.position = "fixed";
         header.style.width = "100%";
-      } else if (globalConfig?.sticky_header && !isValidSection) {
+      } else if (sticky_header && !isValidSection) {
         header.style.position = "sticky ";
-      } else if (!globalConfig?.sticky_header) {
+      } else if (!sticky_header) {
         header.style.position = "unset";
       } else {
         header.style.position = "sticky ";
       }
     }
-  }, [
-    globalConfig?.sticky_header,
-    globalConfig?.transparent_header,
-    isValidSection,
-  ]);
+  }, [sticky_header, transparent_header, isValidSection]);
 
   useEffect(() => {
     if (isRunningOnClient()) {
@@ -244,10 +235,8 @@ function Header({ fpi }) {
       const str = `:root, ::before, ::after${variables}`;
       styleElement.innerHTML = str;
 
-      // Append the <style> element to the document's head
       document.head.appendChild(styleElement);
 
-      // Clean up the <style> element on component unmount
       return () => {
         document.head.removeChild(styleElement);
       };
@@ -303,6 +292,7 @@ function Header({ fpi }) {
       clearTimeout(timeout);
     };
   }, [deliveryAddress, isServiceabilityMandatory]);
+
   const query = new URLSearchParams(useLocation().search);
   const checkoutId = query.get("id");
   const defaultHeaderName =
@@ -313,17 +303,31 @@ function Header({ fpi }) {
     <>
       {!isHeaderHidden && !shouldHide && (
         <div
-          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${globalConfig?.transparent_header && isValidSection && !globalConfig?.sticky_header ? styles.transparentHeader : ""} ${globalConfig?.transparent_header && isValidSection && globalConfig?.sticky_header ? styles.stickyTransparentHeader : ""}`}
+          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${
+            transparent_header && isValidSection && !sticky_header
+              ? styles.transparentHeader
+              : ""
+          } ${transparent_header && isValidSection && sticky_header ? styles.stickyTransparentHeader : ""}`}
           ref={headerRef}
         >
           <header
-            className={`${styles.header} ${globalConfig?.header_border ? styles.seperator : ""} ${globalConfig?.transparent_header && isValidSection ? styles.transparentBackground : ""} ${scrolled ? styles.scrolled : ""}`}
+            className={`${styles.header} ${header_border ? styles.seperator : ""} ${
+              transparent_header && isValidSection
+                ? styles.transparentBackground
+                : ""
+            } ${scrolled ? styles.scrolled : ""}`}
           >
             <div
-              className={`${styles.headerContainer} ${globalConfig?.transparent_header && isValidSection ? styles.paddingMobile : ""} basePageContainer margin0auto `}
+              className={`${styles.headerContainer} ${
+                transparent_header && isValidSection ? styles.paddingMobile : ""
+              } basePageContainer margin0auto `}
             >
               <div
-                className={`${styles.desktop}  ${globalConfig?.transparent_header && isValidSection ? styles.transparent_desktop : ""}`}
+                className={`${styles.desktop}  ${
+                  transparent_header && isValidSection
+                    ? styles.transparent_desktop
+                    : ""
+                }`}
               >
                 <HeaderDesktop
                   checkLogin={checkLogin}
@@ -345,25 +349,25 @@ function Header({ fpi }) {
                 />
               </div>
               <div
-                className={`${styles.mobile}  ${globalConfig?.transparent_header && isValidSection ? styles.transparent_mobile : ""}`}
+                className={`${styles.mobile}  ${
+                  transparent_header && isValidSection
+                    ? styles.transparent_mobile
+                    : ""
+                }`}
               >
                 <div
-                  className={`${styles.mobileTop} ${
-                    styles[globalConfig.header_layout]
-                  } ${styles[globalConfig.logo_menu_alignment]}  ${
+                  className={`${styles.mobileTop} ${styles[header_layout]} ${styles[logo_menu_alignment]}  ${
                     hideNavList &&
                     defaultHeaderName === "My Cart" &&
                     !cartBackNavigationList[currentStep] &&
-                    globalConfig?.logo_menu_alignment !== "layout_4"
+                    logo_menu_alignment !== "layout_4"
                       ? styles.leftLogo
                       : ""
-                  }  ${globalConfig?.transparent_header && isValidSection ? styles.transparent_mobile : ""}`}
+                  }  ${transparent_header && isValidSection ? styles.transparent_mobile : ""}`}
                 >
                   {!hideNavList ? (
                     <Navigation
-                      customClass={`${styles.left} ${styles.flexAlignCenter} ${
-                        styles[globalConfig.header_layout]
-                      }`}
+                      customClass={`${styles.left} ${styles.flexAlignCenter} ${styles[header_layout]}`}
                       fallbackLogo={fallbackLogo}
                       maxMenuLenght={12}
                       reset
@@ -416,7 +420,7 @@ function Header({ fpi }) {
                     className={`${styles.middle} ${styles.flexAlignCenter} ${
                       hideNavList &&
                       !checkoutId &&
-                      globalConfig?.logo_menu_alignment === "layout_4" &&
+                      logo_menu_alignment === "layout_4" &&
                       hideNavList
                         ? styles.paddingRight
                         : ""
@@ -424,7 +428,7 @@ function Header({ fpi }) {
                   >
                     <img
                       style={{
-                        maxHeight: `${globalConfig?.mobile_logo_max_height_header || 38}px`,
+                        maxHeight: `${mobile_logo_max_height_header || 38}px`,
                       }}
                       className={styles.logo}
                       src={getShopLogoMobile()}
@@ -438,26 +442,25 @@ function Header({ fpi }) {
                       >
                         <Search globalConfig={globalConfig} fpi={fpi} />
                       </div>
-                      {!globalConfig?.disable_cart &&
-                        globalConfig?.button_options !== "none" && (
-                          <div>
-                            <button
-                              type="button"
-                              className={`${styles.headerIcon} ${styles["right__icons--bag"]}`}
-                              onClick={() => checkLogin("cart")}
-                              aria-label={`${cartItemCount ?? 0} ${t("resource.header.item_in_cart")}`}
-                            >
-                              <CartIcon
-                                className={`${styles.cart} ${styles.mobileIcon} ${styles.headerIcon}`}
-                              />
-                              {cartItemCount > 0 && (
-                                <span className={styles.cartCount}>
-                                  {cartItemCount}
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                        )}
+                      {!disable_cart && button_options !== "none" && (
+                        <div>
+                          <button
+                            type="button"
+                            className={`${styles.headerIcon} ${styles["right__icons--bag"]}`}
+                            onClick={() => checkLogin("cart")}
+                            aria-label={`${cartItemCount ?? 0} ${t("resource.header.item_in_cart")}`}
+                          >
+                            <CartIcon
+                              className={`${styles.cart} ${styles.mobileIcon} ${styles.headerIcon}`}
+                            />
+                            {cartItemCount > 0 && (
+                              <span className={styles.cartCount}>
+                                {cartItemCount}
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
