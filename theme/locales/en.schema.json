@@ -110,6 +110,7 @@
         "footer": "Footer",
         "cart_and_button_configuration": "Cart & Button Configuration",
         "product_card_configuration": "Product Card Configuration",
+        "product_details_modal_settings": "Product Details Modal Settings",
         "other_page_configuration": "Other Page Configuration",
         "google_maps": "Google Maps",
         "mobile_logo_max_height": "Mobile Navigation Logo Max Height",
@@ -213,6 +214,10 @@
         "hover_image_display": "This option controls whether an additional image is displayed when hovering over the product card",
         "badge_border_radius": "Badge Border Radius",
         "badge_border_radius_info": "Border radius for Badge"
+      },
+      "product_details_modal_settings": {
+        "hide_brand_name": "Hide Brand Name",
+        "hide_brand_name_info": "Brand name will not be shown in the product details modal"
       },
       "other_page_configuration": {
         "improve_image_quality": "Improve Image Quality",

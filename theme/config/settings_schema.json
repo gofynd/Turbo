@@ -407,6 +407,16 @@
       "info": "t:resource.settings_schema.product_card_configuration.hover_image_display",
       "default": false
     },
+    
+    {
+      "type": "checkbox",
+      "id": "hide_brand_name",
+      "category": "t:resource.settings_schema.common.product_details_modal_settings",
+      "label": "t:resource.settings_schema.product_details_modal_settings.hide_brand_name",
+      "info": "t:resource.settings_schema.product_details_modal_settings.hide_brand_name_info",
+      "default": false
+    },
+
     {
       "type": "header",
       "category": "t:resource.settings_schema.common.other_page_configuration",
