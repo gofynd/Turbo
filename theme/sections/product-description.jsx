@@ -591,7 +591,11 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   isCustomOrder={isMto}
                   handleShare={() => handleShare()}
                   displayMode={display_mode?.value}
-                  showSaleTag={show_sale_tag}
+                  showSaleTag={
+                    typeof show_sale_tag?.value === "boolean"
+                      ? show_sale_tag?.value
+                      : true
+                  }
                 />
               </div>
             </div>
