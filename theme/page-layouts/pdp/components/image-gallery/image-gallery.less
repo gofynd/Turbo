@@ -185,7 +185,7 @@
       scroll-padding-bottom: 50vh;
 
       // Thumbnail Sidebar
-        .thumbnailSidebar {
+      .thumbnailSidebar {
         flex: 0 0 80px; // Fixed width
         max-height: calc(100% - 40px); // Dynamic height based on container
         overflow-y: auto; // Scrollable if needed
@@ -281,7 +281,7 @@
       }
 
       // Main Images Vertical Line
-        .mainImagesArea {
+      .mainImagesArea {
         flex: 1 1 auto; // allow it to shrink to enable scrolling
         max-width: 600px;
 
@@ -302,7 +302,7 @@
               box-shadow 0.2s ease-in-out;
             // aspect-ratio: 0.6; // More portrait-oriented (3:5 ratio - taller images)
             max-height: 700px; // Increased max-height for taller portrait images
-              scroll-snap-align: center; // Snap each image toward the center when scrolling
+            scroll-snap-align: center; // Snap each image toward the center when scrolling
 
             &:hover {
               transform: translateY(-2px);
@@ -428,6 +428,7 @@
         overflow: hidden;
         cursor: pointer;
         position: relative;
+        background: @ThemeAccentL3;
         &.active {
           border-color: @ButtonPrimary;
         }

@@ -69,11 +69,24 @@ const useCompare = (fpi) => {
     return url;
   };
 
-  const fetchCompareProduct = () => {
+  const fetchCompareProduct = (slugs = existingSlugs) => {
     setIsLoading(true);
     return fpi
-      .executeGQL(PRODUCT_COMPARISON, { slug: existingSlugs })
+      .executeGQL(PRODUCT_COMPARISON, { slug: slugs })
       .then((res) => {
+        console.log(res, "ressssssss");
+
+        if (res?.errors?.length) {
+          const errorMsg =
+            res.errors[0]?.message ?? t("resource.common.error_message");
+          console.error(errorMsg);
+
+          // show error in snackbar
+          showSnackbar(errorMsg, "error");
+
+          return false;
+        }
+
         if (res?.data?.productComparison) {
           const items = res?.data?.productComparison?.items;
           const firstCategory = items[0]?.categories?.[0];
@@ -99,6 +112,7 @@ const useCompare = (fpi) => {
             "compare_product_attribute",
             res?.data?.productComparison?.attributes_metadata
           );
+          return true;
         } else {
           console.log(
             res?.errors?.[0]?.message ?? t("resource.common.error_message")
@@ -162,12 +176,17 @@ const useCompare = (fpi) => {
     setSearchText(value);
   };
 
-  const handleAdd = (slug) => {
+  const handleAdd = async (slug) => {
     setIsSsrFetched(false);
-    const items = [slug, ...(existingSlugs ?? [])];
-    localStorage?.setItem("compare_slugs", JSON.stringify(items));
-    setExistingSlugs(items);
-    setShowSearch("");
+    const nextSlugs = [slug, ...(existingSlugs ?? [])];
+    const res = await fetchCompareProduct(nextSlugs);
+    if (res) {
+      localStorage?.setItem("compare_slugs", JSON.stringify(nextSlugs));
+      setExistingSlugs(nextSlugs);
+      setShowSearch("");
+      return true;
+    }
+    return false;
   };
 
   const handleRemove = (slug) => {
