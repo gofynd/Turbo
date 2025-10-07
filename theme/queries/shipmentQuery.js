@@ -693,3 +693,14 @@ export const COMPLETE_MEDIA_UPLOAD = `mutation CompleteUpload($completeUploadReq
       }
   }
 }`;
+
+export const UPDATE_DEFAULT_BENEFICIARY = `mutation updateDefaultBeneficiary(
+  $setDefaultBeneficiaryRequestInput: SetDefaultBeneficiaryRequestInput
+) {
+  updateDefaultBeneficiary(
+    setDefaultBeneficiaryRequestInput: $setDefaultBeneficiaryRequestInput
+  ) {
+    is_beneficiary_set
+    success
+  }
+}`

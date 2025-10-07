@@ -5,6 +5,7 @@ import {
   SHIPMENT_REASONS,
   SHIPMENT_INVOICE,
   UPDATE_SHIPMENT_STATUS,
+  UPDATE_DEFAULT_BENEFICIARY,
 } from "../../queries/shipmentQuery";
 import { useSnackbar } from "../../helper/hooks";
 import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
@@ -77,9 +78,45 @@ const useShipmentDetails = (fpi) => {
     }
   }
 
-  async function updateShipment(payload, type) {
+ async function updateShipment(payload, type) {
     setIsLoading(true);
     try {
+      // First call UPDATE_DEFAULT_BENEFICIARY if beneficiary_id exists
+      if (payload.beneficiary_id) {
+        try {
+          const beneficiaryPayload = {
+            setDefaultBeneficiaryRequestInput: {
+              beneficiary_id: payload.beneficiary_id,
+              order_id: payload.order_id,
+              shipment_id: payload.shipmentId,
+            },
+          };
+
+          const beneficiaryRes = await fpi.executeGQL(
+            UPDATE_DEFAULT_BENEFICIARY,
+            beneficiaryPayload
+          );
+
+          if (beneficiaryRes?.data?.updateDefaultBeneficiary?.success) {
+            console.log("Default beneficiary updated successfully");
+          } else {
+            const errorMessage =
+              beneficiaryRes?.errors?.[0]?.message ||
+              "Failed to update default beneficiary";
+            showSnackbar(errorMessage, "error");
+            setIsLoading(false);
+            return;
+          }
+        } catch (beneficiaryError) {
+          const errorMessage =
+            beneficiaryError?.message || "Failed to update default beneficiary";
+          showSnackbar(errorMessage, "error");
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Proceed with UPDATE_SHIPMENT_STATUS only if beneficiary update succeeded or no beneficiary to update
       const res = await fpi.executeGQL(UPDATE_SHIPMENT_STATUS, payload);
       if (
         res?.data?.updateShipmentStatus?.statuses[0]?.shipments[0]?.status ===
@@ -88,14 +125,18 @@ const useShipmentDetails = (fpi) => {
         const newShipmentId =
           res?.data?.updateShipmentStatus?.statuses[0]?.shipments[0]
             ?.final_state?.shipment_id;
+
         if (type === "return") {
           showSnackbar(t("resource.order.return_accepted"), "success");
         }
+
         if (newShipmentId) {
           setTimeout(() => {
             setIsLoading(false);
             navigate(`/profile/orders/shipment/${newShipmentId}`);
           }, 500);
+        } else {
+          setIsLoading(false);
         }
       }
     } catch (error) {
@@ -103,7 +144,7 @@ const useShipmentDetails = (fpi) => {
       console.log({ error });
     }
   }
-
+  
   return {
     isLoading,
     shipmentDetails,
