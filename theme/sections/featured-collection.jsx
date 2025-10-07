@@ -121,6 +121,7 @@ export function Component({ props, globalConfig }) {
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const i18nDetails = useGlobalStore(fpi.getters.i18N_DETAILS);
   const [isClient, setIsClient] = useState(false);
+  const { t } = useGlobalTranslation("translation");
 
   const imagesForScrollView = useMemo(() => {
     if (!getGallery) return [];
@@ -366,8 +367,7 @@ export function Component({ props, globalConfig }) {
               {description?.value}
             </p>
           )}
-          {button_text?.value &&
-            show_view_all?.value &&
+          {show_view_all?.value &&
             button_position?.value !== "below_products" && (
               <div
                 className={`${styles["gap-above-button"]} ${styles.visibleOnDesktop}`}
@@ -377,7 +377,9 @@ export function Component({ props, globalConfig }) {
                     type="button"
                     className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
                   >
-                    {button_text?.value}
+                    {button_text?.value
+                      ? button_text?.value
+                      : t("resource.facets.view_all")}
                   </button>
                 </FDKLink>
               </div>
@@ -437,8 +439,7 @@ export function Component({ props, globalConfig }) {
                     {description?.value}
                   </p>
                 )}
-                {button_text?.value &&
-                  show_view_all?.value &&
+                {show_view_all?.value &&
                   button_position?.value !== "below_products" && (
                     <div
                       className={`${styles["gap-above-button"]} ${styles.visibleOnDesktop}`}
@@ -448,7 +449,9 @@ export function Component({ props, globalConfig }) {
                           type="button"
                           className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
                         >
-                          {button_text?.value}
+                          {button_text?.value
+                            ? button_text?.value
+                            : t("resource.facets.view_all")}
                         </button>
                       </FDKLink>
                     </div>
@@ -493,7 +496,7 @@ export function Component({ props, globalConfig }) {
                   </>
                 )}
               </div>
-              {button_text?.value && show_view_all?.value && (
+              {show_view_all?.value && (
                 <div
                   className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]} ${button_position?.value === "below_products" ? "" : styles.visibleOnMobile}`}
                 >
@@ -502,7 +505,9 @@ export function Component({ props, globalConfig }) {
                       type="button"
                       className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
                     >
-                      {button_text?.value}
+                      {button_text?.value
+                        ? button_text?.value
+                        : t("resource.facets.view_all")}
                     </button>
                   </FDKLink>
                 </div>
@@ -684,7 +689,7 @@ export function Component({ props, globalConfig }) {
                   )
                 )}
               </div>
-              {button_text?.value && show_view_all?.value && (
+              {show_view_all?.value && (
                 <div
                   className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]}`}
                 >
@@ -693,7 +698,9 @@ export function Component({ props, globalConfig }) {
                       type="button"
                       className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
                     >
-                      {button_text?.value}
+                      {button_text?.value
+                        ? button_text?.value
+                        : t("resource.facets.view_all")}
                     </button>
                   </FDKLink>
                 </div>
@@ -760,8 +767,7 @@ export function Component({ props, globalConfig }) {
             </div>
           </div>
         )}
-        {button_text?.value &&
-          show_view_all?.value &&
+        {show_view_all?.value &&
           !showBannerScrollView() &&
           getGallery?.length > 0 && (
             <div
@@ -774,7 +780,9 @@ export function Component({ props, globalConfig }) {
                   type="button"
                   className={`fx-button btn-secondary ${styles["section-button"]}`}
                 >
-                  {button_text?.value}
+                  {button_text?.value
+                    ? button_text?.value
+                    : t("resource.facets.view_all")}
                 </button>
               </FDKLink>
             </div>
@@ -884,7 +892,9 @@ const ProductCardItem = ({
           imagePlaceholder={placeholderProduct}
           showAddToCart={showAddToCart}
           actionButtonText={
-            actionButtonText ?? t("resource.common.add_to_cart")
+            actionButtonText
+              ? actionButtonText
+              : t("resource.common.add_to_cart")
           }
           handleAddToCart={handleAddToCart}
           imgSrcSet={imgSrcSet}

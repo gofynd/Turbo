@@ -536,7 +536,9 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     imagePlaceholder: productPlaceholder,
     showAddToCart:
       !isInternational && show_add_to_cart && !globalConfig?.disable_cart,
-    actionButtonText: card_cta_text,
+    actionButtonText: card_cta_text
+      ? card_cta_text
+      : t("resource.common.add_to_cart"),
     addToCartModalProps,
     stickyFilterTopOffset: headerHeight + 30,
     globalConfig,
