@@ -8,8 +8,8 @@ import SocialLinks from "../socail-media/socail-media";
 import { useGlobalTranslation } from "fdk-core/utils";
 import fallbackFooterLogo from "../../assets/images/logo-footer.png";
 import { useThemeConfig } from "../../helper/hooks";
-import FooterContactLogo from "../../assets/images/footer-contact-logo.svg";
-import FooterEmailLogo from "../../assets/images/footer-email-logo.svg";
+import FooterContactLogo from "../../assets/images/footer-call-icon.svg";
+import FooterEmailLogo from "../../assets/images/footer-mail-icon.svg";
 
 function Footer({ fpi }) {
   const { t } = useGlobalTranslation("translation");

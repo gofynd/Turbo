@@ -277,7 +277,7 @@ const useProductListing = ({ fpi, props }) => {
         ) ?? [];
       setIsResetFilterDisable(!resetableFilterKeys?.length);
     }
-  }, [location?.search, pincode, locationDetails]);
+  }, [location?.search, pincode, locationDetails, pageSize]);
 
   const convertQueryParamsForAlgolia = () => {
     if (typeof window === "undefined") return "";

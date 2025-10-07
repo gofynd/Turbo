@@ -104,22 +104,28 @@
       }
     }
     &--contactInfo {
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 14px;
       justify-content: space-between;
-      align-items: center;
+      align-items: normal;
       background-color: var(
         --footer-opacity-background,
         @FooterBottomBackground
       );
-      @media @desktop {
-        display: flex;
-        justify-content: space-between;
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+
+      @media @tablet {
+        padding: 14px;
+        border-radius: 12px;
       }
-      @media @desktop {
-        padding: 14px 18px;
-        // align-items: center;
+
+      @media @mobile {
+        flex-direction: column;
+        align-items: normal;
       }
+
       .list {
         svg {
           width: 28px;
@@ -137,7 +143,8 @@
         }
 
         @media @tablet-strict {
-          flex: 1;
+          display: flex;
+          justify-content: space-between;
         }
         @media @desktop {
           display: flex;
@@ -219,24 +226,7 @@
     }
   }
 }
-@media @desktop {
-  .footerSupportData a {
-    margin-left: 12px;
-  }
-  .contactIcon {
-  }
-}
 
-.footerSupportData {
-  @media @tablet {
-    padding-bottom: 12px;
-  }
-  @media @desktop {
-    display: flex;
-    gap: 0;
-    align-items: center;
-  }
-}
 .listSocial {
   @media @desktop {
     display: block !important;
@@ -248,15 +238,22 @@
   align-items: center;
   flex-direction: column;
   align-items: flex-start;
-
-  @media @tablet {
-    margin-bottom: 16px;
-  }
   .footerSupportData {
-    padding-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
+    gap: 8px;
+    padding-bottom: 16px;
 
     &:last-child {
       padding-bottom: 0;
+    }
+
+    @media @mobile {
+      padding-bottom: 24px;
+      &:last-child {
+        padding-bottom: 24px;
+      }
     }
   }
 }
@@ -265,6 +262,14 @@
   @media @desktop {
     display: flex;
     align-items: center;
+  }
+  @media @tablet {
+    max-width: 172px;
+    width: 172px;
+  }
+  @media @mobile {
+    max-width: 208px;
+    width: 208px;
   }
 }
 
@@ -301,7 +306,4 @@ ul {
   display: flex;
   align-items: center;
   vertical-align: middle;
-  @media @tablet {
-    margin-bottom: 8px;
-  }
 }
