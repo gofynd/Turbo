@@ -26,7 +26,7 @@ const useHyperlocal = (fpi) => {
     null,
     (value) => {
       if (value && !selectedAddress) {
-        updatedSelectedAddress(value);
+        fpi.custom.setValue(`selectedAddress`, value);
       }
       setIsAddressLoading(false);
     }
