@@ -212,6 +212,7 @@ function BankForm({
             showAsterik
             required
             id={confirmedAccountNoId}
+            onPaste={(e) => e.preventDefault()}
             onInput={(e) => handleAccountNumberInput(e)}
             type="number"
             {...register("confirmedAccountNo", {
