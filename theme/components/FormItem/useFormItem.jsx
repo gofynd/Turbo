@@ -31,15 +31,11 @@ export const useFormItem = ({ fpi }) => {
     const response = [];
     Object.entries(formValues).forEach(([key, value]) => {
       if (
-        (key === "mobile-number" ||
-          key === "mobile" ||
-          key === "mobilenumber" ||
-          key === "mobileNumber" ||
-          key === "phone" ||
-          key === "phone-number" ||
-          key === "phonenumber" ||
-          key === "phoneNumber") &&
-        typeof value === "object"
+        typeof value === "object" &&
+        value !== null &&
+        value.hasOwnProperty("countryCode") &&
+        value.hasOwnProperty("mobile") &&
+        value.hasOwnProperty("isValidNumber")
       ) {
         response.push({
           key,
