@@ -173,8 +173,8 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
 
   const getImgSrc = (card) => {
     return logoOnly?.value
-      ? card?.data?.brand?.logo?.url
-      : card?.data?.brand?.banners?.portrait?.url || placeholderImage;
+      ? card?.brand?.logo?.url
+      : card?.brand?.banners?.portrait?.url || placeholderImage;
   };
   const { isRTL } = useLocaleDirection();
   const [slickSetting, setSlickSettings] = useState({
@@ -286,7 +286,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                 //   className={`${styles["animation-fade-up"]}`}
                 style={{ "--delay": `${150 * (index + 1)}ms` }}
               >
-                <FDKLink to={`/products/?brand=${card?.data?.brand?.slug}`}>
+                <FDKLink to={`/products/?brand=${card?.brand?.slug}`}>
                   <div
                     data-cardtype="BRANDS"
                     className={styles["pos-relative"]}
@@ -298,34 +298,33 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                       }
                       isImageFill={img_fill?.value || logoOnly?.value}
                       src={getImgSrc(card)}
-                      alt={card?.data?.brand?.name || ""}
+                      alt={card?.brand?.name || ""}
                       aspectRatio={logoOnly?.value ? "1" : "0.8"}
                       mobileAspectRatio={logoOnly?.value ? "1" : "0.8"}
                       sources={getImgSrcSet()}
                     />
-                    {card?.data?.brand?.name?.length > 0 &&
-                      !logoOnly?.value && (
-                        <div className={styles["brand-info"]}>
-                          <div className={styles["brand-logo"]}>
-                            <FyImage
-                              src={
-                                card?.data?.brand?.logo?.url
-                                  ? card?.data?.brand?.logo?.url
-                                  : placeholderImage
-                              }
-                              alt={card?.data?.brand?.name || ""}
-                              aspectRatio="1"
-                              mobileAspectRatio="1"
-                              sources={[{ width: 100 }]}
-                            />
-                          </div>
-                          <span
-                            className={`${styles.fontBody} ${styles.brandNameSec}`}
-                          >
-                            {card?.data?.brand?.name}
-                          </span>
+                    {card?.brand?.name?.length > 0 && !logoOnly?.value && (
+                      <div className={styles["brand-info"]}>
+                        <div className={styles["brand-logo"]}>
+                          <FyImage
+                            src={
+                              card?.brand?.logo?.url
+                                ? card?.brand?.logo?.url
+                                : placeholderImage
+                            }
+                            alt={card?.brand?.name || ""}
+                            aspectRatio="1"
+                            mobileAspectRatio="1"
+                            sources={[{ width: 100 }]}
+                          />
                         </div>
-                      )}
+                        <span
+                          className={`${styles.fontBody} ${styles.brandNameSec}`}
+                        >
+                          {card?.brand?.name}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </FDKLink>
               </div>
@@ -361,9 +360,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                         // className={`${styles["animation-fade-up"]}`}
                         style={{ "--delay": `${150 * (index + 1)}ms` }}
                       >
-                        <FDKLink
-                          to={`/products/?brand=${card?.data?.brand?.slug}`}
-                        >
+                        <FDKLink to={`/products/?brand=${card?.brand?.slug}`}>
                           <div
                             data-cardtype="BRANDS"
                             style={{ position: "relative" }}
@@ -378,14 +375,14 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                               mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
                               sources={getImgSrcSet()}
                             />
-                            {card?.data?.brand?.name?.length > 0 &&
+                            {card?.brand?.name?.length > 0 &&
                               !logoOnly?.value && (
                                 <div className={styles["brand-info"]}>
                                   <div className={styles["brand-logo"]}>
                                     <FyImage
                                       src={
-                                        card?.data?.brand?.logo?.url
-                                          ? card?.data?.brand?.logo?.url
+                                        card?.brand?.logo?.url
+                                          ? card?.brand?.logo?.url
                                           : placeholderImage
                                       }
                                       aspectRatio={1}
@@ -394,7 +391,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                                     />
                                   </div>
                                   <span className={styles["font-body"]}>
-                                    {card?.data?.brand?.name}
+                                    {card?.brand?.name}
                                   </span>
                                 </div>
                               )}
@@ -432,9 +429,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                         // className={`${styles["animation-fade-up"]}`}
                         style={{ "--delay": `${150 * (index + 1)}ms` }}
                       >
-                        <FDKLink
-                          to={`/products/?brand=${card?.data?.brand?.slug}`}
-                        >
+                        <FDKLink to={`/products/?brand=${card?.brand?.slug}`}>
                           <div
                             data-cardtype="BRANDS"
                             style={{ position: "relative" }}
@@ -449,14 +444,14 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                               mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
                               sources={getImgSrcSet()}
                             />
-                            {card?.data?.brand?.name?.length > 0 &&
+                            {card?.brand?.name?.length > 0 &&
                               !logoOnly?.value && (
                                 <div className={styles["brand-info"]}>
                                   <div className={styles["brand-logo"]}>
                                     <FyImage
                                       src={
-                                        card?.data?.brand?.logo?.url
-                                          ? card?.data?.brand?.logo?.url
+                                        card?.brand?.logo?.url
+                                          ? card?.brand?.logo?.url
                                           : placeholderImage
                                       }
                                       aspectRatio={1}
@@ -465,7 +460,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                                     />
                                   </div>
                                   <span className={styles["font-body"]}>
-                                    {card?.data?.brand?.name}
+                                    {card?.brand?.name}
                                   </span>
                                 </div>
                               )}
@@ -702,31 +697,32 @@ export const settings = {
   },
 };
 
-Component.serverFetch = async ({ fpi, blocks, id }) => {
+Component.serverFetch = async ({ fpi, blocks }) => {
   try {
-    const promisesArr = [];
     const ids = [];
+    const promises = [];
 
-    blocks?.map((block, index) => {
+    blocks?.forEach((block, index) => {
       if (block.type !== "category") {
+        // Non-category blocks: client expects { type, data }
         ids.push(`${block.type}_${index}`);
-        promisesArr.push(block);
-      } else if (block?.props?.brand?.value) {
+        promises.push(Promise.resolve({ type: block.type, data: block }));
+      } else if (block?.props?.brand?.value?.id) {
+        // Category blocks: fetch brand details and wrap as { type, data }
         const slug = block.props.brand.value.id;
         ids.push(slug);
-        const res = fpi.executeGQL(BRAND_DETAILS, {
-          slug,
-        });
-        if (res !== undefined) {
-          promisesArr.push(res);
-        }
+        const p = fpi
+          .executeGQL(BRAND_DETAILS, { slug })
+          .then((res) => ({ type: "category", data: res?.data || {} }));
+        promises.push(p);
       }
     });
 
-    const responses = await Promise.all(promisesArr);
-    return fpi.custom.setValue(`brandData-${ids?.join("__")}`, responses);
+    const responses = await Promise.all(promises);
+    return fpi.custom.setValue(`brandData-${ids.join("__")}`, responses);
   } catch (err) {
-    console.log(err);
+    console.error("brand-listing serverFetch error:", err);
   }
 };
+
 export default Component;

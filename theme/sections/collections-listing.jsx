@@ -13,6 +13,7 @@ import {
   SliderNextArrow,
   SliderPrevArrow,
 } from "../components/slider-arrow/slider-arrow";
+import { isRunningOnClient } from "../helper/utils";
 
 export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const fpi = useFPI();
@@ -50,34 +51,36 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const collections = customValue[`collectionData-${customSectionId}`] || [];
 
   useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const promisesArr = collectionIds?.map(
-          async ({ type, slug, block }) => {
-            const listingData = { type };
+    if (isRunningOnClient()) {
+      const fetchCollections = async () => {
+        try {
+          const promisesArr = collectionIds?.map(
+            async ({ type, slug, block }) => {
+              const listingData = { type };
 
-            if (type !== "collection-item") {
-              listingData["data"] = block;
-            } else {
-              const response = await fpi.executeGQL(COLLECTION, {
-                slug: slug.split(" ").join("-"),
-              });
+              if (type !== "collection-item") {
+                listingData["data"] = block;
+              } else {
+                const response = await fpi.executeGQL(COLLECTION, {
+                  slug: slug.split(" ").join("-"),
+                });
 
-              listingData["data"] = response?.data || {};
+                listingData["data"] = response?.data || {};
+              }
+
+              return listingData;
             }
+          );
 
-            return listingData;
-          }
-        );
-
-        const responses = await Promise.all(promisesArr);
-        fpi.custom.setValue(`collectionData-${customSectionId}`, responses);
-      } catch (err) {
-        // console.log(err);
+          const responses = await Promise.all(promisesArr);
+          fpi.custom.setValue(`collectionData-${customSectionId}`, responses);
+        } catch (err) {
+          // console.log(err);
+        }
+      };
+      if (!collections?.length && collectionIds?.length) {
+        fetchCollections();
       }
-    };
-    if (!collections?.length && collectionIds?.length) {
-      fetchCollections();
     }
   }, [collectionIds]);
 
@@ -218,8 +221,8 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
                 <BlockRenderer key={slug} block={card} />
               ) : (
                 <CollectionItem
-                  key={`${card?.data?.collection?.name}_${index}`}
-                  collection={card?.data?.collection}
+                  key={`${card?.collection?.name}_${index}`}
+                  collection={card?.collection}
                   props={props}
                   srcset={getImgSrcSet()}
                   defer={index >= itemsPerRow}
@@ -237,14 +240,14 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
         >
           <Slider {...config} className={`${styles.hideOnMobile}`}>
             {collectionsForScrollView?.map(
-              ({ type, data, slug }, index) =>
+              ({ type, data: card, slug }, index) =>
                 type !== "collection-item" ? (
-                  <BlockRenderer key={slug} block={data} />
+                  <BlockRenderer key={slug} block={card} />
                 ) : (
                   <CollectionItem
                     className={styles.sliderItem}
-                    key={`${data?.collection?.name || slug}_${index}`}
-                    collection={data?.collection}
+                    key={`${card?.collection?.name}_${index}`}
+                    collection={card?.collection}
                     props={props}
                     srcset={getImgSrcSet()}
                     defer={index >= itemsPerRow}
@@ -254,14 +257,14 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
           </Slider>
           <Slider {...configMobile} className={`${styles.showOnMobile}`}>
             {collectionsForScrollView?.map(
-              ({ type, data, slug }, index) =>
+              ({ type, data: card, slug }, index) =>
                 type !== "collection-item" ? (
-                  <BlockRenderer key={slug} block={data} />
+                  <BlockRenderer key={slug} block={card} />
                 ) : (
                   <CollectionItem
                     className={styles.sliderItem}
-                    key={`${data?.collection?.name || slug}_${index}`}
-                    collection={data?.collection}
+                    key={`${card?.collection?.name}_${index}`}
+                    collection={card?.collection}
                     props={props}
                     srcset={getImgSrcSet()}
                     defer={index >= 1}
@@ -470,26 +473,41 @@ export const settings = {
   },
 };
 
-Component.serverFetch = async ({ fpi, blocks, id }) => {
+Component.serverFetch = async ({ fpi, blocks }) => {
   try {
-    const ids = [];
-    const promisesArr = blocks?.map(async (block) => {
-      if (block.type !== "collection-item") {
-        ids.push(`${block.type}_${index}`);
-        return block;
-      } else if (block.props?.collection?.value) {
-        const slug = block.props.collection.value;
-        ids.push(slug);
+    const collectionIds = blocks
+      ?.map((block, index) => ({
+        type: block?.type,
+        slug:
+          block?.type !== "collection-item"
+            ? `${block?.type}_${index}`
+            : block?.props?.collection?.value,
+        block,
+      }))
+      ?.filter(({ slug }) => slug);
 
-        return fpi.executeGQL(COLLECTION, {
-          slug: slug.split(" ").join("-"),
-        });
-      }
-    });
-    const responses = await Promise.all(promisesArr);
-    return fpi.custom.setValue(`collectionData-${ids?.join("__")}`, responses);
+    const customSectionId = collectionIds.map(({ slug }) => slug).join("__");
+
+    const responses = await Promise.all(
+      collectionIds.map(async ({ type, slug, block }) => {
+        const listingData = { type };
+        if (type !== "collection-item") {
+          listingData["data"] = block;
+        } else {
+          const response = await fpi.executeGQL(COLLECTION, {
+            slug: slug.split(" ").join("-"),
+          });
+          listingData["data"] = response?.data || {};
+        }
+        return listingData;
+      })
+    );
+
+    // Save for hydration
+
+    return fpi.custom.setValue(`collectionData-${customSectionId}`, responses);
   } catch (err) {
-    // console.log(err);
+    console.error("SSR Fetch Error:", err);
   }
 };
 

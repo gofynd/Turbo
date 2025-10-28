@@ -106,3 +106,29 @@
 .deafult-backround {
   background: @Gray;
 }
+
+.imagePlaceholder {
+  display: none;
+}
+.showDesktopPlaceholder {
+  @media @mobile {
+    display: none;
+  }
+  display: block;
+}
+.showImagePlaceholder {
+  @media @mobile {
+    display: block;
+  }
+}
+.show_on_desktop {
+  @media @mobile {
+    display: none;
+  }
+}
+.show_on_mobile {
+  display: none;
+  @media @mobile {
+    display: block;
+  }
+}

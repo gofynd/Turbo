@@ -5,8 +5,8 @@ import { PRODUCT_COMPARISON } from "../../queries/compareQuery";
 import { useSnackbar } from "../../helper/hooks";
 import styles from "./compare.less";
 import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
-import CompareWarningIcon from "../../assets/images/compare-warning-image.png";
 import CloseIcon from "../../assets/images/close.svg";
+import CompareWarningIcon from "../../assets/images/compare-warning-image.png";
 import CompareIcon from "../../assets/images/compare-icon.svg";
 import { isRunningOnClient } from "../../helper/utils";
 

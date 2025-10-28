@@ -598,6 +598,7 @@
       "quantity": "Quantity",
       "free": "FREE",
       "gift": "gift",
+      "on": "on",
       "placeholder": "placeholder",
       "icons": "icons",
       "field_required": "This field is required",
@@ -782,7 +783,7 @@
       },
       "product": {
         "icon_alt_text": "icon",
-        "check_out_amazing_product_on": "Check out this amazing product on"
+        "check_out": "Check out this"
       },
       "categories": {
         "default_categories": {
@@ -1260,7 +1261,7 @@
       "beneficiary_added": "Beneficiary Added",
       "invalid_refund_link": "Invalid refund link",
       "name_alt_text": "name",
-      "shipment_id":"Shipment ID",
+      "shipment_id": "Shipment ID",
       "select_refund_option": "Select Refund Option",
       "bank_account_transfer": "Bank Account Transfer",
       "recently_used": "Recently Used",
@@ -1277,7 +1278,7 @@
       "enter_bank_details": "Enter Bank Details",
       "refund_amount": "Refund Amount",
       "click_on_send_otp_to_processd": "Click on 'Send OTP' to proceed.",
-      "click_on_send_otp_to_proceed":"Click on 'Send OTP' to proceed."
+      "click_on_send_otp_to_proceed": "Click on 'Send OTP' to proceed."
     },
     "payment": {
       "payment_failed": "Payment Failed",

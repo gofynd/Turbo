@@ -4,6 +4,7 @@ import { USER_DATA_QUERY } from "../queries/libQuery";
 // return true if user is logged in
 // return false if user is not logged in redirect to login page.
 export async function isLoggedIn({ fpi, store }) {
+
   try {
     const isBoolean = typeof store?.auth?.logged_in === "boolean";
     if (isBoolean) {

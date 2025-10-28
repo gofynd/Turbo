@@ -473,13 +473,13 @@
                 "type": "text",
                 "value": ""
               },
+              "card_cta_text": {
+                "type": "text",
+                "value": "Add to Cart"
+              },
               "img_fill": {
                 "type": "checkbox",
                 "value": true
-              },
-               "card_cta_text": {
-                "type": "text",
-                "value": "Add to Cart"
               },
               "show_add_to_cart": {
                 "type": "checkbox",
@@ -496,6 +496,18 @@
               "show_view_all": {
                 "type": "checkbox",
                 "value": true
+              },
+              "mandatory_pincode": {
+                "type": "checkbox",
+                "value": false
+              },
+              "hide_single_size": {
+                "type": "checkbox",
+                "value": false
+              },
+              "preselect_size": {
+                "type": "checkbox",
+                "value": false
               },
               "desktop_layout": {
                 "type": "select",
@@ -901,6 +913,11 @@
                 "props": {}
               },
               {
+                "type": "bundle_products",
+                "name": "Bundle Product List",
+                "props": {}
+              },
+              {
                 "type": "size_wrapper",
                 "name": "Size Container with Action Buttons",
                 "props": {
@@ -946,6 +963,11 @@
               {
                 "type": "add_to_compare",
                 "name": "Add to Compare",
+                "props": {}
+              },
+              {
+                "type": "product_bundles",
+                "name": "Bundle Availability",
                 "props": {}
               },
               {

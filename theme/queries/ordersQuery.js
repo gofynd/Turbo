@@ -88,6 +88,24 @@ export const ORDER_LISTING = `query orders(
             size
             slug_key
           }
+          bundle_details {
+            bundle_group_id
+            name
+            slug
+            price_marked
+            price_effective
+            item_id
+            item_type
+            is_base
+            images
+            seller_identifier
+            article_bundle_id
+            bundle_count
+            bundle_article_quantity
+            return_config {
+              allow_partial_return
+            }
+          }
           prices {
             added_to_fynd_cash
             amount_paid
@@ -232,6 +250,24 @@ export const ORDER_BY_ID = `query order($orderId: String!) {
           brand {
             logo
             name
+          }
+        }
+        bundle_details {
+          bundle_group_id
+          name
+          slug
+          price_marked
+          price_effective
+          item_id
+          item_type
+          is_base
+          images
+          seller_identifier
+          article_bundle_id
+          bundle_count
+          bundle_article_quantity
+          return_config {
+            allow_partial_return
           }
         }
         prices {

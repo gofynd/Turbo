@@ -1,29 +1,33 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FDKLink } from "fdk-core/components";
 
 export function Component({ props, globalConfig }) {
   const { label, url, target } = props;
+  const getPaddingByWidth = (width) => {
+    if (width <= 425) return "16px";
+    if (width > 425 && width < 1024) return "16px 24px";
+    return "16px 40px";
+  };
+  const [padding, setPadding] = useState(() =>
+    getPaddingByWidth(window.innerWidth)
+  );
+  const handleResize = useCallback(() => {
+    setPadding(getPaddingByWidth(window.innerWidth));
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [handleResize]);
+
+  const style = { display: "block", padding };
+
   return target.value === "_blank" ? (
-    <a
-      href={url.value}
-      target={target.value}
-      style={{
-        display: "block",
-        paddingTop: "16px",
-        paddingBottom: `16px`,
-      }}
-    >
+    <a href={url.value} target={target.value} style={style}>
       {label.value}
     </a>
   ) : (
-    <FDKLink
-      to={url.value}
-      style={{
-        display: "block",
-        paddingTop: "16px",
-        paddingBottom: `16px`,
-      }}
-    >
+    <FDKLink to={url.value} style={style}>
       {label.value}
     </FDKLink>
   );
@@ -56,4 +60,5 @@ export const settings = {
   ],
   blocks: [],
 };
+
 export default Component;

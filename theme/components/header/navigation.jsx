@@ -93,10 +93,11 @@ function Navigation({
   const isHorizontalNav = navigationList?.length > 0 && !isSidebarNav;
   const isMegaMenu =
     isHorizontalNav &&
-    globalConfig?.header_mega_menu &&
+    globalConfig?.header_mega_menu === "header_mega_menu" &&
     globalConfig?.header_layout === "double";
   const isFullWidthMegamenu =
-    globalConfig?.header_mega_menu_fullwidth && isMegaMenu;
+    globalConfig?.header_mega_menu === "header_mega_menu_fullwidth" &&
+    globalConfig?.header_layout === "double";
   const getNavigation = navigationList?.slice(0, maxMenuLength);
 
   const getShopLogoMobile = () =>

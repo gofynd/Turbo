@@ -272,7 +272,7 @@ export function ThemeProvider({ children }) {
     }
   }, [i18nDetails?.countryCode]);
 
-  return (
+  const content = (
     <>
       <Helmet>
         {fontLinks}
@@ -293,25 +293,36 @@ export function ThemeProvider({ children }) {
       {children}
     </>
   );
+
+  return content;
 }
 
+
 export const getHelmet = ({ seo }) => {
+  console.log(seo, "seo");
   const title = sanitizeHTMLTag(seo?.title);
   const description = sanitizeHTMLTag(seo?.description);
   const image = sanitizeHTMLTag(seo?.image ? seo?.image : seo?.image_url);
+  const url = sanitizeHTMLTag(seo?.url || seo?.canonical_url);
   const canonicalPath = sanitizeHTMLTag(seo?.canonical_url);
   return (
     <Helmet>
       <title>{title}</title>
-      <meta name="og:title" content={title} />
-      <meta name="twitter:title" content={title} />
       <meta name="description" content={description} />
-      <meta name="og:description" content={description} />
+      {/* Open Graph for product */}
+      <meta property="og:type" content="product" />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      {url && <meta property="og:url" content={url} />}
+      {image && <meta property="og:image" content={image} />}
+      {image && <meta property="og:image:secure_url" content={image} />}
+
+      {/* Twitter */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="image" content={image} />
-      <meta name="og:image" content={image} />
-      <meta name="twitter:image" content={image} />
-      <meta name="og:type" content="website" />
+      {image && <meta name="twitter:image" content={image} />}
+
       {canonicalPath && <link rel="canonical" href={canonicalPath} />}
     </Helmet>
   );

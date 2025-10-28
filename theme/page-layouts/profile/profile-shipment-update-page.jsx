@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import OrdersHeader from "@gofynd/theme-template/components/order-header/order-header";
 import "@gofynd/theme-template/components/order-header/order-header.css";
 import ShipmentUpdateItem from "@gofynd/theme-template/components/shipments-update-item/shipments-update-item";
@@ -16,7 +16,7 @@ import "@gofynd/theme-template/components/reasons-list/reason-item/reason-item.c
 import styles from "./styles/profile-shipment-update-page.less";
 import useShipmentDetails from "../orders/useShipmentDetails";
 import useRefundDetails from "../orders/useRefundDetails";
-import { useSnackbar } from "../../helper/hooks";
+import { useSnackbar, useThemeConfig } from "../../helper/hooks";
 import EmptyState from "../../components/empty-state/empty-state";
 import Loader from "../../components/loader/loader";
 import ProfileRoot from "../../components/profile/profile-root";
@@ -28,13 +28,16 @@ import {
 } from "../../queries/shipmentQuery";
 import ArrowDropdownIcon from "../../assets/images/arrow-dropdown-black.svg";
 import CrossContainedIcon from "../../assets/images/cross-contained-black.svg";
+import { getGroupedShipmentBags } from "../../helper/utils";
 
 function ProfileShipmentUpdatePage({ fpi }) {
   const { t } = useGlobalTranslation("translation");
+  const { globalConfig } = useThemeConfig({ fpi });
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams();
   const DEFAULT_ERROR_TEXT = t("resource.common.error_message");
-  const [updatedQty, setUpdatedQty] = useState("");
+  const [updatedQty, setUpdatedQty] = useState(1);
   const [selectedBagId, setSelectedBagId] = useState("");
   const [extraComment, setExtraComment] = useState("");
   const [type, setType] = useState("");
@@ -79,7 +82,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
         if (cancelBtn === "cancelBtn") {
           return t("resource.facets.return");
         } else {
-          return t("resource.profile.return_request");;
+          return t("resource.profile.return_request");
         }
       }
       return "";
@@ -102,36 +105,63 @@ function ProfileShipmentUpdatePage({ fpi }) {
     });
     return () => {};
   }, [reasonsList]);
-  useEffect(() => {
-    if (shipmentDetails) {
-      const bags = shipmentDetails?.bags;
-      const filterBag = bags?.filter(
-        (item) => item.id === Number(selected_bag_id)
-      );
-      const finalbag = filterBag?.map((item) => {
-        return {
-          ...item,
-          bag_ids: [selected_bag_id],
-        };
-      });
-      setUpdatedQty(finalbag?.[0]?.quantity);
-    }
-  }, [shipmentDetails?.bags]);
+
+  const { bags, bundleGroups, bundleGroupArticles } = useMemo(() => {
+    return getGroupedShipmentBags(shipmentDetails?.bags, {
+      isPartialCheck: params?.type === "return",
+    });
+  }, [shipmentDetails?.bags, params?.type]);
+
   const getBag = useMemo(() => {
-    if (shipmentDetails) {
-      const bags = shipmentDetails?.bags;
-      const filterBag = bags?.filter(
-        (item) => item.id === Number(selected_bag_id)
-      );
-      const finalbag = filterBag?.map((item) => {
-        return {
-          ...item,
-          bag_ids: [selected_bag_id],
-        };
-      });
-      return finalbag;
+    if (!bags) {
+      return [];
     }
-  }, [shipmentDetails?.bags]);
+    const selectedIdNum = Number(selected_bag_id);
+    // 1) First check if the selected bag is part of a bundle group
+    // Search in bundleGroups to identify which group contains the selected bag
+    for (const [groupId, groupBags] of Object.entries(bundleGroups || {})) {
+      // Ensure array
+      const groupArr = Array.isArray(groupBags) ? groupBags : [];
+      const matchedBag = groupArr.find((b) => b?.id === selectedIdNum);
+      if (matchedBag) {
+        // For non-partial return bundles, always return the base bag
+        const baseBag =
+          groupArr.find((b) => b?.bundle_details?.is_base) || matchedBag;
+        return [
+          {
+            ...baseBag,
+            bag_ids: [selected_bag_id],
+          },
+        ];
+      }
+    }
+
+    // 2) If not found in bundle groups, try to find the bag directly
+    const directMatch = bags.find((b) => b.id === selectedIdNum);
+    if (directMatch) {
+      return [
+        {
+          ...directMatch,
+          bag_ids: [selected_bag_id],
+        },
+      ];
+    }
+    return [];
+  }, [bags, bundleGroups, selected_bag_id]);
+
+  // useEffect(() => {
+  //   const item = getBag?.[0];
+  //   if (item) {
+  //     if (
+  //       item.bundle_details?.bundle_group_id &&
+  //       bundleGroups[item.bundle_details.bundle_group_id]
+  //     ) {
+  //       setUpdatedQty(item.bundle_details.bundle_count);
+  //     } else {
+  //       setUpdatedQty(item.quantity);
+  //     }
+  //   }
+  // }, [getBag]);
 
   const updatedQuantity = (qty) => {
     setUpdatedQty(qty);
@@ -211,14 +241,14 @@ function ProfileShipmentUpdatePage({ fpi }) {
     toggelAccordian(+idx + 1, "open");
   };
 
-    const onOtherReason = (event, i) => {
-      setSelectedReason((prev) => ({
-        ...prev,
-        [i]: {
-          ...prev[i],
-          reason_other_text: event,
-        },
-      }));
+  const onOtherReason = (event, i) => {
+    setSelectedReason((prev) => ({
+      ...prev,
+      [i]: {
+        ...prev[i],
+        reason_other_text: event,
+      },
+    }));
   };
   const beneficiaryError = () => {
     return refundDetails?.user_beneficiaries_detail?.beneficiaries?.length > 0
@@ -249,11 +279,14 @@ function ProfileShipmentUpdatePage({ fpi }) {
     }
     return select;
   };
-   const buttondisable = useMemo(() => {
+  const buttondisable = useMemo(() => {
     const currentReason = selectedReason[selectLast()];
-    if (currentReason?.meta?.remark_required && !currentReason?.reason_other_text?.trim()) {
-       return true;
-   }
+    if (
+      currentReason?.meta?.remark_required &&
+      !currentReason?.reason_other_text?.trim()
+    ) {
+      return true;
+    }
     return shipmentDetails?.can_cancel
       ? !(selectLast() && !selectedReason[selectLast()].reasons?.length > 0)
       : !(
@@ -273,6 +306,66 @@ function ProfileShipmentUpdatePage({ fpi }) {
     return arrBags;
   };
   const getProductDetails = () => {
+    const bag = getBag?.[0];
+    if (
+      bag?.bundle_details?.bundle_group_id &&
+      bundleGroups[bag.bundle_details.bundle_group_id]
+    ) {
+      const bundleReturnQty = updatedQty;
+      const bundleBags = bundleGroups[bag.bundle_details.bundle_group_id];
+      const bundleUniqueArticles = [
+        ...(bundleGroupArticles?.[bag.bundle_details.bundle_group_id] || []),
+      ];
+      const articleReturnQuantity = bundleUniqueArticles.reduce(
+        (acc, article) => {
+          if (
+            article?.bundle_details?.article_bundle_id &&
+            article?.bundle_details?.bundle_article_quantity
+          ) {
+            acc.set(
+              article.bundle_details.article_bundle_id,
+              article.bundle_details.bundle_article_quantity * bundleReturnQty
+            );
+          }
+          return acc;
+        },
+        new Map()
+      );
+      const returnBags = [];
+      for (const bag of bundleBags) {
+        if (
+          bag?.bundle_details?.article_bundle_id &&
+          articleReturnQuantity.has(bag.bundle_details.article_bundle_id)
+        ) {
+          const { bundle_details, line_number, seller_identifier, quantity } =
+            bag;
+          const returnQty = articleReturnQuantity.get(
+            bundle_details.article_bundle_id
+          );
+          const remainQty = returnQty - quantity;
+          if (remainQty >= 0) {
+            articleReturnQuantity.set(
+              bundle_details.article_bundle_id,
+              remainQty
+            );
+            returnBags.push({
+              quantity,
+              line_number,
+              identifier: seller_identifier,
+            });
+          } else {
+            returnBags.push({
+              quantity: returnQty,
+              line_number,
+              identifier: seller_identifier,
+            });
+            articleReturnQuantity.delete(bundle_details.article_bundle_id);
+          }
+        }
+        if (!articleReturnQuantity.size) break;
+      }
+      return returnBags;
+    }
     const quantity = updatedQty;
     const line_number = getBag?.[0].line_number;
     const identifier = getBag?.[0].seller_identifier;
@@ -317,7 +410,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
         order_id: shipmentDetails?.order_id,
         products: getProducts,
         selected_reason: { ...reason[selectLast()] },
-        //other_reason_text: extraComment,
+        // other_reason_text: extraComment,
       };
     } else {
       return {
@@ -336,7 +429,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                           meta: {
                             return_qc_json: {
                               images: cdn_urls,
-                              return_reason:{ ...reason[selectLast()] }
+                              return_reason: { ...reason[selectLast()] },
                             },
                           },
                         },
@@ -367,7 +460,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
         shimpment_id: shipmentDetails?.shipment_id,
         order_id: shipmentDetails?.order_id,
         selected_reason: { ...reason[selectLast()] },
-        //other_reason_text: extraComment,
+        // other_reason_text: extraComment,
         beneficiary_id: refundDetails?.user_beneficiaries_detail
           ?.show_beneficiary_details
           ? selectedBeneficary?.beneficiary_id
@@ -458,7 +551,6 @@ function ProfileShipmentUpdatePage({ fpi }) {
     // }
     if (getStatusForUpdate() === "return_pre_qc") {
       setInProgress(true);
-
       const startUploadResponse = await Promise.all(
         imageList.map((item) => {
           return fpi.executeGQL(START_MEDIA_UPLOAD, {
@@ -617,9 +709,13 @@ function ProfileShipmentUpdatePage({ fpi }) {
                 (item, index) => (
                   <ShipmentUpdateItem
                     key={`shipment_item${index}`}
+                    quantity={updatedQty}
                     selectedBagId={selected_bag_id}
                     updatedQuantity={(e) => updatedQuantity(e)}
                     item={item}
+                    bundleGroups={bundleGroups}
+                    bundleGroupArticles={bundleGroupArticles}
+                    globalConfig={globalConfig}
                   ></ShipmentUpdateItem>
                 )
                 //   }
@@ -677,12 +773,6 @@ function ProfileShipmentUpdatePage({ fpi }) {
                 shipmentDetails?.can_return &&
                 refundDetails?.user_beneficiaries_detail
                   ?.show_beneficiary_details && (
-                  <div className={`${styles.divider}`}></div>
-                )}
-              {shipmentDetails?.beneficiary_details &&
-                shipmentDetails?.can_return &&
-                refundDetails?.user_beneficiaries_detail
-                  ?.show_beneficiary_details && (
                   <div>
                     <div className={styles.refundOption}>
                       {t("resource.profile.select_refund_option")}
@@ -715,7 +805,12 @@ function ProfileShipmentUpdatePage({ fpi }) {
                   )} */}
                   </div>
                 )}
-              {showimg() && <div className={`${styles.divider}`}></div>}
+              {shipmentDetails?.beneficiary_details &&
+                shipmentDetails?.can_return &&
+                refundDetails?.user_beneficiaries_detail
+                  ?.show_beneficiary_details && (
+                  <div className={`${styles.divider}`}></div>
+                )}
               {showimg() && (
                 <div className={`${styles.cancelimg}`}>
                   <div className={`${styles.header} ${styles.boldmd}`}>

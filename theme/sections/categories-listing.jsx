@@ -195,7 +195,6 @@ export function Component({ props, blocks, preset, globalConfig }) {
   );
 
   useEffect(() => {
-    // Only run on client side to avoid SSR issues
     if (typeof window === "undefined") return;
 
     const fetchAllCategories = async () => {
@@ -283,7 +282,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
           </Slider>
         </div>
       )}
-      {categories?.length && showStackedView() && (
+      {categories?.length > 0 && showStackedView() && (
         <div
           className={`${styles.categoryGrid} ${
             imagesForStackedView.length === 1 && styles.singleItem
@@ -696,7 +695,6 @@ Component.serverFetch = async ({ fpi, blocks }) => {
     );
     return sortedCategories;
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error("Error in categories listing serverFetch:", err);
     fpi.custom.setValue("error-section", err);
     return [];

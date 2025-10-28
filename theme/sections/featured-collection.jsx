@@ -67,6 +67,7 @@ export function Component({ props, globalConfig }) {
   });
   const { isLoggedIn, openLogin } = useAccounts({ fpi });
   const { toggleWishlist, followedIdList } = useWishlist({ fpi });
+  const { t } = useGlobalTranslation("translation");
   const {
     handleAddToCart,
     isOpen: isAddToCartOpen,
@@ -121,7 +122,6 @@ export function Component({ props, globalConfig }) {
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const i18nDetails = useGlobalStore(fpi.getters.i18N_DETAILS);
   const [isClient, setIsClient] = useState(false);
-  const { t } = useGlobalTranslation("translation");
 
   const imagesForScrollView = useMemo(() => {
     if (!getGallery) return [];
@@ -1119,16 +1119,16 @@ export const settings = {
       options: [
         {
           value: "below_description",
-          text: "t:resource.sections.blog.below_description",
+          text: "Below description",
         },
         {
           value: "below_products",
-          text: "t:resource.sections.blog.below_products",
+          text: "Below products",
         },
       ],
       default: "below_description",
-      label: "t:resource.sections.blog.button_position",
-      info: "t:resource.sections.blog.button_position_info",
+      label: "Button Position",
+      info: "Applicable for only desktop view",
     },
     {
       type: "range",

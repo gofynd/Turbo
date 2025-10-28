@@ -18,7 +18,6 @@ const useEditProfile = (fpi) => {
     fpi.getters.USER_DATA || fpi.getters.CUSTOM_VALUE?.user_Data
   );
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
-
   const [isFormSubmitSuccess, setIsFormSubmitSuccess] = useState(false);
   const [error, setError] = useState(null);
   const [verifyBothData, setVerifyBothData] = useState(null);

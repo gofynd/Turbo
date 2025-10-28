@@ -101,7 +101,9 @@
       "infinite_scroll": "Infinite Scroll",
       "register": "Register",
       "login": "Login",
-      "hide_single_size_info": "Hide single size"
+      "hide_single_size_info": "Hide single size",
+      "default": "default",
+      "default_menu": "Default Menu"
     },
     "settings_schema": {
       "common": {
@@ -175,6 +177,8 @@
         "desktop": "Desktop",
         "mobile_tablet": "Mobile/Tablet",
         "show_footer_contact_details_background": "Show Footer Contact Details Background",
+        "show_collapsible_footer_menu": "Show Collapsible Footer Menu (Mobile)",
+        "collapsible_footer_menu_info": "Check to enable collapsible footer menu on mobile devices",
         "social_media_text": "Social media text label",
         "social_media_text_info": "Show Label text for social media",
         "open_same_tab": "Open social links in same tab",
@@ -368,6 +372,8 @@
         "hero_video": "Hero Video",
         "primary_video": "Primary Video",
         "video_url": "Video URL",
+        "mobile_video_url": "Mobile Video URL",
+        "mobile_primary_video": "Mobile Primary Video",
         "video_support_mp4_youtube": "Supports MP4 Video & Youtube Video URL",
         "autoplay": "Autoplay",
         "enable_autoplay_muted": "Check to enable autoplay (Video will be muted if autoplay is active)",
@@ -394,8 +400,6 @@
         "autoplay_slide_duration": "Autoplay slide duration",
         "top_margin": "Top Margin",
         "top_margin_info": "Top margin for section",
-        "top_padding": "Top Padding",
-        "top_padding_info": "Top Padding for section",
         "open_links_in_new_tab": "Open Links in New Tab",
         "open_links_in_new_tab_info": "Enable to open slide links in a new tab"
       },

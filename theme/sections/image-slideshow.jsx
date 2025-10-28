@@ -10,7 +10,7 @@ import placeholderDesktop2 from "../assets/images/placeholder/slideshow-desktop2
 import placeholderMobile1 from "../assets/images/placeholder/slideshow-mobile1.jpg";
 import placeholderMobile2 from "../assets/images/placeholder/slideshow-mobile2.jpg";
 import styles from "../styles/sections/image-slideshow.less";
-import { useGlobalStore ,useNavigate} from "fdk-core/utils";
+import { useNavigate } from "fdk-core/utils";
 import {
   SliderNextArrow,
   SliderPrevArrow,
@@ -107,12 +107,11 @@ export function Component({ props, blocks, globalConfig, preset }) {
     [autoplay?.value, slide_interval?.value, blocksData]
   );
 
-   const getOverlayPositionStyles = (block) => {
+  const getOverlayPositionStyles = (block) => {
     const positions = {};
     const responsiveViews = ["mobile", "desktop"];
 
     responsiveViews.forEach((view) => {
-      
       const overlayPosition =
         view === "mobile"
           ? block?.props?.text_placement_mobile?.value
@@ -278,9 +277,7 @@ export function Component({ props, blocks, globalConfig, preset }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
     "--slick-dots": `${blocksData?.length * 22 + 10}px`,
   };
-
   const navigate = useNavigate();
-
   return (
     <section className={`remove-horizontal-scroll`} style={dynamicStyles}>
       <Slider {...config} initialSlide={0} className={styles.slideshowSlider}>
@@ -288,44 +285,43 @@ export function Component({ props, blocks, globalConfig, preset }) {
           block.type === "gallery" ? (
             <div className={`${styles.blockItem} ${styles.imageContainer}`}>
               <FDKLink
-                 to={
-                !block?.props?.button_text?.value &&
-                block?.props?.redirect_link?.value
-                  ? block?.props?.redirect_link?.value
-                  : ""
-              }
+                to={
+                  !block?.props?.button_text?.value &&
+                  block?.props?.redirect_link?.value
+                    ? block?.props?.redirect_link?.value
+                    : ""
+                }
                 target={shouldOpenInNewTab ? "_blank" : "_self"}
                 key={index}
               >
-                 <div
-                className={styles.overlayItems}
-                style={getOverlayPositionStyles(block)}
-              >
-                {block?.props?.image_text?.value}
-                {block?.props?.button_text?.value && (
-                  <>
-                    <div>
-                      <button
-                        type="button"
-                        className={`fx-button ${styles.cta_button} ${
-                          block?.props?.invert_button_color?.value
-                            ? "btnSecondary"
-                            : "btnPrimary"
-                        }`}
-                        disabled={
-                          !(block?.props?.redirect_link?.value?.length > 0)
-                        }
-                        onClick={() =>
-                          navigate(block?.props?.redirect_link?.value)
-                        }
-                      >
-                        {block?.props?.button_text?.value}
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-
+                <div
+                  className={styles.overlayItems}
+                  style={getOverlayPositionStyles(block)}
+                >
+                  {block?.props?.image_text?.value}
+                  {block?.props?.button_text?.value && (
+                    <>
+                      <div>
+                        <button
+                          type="button"
+                          className={`fx-button ${styles.cta_button} ${
+                            block?.props?.invert_button_color?.value
+                              ? "btnSecondary"
+                              : "btnPrimary"
+                          }`}
+                          disabled={
+                            !(block?.props?.redirect_link?.value?.length > 0)
+                          }
+                          onClick={() =>
+                            navigate(block?.props?.redirect_link?.value)
+                          }
+                        >
+                          {block?.props?.button_text?.value}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
                 <FyImage
                   src={getDesktopImage(block, index)}
                   sources={getImgSrcSet(block, globalConfig, index)}
@@ -374,7 +370,7 @@ export const settings = {
           id: "redirect_link",
           label: "t:resource.sections.image_slideshow.slide_link",
         },
-         {
+        {
           type: "text",
           id: "image_text",
           default: "Image Text",
@@ -542,6 +538,28 @@ export const settings = {
       label: "t:resource.common.change_slides_every",
       default: 3,
       info: "t:resource.sections.image_slideshow.autoplay_slide_duration",
+    },
+    {
+      type: "range",
+      id: "padding_top",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.image_slideshow.top_padding",
+      default: 0,
+      info: "t:resource.sections.image_slideshow.top_padding_info",
+    },
+    {
+      type: "range",
+      id: "padding_bottom",
+      min: 0,
+      max: 100,
+      step: 1,
+      unit: "px",
+      label: "t:resource.sections.categories.bottom_padding",
+      default: 16,
+      info: "t:resource.sections.categories.bottom_padding_for_section",
     },
     {
       type: "checkbox",

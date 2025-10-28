@@ -1,0 +1,31 @@
+@import "../../../../../styles/main.less";
+
+
+.bundleTitle {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  color: @TextHeading;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px; /* 128.571% */
+  letter-spacing: -0.28px;
+}
+
+.bundleContainer {
+  margin-inline-start: -24px;
+  @media @mobile {
+    margin-inline: -16px;
+  }
+
+  .bundleCard {
+    padding-inline-start: 24px;
+    flex: 0 0 480px;
+    @media @mobile {
+      flex: 0 0 87.5%;
+      padding-inline-start: 16px;
+      &:last-child {
+        padding-inline-end: 16px;
+      }
+    } 
+  }
+}

@@ -1,0 +1,80 @@
+@import "../../../../../styles/main.less";
+
+.productCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid @DividerStokes;
+  border-radius: @ImageRadius;
+  padding: 12px;
+
+  .productContent {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .productImage {
+    border-radius: calc(@ImageRadius - 4px);
+    flex: 0 0 84px;
+  }
+
+  .productDetails {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .brand {
+    color: @TextHeading;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: -0.24px;
+    margin-bottom: 4px;
+  }
+
+  .title {
+    color: @TextBody;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: -0.28px;
+    margin-bottom: 12px;
+    .text-line-clamp();
+  }
+
+  .productPrice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    row-gap: 4px;
+
+    .effective {
+      color: @TextHeading;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 140%;
+    }
+
+    .marked {
+      color: @TextBody;
+      font-size: 12px;
+      line-height: 140%;
+      text-decoration-line: line-through;
+    }
+
+    .discount {
+      color: @SaleDiscountText;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 140%;
+    }
+  }
+
+  .productSize {
+    color: @TextBody;
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.28px;
+    .text-line-clamp();
+  }
+}

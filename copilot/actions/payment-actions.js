@@ -917,13 +917,8 @@ export const paymentActions = [
         const cartData = cartResult.data.cart;
         const cartBreakupValues = cartData.breakup_values?.display || [];
         // Always take the 'total' key value and handle negative values
-        const totalBreakup = cartBreakupValues.find(
-          (item) => item.key === "total"
-        );
-        totalAmount =
-          totalBreakup && typeof totalBreakup.value === "number"
-            ? Math.abs(totalBreakup.value)
-            : 0;
+        const totalBreakup = cartBreakupValues.find((item) => item.key === "total");
+        totalAmount = totalBreakup && typeof totalBreakup.value === "number" ? Math.abs(totalBreakup.value) : 0;
         amountInPaise = totalAmount * 100;
 
         // Get payment options to find selected payment method details

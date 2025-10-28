@@ -58,6 +58,12 @@
       }
     }
     &--menu {
+      &.collapsibleMenu {
+        @media @mobile {
+          margin-bottom: 32px;
+          border-bottom: 1px solid @DividerStokes;
+        }
+      }
       @media @mobile-up {
         display: flex;
         justify-content: space-between;
@@ -68,6 +74,13 @@
       }
       .linkBlock {
         margin-bottom: 32px;
+        &.collapsible {
+          @media @mobile {
+            border-top: 1px solid @DividerStokes;
+            padding: 16px 0;
+            margin: 0;
+          }
+        }
         @media @tablet-strict {
           flex: 1;
         }
@@ -78,6 +91,11 @@
         .menuTitle {
           color: @FooterText;
           margin-bottom: 6px;
+          &.bottomSpace {
+            @media @mobile {
+              margin-bottom: 0;
+            }
+          }
           @media @desktop {
             margin-bottom: 24px;
             margin-bottom: 8px;
@@ -282,7 +300,42 @@
 // .footerIcon.vimeo g > path:first-of-type {
 //   fill: transparent !important;
 // }
-
+.titleFlex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.accordionArrow {
+  display: none;
+  @media @mobile {
+    &.showAccordionArrow {
+      display: flex;
+    }
+    &.rotate {
+      transition: transform 0.3s ease;
+      transform: rotate(180deg);
+    }
+  }
+}
+.accordionList {
+  @media @mobile {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition:
+      max-height 120ms cubic-bezier(0.2, 0, 0, 1),
+      margin-top 300ms cubic-bezier(0.2, 0, 0, 1),
+      opacity 120ms linear,
+      transform 120ms cubic-bezier(0.2, 0, 0, 1);
+    will-change: max-height, margin-top, opacity;
+    &.active {
+      margin-top: 18px;
+      max-height: max-content;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
 ul {
   list-style: none;
 }

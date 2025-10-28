@@ -5,6 +5,15 @@
 }
 
 // Sale Tag Styles - Matching PLP sale badge colors
+
+.saleTagContainer {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 2;
+  pointer-events: none; // Allow mouse events to pass through to image underneath
+}
+
 .saleTag {
   position: absolute;
   top: 24px;
@@ -18,8 +27,22 @@
   font-weight: 400;
   line-height: normal;
   letter-spacing: -0.24px;
+  pointer-events: none; // Allow mouse events to pass through to image underneath
   z-index: 2;
 }
+
+.skeletonSaleTag {
+  min-width: 44px;
+  min-height: 24px;
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  line-height: normal;
+  letter-spacing: -0.24px;
+  z-index: 2;
+  pointer-events: none; // Allow mouse events to pass through to image underneath
+}
+
 .wishlist {
   position: absolute;
   top: 25px;
@@ -56,6 +79,7 @@
   padding: 4px var(--scale-8-px, 8px);
   height: fit-content;
   width: fit-content;
+  pointer-events: none; // Allow mouse events to pass through to image underneath
 }
 .b4 {
   bottom: 8px !important;
@@ -282,9 +306,6 @@
 
       // Main Images Vertical Line
       .mainImagesArea {
-        flex: 1 1 auto; // allow it to shrink to enable scrolling
-        max-width: 600px;
-
         .mainImagesVertical {
           display: flex;
           flex-direction: column;

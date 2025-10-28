@@ -63,6 +63,7 @@ const ProfileAddressPage = ({ fpi }) => {
   const [countrySearchText, setCountrySearchText] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(currentCountry);
   const queryAddressId = searchParams.get("address_id");
+  const userDetails = useGlobalStore(fpi.getters.USER_DATA);
   const memoizedSelectedAdd = useMemo(() => {
     if (!queryAddressId) return;
 
@@ -478,6 +479,7 @@ const ProfileAddressPage = ({ fpi }) => {
                       countryDetails?.display_name)
                 }
                 countryDetails={countryDetails}
+                user={userDetails}
               />
             </div>
           )}

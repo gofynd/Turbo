@@ -101,6 +101,7 @@ export const THEME_DATA = `query Theme($themeId: String!, $pageValue: String!, $
       }
       seo {
         description
+        canonical_url
         title
       }
       text
@@ -141,7 +142,7 @@ export const GLOBAL_DATA = `query ApplicationConfiguration {
       background_color
       card_position
     }
-       social_tokens {
+      social_tokens {
       google {
         app_id
       }

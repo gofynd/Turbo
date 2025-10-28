@@ -57,23 +57,25 @@ function LocationModal({
   const [isAddressListEmpty, setIsAddressListEmpty] = useState(false);
   const mapRef = useRef(null);
   const placesServiceRef = useRef(null);
-  const mapCoordinatesRef = useRef((() => {
-    const lat = selectedAddress?.geo_location?.latitude;
-    const lng = selectedAddress?.geo_location?.longitude;
+  const mapCoordinatesRef = useRef(
+    (() => {
+      const lat = selectedAddress?.geo_location?.latitude;
+      const lng = selectedAddress?.geo_location?.longitude;
 
-    // Validate initial coordinates are numbers
-    if (
-      typeof lat === "number" &&
-      typeof lng === "number" &&
-      !Number.isNaN(lat) &&
-      !Number.isNaN(lng)
-    ) {
-      return { lat, lng };
-    }
+      // Validate initial coordinates are numbers
+      if (
+        typeof lat === "number" &&
+        typeof lng === "number" &&
+        !Number.isNaN(lat) &&
+        !Number.isNaN(lng)
+      ) {
+        return { lat, lng };
+      }
 
-    // If coordinates are invalid, return undefined
-    return undefined;
-  })());
+      // If coordinates are invalid, return undefined
+      return undefined;
+    })()
+  );
 
   const { fetchAddresses, updateAddress } = useAddress({ fpi });
 
@@ -197,15 +199,22 @@ function LocationModal({
       },
       (placeDetails) => {
         if (placeDetails?.geometry?.location) {
-          const lat = typeof placeDetails.geometry.location.lat === 'function' 
-            ? placeDetails.geometry.location.lat() 
-            : placeDetails.geometry.location.lat;
-          const lng = typeof placeDetails.geometry.location.lng === 'function' 
-            ? placeDetails.geometry.location.lng() 
-            : placeDetails.geometry.location.lng;
-          
+          const lat =
+            typeof placeDetails.geometry.location.lat === "function"
+              ? placeDetails.geometry.location.lat()
+              : placeDetails.geometry.location.lat;
+          const lng =
+            typeof placeDetails.geometry.location.lng === "function"
+              ? placeDetails.geometry.location.lng()
+              : placeDetails.geometry.location.lng;
+
           // Validate coordinates are numbers
-          if (typeof lat === "number" && typeof lng === "number" && !Number.isNaN(lat) && !Number.isNaN(lng)) {
+          if (
+            typeof lat === "number" &&
+            typeof lng === "number" &&
+            !Number.isNaN(lat) &&
+            !Number.isNaN(lng)
+          ) {
             const position = {
               lat,
               lng,
@@ -213,7 +222,10 @@ function LocationModal({
             mapCoordinatesRef.current = position;
             mapRef.current?.panTo(mapCoordinatesRef.current);
           } else {
-            console.error('Invalid coordinates from place details:', { lat, lng });
+            console.error("Invalid coordinates from place details:", {
+              lat,
+              lng,
+            });
             return;
           }
         }
@@ -249,17 +261,24 @@ function LocationModal({
         const data = await response.json();
         if (data.results.length > 0) {
           const location = data.results[0].geometry.location;
-          const lat = typeof location.lat === 'function' ? location.lat() : location.lat;
-          const lng = typeof location.lng === 'function' ? location.lng() : location.lng;
-          
+          const lat =
+            typeof location.lat === "function" ? location.lat() : location.lat;
+          const lng =
+            typeof location.lng === "function" ? location.lng() : location.lng;
+
           // Validate coordinates are numbers
-          if (typeof lat === "number" && typeof lng === "number" && !Number.isNaN(lat) && !Number.isNaN(lng)) {
+          if (
+            typeof lat === "number" &&
+            typeof lng === "number" &&
+            !Number.isNaN(lat) &&
+            !Number.isNaN(lng)
+          ) {
             mapCoordinatesRef.current = {
               lat,
               lng,
             };
           } else {
-            console.error('Invalid coordinates received:', { lat, lng });
+            console.error("Invalid coordinates received:", { lat, lng });
             return;
           }
           const { id, ...restAddress } = address;
@@ -418,17 +437,27 @@ function LocationModal({
       onPlaceSelected: (place) => {
         if (place?.geometry?.location) {
           const location = place.geometry.location;
-          const lat = typeof location.lat === 'function' ? location.lat() : location.lat;
-          const lng = typeof location.lng === 'function' ? location.lng() : location.lng;
-          
+          const lat =
+            typeof location.lat === "function" ? location.lat() : location.lat;
+          const lng =
+            typeof location.lng === "function" ? location.lng() : location.lng;
+
           // Validate coordinates are numbers
-          if (typeof lat === "number" && typeof lng === "number" && !Number.isNaN(lat) && !Number.isNaN(lng)) {
+          if (
+            typeof lat === "number" &&
+            typeof lng === "number" &&
+            !Number.isNaN(lat) &&
+            !Number.isNaN(lng)
+          ) {
             mapRef.current?.panTo({
               lat,
               lng,
             });
           } else {
-            console.error("Invalid coordinates from autocomplete place:", { lat, lng });
+            console.error("Invalid coordinates from autocomplete place:", {
+              lat,
+              lng,
+            });
           }
         } else {
           console.error("No geometry available for selected place");

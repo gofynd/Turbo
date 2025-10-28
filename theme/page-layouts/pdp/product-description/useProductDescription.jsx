@@ -9,6 +9,8 @@ import {
   PRODUCT_SELLERS,
   FULFILLMENT_OPTIONS,
   PRODUCT_DETAILS_WITH_SIZE,
+  BUNDLE_ITEMS,
+  BUNDLES_BY_CHILD,
 } from "../../../queries/pdpQuery";
 import useHeader from "../../../components/header/useHeader";
 import {
@@ -43,12 +45,14 @@ const useProductDescription = ({
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const PRODUCT = useGlobalStore(fpi.getters.PRODUCT);
   const LoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
-  const { isPdpSsrFetched, isI18ModalOpen, ssrSizeToSelect } = useGlobalStore(
+  const { isPdpSsrFetched, isI18ModalOpen, ssrProductInfo } = useGlobalStore(
     fpi?.getters?.CUSTOM_VALUE
   );
   const { buybox, fulfillment_option } = useGlobalStore(
     fpi.getters.APP_FEATURES
   );
+  const { bundles: ssrBundles, bundleProducts: ssrBundleProducts } =
+    ssrProductInfo || {};
 
   const { isServiceability } = useThemeFeature({ fpi });
   const {
@@ -70,6 +74,9 @@ const useProductDescription = ({
   const [selectPincodeError, setSelectPincodeError] = useState(false);
   const [pincodeErrorMessage, setPincodeErrorMessage] = useState("");
   const [isPageLoading, setIsPageLoading] = useState(!isPdpSsrFetched);
+  const [bundleProducts, setBundleProducts] = useState(ssrBundleProducts);
+  const [bundles, setBundles] = useState(ssrBundles);
+  const [isBundlesLoading, setIsBundlesLoading] = useState(false);
 
   const isProductDataLoading = useMemo(
     () => isPageLoading && isEmptyOrNull(cachedProductData),
@@ -115,6 +122,22 @@ const useProductDescription = ({
   //   productPriceBySlugLoading ||
   //   false;
 
+  const fetchBundlesByChild = async ({ size }) => {
+    setIsBundlesLoading(true);
+    try {
+      const { data } = await fpi.executeGQL(BUNDLES_BY_CHILD, {
+        slug,
+        size,
+      });
+      if (data?.bundlesByChild?.items) {
+        setBundles(data.bundlesByChild.items);
+      }
+    } catch (error) {
+    } finally {
+      setIsBundlesLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (slug && productPriceBySlug?.store?.uid) {
       const values = {
@@ -133,8 +156,10 @@ const useProductDescription = ({
 
   useEffect(() => {
     if (slug && (!isPdpSsrFetched || slug !== PRODUCT?.product_details?.slug)) {
+      let sizeToSelect;
       setIsLoading(true);
       setIsPageLoading(true);
+      setCurrentSize(null);
       const values = { slug };
       if (size) {
         values.size = size;
@@ -155,26 +180,38 @@ const useProductDescription = ({
               "productPromotions",
               res?.data?.promotions || {}
             );
-            if (size) {
-              const sizeToSelect = product?.sizes?.sizes?.find(
-                (item) => item?.value === size
+            const productSizes = product?.sizes?.sizes || [];
+            sizeToSelect = productSizes?.find((item) => item?.value === size);
+            if (!sizeToSelect && productSizes.length > 0) {
+              const isMto = product?.custom_order?.is_custom_order || false;
+              const firstAvailableSize = productSizes.find(
+                (sizeOption) => sizeOption.quantity > 0 || isMto
               );
+              sizeToSelect = firstAvailableSize || productSizes[0];
+            }
+            if (sizeToSelect?.value) {
               setCurrentSize(sizeToSelect);
-            } else {
-              // If no URL size, auto-select first available size
-              const sizes = product?.sizes?.sizes || [];
-              if (sizes.length > 0) {
-                const isMto = product?.custom_order?.is_custom_order || false;
-                // Find first available size (quantity > 0 or MTO product)
-                const firstAvailableSize = sizes.find(
-                  (sizeOption) => sizeOption.quantity > 0 || isMto
-                );
-                // Fallback to first size if no available sizes found
-                const sizeToSelect = firstAvailableSize || sizes[0];
-                if (sizeToSelect?.value) {
-                  setCurrentSize(sizeToSelect);
-                }
+              if (sizeToSelect?.is_bundle_item) {
+                fetchBundlesByChild({
+                  size: sizeToSelect?.value,
+                });
+              } else {
+                // Clear bundles when switching to non-bundle size
+                setBundles([]);
               }
+            }
+            if (
+              product.item_type === "virtual_bundle" ||
+              product.item_type === "physical_bundle"
+            ) {
+              fpi
+                .executeGQL(BUNDLE_ITEMS, { slug })
+                .then(({ data, errors }) => {
+                  if (data?.bundleItems?.items) {
+                    setBundleProducts(data.bundleItems.items);
+                  }
+                })
+                .catch((err) => {});
             }
           }
         })
@@ -186,13 +223,19 @@ const useProductDescription = ({
           setIsPageLoading(false);
         });
     }
+    return () => {
+      setBundles([]);
+      setBundleProducts([]);
+    };
   }, [slug, i18nDetails?.currency?.code]);
 
   useEffect(() => {
-    fpi.custom.setValue("isPdpSsrFetched", false);
-    if (ssrSizeToSelect) {
-      setCurrentSize(ssrSizeToSelect);
+    const { size, bundles, bundleProducts } = ssrProductInfo || {};
+    if (size) {
+      setCurrentSize(size);
     }
+    setBundles(bundles);
+    setBundleProducts(bundleProducts);
   }, []);
 
   useEffect(() => {
@@ -267,7 +310,7 @@ const useProductDescription = ({
     slug,
     PRODUCT?.product_details?.slug,
     currentSize?.value,
-    locationDetails,
+    locationDetails?.pincode,
     i18nDetails?.currency?.code,
   ]);
 
@@ -491,6 +534,11 @@ const useProductDescription = ({
     fulfillmentOptions,
     setFulfillmentOptions,
     availableFOCount: fulfillment_option?.count || 1,
+    bundleProducts,
+    isBundlesLoading,
+    bundles,
+    setBundles,
+    fetchBundlesByChild,
   };
 };
 

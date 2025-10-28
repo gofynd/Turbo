@@ -6,6 +6,7 @@ export const useFormItem = ({ fpi }) => {
   const [formData, setFormData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
+  const [successMessage, setSuccessMessage] = useState("");
 
   const getCustomForm = () => {
     setIsLoading(true);
@@ -64,6 +65,7 @@ export const useFormItem = ({ fpi }) => {
       if (res?.errors) {
         throw res?.errors?.[0];
       }
+      setSuccessMessage(res?.data?.submitCustomForm?.message || "");
       return res?.data?.submitCustomForm;
     });
   };
@@ -75,6 +77,7 @@ export const useFormItem = ({ fpi }) => {
   return {
     formData,
     isLoading,
+    successMessage,
     handleFormSubmit,
   };
 };

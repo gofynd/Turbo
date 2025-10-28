@@ -12,10 +12,14 @@ function ProductDescription({ fpi }) {
   const PRODUCT = useGlobalStore(fpi.getters.PRODUCT);
   const seo = PRODUCT?.product_details?.seo || {};
   const productDescription = PRODUCT?.product_meta?.short_description;
+  const productName = PRODUCT?.product_details?.name || "";
 
+  const image = PRODUCT?.product_details?.media?.[0].url;
   const mergedSeo = {
     ...seo,
     description: seo?.description || productDescription,
+    title: seo?.title || productName,
+    image: image,
   };
 
   return (

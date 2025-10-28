@@ -6,12 +6,12 @@ import empty from "../assets/images/empty_state.png";
 import { ORDER_BY_ID } from "../queries/checkoutQuery";
 import "@gofynd/theme-template/pages/order-status/order-status.css";
 import Loader from "../components/loader/loader";
-import cartClock from "../assets/images/cart-clock.png";
-import FyImage from "../components/core/fy-image/fy-image";
 import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 import { FDKLink } from "fdk-core/components";
 import EmptyState from "../components/empty-state/empty-state";
 import OrderPendingIcon from "../assets/images/order-pending.svg";
+import { getGroupedShipmentBags } from "../helper/utils";
+import { useThemeConfig } from "../helper/hooks";
 
 function OrderPolling({ isLoggedIn }) {
   const { t } = useGlobalTranslation("translation");
@@ -35,6 +35,7 @@ function OrderStatus({ fpi }) {
   const [attempts, setAttempts] = useState(0);
   const [showPolling, setShowPolling] = useState(false);
   const navigate = useNavigate();
+  const { globalConfig } = useThemeConfig({ fpi });
 
   const fetchOrder = useCallback(() => {
     setTimeout(() => {
@@ -60,8 +61,6 @@ function OrderStatus({ fpi }) {
     }
   }, [success, attempts, fetchOrder, orderData]);
 
-  console.log({ orderData });
-
   return (
     <div className="basePageContainer margin0auto">
       <OrderStatusPage
@@ -73,6 +72,8 @@ function OrderStatus({ fpi }) {
         pollingComp={<OrderPolling isLoggedIn={isloggedIn} />}
         onOrderFailure={() => navigate("/cart/bag")}
         loader={<Loader />}
+        getGroupedShipmentBags={getGroupedShipmentBags}
+        globalConfig={globalConfig}
       />
     </div>
   );

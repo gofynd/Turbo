@@ -247,6 +247,7 @@ const Product = `product(slug: $slug) {
         unit
         width
       }
+      is_bundle_item
       display
       is_available
       quantity
@@ -321,6 +322,7 @@ const Product = `product(slug: $slug) {
   seo {
     description
     title
+    canonical_url
     image {
       url
     }
@@ -988,6 +990,86 @@ export const GET_PRODUCT_PROMOTIONS = `query($slug: String!, $storeIdString: Str
       has_previous
       total
       total_item_count
+    }
+  }
+}`;
+
+export const BUNDLE_ITEMS = `query GetBundleItems($slug: String!, $page: Int = 1) {
+  bundleItems(slug: $slug, pageNo: $page) {
+    items {
+      action
+      brand {
+        name
+        logo {
+          type
+          url
+        }
+        uid
+      }
+      media {
+        type
+        url
+        alt
+      }
+      net_quantity {
+        unit
+        value
+      }
+      size
+      seller_identifiers
+      price
+      price_effective
+      currency
+      slug
+      name
+    }
+    page {
+      current
+      has_next
+      has_previous
+      item_total
+      size
+      type
+    }
+  }
+}`;
+
+export const BUNDLES_BY_CHILD = `query GetBundlesByChild($slug: String!, $size: String!, $page: Int = 1, $pageSize: Int = 50) {
+  bundlesByChild(slug: $slug, size: $size, pageNo: $page, pageSize: $pageSize){
+    items {
+    action
+      brand {
+        name
+        logo{
+          type,
+          url
+        }
+        uid
+      }
+      media {
+        type
+        url
+        alt
+      }
+      net_quantity{
+        unit
+        value
+      }
+      size
+      seller_identifiers
+      price
+      price_effective
+      currency
+      slug
+      name
+    }
+    page {
+      current
+      has_next
+      has_previous
+      item_total
+      size
+      type
     }
   }
 }`;

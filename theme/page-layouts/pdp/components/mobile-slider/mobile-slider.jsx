@@ -12,6 +12,7 @@ import UnmuteIcon from "../../../../assets/images/unmute.svg";
 import AutoRotateIcon from "../../../../assets/images/auto-rotate.svg";
 import WishlistIcon from "../../../../assets/images/wishlist";
 import useLocaleDirection from "../../../../helper/hooks/useLocaleDirection";
+import { Skeleton } from "../../../../components/core/skeletons";
 
 function MobileSlider({
   images,
@@ -26,6 +27,7 @@ function MobileSlider({
   handleShare,
   showShareIcon = true,
   sources = [],
+  isDataLoad = false,
   // Sale tag props (configuration-based)
   showSaleTag = false,
   renderTag,
@@ -132,7 +134,11 @@ function MobileSlider({
         {images?.map((media, i) => (
           <div className={styles.mediaWrapper} key={i}>
             {/* Sale Tag for mobile - Configuration-based */}
-            {i === 0 && showSaleTag && renderTag()}
+            {isDataLoad ? (
+              <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
+            ) : (
+              showSaleTag && renderTag()
+            )}
             {media.type === "image" && (
               <div onClick={() => onImageClick()}>
                 <FyImage

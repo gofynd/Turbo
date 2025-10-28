@@ -72,7 +72,7 @@ export const SEARCH_PRODUCT = `query products(
       }
       name
       slug
-      discount
+       discount
       price {
         effective {
           currency_code

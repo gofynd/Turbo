@@ -19,6 +19,7 @@ function ShareItem({ setShowSocialLinks, description, handleShare }) {
   const { showSnackbar } = useSnackbar();
   const encodedDescription = encodeURIComponent(description);
   const shareUrl = window?.location?.href;
+  const whatsappText = `${encodeURIComponent(shareUrl)}%0A${encodedDescription}`;
 
   const handleCopyToClipboard = (e) => {
     e.stopPropagation();
@@ -40,7 +41,7 @@ function ShareItem({ setShowSocialLinks, description, handleShare }) {
     {
       name: "Facebook",
       icon: <FacebookShareIcon />,
-      link: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      link: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedDescription}`,
     },
     {
       name: "X",
@@ -50,7 +51,7 @@ function ShareItem({ setShowSocialLinks, description, handleShare }) {
     {
       name: "WhatsApp",
       icon: <WhatsappShareIcon />,
-      link: `https://wa.me/?text=${encodedDescription} ${encodedUrl}`,
+      link: `https://wa.me/?text=${whatsappText}`,
     },
     {
       name: "More Apps",
@@ -58,7 +59,6 @@ function ShareItem({ setShowSocialLinks, description, handleShare }) {
       onClick: handleShare,
     },
   ];
-
   return (
     <>
       <div

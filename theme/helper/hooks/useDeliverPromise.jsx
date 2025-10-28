@@ -40,7 +40,9 @@ export const useDeliverPromise = ({ fpi }) => {
 
   const getDeliveryPromise = useCallback(
     (key, promise) => {
-      const timestamp = key == "min" ? promise?.min : promise?.max;
+      
+      const timestamp = key =="min" ? promise?.min : promise?.max;
+      
       if (!timestamp) {
         return t("resource.localization.provide_valid_time");
       }
@@ -53,7 +55,6 @@ export const useDeliverPromise = ({ fpi }) => {
       // const deliveryTime = new Date(
       //   currentTimeStamp.getTime() + timezoneOffsetInMs
       // );
-
       const now = new Date();
       const today = setEndOfDay(new Date());
       const tomorrow = setEndOfDay(new Date(now.getTime() + 86400000)); // +1 day
@@ -71,20 +72,24 @@ export const useDeliverPromise = ({ fpi }) => {
 
       const maxDeliveryMinutes = Number(serviceability_max_min) || 0;
       const maxDeliveryHours = Number(serviceability_max_hour) || 0;
-      if (key === "range" && promise?.min < promise?.max) {
-        return `${t("resource.header.get_it_by", {
-          time: ` ${convertUTCDateToLocalDate(
-            promise?.min,
-            { weekday: "short", day: "numeric", month: "short" },
-            formatLocale(locale, countryCode, true)
-          )}  -  ${convertUTCDateToLocalDate(
-            promise?.max,
-            { weekday: "short", day: "numeric", month: "short" },
-            formatLocale(locale, countryCode, true)
-          )}`,
-        })}`;
-      }
+      
+      if (key === "range" && promise?.min < promise?.max ) {
+          return `${t(`resource.header.get_it_by`, {
+            time: ` ${convertUTCDateToLocalDate(
+              promise?.min,
+              { weekday: "short", day: "numeric", month: "short" },
+              formatLocale(locale, countryCode, true)
+            )}  -  ${convertUTCDateToLocalDate(
+              promise?.max,
+              { weekday: "short", day: "numeric", month: "short" },
+              formatLocale(locale, countryCode, true)
+            )}`
+              .toUpperCase()
+              .replace(/\s*-\s*/, " - "),
+          })} `;
 
+        
+      }
       if (diffInMins > 0 && diffInMins <= maxDeliveryMinutes) {
         return t(
           diffInMins > 1
@@ -121,12 +126,10 @@ export const useDeliverPromise = ({ fpi }) => {
 
   const getFormattedPromise = useCallback(
     (promise) => {
-      
       if (!promise) {
         return;
       }
-
-      return getDeliveryPromise(delivery_promise_type, promise);
+        return getDeliveryPromise(delivery_promise_type, promise);
     },
     [delivery_promise_type, getDeliveryPromise]
   );

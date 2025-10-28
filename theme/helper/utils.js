@@ -47,9 +47,9 @@ export const numberWithCommas = (number = 0) => {
     let no =
       num?.toString()?.split(".")?.[0]?.length > 3
         ? `${num
-          ?.toString()
-          ?.substring(0, num?.toString()?.split(".")[0].length - 3)
-          ?.replace(/\B(?=(\d{2})+(?!\d))/g, ",")},${num
+            ?.toString()
+            ?.substring(0, num?.toString()?.split(".")[0].length - 3)
+            ?.replace(/\B(?=(\d{2})+(?!\d))/g, ",")},${num
             ?.toString()
             ?.substring(num?.toString()?.split(".")?.[0]?.length - 3)}`
         : num?.toString();
@@ -278,7 +278,6 @@ export const currencyFormat = (value, currencySymbol, locale = "en-IN") => {
   return "";
 };
 
-
 export const getReviewRatingData = (customMeta) => {
   const data = {};
 
@@ -344,7 +343,9 @@ export const formatLocale = (locale, countryCode, isCurrencyLocale = false) => {
   if (locale === "en" || !locale) {
     return DEFAULT_UTC_LOCALE;
   }
-  const finalLocale = locale.includes("-") ? locale : `${locale}${countryCode ? "-" + countryCode : ""}`;
+  const finalLocale = locale.includes("-")
+    ? locale
+    : `${locale}${countryCode ? "-" + countryCode : ""}`;
   return isValidLocale(finalLocale) ? finalLocale : DEFAULT_UTC_LOCALE;
 };
 
@@ -359,7 +360,7 @@ export const getDirectionAdaptiveValue = (cssProperty, value) => {
   }
 };
 export function createFieldValidation(field, t) {
-  if (!field) return () => { };
+  if (!field) return () => {};
   const { slug, display_name, required, validation } = field;
   const { type, regex } = validation || {};
   if (slug === "phone") {
@@ -451,7 +452,11 @@ export function getLocalizedRedirectUrl(path = "", currentLocale) {
 
 export function spaNavigate(path) {
   // SSR / very old browsers
-  if (typeof window === "undefined" || !window.history || !window.history.pushState) {
+  if (
+    typeof window === "undefined" ||
+    !window.history ||
+    !window.history.pushState
+  ) {
     window.location.href = path;
     return;
   }
@@ -463,20 +468,18 @@ export function spaNavigate(path) {
   window.dispatchEvent(new PopStateEvent("popstate"));
 }
 
-
-
 export function translateDynamicLabel(input, t) {
   const safeInput = input
     .toLowerCase()
-    .replace(/\//g, '_') // replace slashes with underscores
-    .replace(/[^a-z0-9_\s]/g, '') // remove special characters except underscores and spaces
+    .replace(/\//g, "_") // replace slashes with underscores
+    .replace(/[^a-z0-9_\s]/g, "") // remove special characters except underscores and spaces
     .trim()
-    .replace(/\s+/g, '_'); // replace spaces with underscores
+    .replace(/\s+/g, "_"); // replace spaces with underscores
 
   const translationKey = `resource.dynamic_label.${safeInput}`;
   const translated = t(translationKey);
 
-  return translated.split('.').pop() === safeInput ? input : translated;
+  return translated.split(".").pop() === safeInput ? input : translated;
 }
 export const getAddressStr = (item, isAddressTypeAvailable) => {
   if (!item || typeof item !== "object") {
@@ -538,23 +541,26 @@ export const getAddressFromComponents = (components, name) => {
 };
 
 export function getDefaultLocale(locales) {
-  const defaultLocaleObj = locales.find(item => item.is_default === true);
+  const defaultLocaleObj = locales.find((item) => item.is_default === true);
   return defaultLocaleObj ? defaultLocaleObj.locale : null;
 }
 
 export function isLocalePresent(locale, localesArray = []) {
-  return localesArray.some(item => item.locale === locale);
+  return localesArray.some((item) => item.locale === locale);
 }
 
 export function addLocaleToShareCartUrl(url, locale, supportedLocales) {
   try {
     // Extract valid locale codes from supportedLocales.items
-    const validLocaleCodes = (supportedLocales?.items || []).map(item => item.locale);
+    const validLocaleCodes = (supportedLocales?.items || []).map(
+      (item) => item.locale
+    );
 
-    if (!locale || locale === "en" || !validLocaleCodes.includes(locale)) return url;
+    if (!locale || locale === "en" || !validLocaleCodes.includes(locale))
+      return url;
 
     const parsedUrl = new URL(url);
-    const pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
+    const pathSegments = parsedUrl.pathname.split("/").filter(Boolean);
 
     // Replace the locale if one is already present
     if (validLocaleCodes.includes(pathSegments[0])) {
@@ -563,10 +569,10 @@ export function addLocaleToShareCartUrl(url, locale, supportedLocales) {
       pathSegments.unshift(locale);
     }
 
-    parsedUrl.pathname = '/' + pathSegments.join('/');
+    parsedUrl.pathname = "/" + pathSegments.join("/");
     return parsedUrl.toString();
   } catch (e) {
-    console.error('Invalid URL:', e);
+    console.error("Invalid URL:", e);
     return url;
   }
 }
@@ -574,4 +580,83 @@ export function addLocaleToShareCartUrl(url, locale, supportedLocales) {
 export function getLocaleDirection(fpi) {
   const dir = fpi?.store?.getState()?.custom?.currentLocaleDetails?.direction;
   return dir || "ltr";
+}
+
+export function getDiscountPercentage({ markedPrice, effectivePrice }) {
+  if (markedPrice === effectivePrice) return;
+  return Math.floor(((markedPrice - effectivePrice) / markedPrice) * 100);
+}
+
+export function getGroupedShipmentBags(
+  bags,
+  { includePromoBags = true, isPartialCheck = false } = {}
+) {
+  if (!bags) {
+    return {
+      bags: [],
+      bundleGroups: {},
+      bundleGroupArticles: {},
+    };
+  }
+
+  const shipmentBags = [];
+  const bundleGroups = new Map();
+  const bundleGroupArticles = new Map();
+  const hasBaseInBag = new Set();
+  const bundleGroupRepresentative = new Map(); // Track first item of each bundle group
+
+  for (const bag of bags) {
+    const bundleDetails = bag?.bundle_details;
+    const bundleGroupId = bundleDetails?.bundle_group_id;
+    const isBase = !!bundleDetails?.is_base;
+    const isPartialReturn =
+      !!bundleDetails?.return_config?.allow_partial_return;
+
+    if (!includePromoBags && Object.keys(bag?.parent_promo_bags)?.length > 0) {
+      continue;
+    }
+
+    if (bundleGroupId && (!isPartialCheck || !isPartialReturn)) {
+      if (isBase && !hasBaseInBag.has(bundleGroupId)) {
+        shipmentBags.push(bag);
+        hasBaseInBag.add(bundleGroupId);
+      } else if (
+        !isBase &&
+        !hasBaseInBag.has(bundleGroupId) &&
+        !bundleGroupRepresentative.has(bundleGroupId)
+      ) {
+        // If no base item exists yet, use the first child item as representative
+        bundleGroupRepresentative.set(bundleGroupId, bag);
+      }
+
+      if (!bundleGroups.has(bundleGroupId)) {
+        bundleGroups.set(bundleGroupId, []);
+        bundleGroupArticles.set(bundleGroupId, new Map());
+      }
+      bundleGroups.get(bundleGroupId).push(bag);
+      bundleGroupArticles
+        .get(bundleGroupId)
+        .set(bundleDetails?.article_bundle_id, bag);
+    } else {
+      shipmentBags.push(bag);
+    }
+  }
+
+  // Add representative items for bundle groups that have no base item
+  for (const [bundleGroupId, representativeBag] of bundleGroupRepresentative) {
+    if (!hasBaseInBag.has(bundleGroupId)) {
+      shipmentBags.push(representativeBag);
+    }
+  }
+
+  return {
+    bags: shipmentBags,
+    bundleGroups: Object.fromEntries(bundleGroups),
+    bundleGroupArticles: Object.fromEntries(
+      [...bundleGroupArticles].map(([id, articles]) => [
+        id,
+        [...articles.values()],
+      ])
+    ),
+  };
 }

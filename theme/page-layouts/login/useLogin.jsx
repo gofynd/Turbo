@@ -204,8 +204,10 @@ const useLogin = ({ fpi }) => {
       throw err;
     }
   };
+
   const getAppleUserInfo = ({ idTokenPayload, userNameObj }) => {
     const { sub: user_identifier = null } = idTokenPayload || {};
+
     // Apple only returns name once (first sign-in)
     const first_name = userNameObj?.firstName ?? null;
     const last_name = userNameObj?.lastName ?? null;
@@ -257,6 +259,12 @@ const useLogin = ({ fpi }) => {
     isPassword,
     isOtp,
     showLoginToggleButton,
+    googleClientId,
+    appleId,
+    appleRedirectURI,
+    facebookAppId,
+    social: platformData?.social,
+    handleGoogleError,
     isRegisterEnabled: platformData?.register,
     registerButtonLabel: t("resource.common.go_to_register"),
     loginButtonText: appFeatures?.landing_page?.login_btn_text,
@@ -267,12 +275,6 @@ const useLogin = ({ fpi }) => {
     onLoginToggleClick: handleLoginModeToggle,
     onRegisterButtonClick: handleRegisterClick,
     onLoginFormSubmit: handleLoginFormSubmit,
-    googleClientId,
-    appleId,
-    appleRedirectURI,
-    facebookAppId,
-    social: platformData?.social,
-    handleGoogleError,
     onGoogleCredential,
     onAppleCredential,
     loginWithFacebookMutation,

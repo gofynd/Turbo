@@ -47,8 +47,11 @@ const useCart = (fpi, isActive = true) => {
   const [isCartUpdating, setIsCartUpdating] = useState(false);
   const [modeLoading, setIsModeLoading] = useState(false);
   const [applyRewardResponse, setApplyRewardResponse] = useState(null);
-  const [currentCartId, setCurrentCartId] = useState(null);
+  const [currentCartId, setCurrentCartId] = useState(null); 
   const [isRewardApplied, setIsRewardApplied] = useState(false); // ← NEW
+  
+
+
   const { buy_now_cart_items, cart_items, cart_items_count } = CART || {};
   const {
     breakup_values,
@@ -86,11 +89,11 @@ const useCart = (fpi, isActive = true) => {
   }, [cart_items]);
 
   useEffect(() => {
-      if (cartId && cartId !== currentCartId) {
-        setCurrentCartId(cartId);
-        setIsRewardApplied(false);
-        localStorage.removeItem(`loyaltyToastShown_${cartId}`);
-      }
+    if (cartId && cartId !== currentCartId) {
+      setCurrentCartId(cartId);
+      setIsRewardApplied(false);
+      localStorage.removeItem(`loyaltyToastShown_${cartId}`);
+    }
   }, [cartId]);
 
   const cartItemsByItemId = useMemo(() => {
@@ -128,65 +131,64 @@ const useCart = (fpi, isActive = true) => {
     () => cart_items?.currency?.symbol || "₹",
     [cart_items]
   );
-
-    const onApplyLoyaltyPoints = async (isChecked, showToast = true) => {
-      setIsLoyaltyLoading(true);
-      setIsCartUpdating(true);
-
-      const payload = {
-        includeItems: true,
-        includeBreakup: true,
-        cartId: cartId,
-        redeemPoints: { redeem_points: isChecked },
-      };
-
-      try {
-        const res = await fpi.executeGQL(APPLY_REWARD_POINTS, payload, {
-          skipStoreUpdate: false,
-        });
-
-        const data = res?.data?.applyLoyaltyPoints;
-        setApplyRewardResponse(data);
-
-        if (data?.success) {
-          setIsRewardApplied(isChecked);
-
-          const toastKey = `loyaltyToastShown_${cartId}`;
-
-          if (isChecked) {
-            if (showToast && !localStorage.getItem(toastKey)) {
-              showSnackbar(
-                data.message || "Reward points applied successfully",
-                "success"
-              );
-              localStorage.setItem(toastKey, "true");
-            }
-          } else {
-            if (showToast) {
-              showSnackbar("Reward points removed", "success");
-            }
-            localStorage.removeItem(toastKey);
-          }
-
-          await fetchCartDetails(fpi);
-        } else {
-          let errorMsg = "Could not update reward points";
-          if (Array.isArray(res?.errors) && res.errors.length > 0) {
-            errorMsg = res.errors[0]?.message || errorMsg;
-          } else if (Array.isArray(data?.errors) && data.errors.length > 0) {
-            errorMsg = data.errors[0]?.message || errorMsg;
-          }
-          showSnackbar(errorMsg, "error");
-        }
-      } catch (err) {
-        console.error("ApplyRewardPoints error", err);
-        showSnackbar("Something went wrong", "error");
-      } finally {
-        setIsCartUpdating(false);
-        setIsLoyaltyLoading(false);
-      }
+   
+  
+  const onApplyLoyaltyPoints = async (isChecked, showToast = true) => {
+    setIsLoyaltyLoading(true);
+    setIsCartUpdating(true);
+  
+    const payload = {
+      includeItems: true,
+      includeBreakup: true,
+      cartId: cartId,
+      redeemPoints: { redeem_points: isChecked },
     };
-
+  
+    try {
+      const res = await fpi.executeGQL(APPLY_REWARD_POINTS, payload, {
+        skipStoreUpdate: false,
+      });
+  
+      const data = res?.data?.applyLoyaltyPoints;
+      setApplyRewardResponse(data);
+  
+      if (data?.success) {
+        setIsRewardApplied(isChecked);
+  
+        const toastKey = `loyaltyToastShown_${cartId}`;
+  
+        if (isChecked) {
+          if (showToast && !localStorage.getItem(toastKey)) {
+            showSnackbar(data.message || "Reward points applied successfully", "success");
+            localStorage.setItem(toastKey, "true");
+          }
+        } else {
+          if (showToast) {
+            showSnackbar("Reward points removed", "success");
+          }
+          localStorage.removeItem(toastKey);
+        }
+  
+        await fetchCartDetails(fpi);
+      } else {
+        let errorMsg = "Could not update reward points";
+        if (Array.isArray(res?.errors) && res.errors.length > 0) {
+          errorMsg = res.errors[0]?.message || errorMsg;
+        } else if (Array.isArray(data?.errors) && data.errors.length > 0) {
+          errorMsg = data.errors[0]?.message || errorMsg;
+        }
+        showSnackbar(errorMsg, "error");
+      }
+    } catch (err) {
+      console.error("ApplyRewardPoints error", err);
+      showSnackbar("Something went wrong", "error");
+    } finally {
+      setIsCartUpdating(false);
+      setIsLoyaltyLoading(false);
+    }
+  };
+  
+  
   function updateCartItems(
     event,
     itemDetails,
@@ -202,7 +204,7 @@ const useCart = (fpi, isActive = true) => {
       event.stopPropagation();
     }
     setIsCartUpdating(true);
-
+  
     try {
       const payload = {
         b: true,
@@ -226,9 +228,9 @@ const useCart = (fpi, isActive = true) => {
           operation,
         },
       };
-
+  
       return fpi
-        .executeGQL(CART_UPDATE, payload, { skipStoreUpdate: false })
+        .executeGQL(CART_UPDATE, payload, { skipStoreUpdate: false })       
         .then(async (res) => {
           if (res?.data?.updateCart?.success) {
             if (!moveToWishList) {
@@ -238,10 +240,13 @@ const useCart = (fpi, isActive = true) => {
                 "success"
               );
             }
-            await fetchCartDetails(fpi, { buyNow }); // Wait for fetchCartDetails to complete
+        
+            await fetchCartDetails(fpi, { buyNow });
+
             if (isRewardApplied) {
-              await onApplyLoyaltyPoints(true, false);
+              await onApplyLoyaltyPoints(true, false); 
             }
+        
           } else if (!isSizeUpdate) {
             showSnackbar(
               translateDynamicLabel(res?.data?.updateCart?.message, t) ||
@@ -249,20 +254,20 @@ const useCart = (fpi, isActive = true) => {
               "error"
             );
           }
-          return res?.data?.updateCart;
         })
+        
         .catch((error) => {
           console.error(error);
         })
         .finally(() => {
-          setIsCartUpdating(false); // Small delay to ensure UI updates
+          setIsCartUpdating(false);
         });
     } catch (error) {
       console.log(error);
-      setIsCartUpdating(false); // Ensure it resets if an error occurs synchronously
+      setIsCartUpdating(false);
     }
   }
-
+  
   function gotoCheckout() {
     if (cart_items?.id) {
       navigate(
@@ -312,7 +317,10 @@ const useCart = (fpi, isActive = true) => {
       openLogin();
     }
   };
+
   const [isLoyaltyLoading, setIsLoyaltyLoading] = useState(false);
+
+
 
   function onOpenPromoModal() {
     setIsPromoModalOpen(true);

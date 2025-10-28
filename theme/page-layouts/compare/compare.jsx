@@ -1,11 +1,11 @@
-import React, { useState, Suspense, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import useCompare from "./useCompare";
 import styles from "./compare.less";
 import Compare from "@gofynd/theme-template/page-layouts/compare/compare";
 import "@gofynd/theme-template/page-layouts/compare/compare.css";
 import { PRODUCT_COMPARISON } from "../../queries/compareQuery";
-import useAddToCartModal from "../plp/useAddToCartModal";
 import ScrollToTop from "../../components/scroll-to-top/scroll-to-top";
+import useAddToCartModal from "../plp/useAddToCartModal";
 import { useThemeConfig } from "../../helper/hooks";
 const AddToCart = React.lazy(
   () =>
@@ -27,9 +27,7 @@ function CompareProducts({ fpi }) {
       const width = window?.innerWidth;
       setIsTablet(width >= 768 && width <= 1024);
     };
-
     handleResize();
-
     window?.addEventListener("resize", handleResize);
     return () => {
       window?.removeEventListener("resize", handleResize);

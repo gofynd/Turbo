@@ -53,7 +53,7 @@ function Header({ fpi }) {
     loggedIn,
   } = useHeader(fpi);
 
-  // Destructure everything used from globalConfig (with safe fallbacks)
+  // Destructure values used from globalConfig (with safe defaults)
   const {
     sticky_header = true,
     transparent_header = false,
@@ -70,10 +70,7 @@ function Header({ fpi }) {
   const { openLogin } = useAccounts({ fpi });
   const shouldHide = location.pathname.startsWith("/payment/link/");
   const hideNavList =
-    location.pathname.startsWith("/cart/") &&
-    (typeof show_secondary_header_on_checkout === "boolean"
-      ? show_secondary_header_on_checkout
-      : false);
+    location.pathname.startsWith("/cart/") && show_secondary_header_on_checkout;
   const { activeLocale } = useLocale();
   const i18N_DETAILS = useGlobalStore(fpi.getters.i18N_DETAILS);
   const { supportedLanguages } = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
@@ -154,6 +151,8 @@ function Header({ fpi }) {
     });
 
     sessionStorage.setItem(LOCALE_SYNC_FLAG, validLocale);
+
+    // If your app truly needs a full refresh to pick up the new i18n wiring, reload once.
     window.location.replace(window.location.href);
   }, [activeLocale]); // <-- only when the selected locale changes
 

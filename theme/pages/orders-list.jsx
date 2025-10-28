@@ -11,8 +11,11 @@ import Loader from "../components/loader/loader";
 import ProfileRoot from "../components/profile/profile-root";
 import EmptyState from "../components/empty-state/empty-state";
 import { isLoggedIn } from "../helper/auth-guard";
+import { getGroupedShipmentBags } from "../helper/utils";
+import { useThemeConfig } from "../helper/hooks";
 
 function OrdersList({ fpi }) {
+  const { globalConfig } = useThemeConfig({ fpi });
   const { t } = useGlobalTranslation("translation");
   const { isLoading, orders, handelBuyAgain } = useOrdersListing(fpi);
   const { fulfillment_option } = useGlobalStore(fpi.getters.APP_FEATURES);
@@ -66,6 +69,8 @@ function OrdersList({ fpi }) {
                   <OrderShipment
                     key={index}
                     orderInfo={item}
+                    getGroupedShipmentBags={getGroupedShipmentBags}
+                    globalConfig={globalConfig}
                     onBuyAgainClick={handelBuyAgain}
                     isBuyAgainEligible={true}
                     availableFOCount={fulfillment_option?.count || 1}

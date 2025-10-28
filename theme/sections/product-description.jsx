@@ -33,6 +33,8 @@ import {
   GET_PRODUCT_DETAILS,
   PRODUCT_DETAILS_WITH_SIZE,
   FULFILLMENT_OPTIONS,
+  BUNDLE_ITEMS,
+  BUNDLES_BY_CHILD,
 } from "../queries/pdpQuery";
 import QuantityController from "@gofynd/theme-template/components/quantity-control/quantity-control";
 import "@gofynd/theme-template/components/quantity-control/quantity-control.css";
@@ -45,6 +47,8 @@ import BuyNowIcon from "../assets/images/buy-now.svg";
 import ScaleIcon from "../assets/images/scale.svg";
 import Fulfillment from "../page-layouts/pdp/components/fulfillment/fulfillment";
 import { Skeleton } from "../components/core/skeletons";
+import ProductBundles from "../page-layouts/pdp/components/bundle/product-bundles/product-bundles";
+import BundleItems from "../page-layouts/pdp/components/bundle/bundle-items/bundle-items";
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
@@ -188,6 +192,11 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     fulfillmentOptions,
     setFulfillmentOptions,
     availableFOCount,
+    bundleProducts,
+    isBundlesLoading,
+    bundles,
+    setBundles,
+    fetchBundlesByChild,
   } = useProductDescription({ fpi, slug, size, props, cachedProductData });
 
   const { onUpdateCartItems, isCartUpdating, cartItems } = useCart(fpi, false);
@@ -230,6 +239,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     offsetX: 0,
     offsetY: 0,
   });
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const isMobile = useViewport(0, 768);
   const {
     media,
@@ -381,6 +391,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     // setSelectedSize(size?.value);
     setCurrentSize(size);
     setShowSizeDropdown(false);
+    if (size?.is_bundle_item) {
+      fetchBundlesByChild({ size: size.value });
+    } else {
+      // Clear bundles when switching to non-bundle size
+      setBundles([]);
+    }
   };
 
   // function getReviewRatingInfo() {
@@ -428,7 +444,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       try {
         await navigator.share({
           title: t("resource.product.amazing_product"),
-          text: `${t("resource.section.product.check_out_amazing_product_on")} ${application?.name}`,
+          text: `${t("resource.section.product.check_out")} ${productDetails?.name} ${t("resource.common.on")} ${application?.name}`,
           url: window?.location?.href,
         });
       } catch (error) {
@@ -516,7 +532,20 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     setZoomData((prev) => ({ ...prev, show: false }));
   };
 
+  const handleLightboxStateChange = (isOpen) => {
+    setIsLightboxOpen(isOpen);
+    // Hide zoom when lightbox opens
+    if (isOpen) {
+      setZoomData((prev) => ({ ...prev, show: false }));
+    }
+  };
+
   const onMouseMove = (event) => {
+    // Disable zoom when lightbox is open
+    if (isLightboxOpen) {
+      return;
+    }
+
     const zoomWrapper = event.currentTarget; // This is the image-zoom-wrapper
     const targetImageBox = event.target.closest(".fx-image"); // The specific image under cursor
 
@@ -568,7 +597,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   return (
     <>
-      <div className={`${styles.mainContainer}`}>
+      <div className={styles.mainContainer}>
         <BreadCrumb
           productData={productDetails}
           config={props}
@@ -586,6 +615,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   globalConfig={globalConfig}
                   followed={followed}
                   imgSources={imgSources}
+                  isDataLoad={isPageLoading}
                   removeFromWishlist={removeFromWishlist}
                   addToWishList={addToWishList}
                   isCustomOrder={isMto}
@@ -596,6 +626,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                       ? show_sale_tag?.value
                       : true
                   }
+                  onLightboxStateChange={handleLightboxStateChange}
                 />
               </div>
             </div>
@@ -653,7 +684,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                     <ShareItem
                                       setShowSocialLinks={setShowSocialLinks}
                                       handleShare={() => handleShare()}
-                                      description={`${t("resource.section.product.check_out_amazing_product_on")} ${application?.name}`}
+                                      description={`${t("resource.section.product.check_out")} ${productDetails?.name} ${t("resource.common.on")} ${application?.name}`}
                                     />
                                   )}
                                 </>
@@ -1464,6 +1495,45 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                         </Fragment>
                       );
 
+                    case "extension-binding":
+                      return (
+                        <BlockRenderer
+                          key={`extension-binding_${index}`}
+                          block={block}
+                        />
+                      );
+
+                    case "product_bundles":
+                      return (
+                        <ProductBundles
+                          key={`${slug}_product_bundles`}
+                          fpi={fpi}
+                          isLoading={isBundlesLoading}
+                          currencySymbol={
+                            productPriceBySlug?.price?.currency_symbol ||
+                            priceDataDefault?.effective?.currency_symbol
+                          }
+                          bundles={bundles}
+                          globalConfig={globalConfig}
+                        />
+                      );
+
+                    case "bundle_products":
+                      return (
+                        <BundleItems
+                          key={`${slug}_bundle_products`}
+                          fpi={fpi}
+                          isLoading={isPageLoading}
+                          isBrand={getBlockConfigValue(block, "show_brand")}
+                          currencySymbol={
+                            productPriceBySlug?.price?.currency_symbol ||
+                            priceDataDefault?.effective?.currency_symbol
+                          }
+                          products={bundleProducts}
+                          globalConfig={globalConfig}
+                        />
+                      );
+
                     default:
                       return (
                         <BlockRenderer
@@ -2032,6 +2102,16 @@ export const settings = {
         },
       ],
     },
+    {
+      type: "product_bundles",
+      name: "Bundle Availability",
+      props: [],
+    },
+    {
+      type: "bundle_products",
+      name: "Bundle Product List",
+      props: [],
+    },
   ],
   preset: {
     blocks: [
@@ -2063,15 +2143,17 @@ Component.serverFetch = async ({ fpi, router, props }) => {
 
   try {
     const values = { slug };
+    let sizeToSelect;
+    let bundleProducts = [];
+    let bundles = [];
     if (size) values.size = size;
-
     const query = size ? PRODUCT_DETAILS_WITH_SIZE : GET_PRODUCT_DETAILS;
 
     fpi.custom.setValue("isPdpSsrFetched", true);
     fpi.custom.setValue("isProductNotFound", false);
 
     const response = await fpi.executeGQL(query, values);
-    const { product } = response.data;
+    const { product } = response.data || {};
     if (
       product == null ||
       (typeof product === "object" && Object.keys(product).length === 0)
@@ -2079,23 +2161,16 @@ Component.serverFetch = async ({ fpi, router, props }) => {
       fpi.custom.setValue("isProductNotFound", true);
       return response;
     }
-    if (size) {
-      const sizeToSelect = product?.sizes?.sizes?.find(
-        (item) => item?.value === size
-      );
-      fpi.custom.setValue("ssrSizeToSelect", sizeToSelect);
-      return response;
-    } else {
+    sizeToSelect = product?.sizes?.sizes?.find((item) => item?.value === size);
+    if (!sizeToSelect) {
       // Fallback: auto-select size and call fulfillment
       const sizes = product?.sizes?.sizes || [];
       if (sizes.length > 0) {
         const isMto = product?.custom_order?.is_custom_order || false;
-
         const firstAvailableSize = sizes.find(
           (sizeOption) => sizeOption.quantity > 0 || isMto
         );
-
-        const sizeToSelect = firstAvailableSize || sizes[0];
+        sizeToSelect = firstAvailableSize || sizes[0];
 
         if (sizeToSelect?.value) {
           const payload = {
@@ -2103,18 +2178,47 @@ Component.serverFetch = async ({ fpi, router, props }) => {
             size: sizeToSelect.value.toString(),
             pincode: "",
           };
-
           try {
             await fpi.executeGQL(FULFILLMENT_OPTIONS, payload);
-            fpi.custom.setValue("ssrSizeToSelect", sizeToSelect);
           } catch (e) {
             console.error("FULFILLMENT_OPTIONS failed", e);
-          } finally {
-            return response;
           }
         }
       }
     }
+
+    try {
+      if (sizeToSelect?.value && sizeToSelect?.is_bundle_item) {
+        const bundleRes = await fpi.executeGQL(BUNDLES_BY_CHILD, {
+          slug,
+          size: sizeToSelect?.value,
+        });
+        const { data: bundleData } = bundleRes || {};
+        if (bundleData?.bundlesByChild?.items) {
+          bundles = bundleData.bundlesByChild.items;
+        }
+      }
+
+      if (
+        product.item_type === "virtual_bundle" ||
+        product.item_type === "physical_bundle"
+      ) {
+        const bundleItemsRes = await fpi.executeGQL(BUNDLE_ITEMS, {
+          slug,
+        });
+        const { data: bundleItemsData } = bundleItemsRes || {};
+        if (bundleItemsData?.bundleItems?.items) {
+          bundleProducts = bundleItemsData.bundleItems.items;
+        }
+      }
+    } catch (error) {
+      // Handle bundle fetch errors silently
+    }
+    fpi.custom.setValue("ssrProductInfo", {
+      size: sizeToSelect,
+      bundles,
+      bundleProducts,
+    });
     return response;
   } catch (error) {
     fpi.custom.setValue("isProductNotFound", true);

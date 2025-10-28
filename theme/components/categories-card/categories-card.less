@@ -17,8 +17,8 @@
 
 .categoriesName {
   position: absolute;
-  border: 1px solid @DividerStokes;
-  background-color: @ThemeAccentL5;
+  border: 1px solid @ButtonPrimary;
+  background-color: @ButtonSecondary;
   border-radius: @ButtonRadius;
   padding: 7px 15px;
   text-align: center;
@@ -30,9 +30,10 @@
   cursor: pointer;
   text-overflow: ellipsis;
   overflow: hidden;
-  color: @TextBody;
+  color: @ButtonPrimary;
   &:hover {
-    background: @ThemeAccentL3;
+    background-color: @ButtonPrimary;
+    color: @ButtonSecondary;
   }
   &.top {
     bottom: unset;

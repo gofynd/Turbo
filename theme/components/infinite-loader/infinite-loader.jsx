@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, Suspense } from "react";
 import { isRunningOnClient } from "../../helper/utils";
 
 const Spinner = React.lazy(
@@ -36,7 +36,14 @@ const InfiniteLoader = ({
     <>
       {children}
       {infiniteLoaderEnabled && (
-        <div ref={lastElementRef}>{hasNext && (loader || <Spinner />)}</div>
+        <div ref={lastElementRef}>
+          {hasNext &&
+            (loader || (
+              <Suspense fallback={null}>
+                <Spinner />
+              </Suspense>
+            ))}
+        </div>
       )}
     </>
   );

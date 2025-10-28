@@ -19,8 +19,7 @@ import BankForm from "../components/refund/bank-form";
 import BankVerifiedIcon from "../assets/images/bankVerified.svg";
 import RadioIcon from "../assets/images/radio";
 import CheckmarkFilledIcon from "../assets/images/checkmark-filled.svg";
-import Shimmer from "../components/shimmer/shimmer";
-
+import { Skeleton } from "../components/core/skeletons";
 import { useSnackbar, useViewport } from "../helper/hooks";
 
 const TRANSFER_MODE = {
@@ -219,7 +218,6 @@ function Refund({ fpi }) {
 
     setIsLoading(true);
     setIsAmountLoading(true);
-
     const values = {
       shipmentId: shipmentId || "",
       orderId: orderId || "",
@@ -251,7 +249,6 @@ function Refund({ fpi }) {
   }, [shipmentId, orderId]);
 
   const handleSendOtp = () => {
-    console.log("clcik");
     if (customerPhone) {
       fetchAdditionalData({
         orderId,
@@ -309,9 +306,9 @@ function Refund({ fpi }) {
             </div>
             <RefundDetails
               orderId={orderId}
-              shipmentId={shipmentId}
               refundAmount={refundAmount}
               currencySymbol={currencySymbol}
+              shipmentId={shipmentId}
               isLoading={isAmountLoading}
             />
             {isValidOtp ? (
@@ -455,9 +452,9 @@ function BeneficiarySuccess({
       </div>
       <RefundDetails
         orderId={orderId}
-        shipmentId={shipmentId}
         refundAmount={refundAmount}
         currencySymbol={currencySymbol}
+        shipmentId={shipmentId}
       />
       {/* <div className={styles.beneficiaryDetails}>
         <div className={styles.detailItem}>
@@ -494,7 +491,6 @@ function RefundDetails({
   isLoading = false,
 }) {
   const { t } = useGlobalTranslation("translation");
-
   const isMobile = useViewport(0, 540);
   const hasRefundAmount =
     refundAmount !== null &&
@@ -507,6 +503,7 @@ function RefundDetails({
         <span>{t("resource.refund_order.order_id")}</span>
         <span>{orderId}</span>
       </div>
+
       <div className={styles.refundDetailsItem}>
         <span>{t("resource.common.shipment_id")}</span>
         <span>{shipmentId}</span>
@@ -522,7 +519,7 @@ function RefundDetails({
           </span>
         ) : (
           <span>
-            <Shimmer height="20px" width="35px" />
+            <Skeleton height={20} width="35px" />
           </span>
         )}
       </div> */}
@@ -550,24 +547,19 @@ function OtpValidationForm({
 
   const [otp, setOtp] = useState(Array(4).fill(""));
   const inputs = useRef([]);
-
   const handleChange = (e, index) => {
     const { value } = e.target;
-
     if (value.match(/^\d$/) || value === "") {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-
       const otpString = newOtp.join("");
       setValue("otp", otpString);
-
       if (value && index < 3) {
         inputs.current[index + 1]?.focus();
       }
     }
   };
-
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
       if (otp[index] === "" && index > 0) {
@@ -580,11 +572,9 @@ function OtpValidationForm({
       }
     }
   };
-
   const handlePaste = (e) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text");
-
     if (pastedData.match(/^\d{4}$/)) {
       const newOtp = pastedData.split("").slice(0, 4);
       setOtp(newOtp);
@@ -592,11 +582,9 @@ function OtpValidationForm({
       inputs.current[3]?.focus();
     }
   };
-
   const otpValue = watch("otp");
   const isOtpValid =
     otpValue && otpValue.length === 4 && /^[0-9]{4}$/.test(otpValue);
-
   // Auto focus first input when OTP section becomes visible
   useEffect(() => {
     if (isOtpSend && inputs.current[0]) {
@@ -609,13 +597,13 @@ function OtpValidationForm({
   return (
     <div className={styles.refundOtp}>
       <div className={styles.refundOtpHead}>
-        <h4>
-          {isOtpSend ? t("resource.common.enter_otp") : "Complete Verification"}
-        </h4>
+        {isOtpSend
+          ? t("resource.common.enter_otp")
+          : t("resource.common.complete_verification")}
         <div className={styles.subText}>
           {isOtpSend
             ? ` ${t("resource.refund_order.otp_sent_to_phone")} ${customerPhone || ""} `
-            : "Click on 'Send OTP' to proceed."}
+            : t("resource.refund_order.click_on_send_otp_to_proceed")}
         </div>
       </div>
       {!isOtpSend ? (
@@ -651,8 +639,8 @@ function OtpValidationForm({
             </>
           ) : (
             <>
-              <Shimmer height="48px" width="100%" />
-              <Shimmer height="48px" width="100%" />
+              <Skeleton height="48px" width="100%" />
+              <Skeleton height="48px" width="100%" />
             </>
           )}
         </form>

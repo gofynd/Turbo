@@ -18,8 +18,8 @@
     padding: 7px 12px;
     border-radius: @ButtonRadius;
     justify-content: center;
-    background: @ThemeAccentL5;
-    border: 1px solid @DividerStokes;
+    border: 1px solid @ButtonPrimary;
+    background-color: @ButtonSecondary;
     position: absolute;
     bottom: 12px;
     inset-inline-start: 12px;
@@ -30,20 +30,20 @@
       inset-inline-start: 43px;
       inset-inline-end: 43px;
     }
-    &:hover {
-      background: @ThemeAccentL3;
-    }
     .title {
       text-transform: capitalize;
       text-align: center;
       .text-line-clamp();
-      color: @TextBody;
+      color: @ButtonPrimary;
     }
   }
   &.COLLECTIONS {
     .cardDesc {
       &:hover {
-        background: @ThemeAccentL3;
+        background-color: @ButtonPrimary;
+        .title {
+          color: @ButtonSecondary !important;
+        }
       }
     }
   }

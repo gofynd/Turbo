@@ -13,9 +13,8 @@ import ThreeDIcon from "../../../../assets/images/3D.svg";
 import CarouselNavArrowIcon from "../../../../assets/images/carousel-nav-arrow.svg";
 import ArrowLeftIcon from "../../../../assets/images/arrow-left.svg";
 import ArrowRightIcon from "../../../../assets/images/arrow-right.svg";
-import { useGlobalTranslation } from "fdk-core/utils";
+import { useGlobalTranslation, useGlobalStore, useFPI } from "fdk-core/utils";
 import { Skeleton } from "../../../../components/core/skeletons";
-import { useGlobalStore, useFPI } from "fdk-core/utils";
 
 const LightboxImage = React.lazy(
   () => import("../lightbox-image/lightbox-image")
@@ -37,9 +36,11 @@ function PdpImageGallery({
   handleShare,
   showShareIcon = true,
   imgSources = [],
+  isDataLoad = false,
   // Sale tag props (configuration-based)
   showSaleTag = false,
   displayMode = "carousel", // "carousel", "vertical", or "vertical-with-thumbnail"
+  onLightboxStateChange, // Callback to notify parent about lightbox state
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [enableLightBox, setEnableLightBox] = useState(false);
@@ -53,7 +54,6 @@ function PdpImageGallery({
   const fpi = useFPI();
   const product = useGlobalStore(fpi.getters.PRODUCT);
   const productDetails = product.product_details;
-  
   const handleVerticalContainerWheel = (event) => {
     const container = verticalContainerRef.current;
     if (!container) return;
@@ -96,7 +96,12 @@ function PdpImageGallery({
         classList.remove("remove-scroll");
       }
     }
-  }, [enableLightBox]);
+
+    // Notify parent component about lightbox state change
+    if (onLightboxStateChange) {
+      onLightboxStateChange(enableLightBox);
+    }
+  }, [enableLightBox, onLightboxStateChange]);
 
   useEffect(() => {
     setCurrentImageIndex(0);
@@ -200,7 +205,6 @@ function PdpImageGallery({
   };
 
   const renderTag = () => {
-   
     // Check conditions in order of priority
     if (!productDetails.sizes?.sellable) {
       // Out of stock
@@ -227,7 +231,7 @@ function PdpImageGallery({
           <span>{t("resource.common.sale")}</span>
         </div>
       );
-    } 
+    }
     return null;
   };
   // Render Carousel Mode
@@ -244,26 +248,33 @@ function PdpImageGallery({
         </div>
         <div className={styles.imageBox}>
           {isLoading ? (
-            <Skeleton width={"100%"} aspectRatio={getProductImgAspectRatio(globalConfig)}  />
+            <Skeleton
+              width={"100%"}
+              aspectRatio={getProductImgAspectRatio(globalConfig)}
+            />
           ) : (
-          <PicZoom
-            customClass={styles.imageItem}
-            source={currentMedia.src}
-            type={currentMedia.type}
-            alt={currentMedia.alt}
-            currentIndex={currentImageIndex}
-            sources={imgSources}
-            onClickImage={() => openGalleryFromCarousel()}
-            resumeVideo={resumeVideo}
-            globalConfig={globalConfig}
-            followed={followed}
-            removeFromWishlist={removeFromWishlist}
-            addToWishList={addToWishList}
-            hideImagePreview={hideImagePreview}
-          />
+            <PicZoom
+              customClass={styles.imageItem}
+              source={currentMedia.src}
+              type={currentMedia.type}
+              alt={currentMedia.alt}
+              currentIndex={currentImageIndex}
+              sources={imgSources}
+              onClickImage={openGalleryFromCarousel}
+              resumeVideo={resumeVideo}
+              globalConfig={globalConfig}
+              followed={followed}
+              removeFromWishlist={removeFromWishlist}
+              addToWishList={addToWishList}
+              hideImagePreview={hideImagePreview}
+            />
           )}
-          <div>
-            {renderTag()}
+          <div className={styles.saleTagContainer}>
+            {isDataLoad ? (
+              <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
+            ) : (
+              renderTag()
+            )}
           </div>
           {isCustomOrder && (
             <div className={`${styles.badge} ${styles.b4}`}>
@@ -311,51 +322,55 @@ function PdpImageGallery({
               } ${images && images?.length < 5 ? styles.fitContent : ""}`}
             >
               {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
-              {images.map((item, index) => 
-               isLoading ? (
-                  <Skeleton  width={"100%"} aspectRatio={getProductImgAspectRatio(globalConfig)} />
+              {images.map((item, index) =>
+                isLoading ? (
+                  <Skeleton
+                    width={"100%"}
+                    aspectRatio={getProductImgAspectRatio(globalConfig)}
+                  />
                 ) : (
-                <li
-                  key={index}
-                  onClick={(e) => setMainImage(e, index)}
-                  className={`${styles.thumbnail} ${
-                    item.type === "video" ? styles.flexAlign : ""
-                  } ${currentImageIndex === index ? styles.active : ""}`}
-                  style={{ "--icon-color": iconColor }}
-                >
-                  {item.type === "image" && (
-                    <FyImage
-                      customClass={`${styles["thumbnailList--item"]}`}
-                      src={item?.url}
-                      alt={item?.alt}
-                      aspectRatio={getProductImgAspectRatio(globalConfig)}
-                      sources={[{ width: 100 }]}
-                      globalConfig={globalConfig}
-                      isImageFill={globalConfig?.img_fill}
-                    />
-                  )}
-                  {item.type === "video" && (
-                    <>
-                      {item.url.includes("youtube") ? (
-                        <img
-                          className={`${styles["thumbnailList--item"]} ${styles.videoThumbnail}`}
-                          src={getImageURL(item.url)}
-                          alt={item.alt}
-                        />
-                      ) : (
-                        <video
-                          className={`${styles["thumbnailList--item"]} ${styles.videoThumbnail}`}
-                          src={item?.url}
-                        />
-                      )}
-                      <VideoPlayIcon className={styles.videoPlayIcon} />
-                    </>
-                  )}
-                  {item.type === "3d_model" && (
-                    <ThreeDIcon className={styles.modelIcon} />
-                  )}
-                </li>
-              ))}
+                  <li
+                    key={index}
+                    onClick={(e) => setMainImage(e, index)}
+                    className={`${styles.thumbnail} ${
+                      item.type === "video" ? styles.flexAlign : ""
+                    } ${currentImageIndex === index ? styles.active : ""}`}
+                    style={{ "--icon-color": iconColor }}
+                  >
+                    {item.type === "image" && (
+                      <FyImage
+                        customClass={`${styles["thumbnailList--item"]}`}
+                        src={item?.url}
+                        alt={item?.alt}
+                        aspectRatio={getProductImgAspectRatio(globalConfig)}
+                        sources={[{ width: 100 }]}
+                        globalConfig={globalConfig}
+                        isImageFill={globalConfig?.img_fill}
+                      />
+                    )}
+                    {item.type === "video" && (
+                      <>
+                        {item.url.includes("youtube") ? (
+                          <img
+                            className={`${styles["thumbnailList--item"]} ${styles.videoThumbnail}`}
+                            src={getImageURL(item.url)}
+                            alt={item.alt}
+                          />
+                        ) : (
+                          <video
+                            className={`${styles["thumbnailList--item"]} ${styles.videoThumbnail}`}
+                            src={item?.url}
+                          />
+                        )}
+                        <VideoPlayIcon className={styles.videoPlayIcon} />
+                      </>
+                    )}
+                    {item.type === "3d_model" && (
+                      <ThreeDIcon className={styles.modelIcon} />
+                    )}
+                  </li>
+                )
+              )}
             </ul>
             <button
               type="button"
@@ -390,7 +405,7 @@ function PdpImageGallery({
               alt={item.alt}
               currentIndex={index}
               sources={imgSources}
-              onClickImage={() => openGallery(index)}
+              onClickImage={openGallery.bind(null, index)}
               resumeVideo={resumeVideo}
               globalConfig={globalConfig}
               followed={followed}
@@ -407,8 +422,12 @@ function PdpImageGallery({
                 </span>
               </div>
             )} */}
-            <div>
-            {index === 0 && renderTag()}
+            <div className={styles.saleTagContainer}>
+              {index === 0 && !isDataLoad ? (
+                renderTag()
+              ) : (
+                <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
+              )}
             </div>
             {isCustomOrder && index === 0 && (
               <div className={`${styles.badge} ${styles.b4}`}>
@@ -512,7 +531,7 @@ function PdpImageGallery({
                   alt={item.alt}
                   currentIndex={index}
                   sources={imgSources}
-                  onClickImage={() => openGallery(index)}
+                  onClickImage={openGallery.bind(null, index)}
                   resumeVideo={resumeVideo}
                   globalConfig={globalConfig}
                   followed={followed}
@@ -520,8 +539,15 @@ function PdpImageGallery({
                   addToWishList={addToWishList}
                   hideImagePreview={hideImagePreview}
                 />
-                <div>
-                {index === 0 && renderTag()}
+                <div className={styles.saleTagContainer}>
+                  {index === 0 && !isDataLoad ? (
+                    renderTag()
+                  ) : (
+                    <Skeleton
+                      width={"44px"}
+                      className={styles.skeletonSaleTag}
+                    />
+                  )}
                 </div>
                 {isCustomOrder && index === 0 && (
                   <div className={`${styles.badge} ${styles.b4}`}>
@@ -567,6 +593,7 @@ function PdpImageGallery({
           showShareIcon={showShareIcon}
           showSaleTag={showSaleTag}
           renderTag={renderTag}
+          isDataLoad={isDataLoad}
         />
       </div>
 

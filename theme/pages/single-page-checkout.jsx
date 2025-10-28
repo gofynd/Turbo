@@ -24,9 +24,9 @@ function SingleCheckoutPage({ fpi }) {
   const [showShipment, setShowShipment] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
-  const [mopPayload, setMopPayload] = useState("");
   const [isApiLoading, setIsApiLoading] = useState(true);
   const [checkoutAmount, setCheckoutAmount] = useState(0);
+  const [mopPayload, setMopPayload] = useState("");
   const { onPriceDetailsClick, cartData } = useCart(fpi);
   const steps = [
     { label: t("resource.checkout.address") },
@@ -122,7 +122,6 @@ function SingleCheckoutPage({ fpi }) {
   });
 
   const { isCouponValid, setIsCouponValid, inValidCouponData } = cartCoupon;
-
   useEffect(() => {
     setIsApiLoading(true);
     const payload = {

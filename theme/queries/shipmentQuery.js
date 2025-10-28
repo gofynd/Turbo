@@ -93,6 +93,25 @@ export const GET_SHIPMENT_DETAILS = `query shipment(
           transfer_price
           value_of_good
         }
+        bundle_details {
+          bundle_group_id
+          name
+          slug
+          price_marked
+          price_effective
+          item_id
+          item_type
+          is_base
+          images
+          seller_identifier
+          article_bundle_id
+          bundle_count
+          bundle_article_quantity
+          size
+          return_config {
+            allow_partial_return
+          }
+        }
         item {
           code
           id

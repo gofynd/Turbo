@@ -96,14 +96,6 @@
       "info": "t:resource.settings_schema.header.sticky_header_info"
     },
     {
-      "type": "checkbox",
-      "id": "header_border",
-      "default": true,
-      "category": "Header",
-      "label": "Show border on desktop",
-      "info": "It adds a border below header on desktop devices"
-    },
-    {
       "type": "select",
       "id": "logo_menu_alignment",
       "default": "layout_1",
@@ -129,21 +121,30 @@
       ]
     },
     {
-      "type": "checkbox",
-      "id": "header_mega_menu",
-      "default": false,
+      "type": "radio",
+      "id":"header_mega_menu",
       "category": "t:resource.common.header",
       "label": "t:resource.settings_schema.header.switch_to_mega_menu",
-      "info": "t:resource.settings_schema.header.mega_menu_double_row_required"
-    },
-    {
-      "type": "checkbox",
-      "id": "header_mega_menu_fullwidth",
-      "default": false,
-      "category": "t:resource.common.header",
-      "label": "t:resource.settings_schema.header.use_full_width_mega_menu",
-      "info": "t:resource.settings_schema.header.use_full_width_mega_menu_info"
-    },
+
+      "info": "t:resource.settings_schema.header.mega_menu_double_row_required",
+      "default": "t:resource.common.default",
+      "options": [
+        {
+        "value": "t:resource.common.default",
+        "text": "t:resource.common.default_menu"
+        },
+        {
+        "value": "header_mega_menu",
+        "text": "t:resource.settings_schema.header.switch_to_mega_menu"
+        },
+        {
+        "value": "header_mega_menu_fullwidth",
+        "text": "t:resource.settings_schema.header.use_full_width_mega_menu",
+        "info": "t:resource.settings_schema.header.use_full_width_mega_menu_info"
+        }
+      ] 
+    }
+    ,
     {
       "type": "select",
       "id": "nav_weight",
@@ -217,6 +218,14 @@
     },
     {
       "type": "checkbox",
+      "id": "collapsible_footer_menu",
+      "default": false,
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.show_collapsible_footer_menu",
+       "info": "t:resource.settings_schema.footer.collapsible_footer_menu_info"
+    },
+    {
+      "type": "checkbox",
       "id": "footer_contact_background",
       "default": true,
       "category": "t:resource.settings_schema.common.footer",
@@ -257,21 +266,6 @@
       "max": 100,
       "unit": "px",
       "default": 36
-    },
-    {
-      "type": "checkbox",
-      "id": "footer_contact_background",
-      "default": true,
-      "category": "Footer",
-      "label": "Show Footer Contact Details Background"
-    },
-    {
-      "type": "checkbox",
-      "id": "footer_social_open_same_tab",
-      "default": false,
-      "category": "Footer",
-      "label": "Open social links in same tab",
-      "info": "Check this to open social media links in the same tab instead of a new one."
     },
     {
       "type": "header",
@@ -399,6 +393,14 @@
       "default": false,
       "label": "t:resource.common.fit_image_to_container",
       "info": "t:resource.common.clip_image_to_fit_container"
+    },
+     {
+      "type": "checkbox",
+      "id": "hide_brand_name",
+      "category": "t:resource.settings_schema.common.product_details_modal_settings",
+      "label": "t:resource.settings_schema.product_details_modal_settings.hide_brand_name",
+      "info": "t:resource.settings_schema.product_details_modal_settings.hide_brand_name_info",
+      "default": false
     },
     {
       "type": "color",

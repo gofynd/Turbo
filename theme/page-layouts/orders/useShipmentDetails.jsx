@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import {
   GET_SHIPMENT_DETAILS,
@@ -20,10 +20,11 @@ const useShipmentDetails = (fpi) => {
   const [invoiceDetails, setInvoiceDetails] = useState({});
   const [reasonsList, setReasonsList] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [attempts, setAttempts] = useState(0);
+  const [showPolling, setShowPolling] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(true);
-    try {
+  const fetchShipmentDetails = useCallback(() => {
+    setTimeout(() => {
       const values = {
         shipmentId: params.shipmentId || "",
       };
@@ -31,19 +32,46 @@ const useShipmentDetails = (fpi) => {
       fpi
         .executeGQL(GET_SHIPMENT_DETAILS, values)
         .then((res) => {
-          if (res?.data?.shipment) {
+          if (
+            res?.data?.shipment?.detail &&
+            Object.keys(shipmentDetails).length === 0
+          ) {
             const data = res?.data?.shipment?.detail;
             setShipmentDetails(data);
+            setShowPolling(false);
+            setIsLoading(false);
+          } else {
+            setAttempts((prev) => prev + 1);
           }
         })
-        .finally(() => {
-          setIsLoading(false);
+        .catch((error) => {
+          // eslint-disable-next-line no-console
+          console.log({ error });
+          setAttempts((prev) => prev + 1);
         });
-    } catch (error) {
-      console.log({ error });
-      setIsLoading(false);
+    }, 2000);
+  }, [params.shipmentId, shipmentDetails, fpi]);
+
+  useEffect(() => {
+    // Reset state when shipmentId changes
+    if (params.shipmentId) {
+      setShipmentDetails({});
+      setAttempts(0);
+      setShowPolling(false);
+      setIsLoading(true);
     }
-  }, [location.search]);
+  }, [params.shipmentId, location.search]);
+
+  useEffect(() => {
+    if (params.shipmentId) {
+      if (attempts < 5 && Object.keys(shipmentDetails).length === 0) {
+        fetchShipmentDetails();
+      } else if (attempts >= 5) {
+        setShowPolling(true);
+        setIsLoading(false);
+      }
+    }
+  }, [params.shipmentId, attempts, fetchShipmentDetails, shipmentDetails]);
 
   function getBagReasons(bagObj) {
     setIsLoading(true);
@@ -60,6 +88,7 @@ const useShipmentDetails = (fpi) => {
           setIsLoading(false);
         });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log({ error });
       setIsLoading(false);
     }
@@ -74,6 +103,7 @@ const useShipmentDetails = (fpi) => {
         }
       });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log({ error });
     }
   }
@@ -98,6 +128,7 @@ const useShipmentDetails = (fpi) => {
           );
 
           if (beneficiaryRes?.data?.updateDefaultBeneficiary?.success) {
+            // eslint-disable-next-line no-console
             console.log("Default beneficiary updated successfully");
           } else {
             const errorMessage =
@@ -141,6 +172,7 @@ const useShipmentDetails = (fpi) => {
       }
     } catch (error) {
       setIsLoading(false);
+      // eslint-disable-next-line no-console
       console.log({ error });
     }
   }
@@ -153,6 +185,8 @@ const useShipmentDetails = (fpi) => {
     getBagReasons,
     getInvoice,
     updateShipment,
+    showPolling,
+    attempts,
   };
 };
 

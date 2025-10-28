@@ -23,6 +23,8 @@ import {
 import OrderDeliveryIcon from "../assets/images/order-delivery.svg";
 import CrossIcon from "../assets/images/cross-black.svg";
 import DefaultImage from "../assets/images/default-image.svg";
+import OrderPendingIcon from "../assets/images/order-pending.svg";
+import { getGroupedShipmentBags } from "../helper/utils";
 
 import "@gofynd/theme-template/components/core/modal/modal.css";
 
@@ -30,13 +32,32 @@ const Modal = React.lazy(
   () => import("@gofynd/theme-template/components/core/modal/modal")
 );
 
-export function Component({ blocks, fpi }) {
+function ShipmentPolling() {
+  const { t } = useGlobalTranslation("translation");
+  return (
+    <EmptyState
+      description={t("resource.order.polling.description")}
+      Icon={<OrderPendingIcon />}
+      title={t("resource.order.polling.pending")}
+      btnLink="/profile/orders"
+      btnTitle={t("resource.common.continue_shopping")}
+    />
+  );
+}
+
+export function Component({ blocks, globalConfig, fpi }) {
   const { t } = useGlobalTranslation("translation");
   const navigate = useNavigate();
   const location = useLocation();
   const { fulfillment_option } = useGlobalStore(fpi.getters.APP_FEATURES);
-  const { isLoading, shipmentDetails, invoiceDetails, getInvoice } =
-    useShipmentDetails(fpi);
+  const {
+    isLoading,
+    shipmentDetails,
+    invoiceDetails,
+    getInvoice,
+    showPolling,
+    attempts,
+  } = useShipmentDetails(fpi);
   const [initial, setInitial] = useState(true);
   const [show, setShow] = useState(false);
   const [selectId, setSelectId] = useState("");
@@ -57,15 +78,18 @@ export function Component({ blocks, fpi }) {
     }
   }, [shipmentDetails?.shipment_id, shipmentDetails?.show_download_invoice]);
 
-  const getBag = () => {
-    return shipmentDetails?.bags;
-  };
+  const {
+    bags: shipmentBags,
+    bundleGroups,
+    bundleGroupArticles,
+  } = useMemo(() => {
+    return getGroupedShipmentBags(shipmentDetails?.bags, {
+      isPartialCheck: !!(shipmentDetails?.can_return && !initial),
+    });
+  }, [shipmentDetails?.bags, shipmentDetails?.can_return, initial]);
 
   const getSlicedGroupedShipmentBags = () => {
-    return shipmentDetails?.bags?.slice(
-      0,
-      show ? shipmentDetails?.bags?.length : 1 * 2
-    );
+    return shipmentBags.slice(0, show ? shipmentBags.length : 1 * 2);
   };
 
   const toggelInit = (item) => {
@@ -123,14 +147,19 @@ export function Component({ blocks, fpi }) {
         <Loader />
       ) : (
         <div className="basePageContainer">
-          {!shipmentDetails && (
+          {showPolling && (
+            <div className={`${styles.error}`}>
+              <ShipmentPolling />
+            </div>
+          )}
+          {!shipmentDetails && !showPolling && !isLoading && (
             <div className={`${styles.error}`}>
               <EmptyState
                 title={t("resource.section.order.empty_state_title")}
                 description={t("resource.section.order.empty_state_desc")}
                 btnLink="/profile/orders"
                 btnTitle={t("resource.section.order.emptybtn_title")}
-              ></EmptyState>
+              />
             </div>
           )}
           <div>
@@ -173,6 +202,8 @@ export function Component({ blocks, fpi }) {
                                   <ShipmentItem
                                     key={item.item.brand.name + index}
                                     bag={item}
+                                    bundleGroups={bundleGroups}
+                                    bundleGroupArticles={bundleGroupArticles}
                                     initial={initial}
                                     onChangeValue={onselectreason}
                                     shipment={{
@@ -184,19 +215,20 @@ export function Component({ blocks, fpi }) {
                                     }
                                     selectId={selectId}
                                     type="my-orders"
+                                    globalConfig={globalConfig}
                                   ></ShipmentItem>
                                 </div>
                               )
                             )}
                           </div>
-                          {getBag()?.length > 2 && (
+                          {shipmentBags.length > 2 && (
                             <div>
                               {!show && (
                                 <div
                                   className={`${styles.viewMore} `}
                                   onClick={showMore}
                                 >
-                                  {`+ ${getBag().length - 2} ${t("resource.facets.view_more_lower")}`}
+                                  {`+ ${shipmentBags.length - 2} ${t("resource.facets.view_more_lower")}`}
                                 </div>
                               )}
                               {show && (
@@ -321,7 +353,7 @@ export function Component({ blocks, fpi }) {
                               shipmentInfo={shipmentDetails}
                               changeinit={toggelInit}
                               invoiceDetails={invoiceDetails}
-                              bagLength={getBag()?.length}
+                              bagLength={shipmentBags?.length}
                               availableFOCount={fulfillment_option?.count || 1}
                             ></ShipmentTracking>
                           </div>
@@ -416,33 +448,41 @@ export function Component({ blocks, fpi }) {
                 </h4>
 
                 <div className={styles.mediaContent}>
-                  {mediaLoadError ? (
-                    <div className={styles.mediaErrorContainer}>
-                      <DefaultImage className={styles.modalImage} />
-                    </div>
-                  ) : isVideo(selectedMedia.url) ? (
-                    <video
-                      className={styles.modalVideo}
-                      src={selectedMedia.url}
-                      controls
-                      autoPlay
-                      disablePictureInPicture
-                      onError={handleMediaError}
-                    >
-                      <source src={selectedMedia.url} type="video/mp4" />
-                      <source src={selectedMedia.url} type="video/webm" />
-                      <source src={selectedMedia.url} type="video/ogg" />
-                    </video>
-                  ) : (
-                    <div className={styles.imageContainer}>
-                      <img
-                        className={styles.modalImage}
-                        src={selectedMedia.url}
-                        alt={selectedMedia.desc || "image"}
-                        onError={handleMediaError}
-                      />
-                    </div>
-                  )}
+                  {(() => {
+                    if (mediaLoadError) {
+                      return (
+                        <div className={styles.mediaErrorContainer}>
+                          <DefaultImage className={styles.modalImage} />
+                        </div>
+                      );
+                    }
+                    if (isVideo(selectedMedia.url)) {
+                      return (
+                        <video
+                          className={styles.modalVideo}
+                          src={selectedMedia.url}
+                          controls
+                          autoPlay
+                          disablePictureInPicture
+                          onError={handleMediaError}
+                        >
+                          <source src={selectedMedia.url} type="video/mp4" />
+                          <source src={selectedMedia.url} type="video/webm" />
+                          <source src={selectedMedia.url} type="video/ogg" />
+                        </video>
+                      );
+                    }
+                    return (
+                      <div className={styles.imageContainer}>
+                        <img
+                          className={styles.modalImage}
+                          src={selectedMedia.url}
+                          alt={selectedMedia.desc || "image"}
+                          onError={handleMediaError}
+                        />
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </Modal>

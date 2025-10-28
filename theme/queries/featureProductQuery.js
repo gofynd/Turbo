@@ -164,6 +164,7 @@ export const FEATURE_PRODUCT_DETAILS = `query($slug: String!)  {
     rating_count
     seo {
       description
+      canonical_url
       title
     }
     short_description

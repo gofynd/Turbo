@@ -37,8 +37,8 @@ export async function globalDataResolver({ fpi, applicationID }) {
 export async function pageDataResolver({ fpi, router, themeId }) {
 	const state = fpi.store.getState();
 	const pageValue = getPageSlug(router);
-	 if (!state?.auth?.user_data?.user_id) {
-    fpi.executeGQL(USER_DATA_QUERY);
+  if (!state?.auth?.user_data?.user_id) {
+  	fpi.executeGQL(USER_DATA_QUERY);
   }
 	const APIs = [];
 	const currentPageInStore = fpi.getters.PAGE(state)?.value ?? null;

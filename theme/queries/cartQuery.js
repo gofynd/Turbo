@@ -1,5 +1,6 @@
 const CART_ITEMS = `items {
   bulk_offer
+  item_type
   coupon_message
   custom_order
   discount
@@ -238,15 +239,16 @@ const CART_BREAKUP_VALUES = `breakup_values {
     description
     is_applied
     total
-    points
+     points
     amount
     earn_points
     earn_points_amount
     is_applied
     total_points
     title
-    earn_title
+  earn_title
   }
+ 
   raw {
     cod_charge
     convenience_fee
@@ -263,8 +265,9 @@ const CART_BREAKUP_VALUES = `breakup_values {
     vog
     you_saved
     total_charge
-    engage_amount
+   engage_amount
   }
+   
 }`;
 
 const CART_COUPON = `coupon {

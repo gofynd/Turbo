@@ -1500,6 +1500,25 @@ export const ORDER_BY_ID = `query Order($orderId: String!) {
           updated_at
         }
         delivery_date
+        bundle_details {
+          bundle_group_id
+          name
+          slug
+          price_marked
+          price_effective
+          item_id
+          item_type
+          is_base
+          images
+          seller_identifier
+          article_bundle_id
+          bundle_count
+          bundle_article_quantity
+          size
+          return_config {
+            allow_partial_return
+          }
+        }
         financial_breakup {
           added_to_fynd_cash
           amount_paid

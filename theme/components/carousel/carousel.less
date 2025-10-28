@@ -1,0 +1,94 @@
+@import "../../styles/main.less";
+
+.carousel {
+  position: relative;
+}
+
+.carouselContent {
+  overflow: hidden;
+}
+
+.carouselTrack {
+  display: flex;
+}
+
+carouselTrackHorizontal {
+  margin-left: -1rem;
+}
+
+carouselTrackVertical {
+  flex-direction: column;
+  margin-top: -1rem;
+}
+
+.carouselItem {
+  min-width: 0;
+  flex: 0 0 100%;
+}
+
+carouselItemHorizontal {
+  padding-left: 1rem;
+}
+
+carouselItemVertical {
+  padding-top: 1rem;
+}
+
+.carouselBtn {
+  position: absolute;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  font-size: 48px;
+  transition: background-color 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--dividerStokes, #d4d1d1);
+  &:hover {
+    box-shadow: 0 6px 20px 0 var(--dividerStokes, #c0bebe);
+    background: var(--themeAccentL4, #f8f8f8);
+  }
+}
+
+.carouselBtnIcon {
+  width: 0.8em;
+  height: 0.8em;
+  font-size: inherit;
+}
+
+.carouselPrevBtnHorizontal {
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carouselPrevBtnVertical {
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
+}
+
+.carouselNextBtnHorizontal {
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carouselNextBtnVertical {
+  bottom: -36px;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
