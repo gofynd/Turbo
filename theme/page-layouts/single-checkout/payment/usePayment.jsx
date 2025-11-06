@@ -13,7 +13,7 @@ import {
   UPDATE_CART_BREAKUP,
   VALID_UPI,
 } from "../../../queries/checkoutQuery";
-import { numberWithCommas } from "../../../helper/utils";
+import { numberWithCommas, isRunningOnClient } from "../../../helper/utils";
 import {
   RESEND_OR_CANCEL_PAYMENT,
   CHECK_AND_UPDATE_PAYMENT_STATUS,
@@ -29,6 +29,7 @@ import {
 import { CART_DETAILS, VALIDATE_COUPON } from "../../../queries/cartQuery";
 import { fetchCartDetails } from "../../cart/useCart";
 import { useSnackbar } from "../../../helper/hooks";
+import { REMOVE_COUPON } from "../../../queries/cartQuery";
 
 const usePayment = (fpi) => {
   const { t } = useGlobalTranslation("translation");
@@ -43,6 +44,7 @@ const usePayment = (fpi) => {
   const [showUpiRedirectionModal, setShowUpiRedirectionModal] = useState(false);
   const [partialPaymentOption, setPartialPaymentOption] = useState(undefined);
   const [breakUpValues, setBreakupValues] = useState([]);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const cart = useGlobalStore(fpi.getters.CART) || {};
 
   const { user_id = "" } = useGlobalStore(fpi.getters.USER_DATA) || {};
@@ -55,6 +57,69 @@ const usePayment = (fpi) => {
   const address_id = searchParams.get("address_id");
 
   const disbaleCheckout = useGlobalStore(fpi?.getters?.SHIPMENTS);
+  const customValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
+  const { shared_cart_staff_data = null } = customValue;
+
+  // Restore staff data from sessionStorage on mount if not already in store
+  useEffect(() => {
+    if (
+      isRunningOnClient() &&
+      !shared_cart_staff_data &&
+      fpi?.custom?.setValue
+    ) {
+      try {
+        const storedData = sessionStorage.getItem("shared_cart_staff_data");
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+          // Only restore if we have valid data
+          if (
+            parsedData &&
+            (parsedData.ordering_store || parsedData.selected_staff)
+          ) {
+            fpi.custom.setValue("shared_cart_staff_data", parsedData);
+          }
+        }
+      } catch (error) {
+        // Silently fail if sessionStorage is unavailable or data is corrupted
+      }
+    }
+  }, [fpi, shared_cart_staff_data]);
+
+  // Helper function to build staff data payload (only includes if data exists and is valid)
+  const getStaffPayload = () => {
+    if (!shared_cart_staff_data) {
+      return {};
+    }
+
+    const payload = {};
+
+    // Only include ordering_store if it's a valid string/number
+    if (
+      shared_cart_staff_data.ordering_store !== null &&
+      shared_cart_staff_data.ordering_store !== undefined &&
+      shared_cart_staff_data.ordering_store !== ""
+    ) {
+      payload.ordering_store = shared_cart_staff_data.ordering_store;
+    }
+
+    // Only include staff if selected_staff is valid
+    if (
+      shared_cart_staff_data.selected_staff !== null &&
+      shared_cart_staff_data.selected_staff !== undefined &&
+      shared_cart_staff_data.selected_staff !== ""
+    ) {
+      payload.staff = {
+        _id: shared_cart_staff_data?.selected_staff,
+        employee_code: shared_cart_staff_data?.employee_code || "",
+        first_name: shared_cart_staff_data?.first_name || "",
+        last_name: shared_cart_staff_data?.last_name || "",
+        user: shared_cart_staff_data?.user || "",
+      };
+    }
+
+    return payload;
+  };
+
   const [errorMessage, setErrorMessage] = useState("");
   const [linkPaymentOptions, setLinkPaymentOptions] = useState([]);
   const [linkDataOption, setLinkDataOption] = useState([]);
@@ -65,7 +130,7 @@ const usePayment = (fpi) => {
   const [callOnce, setCallOnce] = useState(false);
   const { showSnackbar } = useSnackbar();
   const navigate = useNavigate();
-
+  const { isCouponValid = true } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
   const handleIsQrCodeLoading = (value) => {
     setIsQrCodeLoading(value);
   };
@@ -98,7 +163,12 @@ const usePayment = (fpi) => {
     const [mrpTotal, subTotal, storeCredit, total] =
       response.data.selectPaymentMode.breakup_values.display;
     setBreakupValues([mrpTotal, subTotal, storeCredit, total]);
-
+    if (!isCouponValid) {
+      await fpi.executeGQL(REMOVE_COUPON, {
+        buyNow: buyNow,
+        removeCouponId: bagData?.breakup_values?.coupon?.uid?.toString(),
+      });
+    }
     const cartPayload = {
       buyNow,
       includeAllItems: true,
@@ -245,6 +315,10 @@ const usePayment = (fpi) => {
 
   const validateCoupon = async (payload) => {
     const res = await fpi.executeGQL(VALIDATE_COUPON, payload);
+    fpi.custom.setValue(
+      "isCouponValid",
+      res?.data?.validateCoupon?.coupon_validity?.valid
+    );
     return res;
   };
 
@@ -409,7 +483,7 @@ const usePayment = (fpi) => {
       amount: Math.abs(store_credit),
     };
     if (mode === "CREDITNOTE") {
-      setIsLoading(true);
+      setIsPaymentLoading(true);
       const { merchant_code, code, aggregator_name } =
         partialPaymentOption?.list[0] || {};
 
@@ -428,6 +502,7 @@ const usePayment = (fpi) => {
           buy_now: buyNow,
           address_id,
           billing_address_id: billing_address_id || address_id,
+          ...getStaffPayload(),
           payment_mode: code ?? "",
           aggregator_name,
           payment_identifier: code ?? "",
@@ -442,7 +517,7 @@ const usePayment = (fpi) => {
       //     return;
       // }
       try {
-        setIsLoading(true);
+        setIsPaymentLoading(true);
         addParamsToLocation({
           ...getQueryParams(),
           aggregator_name: selectedNewCardData.aggregator_name,
@@ -497,6 +572,7 @@ const usePayment = (fpi) => {
               ...selectedCardData,
               is_card_secure: isCardSecure,
             },
+            ...getStaffPayload(),
             enableLinkPaymentOption: enableLinkPaymentOption,
             paymentflow: linkDataOption?.aggregator_details?.find(
               (item) =>
@@ -505,7 +581,7 @@ const usePayment = (fpi) => {
             success: linkOrderInfo?.success,
           });
           if (cardRes?.meta?.requestStatus === "rejected") {
-            setIsLoading(false);
+            setIsPaymentLoading(false);
             return cardRes?.payload;
           }
         } else {
@@ -527,6 +603,7 @@ const usePayment = (fpi) => {
               ...selectedCardData,
               is_card_secure: isCardSecure,
             },
+            ...getStaffPayload(),
             address_id,
             billing_address_id: address_id,
             paymentflow: paymentOption?.aggregator_details?.find(
@@ -542,16 +619,16 @@ const usePayment = (fpi) => {
           };
           const res = await fpi.payment.checkoutPayment(paymentPayload);
           if (res?.meta?.requestStatus === "rejected") {
-            setIsLoading(false);
+            setIsPaymentLoading(false);
             return res?.payload;
           }
           return res?.payload?.data?.checkoutCart;
         }
       } catch (error) {
         console.log(error);
-        setIsLoading(false);
+        setIsPaymentLoading(false);
       } finally {
-        setIsLoading(false);
+        setIsPaymentLoading(false);
       }
     } else if (mode === "CARD") {
       try {
@@ -562,7 +639,7 @@ const usePayment = (fpi) => {
           // openRbiGuidelineDialog = true;
           // return;
         }
-        setIsLoading(true);
+        setIsPaymentLoading(true);
         // const confirmedPayment = fpi.payment.confirmPayment(payload);
         addParamsToLocation({
           ...getQueryParams(),
@@ -581,6 +658,7 @@ const usePayment = (fpi) => {
           ...options,
           aggregator_name: selectedCard.aggregator_name,
           payment_identifier: selectedCard.card_id,
+          ...getStaffPayload(),
           payment: {
             ...selectedCard,
             card_security_code: selectedCardCvv,
@@ -602,16 +680,16 @@ const usePayment = (fpi) => {
         };
         const res = await fpi.payment.checkoutPayment(paymentPayload);
         if (res?.meta?.requestStatus === "rejected") {
-          setIsLoading(false);
+          setIsPaymentLoading(false);
           return res?.payload;
         }
       } catch (error) {
         console.log(error);
       } finally {
-        setIsLoading(false);
+        setIsPaymentLoading(false);
       }
     } else if (mode === "WL") {
-      setIsLoading(true);
+      setIsPaymentLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
         aggregator_name: selectedWallet.aggregator_name,
@@ -661,6 +739,7 @@ const usePayment = (fpi) => {
               order_id: linkOrderInfo?.data?.order_id,
               wallet: selectedWallet.code ?? "",
             },
+            ...getStaffPayload(),
             enableLinkPaymentOption: enableLinkPaymentOption,
             paymentflow: linkDataOption?.aggregator_details?.find(
               (item) => item.aggregator_key === selectedWallet?.aggregator_name
@@ -668,7 +747,7 @@ const usePayment = (fpi) => {
             success: linkOrderInfo?.success,
           })
           .then((res) => {
-            setIsLoading(false);
+            setIsPaymentLoading(false);
             if (res?.error?.message) {
               console.log(res, "error value in usePayment");
               setErrorMessage(res?.payload?.message);
@@ -680,7 +759,7 @@ const usePayment = (fpi) => {
           id: cart_id,
           address_id,
         };
-        setIsLoading(true);
+        setIsPaymentLoading(true);
         const { id, is_redirection, ...options } = payload;
         const currentModeOfPayment = getCurrentModeOfPayment(
           payload,
@@ -697,6 +776,7 @@ const usePayment = (fpi) => {
           paymentflow: paymentOption?.aggregator_details?.find(
             (item) => item.aggregator_key === selectedWallet?.aggregator_name
           ),
+          ...getStaffPayload(),
           buy_now: buyNow,
           ...(isStoreCreditApplied && {
             payment_methods: isStoreCreditApplied
@@ -705,14 +785,14 @@ const usePayment = (fpi) => {
           }),
         };
         fpi.payment.checkoutPayment(paymentPayload).then((res) => {
-          setIsLoading(false);
+          setIsPaymentLoading(false);
           if (res?.error?.message) {
             setErrorMessage(res?.payload?.message);
           }
         });
       }
     } else if (mode === "UPI") {
-      setIsLoading(true);
+      setIsPaymentLoading(true);
       const payload = {
         aggregator_name: selectedUPIData.aggregator_name,
         payment_mode: mode,
@@ -790,6 +870,7 @@ const usePayment = (fpi) => {
               order_id: linkOrderInfo?.data?.order_id,
               vpa: vpa,
             },
+            ...getStaffPayload(),
             enableLinkPaymentOption: enableLinkPaymentOption,
             paymentflow: linkDataOption?.aggregator_details?.find(
               (item) => item.aggregator_key === selectedUPIData?.aggregator_name
@@ -826,6 +907,7 @@ const usePayment = (fpi) => {
                 address_id,
                 billing_address_id: address_id,
                 aggregator_name: selectedUPIData.aggregator_name,
+                ...getStaffPayload(),
                 paymentflow: paymentOption?.aggregator_details?.find(
                   (item) =>
                     item.aggregator_key === selectedUPIData?.aggregator_name
@@ -847,6 +929,7 @@ const usePayment = (fpi) => {
                 address_id,
                 billing_address_id: address_id,
                 aggregator_name: selectedUPIData.aggregator_name,
+                ...getStaffPayload(),
                 paymentflow: paymentOption?.aggregator_details?.find(
                   (item) =>
                     item.aggregator_key === selectedUPIData?.aggregator_name
@@ -866,7 +949,7 @@ const usePayment = (fpi) => {
       } catch (error) {
         console.error("Error during UPI payment process:", error);
       } finally {
-        setIsLoading(false);
+        setIsPaymentLoading(false);
       }
     } else if (mode === "QR") {
       setIsQrCodeLoading(true);
@@ -910,6 +993,7 @@ const usePayment = (fpi) => {
             payment: {
               ...selectedQrData,
             },
+            ...getStaffPayload(),
             data: res?.data,
             enableLinkPaymentOption: enableLinkPaymentOption,
             paymentflow: linkDataOption?.aggregator_details?.find(
@@ -943,6 +1027,7 @@ const usePayment = (fpi) => {
                 },
                 address_id,
                 billing_address_id: address_id,
+                ...getStaffPayload(),
                 paymentflow: paymentOption?.aggregator_details?.find(
                   (item) =>
                     item.aggregator_key === selectedQrData?.aggregator_name
@@ -961,6 +1046,7 @@ const usePayment = (fpi) => {
                 },
                 address_id,
                 billing_address_id: address_id,
+                ...getStaffPayload(),
                 paymentflow: paymentOption?.aggregator_details?.find(
                   (item) =>
                     item.aggregator_key === selectedQrData?.aggregator_name
@@ -976,7 +1062,7 @@ const usePayment = (fpi) => {
         setIsQrCodeLoading(false);
       }
     } else if (mode === "NB") {
-      setIsLoading(true);
+      setIsPaymentLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
         aggregator_name: selectedNB.aggregator_name,
@@ -1032,7 +1118,7 @@ const usePayment = (fpi) => {
             ),
           })
           .then((res) => {
-            setIsLoading(false);
+            setIsPaymentLoading(false);
             if (res?.error?.message) {
               console.log(res, "error value in usePayment");
               setErrorMessage(res?.payload?.message);
@@ -1044,7 +1130,7 @@ const usePayment = (fpi) => {
           id: cart_id,
           address_id,
         };
-        setIsLoading(true);
+        setIsPaymentLoading(true);
         const { id, is_redirection, ...options } = payload;
         const currentModeOfPayment = getCurrentModeOfPayment(
           payload,
@@ -1059,6 +1145,7 @@ const usePayment = (fpi) => {
           payment: selectedNB,
           address_id,
           billing_address_id: address_id,
+          ...getStaffPayload(),
           paymentflow: paymentOption?.aggregator_details?.find(
             (item) => item.aggregator_key === options?.aggregator_name
           ),
@@ -1070,7 +1157,7 @@ const usePayment = (fpi) => {
           }),
         };
         fpi.payment.checkoutPayment(paymentPayload).then((res) => {
-          setIsLoading(false);
+          setIsPaymentLoading(false);
           if (res?.error?.message) {
             setErrorMessage(res?.payload?.message);
           }
@@ -1082,7 +1169,7 @@ const usePayment = (fpi) => {
         id: cart_id,
         address_id,
       };
-      setIsLoading(true);
+      setIsPaymentLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
         aggregator_name: selectedTabData?.aggregator_name,
@@ -1099,6 +1186,7 @@ const usePayment = (fpi) => {
             payment: selectedTabData,
             address_id,
             billing_address_id: address_id,
+            ...getStaffPayload(),
             paymentflow: paymentOption?.aggregator_details?.find(
               (item) => item.aggregator_key === selectedTabData?.aggregator_name
             ),
@@ -1109,7 +1197,7 @@ const usePayment = (fpi) => {
           })
           .then((res) => {
             if (res?.error?.message) {
-              setIsLoading(false);
+              setIsPaymentLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
@@ -1122,6 +1210,7 @@ const usePayment = (fpi) => {
             payment: selectedTabData,
             address_id,
             billing_address_id: address_id,
+            ...getStaffPayload(),
             paymentflow: paymentOption?.aggregator_details?.find(
               (item) => item.aggregator_key === selectedTabData?.aggregator_name
             ),
@@ -1129,13 +1218,13 @@ const usePayment = (fpi) => {
           })
           .then((res) => {
             if (res?.error?.message) {
-              setIsLoading(false);
+              setIsPaymentLoading(false);
               setErrorMessage(res?.payload?.message);
             }
           });
       }
     } else if (mode === "PL") {
-      setIsLoading(true);
+      setIsPaymentLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
         aggregator_name: selectedPayLater.aggregator_name,
@@ -1184,6 +1273,7 @@ const usePayment = (fpi) => {
               order_id: linkOrderInfo?.data?.order_id,
               provider: selectedPayLater?.code ?? "",
             },
+            ...getStaffPayload(),
             success: linkOrderInfo?.success,
             enableLinkPaymentOption: enableLinkPaymentOption,
             paymentflow: linkDataOption?.aggregator_details?.find(
@@ -1192,7 +1282,7 @@ const usePayment = (fpi) => {
             ),
           })
           .then((res) => {
-            setIsLoading(false);
+            setIsPaymentLoading(false);
             if (res?.error?.message) {
               console.log(res, "error value in usePayment");
               setErrorMessage(res?.payload?.message);
@@ -1204,7 +1294,7 @@ const usePayment = (fpi) => {
           id: cart_id,
           address_id,
         };
-        setIsLoading(true);
+        setIsPaymentLoading(true);
 
         const { id, is_redirection, ...options } = payload;
         const currentModeOfPayment = getCurrentModeOfPayment(
@@ -1222,6 +1312,7 @@ const usePayment = (fpi) => {
               payment: selectedPayLater,
               address_id,
               billing_address_id: address_id,
+              ...getStaffPayload(),
               paymentflow: paymentOption?.aggregator_details?.find(
                 (item) =>
                   item.aggregator_key === selectedPayLater?.aggregator_name
@@ -1232,7 +1323,7 @@ const usePayment = (fpi) => {
                 : [],
             })
             .then((res) => {
-              setIsLoading(false);
+              setIsPaymentLoading(false);
               if (res?.error?.message) {
                 setErrorMessage(res?.payload?.message);
               }
@@ -1248,6 +1339,7 @@ const usePayment = (fpi) => {
               payment: selectedPayLater,
               address_id,
               billing_address_id: address_id,
+              ...getStaffPayload(),
               paymentflow: paymentOption?.aggregator_details?.find(
                 (item) =>
                   item.aggregator_key === selectedPayLater?.aggregator_name
@@ -1255,7 +1347,7 @@ const usePayment = (fpi) => {
               buy_now: buyNow,
             })
             .then((res) => {
-              setIsLoading(false);
+              setIsPaymentLoading(false);
               if (res?.error?.message) {
                 setErrorMessage(res?.payload?.message);
               }
@@ -1263,7 +1355,7 @@ const usePayment = (fpi) => {
         }
       }
     } else if (mode === "CARDLESS_EMI") {
-      setIsLoading(true);
+      setIsPaymentLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
         aggregator_name: selectedCardless.aggregator_name,
@@ -1309,7 +1401,7 @@ const usePayment = (fpi) => {
             ),
           })
           .then((res) => {
-            setIsLoading(false);
+            setIsPaymentLoading(false);
             if (res?.error?.message) {
               console.log(res, "error value in usePayment");
               setErrorMessage(res?.payload?.message);
@@ -1336,6 +1428,7 @@ const usePayment = (fpi) => {
           payment: selectedCardless,
           address_id,
           billing_address_id: address_id,
+          ...getStaffPayload(),
           paymentflow: paymentOption?.aggregator_details?.find(
             (item) => item.aggregator_key === selectedCardless?.aggregator_name
           ),
@@ -1347,14 +1440,14 @@ const usePayment = (fpi) => {
           }),
         };
         fpi.payment.checkoutPayment(paymentPayload).then((res) => {
-          setIsLoading(false);
+          setIsPaymentLoading(false);
           if (res?.error?.message) {
             setErrorMessage(res?.payload?.message);
           }
         });
       }
     } else if (mode === "Other") {
-      setIsLoading(true);
+      setIsPaymentLoading(true);
       addParamsToLocation({
         ...getQueryParams(),
         aggregator_name: selectedOtherPayment.aggregator_name,
@@ -1394,6 +1487,7 @@ const usePayment = (fpi) => {
             payment: selectedOtherPayment,
             queryParams: getQueryParams(),
             data: res?.data,
+            ...getStaffPayload(),
             success: linkOrderInfo?.success,
             enableLinkPaymentOption: enableLinkPaymentOption,
             paymentflow: linkDataOption?.aggregator_details?.find(
@@ -1403,7 +1497,7 @@ const usePayment = (fpi) => {
           })
           .then((res) => {
             if (res?.error?.message) {
-              setIsLoading(false);
+              setIsPaymentLoading(false);
               console.log(res, "error value in usePayment");
               setErrorMessage(res?.payload?.message);
             }
@@ -1431,6 +1525,7 @@ const usePayment = (fpi) => {
             payment: selectedOtherPayment,
             address_id,
             billing_address_id: address_id,
+            ...getStaffPayload(),
             paymentflow: paymentOption?.aggregator_details?.find(
               (item) =>
                 item.aggregator_key === selectedOtherPayment?.aggregator_name
@@ -1444,7 +1539,7 @@ const usePayment = (fpi) => {
           })
           .then((res) => {
             if (res?.error?.message) {
-              setIsLoading(false);
+              setIsPaymentLoading(false);
               console.log(
                 res,
                 "response while calling fpi.payment.checkoutPayment"
@@ -1701,6 +1796,7 @@ const usePayment = (fpi) => {
     isApiLoading,
     getLinkOrderDetails,
     creditUpdating,
+    isPaymentLoading,
   };
 };
 

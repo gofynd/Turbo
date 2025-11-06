@@ -7,6 +7,7 @@ import {
 } from "../../queries/sharedCartQuery";
 import { CART_ITEMS_COUNT } from "../../queries/wishlistQuery";
 import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
+import { isRunningOnClient } from "../../helper/utils";
 
 const useSharedCart = (fpi) => {
   const { t } = useGlobalTranslation("translation");
@@ -29,6 +30,39 @@ const useSharedCart = (fpi) => {
       .executeGQL(SHARED_CART_DETAILS, payload)
       .then((res) => {
         setSharedCart(res?.data?.sharedCartDetails?.cart);
+        const metaData =
+          res?.data?.sharedCartDetails?.cart?.shared_cart_details?.meta;
+
+        // Parse meta if it's a JSON string, otherwise use as-is
+        let parsedMeta = metaData;
+        if (typeof metaData === "string") {
+          try {
+            parsedMeta = JSON.parse(metaData);
+          } catch (e) {
+            // eslint-disable-next-line no-console
+            console.warn(
+              "Failed to parse shared_cart_details.meta as JSON:",
+              e
+            );
+            parsedMeta = metaData;
+          }
+        }
+
+        // Store the parsed meta data
+        if (parsedMeta) {
+          fpi.custom.setValue("shared_cart_staff_data", parsedMeta);
+          // Persist to sessionStorage to survive page refreshes
+          if (isRunningOnClient()) {
+            try {
+              sessionStorage.setItem(
+                "shared_cart_staff_data",
+                JSON.stringify(parsedMeta)
+              );
+            } catch (error) {
+              // Silently fail if sessionStorage is unavailable
+            }
+          }
+        }
       })
       .finally(() => {
         setIsLoading(false);
@@ -53,7 +87,7 @@ const useSharedCart = (fpi) => {
           `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
         ] = (
           result[
-          `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
+            `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
           ] || []
         ).concat(item);
         return result;
@@ -84,12 +118,20 @@ const useSharedCart = (fpi) => {
       fpi.executeGQL(UPDATE_CART_WITH_SHARED_ITEMS, payload).then((res) => {
         if (res?.errors) {
           showSnackbar(
-            res?.errors?.message || t('resource.cart.failed_to_action_cart', { action: t(`resource.cart.${action}`)}),
+            res?.errors?.message ||
+              t("resource.cart.failed_to_action_cart", {
+                action: t(`resource.cart.${action}`),
+              }),
             "error"
           );
         } else {
+          // Note: shared_cart_staff_data is already stored in CUSTOM_VALUE store
+          // and will persist automatically. No need to manually preserve it here.
           showSnackbar(
-            successInfo ?? t('resource.cart.cart_action_successful', { action: t(`resource.cart.${action}`)}),
+            successInfo ??
+              t("resource.cart.cart_action_successful", {
+                action: t(`resource.cart.${action}`),
+              }),
             "success"
           );
           navigate("/cart/bag/");

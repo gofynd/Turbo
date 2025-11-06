@@ -26,7 +26,6 @@ export default function ProductBundles({
   currencySymbol,
   globalConfig,
 }) {
-  console.log({ bundles, isLoading });
   const { t } = useGlobalTranslation("translation");
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const { direction } = useLocaleDirection();

@@ -1011,10 +1011,6 @@ export const BUNDLE_ITEMS = `query GetBundleItems($slug: String!, $page: Int = 1
         url
         alt
       }
-      net_quantity {
-        unit
-        value
-      }
       size
       seller_identifiers
       price

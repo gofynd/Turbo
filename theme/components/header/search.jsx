@@ -32,6 +32,7 @@ function Search({
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [hasInputValue, setHasInputValue] = useState(false); // Track if input has text immediately
   const [collectionsData, setCollectionsData] = useState([]);
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -70,6 +71,7 @@ function Search({
     setShowSearch(false);
     setSearchText("");
     setIsSearchFocused(false);
+    setHasInputValue(false);
     if (inputRef?.current) inputRef.current.value = "";
   };
 
@@ -157,19 +159,29 @@ function Search({
     }, 400),
     []
   );
+
+  const handleInputChange = (e) => {
+    // Immediately update hasInputValue for label animation (no delay)
+    setHasInputValue(e.target.value.length > 0);
+    // Call debounced search function
+    setEnterSearchData(e);
+  };
   const redirectToProduct = (link = "/") => {
     if (link) navigate(link);
     closeSearch();
     setSearchText("");
+    setHasInputValue(false);
     if (inputRef?.current) inputRef.current.value = "";
   };
 
   const getProductSearchSuggestions = (results) => results?.slice(0, 4);
   const checkInput = () => {
-    if (searchText) {
+    // Check the actual input value, not the debounced searchText state
+    if (inputRef.current?.value) {
       return;
     }
     setIsSearchFocused(false);
+    setHasInputValue(false);
   };
 
   const getDisplayData = (product) => {
@@ -240,7 +252,7 @@ function Search({
                 placeholder={
                   isDoubleRowHeader ? t("resource.facets.search") : ""
                 }
-                onChange={(e) => setEnterSearchData(e)}
+                onChange={handleInputChange}
                 onKeyUp={(e) =>
                   e.key === "Enter" &&
                   e.target?.value &&
@@ -263,7 +275,7 @@ function Search({
                 id="search-input-label"
                 className={`${styles["search__input--label"]} b1 ${
                   styles.fontBody
-                } ${isSearchFocused ? styles.active : ""}`}
+                } ${isSearchFocused || hasInputValue ? styles.active : ""}`}
                 style={{ display: !isDoubleRowHeader ? "block" : "none" }}
               >
                 {t("resource.facets.search")}

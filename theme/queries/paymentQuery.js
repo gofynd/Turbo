@@ -35,11 +35,22 @@ export const CARD_DETAILS = `query payment(
   payment {
     card_details(cardInfo: $cardInfo, aggregator: $aggregator) {
       data {
-        card_brand,
-        cvv_length,
-        logo,
-        is_enabled,
-        is_card_valid
+    card_brand,
+    country,
+    card_sub_type,
+    bank,
+    user,
+    cvv_length,
+    id,
+    status,
+    card_object,
+    extended_card_type,
+    bank_code,
+    type,
+    is_enabled,
+    is_domestic_card,
+    logo,
+    is_card_valid
       }
       success
     }

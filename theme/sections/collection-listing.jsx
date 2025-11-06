@@ -411,8 +411,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
       fpi
         .executeGQL(
           COLLECTION_DETAILS,
-          { slug: payload?.slug },
-          { skipStoreUpdate: true }
+          { slug: payload?.slug }
         )
         .then((res) => {
           fpi.custom.setValue("customCollection", res?.data?.collection);
@@ -441,7 +440,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
         });
     } else {
       return fpi
-        .executeGQL(COLLECTION_WITH_ITEMS, payload, { skipStoreUpdate: true })
+        .executeGQL(COLLECTION_WITH_ITEMS, payload)
         .then((res) => {
           const { collection, collectionItems } = res?.data || {};
 

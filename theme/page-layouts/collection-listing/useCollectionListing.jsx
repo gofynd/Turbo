@@ -133,7 +133,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
   useEffect(() => {
     if (!isCollectionsSsrFetched && isAlgoliaEnabled) {
       fpi
-        .executeGQL(COLLECTION_DETAILS, { slug }, { skipStoreUpdate: true })
+        .executeGQL(COLLECTION_DETAILS, { slug })
         .then((res) => {
           fpi.custom.setValue("customCollection", res?.data?.collection);
         });
@@ -260,7 +260,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
         });
     } else {
       fpi
-        .executeGQL(COLLECTION_WITH_ITEMS, payload, { skipStoreUpdate: true })
+        .executeGQL(COLLECTION_WITH_ITEMS, payload)
         .then((res) => {
           if (res.errors) {
             throw res.errors[0];

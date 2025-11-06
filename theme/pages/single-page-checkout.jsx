@@ -11,6 +11,7 @@ import useCart from "../page-layouts/cart/useCart";
 import Loader from "../components/loader/loader";
 import useCartCoupon from "../page-layouts/cart/useCartCoupon";
 import useCartComment from "../page-layouts/cart/useCartComment";
+import styles from "../styles/singlePageCheckout.less";
 
 function SingleCheckoutPage({ fpi }) {
   const { t } = useGlobalTranslation("translation");
@@ -236,7 +237,7 @@ function SingleCheckoutPage({ fpi }) {
         showGoogleMap={isCheckoutMap}
         mapApiKey={mapApiKey}
         getDeliveryPromise={(promise) => getFormattedPromise(promise?.iso)}
-        loader={<Loader />}
+        loader={<Loader customClassName={styles.customizedLoader} />}
         buybox={buybox}
         isCartValid={isCartValid}
         redirectPaymentOptions={redirectPaymentOptions}

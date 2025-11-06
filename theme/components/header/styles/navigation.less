@@ -1,8 +1,8 @@
 @import "./desktop-header.less";
 @import "./header.less";
 
-.textEllipsis{
-  flex:1;
+.textEllipsis {
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -86,6 +86,7 @@
         top: 100%;
         padding-top: 4px;
         display: none;
+        z-index: 99;
       }
 
       .l2NavigationList {
@@ -96,6 +97,8 @@
         box-shadow:
           0px 12px 16px rgba(0, 0, 0, 0.16),
           0px 4px 4px rgba(0, 0, 0, 0.15);
+        max-height: 100vh;
+        overflow-y: auto;
         z-index: 100;
         &__item {
           &--container {

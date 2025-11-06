@@ -160,6 +160,8 @@ const useProductDescription = ({
       setIsLoading(true);
       setIsPageLoading(true);
       setCurrentSize(null);
+      setPincodeErrorMessage("");
+
       const values = { slug };
       if (size) {
         values.size = size;

@@ -66,6 +66,10 @@ const useCartCoupon = ({
 
   const validateCoupon = async (payload) => {
     const res = await fpi.executeGQL(VALIDATE_COUPON, payload);
+    fpi.custom.setValue(
+      "isCouponValid",
+      res?.data?.validateCoupon?.coupon_validity?.valid
+    );
     setInvalidCouponData({
       title: res?.data?.validateCoupon?.coupon_validity?.title,
       message: res?.data?.validateCoupon?.coupon_validity?.display_message_en,
