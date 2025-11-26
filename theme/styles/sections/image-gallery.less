@@ -1,12 +1,6 @@
 @import "../main.less";
 
-.nextArrowStyles {
-  right: 20px;
-  inset-inline-start: "unset";
-}
-.prevArrowStyles {
-  left: 20px;
-}
+
 .titleBlock {
   text-align: center;
   padding-inline: @SectionInlinePaddingDesktop;
@@ -66,6 +60,11 @@
   @media @mobile {
     padding: 0;
   }
+  .carouselBtn {
+    @media @tablet {
+      display: none;
+    }
+  }
   :global {
     .slick-list {
       margin: 0 calc(var(--gap) / 2 * -1);
@@ -77,6 +76,21 @@
   &.mobileItemLess {
     @media @mobile {
       padding-inline: @SectionInlinePaddingMobile;
+    }
+  }
+
+  .carouselItem {
+    flex: 0 0 calc(100% / var(--count-desktop, 1));
+
+    @media @mobile {
+      flex: 0 0 calc((100% - 50px) / var(--count-mobile, 1));
+    }
+  }
+  .carouselArrows {
+    display: var(--show-arrow);
+
+    @media @tablet {
+      display: none;
     }
   }
 }

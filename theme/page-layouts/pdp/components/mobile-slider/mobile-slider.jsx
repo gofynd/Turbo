@@ -1,5 +1,5 @@
-import React, { useState, createRef } from "react";
-import Slider from "react-slick";
+import React, { useState, createRef, useMemo } from "react";
+// import Slider from "react-slick";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import { getProductImgAspectRatio } from "../../../../helper/utils";
@@ -12,6 +12,11 @@ import UnmuteIcon from "../../../../assets/images/unmute.svg";
 import AutoRotateIcon from "../../../../assets/images/auto-rotate.svg";
 import WishlistIcon from "../../../../assets/images/wishlist";
 import useLocaleDirection from "../../../../helper/hooks/useLocaleDirection";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "../../../../components/carousel/carousel";
 import { Skeleton } from "../../../../components/core/skeletons";
 
 function MobileSlider({
@@ -64,6 +69,30 @@ function MobileSlider({
     ],
     rtl: isRTL,
   };
+
+  const len = images?.length;
+  const centerModeTablet = len > 1 && !slideTabCentreNone;
+
+  const options = useMemo(() => {
+    return {
+      direction: isRTL ? "rtl" : "ltr",
+      align: "start",
+      loop: len > 1,
+      draggable: false,
+      containScroll: "trimSnaps",
+      slidesToScroll: 1,
+      duration: 25,
+      breakpoints: {
+        "(max-width: 779px)": {
+          align: centerModeTablet ? "center" : "start",
+          loop: len > 1,
+        },
+        "(max-width: 479px)": {
+          align: "start",
+        },
+      },
+    };
+  }, [isRTL, len, centerModeTablet]);
 
   const [showReplayButton, setShowReplayButton] = useState(false);
   const [isMute, setIsMute] = useState(true);
@@ -124,114 +153,121 @@ function MobileSlider({
 
   return (
     <div className={styles.mobilePdpCarouselBox} style={{ maxWidth: "100vw" }}>
-      <Slider
+      {/* <Slider
         {...settings}
         beforeChange={(cur, next) => {
           setCurrentImageIndex(next);
           // setCurrentMedia(next);
         }}
-      >
-        {images?.map((media, i) => (
-          <div className={styles.mediaWrapper} key={i}>
-            {/* Sale Tag for mobile - Configuration-based */}
-            {isDataLoad ? (
-              <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
-            ) : (
-              showSaleTag && renderTag()
-            )}
-            {media.type === "image" && (
-              <div onClick={() => onImageClick()}>
-                <FyImage
-                  src={media?.url}
-                  alt={media?.alt}
-                  isImageFill={globalConfig?.img_fill}
-                  aspectRatio={getProductImgAspectRatio(globalConfig)}
-                  sources={sources}
-                  defer={i > 1}
-                  globalConfig={globalConfig}
-                />
-              </div>
-            )}
-            {media.type === "video" && (
-              <div className={styles.videoContainer}>
-                {media?.url.includes("youtube") && (
-                  <img
-                    src={getImageURL(media.url)}
-                    alt={media.alt}
-                    onClick={() => onImageClick()}
-                  />
+      ></Slider> */}
+
+      <Carousel opts={options}>
+        <CarouselContent>
+          {images?.map((media, i) => (
+            <CarouselItem style={{ flex: "0 0 100%" }}>
+              <div className={styles.mediaWrapper} key={i}>
+                {/* Sale Tag for mobile - Configuration-based */}
+                {isDataLoad ? (
+                  <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
+                ) : (
+                  showSaleTag && renderTag()
                 )}
-                <div className={styles.videoPlayerWrapper}>
-                  {!media?.url.includes("youtube") && (
-                    <div>
-                      <video
-                        ref={videoRef}
-                        id={`mobile-video-player-${i}`}
-                        className={styles.originalVideo}
-                        controls={false}
-                        autoPlay
-                        muted={isMute}
-                        onClick={pauseVideo}
-                        onEnded={onVideoEnd}
-                        // onLoadedData={videoLoaded(i)}
-                      >
-                        <source src={media?.url} type="video/mp4" />
-                      </video>
-                      <div>
-                        {showReplayButton && (
-                          <ReplayIcon
-                            className={`${styles.playerIcon} ${styles.playerReplay}`}
-                            onClick={() => restartVideo(i)}
-                          />
-                        )}
-                        <span
-                          onClick={() => {
-                            toggleMute();
-                          }}
-                        >
-                          {isMute ? (
-                            <MuteIcon
-                              className={`${styles.playerIcon} ${styles.playerMute}`}
-                            />
-                          ) : (
-                            <UnmuteIcon
-                              className={`${styles.playerIcon} ${styles.playerMute}`}
-                            />
-                          )}
-                        </span>
-                      </div>
+                {media.type === "image" && (
+                  <div onClick={() => onImageClick()}>
+                    <FyImage
+                      src={media?.url}
+                      alt={media?.alt}
+                      isImageFill={globalConfig?.img_fill}
+                      aspectRatio={getProductImgAspectRatio(globalConfig)}
+                      sources={sources}
+                      defer={i > 1}
+                      globalConfig={globalConfig}
+                    />
+                  </div>
+                )}
+                {media.type === "video" && (
+                  <div className={styles.videoContainer}>
+                    {media?.url.includes("youtube") && (
+                      <img
+                        src={getImageURL(media.url)}
+                        alt={media.alt}
+                        onClick={() => onImageClick()}
+                      />
+                    )}
+                    <div className={styles.videoPlayerWrapper}>
+                      {!media?.url.includes("youtube") && (
+                        <div>
+                          <video
+                            ref={videoRef}
+                            id={`mobile-video-player-${i}`}
+                            className={styles.originalVideo}
+                            controls={false}
+                            autoPlay
+                            muted={isMute}
+                            onClick={pauseVideo}
+                            onEnded={onVideoEnd}
+                            // onLoadedData={videoLoaded(i)}
+                          >
+                            <source src={media?.url} type="video/mp4" />
+                          </video>
+                          <div>
+                            {showReplayButton && (
+                              <ReplayIcon
+                                className={`${styles.playerIcon} ${styles.playerReplay}`}
+                                onClick={() => restartVideo(i)}
+                              />
+                            )}
+                            <span
+                              onClick={() => {
+                                toggleMute();
+                              }}
+                            >
+                              {isMute ? (
+                                <MuteIcon
+                                  className={`${styles.playerIcon} ${styles.playerMute}`}
+                                />
+                              ) : (
+                                <UnmuteIcon
+                                  className={`${styles.playerIcon} ${styles.playerMute}`}
+                                />
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+                {media.type === "3d_model" && (
+                  <div className={styles.type3dModel}>
+                    <Viewer3D src={media.url} />
+                    <AutoRotateIcon
+                      className={styles.autoRotateIcon}
+                      onClick={() => onImageClick()}
+                    />
+                  </div>
+                )}
+                {isCustomOrder && (
+                  <div className={`${styles.badge} ${styles.b4}`}>
+                    {t("resource.product.made_to_order")}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  aria-label="Wishlist"
+                  className={`${followed ? styles.activeWishlist : ""} ${styles.wishlistIcon}`}
+                  onClick={(e) =>
+                    followed ? removeFromWishlist(e) : addToWishList(e)
+                  }
+                >
+                  <WishlistIcon isActive={followed} />
+                </button>
               </div>
-            )}
-            {media.type === "3d_model" && (
-              <div className={styles.type3dModel}>
-                <Viewer3D src={media.url} />
-                <AutoRotateIcon
-                  className={styles.autoRotateIcon}
-                  onClick={() => onImageClick()}
-                />
-              </div>
-            )}
-            {isCustomOrder && (
-              <div className={`${styles.badge} ${styles.b4}`}>
-                {t("resource.product.made_to_order")}
-              </div>
-            )}
-            <button
-              type="button"
-              aria-label="Wishlist"
-              className={`${followed ? styles.activeWishlist : ""} ${styles.wishlistIcon}`}
-              onClick={(e) =>
-                followed ? removeFromWishlist(e) : addToWishList(e)
-              }
-            >
-              <WishlistIcon isActive={followed} />
-            </button>
-          </div>
-        ))}
-      </Slider>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+
       {/* Removed share icon from slider */}
       {/* {showShareIcon && (
         <ShareIcon

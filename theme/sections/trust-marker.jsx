@@ -1,16 +1,16 @@
 import React, { useMemo } from "react";
 import { FDKLink, BlockRenderer } from "fdk-core/components";
-import Slider from "react-slick";
 import styles from "../styles/trust-marker.less";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
-import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
 
 export function Component({ props, globalConfig, blocks, preset }) {
   const {
@@ -108,85 +108,68 @@ const HorizontalLayout = ({
   colCountMobile,
 }) => {
   const { isRTL } = useLocaleDirection();
-  const slickSetting = useMemo(() => {
-    return {
-      dots: false,
-      arrows: trustMarker?.length > colCount,
-      focusOnSelect: true,
-      infinite: trustMarker?.length > colCount,
-      speed: 600,
-      slidesToShow: Number(colCount),
-      slidesToScroll: Number(colCount),
-      autoplay: false,
-      centerMode: false,
-      centerPadding: trustMarker?.length === 1 ? "0" : "152px",
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      responsive: [
-        {
-          breakpoint: 1023,
-          settings: {
-            arrows: false,
-          },
-        },
-      ],
-      rtl: isRTL,
-    };
-  }, [trustMarker, colCount, colCountMobile]);
 
-  const slickSettingMobile = useMemo(() => {
+  const len = trustMarker?.length ?? 0;
+
+  const options = useMemo(() => {
     return {
-      dots: false,
-      arrows: false,
-      focusOnSelect: true,
-      infinite: trustMarker?.length > Number(colCountMobile),
-      speed: 600,
-      slidesToShow: Number(colCountMobile),
-      slidesToScroll: Number(colCountMobile),
-      autoplay: false,
-      centerMode: false,
-      centerPadding: "50px",
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
-      rtl: isRTL,
+      direction: isRTL ? "rtl" : "ltr",
+      loop: len > colCount,
+      draggable: true,
+      containScroll: "trimSnaps",
+      slidesToScroll: 1,
+      duration: 35,
+      breakpoints: {
+        "(max-width: 480px)": {
+          align: len > colCountMobile ? "center" : "start",
+          loop: len > colCountMobile,
+          slidesToScroll: colCountMobile,
+        },
+        "(min-width: 481px) and (max-width: 1023px)": {
+          align: "start",
+          loop: len > colCount,
+          slidesToScroll: colCount,
+        },
+        "(min-width: 1024px)": {
+          align: "start",
+          loop: len > colCount,
+          slidesToScroll: colCount,
+        },
+      },
     };
-  }, [trustMarker, colCount, colCountMobile]);
+  }, [isRTL, len, colCount, colCountMobile]);
 
   return (
     <div
       className={`remove-horizontal-scroll ${styles.horizontalLayout} ${className}`}
-      style={{
-        "--slick-dots": `${Math.ceil(trustMarker?.length / colCount) * 22 + 10}px`,
-      }}
     >
-      <Slider className={`${styles.hideOnMobile}`} {...slickSetting}>
-        {trustMarker?.map((block, i) =>
-          block?.type !== "trustmarker" ? (
-            <BlockRenderer key={i} block={block} />
-          ) : (
-            <Trustmark
+      <Carousel opts={options}>
+        <CarouselContent>
+          {trustMarker?.map((block, i) => (
+            <CarouselItem
               key={i}
-              className={styles.horizontalItem}
-              props={block.props}
-              globalConfig={globalConfig}
-            />
-          )
-        )}
-      </Slider>
-      <Slider className={`${styles.showOnMobile}`} {...slickSettingMobile}>
-        {trustMarker?.map((block, i) =>
-          block?.type !== "trustmarker" ? (
-            <BlockRenderer key={i} block={block} />
-          ) : (
-            <Trustmark
-              key={i}
-              className={styles.horizontalItem}
-              props={block.props}
-              globalConfig={globalConfig}
-            />
-          )
-        )}
-      </Slider>
+              className={styles.carouselItem}
+              style={{
+                "--count-desktop": colCount,
+                "--count-mobile": colCountMobile,
+              }}
+            >
+              {block?.type !== "trustmarker" ? (
+                <BlockRenderer key={i} block={block} />
+              ) : (
+                <Trustmark
+                  key={i}
+                  className={styles.horizontalItem}
+                  props={block.props}
+                  globalConfig={globalConfig}
+                />
+              )}
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className={styles.carouselBtn} />
+        <CarouselNext className={styles.carouselBtn} />
+      </Carousel>
     </div>
   );
 };

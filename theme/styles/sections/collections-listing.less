@@ -1,11 +1,15 @@
 @import "../main.less";
-.nextArrowStyles {
-  right: 20px;
-  inset-inline-start: "unset";
+
+.carouselBtn {
+  &[disabled] {
+    display: none;
+  }
+
+  @media @tablet {
+    display: none;
+  }
 }
-.prevArrowStyles {
-  left: 20px;
-}
+
 .collections__template {
   .section-title-block {
     text-align: center;
@@ -80,11 +84,12 @@
   @media @mobile {
     padding: 0;
   }
-  :global {
-    .slick-list {
-      margin: 0 calc(var(--gap) / 2 * -1);
+  .carouselBtn {
+    @media @tablet {
+      display: none;
     }
   }
+
   .sliderItem {
     padding-inline: calc(var(--gap) / 2);
   }
@@ -121,15 +126,5 @@
     @media @mobile {
       padding-inline: @SectionInlinePaddingMobile;
     }
-  }
-}
-.hideOnMobile {
-  @media @mobile {
-    display: none;
-  }
-}
-.showOnMobile {
-  @media @mobile-up {
-    display: none;
   }
 }

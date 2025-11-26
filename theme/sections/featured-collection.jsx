@@ -2,14 +2,10 @@ import React, { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import { FDKLink } from "fdk-core/components";
 import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
 import { FEATURED_COLLECTION_PLACEHOLDER_PRODUCTS } from "../helper/constant";
-import Slider from "react-slick";
 import ProductCard from "@gofynd/theme-template/components/product-card/product-card";
 import styles from "../styles/sections/featured-collection.less";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
-import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
-import ArrowRightIcon from "../assets/images/arrow-right.svg";
 import { FEATURED_COLLECTION } from "../queries/collectionsQuery";
 import "@gofynd/theme-template/components/product-card/product-card.css";
 import placeholderBanner from "../assets/images/placeholder/featured-collection-banner.png";
@@ -27,9 +23,12 @@ import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide
 import "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
 
 const Modal = React.lazy(
   () => import("@gofynd/theme-template/components/core/modal/modal")
@@ -128,63 +127,92 @@ export function Component({ props, globalConfig }) {
     return getGallery.slice(0, max_count?.value);
   }, [getGallery, max_count?.value]);
   const { isRTL } = useLocaleDirection();
-  const config = useMemo(() => {
-    const itemCount = Number(item_count?.value ?? 4);
-    const itemLength = imagesForScrollView?.length;
-    return {
-      dots: false,
-      arrows: itemLength > itemCount,
-      infinite: itemLength > itemCount,
-      speed: 300,
-      slidesToShow: itemCount,
-      slidesToScroll: itemCount,
-      swipeToSlide: true,
-      autoplay: false,
-      cssEase: "linear",
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      responsive: [
-        {
-          breakpoint: 780,
-          settings: {
-            arrows: false,
-            slidesToShow: 3,
-            slidesToScroll: 3,
-            dots: false,
-            swipe: true,
-            swipeToSlide: false,
-            touchThreshold: 80,
-            draggable: false,
-            touchMove: true,
-          },
-        },
-      ],
-      rtl: isRTL,
-    };
-  }, [item_count?.value, imagesForScrollView?.length]);
 
-  const configMobile = useMemo(() => {
-    return {
-      dots: false,
-      arrows: false,
-      speed: 300,
-      slidesToShow: itemCountMobile,
-      slidesToScroll: 1,
-      swipeToSlide: true,
-      swipe: true,
-      autoplay: false,
-      infinite: imagesForScrollView?.length > itemCountMobile,
-      cssEase: "linear",
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      centerMode: imagesForScrollView?.length > itemCountMobile,
-      centerPadding: "25px",
-      touchThreshold: 5,
-      draggable: true,
-      touchMove: true,
-      rtl: isRTL,
+  const desktopCount = Number(item_count?.value ?? 4);
+  const [breakpoint, setBreakpoint] = useState("desktop");
+
+  useEffect(() => {
+    const mqDesktop = window.matchMedia("(min-width: 780px)");
+    const mqTablet = window.matchMedia(
+      "(min-width: 480px) and (max-width: 779px)"
+    );
+    const update = () => {
+      if (mqDesktop.matches) setBreakpoint("desktop");
+      else if (mqTablet.matches) setBreakpoint("tablet");
+      else setBreakpoint("mobile");
     };
-  }, [itemCountMobile, imagesForScrollView?.length]);
+    update();
+    mqDesktop.addEventListener("change", update);
+    mqTablet.addEventListener("change", update);
+    return () => {
+      mqDesktop.removeEventListener("change", update);
+      mqTablet.removeEventListener("change", update);
+    };
+  }, []);
+
+  const itemLength = imagesForScrollView.length;
+  const showArrows = breakpoint === "desktop" && itemLength > desktopCount;
+  const loop =
+    itemLength >
+    (breakpoint === "desktop"
+      ? desktopCount
+      : breakpoint === "tablet"
+        ? 3
+        : itemCountMobile);
+
+  const config = useMemo(() => {
+    if (breakpoint === "desktop") {
+      return {
+        align: "start",
+        direction: isRTL ? "rtl" : "ltr",
+        loop,
+        draggable: true,
+        containScroll: "trimSnaps",
+        slidesToScroll: desktopCount,
+        duration: 20,
+      };
+    }
+    if (breakpoint === "tablet") {
+      return {
+        align: "start",
+        direction: isRTL ? "rtl" : "ltr",
+        loop,
+        draggable: false,
+        containScroll: "trimSnaps",
+        slidesToScroll: 3,
+        duration: 20,
+      };
+    }
+
+    return {
+      align: imagesForScrollView.length > itemCountMobile ? "center" : "start",
+      direction: isRTL ? "rtl" : "ltr",
+      loop: imagesForScrollView.length > itemCountMobile,
+      draggable: true,
+      containScroll: "trimSnaps",
+      slidesToScroll: 1,
+      duration: 20,
+    };
+  }, [
+    breakpoint,
+    isRTL,
+    loop,
+    desktopCount,
+    itemCountMobile,
+    imagesForScrollView.length,
+  ]);
+
+  let slideBasis = "100%";
+  let viewportPadding = {};
+
+  if (breakpoint === "desktop") {
+    slideBasis = `${100 / (desktop_layout?.value === "banner_horizontal_scroll" ? 2.5 : Math.max(desktopCount, 1))}%`;
+  } else if (breakpoint === "tablet") {
+    slideBasis = `${100 / 3}%`;
+  } else {
+    slideBasis = `calc((100% - 38px) / ${Math.max(mobile_layout?.value === "banner_horizontal_scroll" ? 1 : itemCountMobile, 1)})`;
+    viewportPadding = { paddingInline: "25px" };
+  }
 
   const bannerConfig = useMemo(
     () => ({
@@ -460,41 +488,34 @@ export function Component({ props, globalConfig }) {
               <div
                 className={`${styles.productSlider} ${styles.bannerSlider} ${imagesForScrollView?.length <= 1 ? styles.lessItem : ""}`}
               >
-                <Slider {...bannerConfig} ref={bannerRef}>
-                  {imagesForScrollView?.map((product, index) => (
-                    <ProductCardItem
-                      key={`${product.uid}_${index}`}
-                      className={styles.sliderItem}
-                      product={product}
-                      imgSrcSet={imgSrcSet}
-                      listingPrice={listingPrice}
-                      props={props}
-                      globalConfig={globalConfig}
-                      showAddToCart={showAddToCart}
-                      actionButtonText={card_cta_text?.value}
-                      followedIdList={followedIdList}
-                      isSlider={true}
-                      handleWishlistToggle={handleWishlistToggle}
-                      handleAddToCart={handleAddToCart}
-                    />
-                  ))}
-                </Slider>
-                {getGallery?.length > 1 && (
-                  <>
-                    <span
-                      className={styles.customPrevBtn}
-                      onClick={() => bannerRef.current.slickPrev()}
-                    >
-                      <ArrowRightIcon />
-                    </span>
-                    <span
-                      className={styles.customNextBtn}
-                      onClick={() => bannerRef.current.slickNext()}
-                    >
-                      <ArrowRightIcon />
-                    </span>
-                  </>
-                )}
+                <Carousel opts={config}>
+                  <CarouselContent>
+                    {imagesForScrollView?.map((product, index) => (
+                      <CarouselItem
+                        key={index}
+                        style={{ flex: `0 0 ${slideBasis}` }}
+                      >
+                        <ProductCardItem
+                          key={`${product.uid}_${index}`}
+                          className={styles.sliderItem}
+                          product={product}
+                          imgSrcSet={imgSrcSet}
+                          listingPrice={listingPrice}
+                          props={props}
+                          globalConfig={globalConfig}
+                          showAddToCart={showAddToCart}
+                          actionButtonText={card_cta_text?.value}
+                          followedIdList={followedIdList}
+                          isSlider={true}
+                          handleWishlistToggle={handleWishlistToggle}
+                          handleAddToCart={handleAddToCart}
+                        />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className={styles.carouselBtn} />
+                  <CarouselNext className={styles.carouselBtn} />
+                </Carousel>
               </div>
               {show_view_all?.value && (
                 <div
@@ -526,48 +547,35 @@ export function Component({ props, globalConfig }) {
                 ? styles.mobileVisible
                 : styles.mobileHidden
             }`}
-            style={{
-              "--slick-dots": `${Math.ceil(imagesForScrollView?.length / item_count?.value) * 22 + 10}px`,
-            }}
           >
-            <Slider className={`${styles.hideOnMobile}`} {...config}>
-              {imagesForScrollView?.map((product, index) => (
-                <ProductCardItem
-                  key={`${product.uid}_${index}`}
-                  className={styles.sliderItem}
-                  product={product}
-                  imgSrcSet={imgSrcSet}
-                  listingPrice={listingPrice}
-                  props={props}
-                  globalConfig={globalConfig}
-                  showAddToCart={showAddToCart}
-                  actionButtonText={card_cta_text?.value}
-                  followedIdList={followedIdList}
-                  isSlider={true}
-                  handleWishlistToggle={handleWishlistToggle}
-                  handleAddToCart={handleAddToCart}
-                />
-              ))}
-            </Slider>
-            <Slider className={`${styles.hideOnTablet}`} {...configMobile}>
-              {imagesForScrollView?.map((product, index) => (
-                <ProductCardItem
-                  key={`${product.uid}_${index}`}
-                  className={styles.sliderItem}
-                  product={product}
-                  imgSrcSet={imgSrcSet}
-                  listingPrice={listingPrice}
-                  props={props}
-                  globalConfig={globalConfig}
-                  showAddToCart={showAddToCart}
-                  actionButtonText={card_cta_text?.value}
-                  followedIdList={followedIdList}
-                  isSlider={true}
-                  handleWishlistToggle={handleWishlistToggle}
-                  handleAddToCart={handleAddToCart}
-                />
-              ))}
-            </Slider>
+            <Carousel opts={config}>
+              <CarouselContent>
+                {imagesForScrollView?.map((product, index) => (
+                  <CarouselItem
+                    key={index}
+                    style={{ flex: `0 0 ${slideBasis}` }}
+                  >
+                    <ProductCardItem
+                      key={`${product.uid}_${index}`}
+                      className={styles.sliderItem}
+                      product={product}
+                      imgSrcSet={imgSrcSet}
+                      listingPrice={listingPrice}
+                      props={props}
+                      globalConfig={globalConfig}
+                      showAddToCart={showAddToCart}
+                      actionButtonText={card_cta_text?.value}
+                      followedIdList={followedIdList}
+                      isSlider={true}
+                      handleWishlistToggle={handleWishlistToggle}
+                      handleAddToCart={handleAddToCart}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className={styles.carouselBtn} />
+              <CarouselNext className={styles.carouselBtn} />
+            </Carousel>
           </div>
         )}
         {getGallery.length > 0 && (

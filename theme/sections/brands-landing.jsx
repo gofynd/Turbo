@@ -152,7 +152,7 @@ Component.serverFetch = async ({ fpi }) => {
   try {
     const values = {
       pageNo: 1,
-      pageSize: 20,
+      pageSize: 12,
     };
     await fpi.executeGQL(BRAND_LISTING, values).then((res) => {
       return res;

@@ -67,13 +67,33 @@
   @media @mobile {
     --gap: 8px;
   }
-  :global {
-    .slick-list {
-      margin: 0 calc(var(--gap) / 2 * -1) !important;
+  .carouselBtn {
+    @media @tablet {
+      display: none;
     }
   }
   .horizontalItem {
     padding: 0 calc(var(--gap) / 2);
+  }
+
+  .carouselItem {
+    @media @mobile-up {
+      flex: 0 0 calc(100% / var(--count-desktop, 1));
+    }
+
+    @media @mobile {
+      flex: 0 0 calc(100% / var(--count-mobile, 1));
+    }
+  }
+
+  .carouselArrows {
+    @media @tablet-extend {
+      display: none;
+    }
+
+    @media @tablet-extend-up {
+      display: var(--show-arrow);
+    }
   }
 }
 

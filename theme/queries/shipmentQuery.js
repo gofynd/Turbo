@@ -32,6 +32,18 @@ export const GET_SHIPMENT_DETAILS = `query shipment(
         type
         is_default
       }
+      ndr_details {
+        show_ndr_form
+        non_editable_address_fields
+        delivery_scheduled_date
+        failure_reason
+        customer_remarks
+        allowed_delivery_window {
+            start_date
+            end_date
+            excluded_dates
+        }
+      }
       bags {
         can_cancel
         can_return
@@ -713,6 +725,17 @@ export const COMPLETE_MEDIA_UPLOAD = `mutation CompleteUpload($completeUploadReq
   }
 }`;
 
+export const DELIVERY_REQUEST_REATTEMPT=`mutation submitDeliveryReattemptRequest(
+  $shipmentId: String!
+  $deliveryReattemptRequestInput: DeliveryReattemptRequestInput
+) {
+  submitDeliveryReattemptRequest(
+    shipmentId: $shipmentId
+    deliveryReattemptRequestInput: $deliveryReattemptRequestInput
+  ) {
+    message
+  }
+}`;
 export const UPDATE_DEFAULT_BENEFICIARY = `mutation updateDefaultBeneficiary(
   $setDefaultBeneficiaryRequestInput: SetDefaultBeneficiaryRequestInput
 ) {

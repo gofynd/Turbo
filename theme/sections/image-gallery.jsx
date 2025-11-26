@@ -1,15 +1,19 @@
 import React, { useMemo } from "react";
+import clsx from "clsx";
 import { FDKLink, BlockRenderer } from "fdk-core/components";
-import Slider from "react-slick";
 import styles from "../styles/sections/image-gallery.less";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import placeholderImage from "../assets/images/placeholder/image-gallery.png";
-import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import { useLocaleDirection } from "../helper/hooks";
 import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 export function Component({ props, blocks = [], globalConfig = {}, preset }) {
   const {
@@ -155,118 +159,74 @@ const HorizontalLayout = ({
   autoplaySpeed,
   in_new_tab,
 }) => {
-  const { isRTL } = useLocaleDirection();
-  const config = useMemo(
-    () => ({
-      dots: false,
-      arrows: items?.length > colCount,
-      infinite: items?.length > colCount,
-      speed: 500,
-      slidesToShow: colCount,
-      slidesToScroll: colCount,
-      swipeToSlide: true,
-      autoplay,
-      autoplaySpeed,
-      cssEase: "linear",
-      // arrows: getGallery.length > item_count?.value || false,
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      responsive: [
-        {
-          breakpoint: 800,
-          settings: {
-            arrows: false,
-            slidesToShow: colCount,
-            slidesToScroll: colCount,
-            swipe: true,
-            swipeToSlide: false,
-            touchThreshold: 80,
-            draggable: false,
-            touchMove: true,
-          },
-        },
-      ],
-      rtl: isRTL,
-    }),
-    [items.length, colCount, autoplay, autoplaySpeed]
-  );
-  const configMobile = useMemo(
-    () => ({
-      dots: false,
-      arrows: false,
-      infinite: items?.length > colCountMobile,
-      slidesToShow: colCountMobile,
+  const { direction } = useLocaleDirection();
+  const len = items?.length;
+
+  const carouselProps = useMemo(() => {
+    const opts = {
+      align: len > colCountMobile ? "center" : "start",
+      direction,
+      loop: len > colCountMobile,
+      draggable: true,
+      containScroll: "trimSnaps",
       slidesToScroll: colCountMobile,
-      speed: 500,
-      autoplay,
-      autoplaySpeed,
-      cssEase: "linear",
-      centerMode: true,
-      centerPadding: "25px",
-      swipe: true,
-      swipeToSlide: false,
-      touchThreshold: 80,
-      draggable: false,
-      touchMove: true,
-      // arrows: getGallery.length > item_count?.value || false,
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-    }),
-    [items?.length, colCountMobile, autoplay, autoplaySpeed]
-  );
+      duration: 30,
+      breakpoints: {
+        "(min-width: 481px)": {
+          align: "start",
+          loop: len > colCount,
+          slidesToScroll: colCount,
+        },
+      },
+    };
+    const plugins = autoplay ? [Autoplay({ delay: autoplaySpeed })] : [];
+    return { opts, plugins };
+  }, [direction, len, colCount, colCountMobile, autoplay, autoplaySpeed]);
 
   return (
     <div
-      className={`remove-horizontal-scroll ${styles.imageSlider} ${items?.length <= colCountMobile ? styles.mobileItemLess : ""} ${className}`}
-      style={{
-        "--slick-dots": `${Math.ceil(items?.length / colCount) * 22 + 10}px`,
-        maxWidth: "100vw",
-      }}
+      className={clsx(
+        "remove-horizontal-scroll",
+        styles.imageSlider,
+        items?.length <= colCountMobile && styles.mobileItemLess,
+        className
+      )}
     >
-      <Slider {...config} className={styles.hideOnMobile}>
-        {items.map((block, index) =>
-          block.type === "gallery" ? (
-            <div key={index} className={styles.sliderItem}>
-              <FDKLink
-                to={block?.props?.link?.value || ""}
-                target={in_new_tab?.value ? "_blank" : "_self"}
-              >
-                <FyImage
-                  customClass={styles.imageGallery}
-                  src={block?.props?.image?.value || placeholderImage}
-                  sources={sources}
-                  globalConfig={globalConfig}
-                  isFixedAspectRatio={false}
-                />
-              </FDKLink>
-            </div>
-          ) : (
-            <BlockRenderer key={index} block={block} />
-          )
-        )}
-      </Slider>
-      <Slider {...configMobile} className={styles.showOnMobile}>
-        {items.map((block, index) =>
-          block.type === "gallery" ? (
-            <div key={index} className={styles.sliderItem}>
-              <FDKLink
-                to={block?.props?.link?.value || ""}
-                target={in_new_tab?.value ? "_blank" : "_self"}
-              >
-                <FyImage
-                  customClass={styles.imageGallery}
-                  src={block?.props?.image?.value || placeholderImage}
-                  sources={sources}
-                  globalConfig={globalConfig}
-                  isFixedAspectRatio={false}
-                />
-              </FDKLink>
-            </div>
-          ) : (
-            <BlockRenderer key={index} block={block} />
-          )
-        )}
-      </Slider>
+      <Carousel {...carouselProps}>
+        <CarouselContent>
+          {items.map((block, index) => (
+            <CarouselItem
+              key={index}
+              className={styles.carouselItem}
+              style={{
+                "--count-desktop": colCount,
+                "--count-mobile": colCountMobile,
+              }}
+            >
+              {block.type === "gallery" ? (
+                <div key={index} className={styles.sliderItem}>
+                  <FDKLink
+                    to={block?.props?.link?.value || ""}
+                    target={in_new_tab?.value ? "_blank" : "_self"}
+                  >
+                    <FyImage
+                      customClass={styles.imageGallery}
+                      src={block?.props?.image?.value || placeholderImage}
+                      sources={sources}
+                      globalConfig={globalConfig}
+                      isFixedAspectRatio={false}
+                    />
+                  </FDKLink>
+                </div>
+              ) : (
+                <BlockRenderer key={index} block={block} />
+              )}
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className={styles.carouselBtn} />
+        <CarouselNext className={styles.carouselBtn} />
+      </Carousel>
     </div>
   );
 };

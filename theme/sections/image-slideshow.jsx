@@ -1,24 +1,25 @@
-import React, { useMemo, useRef, useCallback } from "react";
+import React, { useMemo } from "react";
 import { FDKLink, BlockRenderer } from "fdk-core/components";
-import Slider from "react-slick";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import placeholderDesktop from "../assets/images/placeholder/image-slideshow-desktop.jpg";
-import placeholderMobile from "../assets/images/placeholder/image-slideshow-mobile.jpg";
 import placeholderDesktop1 from "../assets/images/placeholder/slideshow-desktop1.jpg";
 import placeholderDesktop2 from "../assets/images/placeholder/slideshow-desktop2.jpg";
 import placeholderMobile1 from "../assets/images/placeholder/slideshow-mobile1.jpg";
 import placeholderMobile2 from "../assets/images/placeholder/slideshow-mobile2.jpg";
 import styles from "../styles/sections/image-slideshow.less";
 import { useNavigate } from "fdk-core/utils";
-import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import { useWindowWidth } from "../helper/hooks";
 import { getDirectionAdaptiveValue } from "../helper/utils";
 import { DIRECTION_ADAPTIVE_CSS_PROPERTIES } from "../helper/constant";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 const placeholderImagesDesktop = [placeholderDesktop1, placeholderDesktop2];
 const placeholderImagesMobile = [placeholderMobile1, placeholderMobile2];
@@ -61,7 +62,7 @@ function getImgSrcSet(block, globalConfig, index) {
 }
 
 export function Component({ props, blocks, globalConfig, preset }) {
-  const { isRTL } = useLocaleDirection();
+  const { direction } = useLocaleDirection();
   const blocksData = blocks.length === 0 ? preset?.blocks : blocks;
   const {
     autoplay,
@@ -73,39 +74,19 @@ export function Component({ props, blocks, globalConfig, preset }) {
   const shouldOpenInNewTab =
     open_in_new_tab?.value === true || open_in_new_tab?.value === "true";
   const windowWidth = useWindowWidth();
-  const config = useMemo(
-    () => ({
-      speed: 500,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      infinite: blocksData.length > 1,
-      swipeToSlide: true,
-      autoplay: !!autoplay?.value,
-      autoplaySpeed: (slide_interval?.value ?? 3) * 1000,
-      pauseOnHover: true,
-      cssEase: "linear",
-      arrows: blocksData.length > 1,
-      dots: false,
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      responsive: [
-        {
-          breakpoint: 800,
-          settings: {
-            arrows: false,
-            pauseOnHover: false,
-            swipe: blocksData.length > 1,
-            swipeToSlide: false,
-            touchThreshold: 80,
-            draggable: false,
-            touchMove: true,
-          },
-        },
-      ],
-      rtl: isRTL,
-    }),
-    [autoplay?.value, slide_interval?.value, blocksData]
-  );
+
+  const plugins = useMemo(() => {
+    if (autoplay?.value) {
+      return [
+        Autoplay({
+          stopOnMouseEnter: true,
+          stopOnInteraction: false,
+          delay: (slide_interval?.value ?? 3) * 1000,
+        }),
+      ];
+    }
+    return [];
+  }, [autoplay?.value, slide_interval?.value]);
 
   const getOverlayPositionStyles = (block) => {
     const positions = {};
@@ -275,67 +256,74 @@ export function Component({ props, blocks, globalConfig, preset }) {
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 0}px`,
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
-    "--slick-dots": `${blocksData?.length * 22 + 10}px`,
   };
   const navigate = useNavigate();
   return (
-    <section className={`remove-horizontal-scroll`} style={dynamicStyles}>
-      <Slider {...config} initialSlide={0} className={styles.slideshowSlider}>
-        {blocksData?.map((block, index) =>
-          block.type === "gallery" ? (
-            <div className={`${styles.blockItem} ${styles.imageContainer}`}>
-              <FDKLink
-                to={
-                  !block?.props?.button_text?.value &&
-                  block?.props?.redirect_link?.value
-                    ? block?.props?.redirect_link?.value
-                    : ""
-                }
-                target={shouldOpenInNewTab ? "_blank" : "_self"}
-                key={index}
-              >
-                <div
-                  className={styles.overlayItems}
-                  style={getOverlayPositionStyles(block)}
-                >
-                  {block?.props?.image_text?.value}
-                  {block?.props?.button_text?.value && (
-                    <>
-                      <div>
-                        <button
-                          type="button"
-                          className={`fx-button ${styles.cta_button} ${
-                            block?.props?.invert_button_color?.value
-                              ? "btnSecondary"
-                              : "btnPrimary"
-                          }`}
-                          disabled={
-                            !(block?.props?.redirect_link?.value?.length > 0)
-                          }
-                          onClick={() =>
-                            navigate(block?.props?.redirect_link?.value)
-                          }
-                        >
-                          {block?.props?.button_text?.value}
-                        </button>
-                      </div>
-                    </>
-                  )}
+    <section className="remove-horizontal-scroll" style={dynamicStyles}>
+      <Carousel
+        className={styles.slideshowCarousel}
+        opts={{ loop: true, skipSnaps: true, direction }}
+        plugins={plugins}
+      >
+        <CarouselContent>
+          {blocksData?.map((block, index) => (
+            <CarouselItem key={index}>
+              {block.type === "gallery" ? (
+                <div className={`${styles.blockItem} ${styles.imageContainer}`}>
+                  <FDKLink
+                    to={
+                      !block?.props?.button_text?.value &&
+                      block?.props?.redirect_link?.value
+                        ? block?.props?.redirect_link?.value
+                        : ""
+                    }
+                    target={shouldOpenInNewTab ? "_blank" : "_self"}
+                    key={index}
+                  >
+                    <div
+                      className={styles.overlayItems}
+                      style={getOverlayPositionStyles(block)}
+                    >
+                      {block?.props?.image_text?.value}
+                      {block?.props?.button_text?.value && (
+                        <div>
+                          <button
+                            type="button"
+                            className={`fx-button ${styles.cta_button} ${
+                              block?.props?.invert_button_color?.value
+                                ? "btnSecondary"
+                                : "btnPrimary"
+                            }`}
+                            disabled={
+                              !(block?.props?.redirect_link?.value?.length > 0)
+                            }
+                            onClick={() =>
+                              navigate(block?.props?.redirect_link?.value)
+                            }
+                          >
+                            {block?.props?.button_text?.value}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <FyImage
+                      src={getDesktopImage(block, index)}
+                      sources={getImgSrcSet(block, globalConfig, index)}
+                      defer={index < 1 ? false : true}
+                      alt={`slide-${index}`}
+                      isFixedAspectRatio={false}
+                    />
+                  </FDKLink>
                 </div>
-                <FyImage
-                  src={getDesktopImage(block, index)}
-                  sources={getImgSrcSet(block, globalConfig, index)}
-                  defer={index < 1 ? false : true}
-                  alt={`slide-${index}`}
-                  isFixedAspectRatio={false}
-                />
-              </FDKLink>
-            </div>
-          ) : (
-            <BlockRenderer key={index} block={block} />
-          )
-        )}
-      </Slider>
+              ) : (
+                <BlockRenderer block={block} />
+              )}
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className={styles.carouselBtn} />
+        <CarouselNext className={styles.carouselBtn} />
+      </Carousel>
     </section>
   );
 }

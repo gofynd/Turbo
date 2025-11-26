@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "../styles/sections/brand-listing.less";
-import Slider from "react-slick";
 import { FDKLink, BlockRenderer } from "fdk-core/components";
 import { BRAND_DETAILS } from "../queries/brandsQuery";
 import placeholderImage from "../assets/images/placeholder/brand-listing.png";
 import { useGlobalStore, useFPI } from "fdk-core/utils";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
-import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import { useWindowWidth } from "../helper/hooks";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
 
 export function Component({ props, globalConfig, blocks, id: sectionId }) {
   const fpi = useFPI();
@@ -177,64 +177,40 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
       : card?.brand?.banners?.portrait?.url || placeholderImage;
   };
   const { isRTL } = useLocaleDirection();
-  const [slickSetting, setSlickSettings] = useState({
-    dots: false,
-    arrows: brands?.length > per_row?.value,
-    nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-    prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-    focusOnSelect: true,
-    infinite: true,
-    speed: 600,
-    slidesToShow:
-      brands?.length < per_row?.value ? brands?.length : Number(per_row?.value),
-    slidesToScroll:
-      brands?.length < per_row?.value ? brands?.length : Number(per_row?.value),
-    responsive: [
-      {
-        breakpoint: 780,
-        settings: {
-          arrows: false,
-          slidesToShow: brands?.length < 4 ? brands?.length : 3,
-          slidesToScroll: 3,
-          swipe: true,
-          swipeToSlide: false,
-          touchThreshold: 80,
+
+  const len = brands?.length;
+
+  const desktopCount = Math.min(len, Number(per_row?.value ?? 4));
+  const tabletCount = Math.min(len, 3);
+  const mobileCount = logoOnly?.value ? 3 : 1;
+  const centerModeMobile = !(logoOnly?.value || len === 1);
+
+  const options = useMemo(
+    () => ({
+      direction: isRTL ? "rtl" : "ltr",
+      align: "start",
+      loop: true,
+      draggable: true,
+      containScroll: "trimSnaps",
+      slidesToScroll: desktopCount,
+      duration: 35,
+      breakpoints: {
+        "(max-width: 779px)": {
           draggable: false,
-          touchMove: true,
+          slidesToScroll: 3,
+          align: "start",
+          loop: true,
+        },
+        "(max-width: 479px)": {
+          draggable: false,
+          slidesToScroll: mobileCount,
+          align: centerModeMobile ? "center" : "start",
+          loop: true,
         },
       },
-    ],
-    rtl: isRTL,
-  });
-  const [slickSettingsMobile, setSlickSettingsMobile] = useState({
-    dots: false,
-    arrows: false,
-    nextArrow: <SliderRightIcon />,
-    prevArrow: <SliderLeftIcon />,
-    focusOnSelect: true,
-    infinite: true,
-    speed: 600,
-    slidesToShow: logoOnly?.value ? 3 : 1,
-    slidesToScroll: logoOnly?.value ? 3 : 1,
-    centerMode: !(logoOnly?.value || getBrandCount()?.length === 1),
-    centerPadding: "25px",
-    swipe: true,
-    swipeToSlide: false,
-    touchThreshold: 80,
-    draggable: false,
-    touchMove: true,
-    rtl: isRTL,
-  });
-
-  useEffect(() => {
-    if (slickSetting.arrows !== brands?.length > per_row?.value) {
-      setSlickSettings((prevConfig) => ({
-        ...prevConfig,
-        arrows: brands?.length > per_row?.value,
-        dots: false,
-      }));
-    }
-  }, [per_row, brands]);
+    }),
+    [isRTL, desktopCount, mobileCount, centerModeMobile]
+  );
 
   const isDemoBlock = () => {
     const brands =
@@ -339,138 +315,93 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
               styles[`card-count-${per_row?.value}`]
             } ${logoOnly?.value ? styles.logoWidth : ""} ${
               getBrandCount()?.length === 1 ? styles["single-card"] : ""
-            } ${styles.hideOnMobile}`}
+            }`}
             style={{
               "--brand-item": per_row?.value,
               "--slick-dots": `${Math.ceil(getBrandCount()?.length / per_row?.value) * 22 + 10}px`,
             }}
           >
-            <Slider
-              style={{ maxWidth: "100vw" }}
+            <Carousel
+              opts={options}
               className={` ${styles["brands-carousel"]} ${logoOnly?.value ? styles[`logo-carousel`] : ""} ${logoOnly?.value ? styles[`card-count-${per_row?.value}`] : ""} ${getBrandCount()?.length <= per_row?.value || windowWidth <= 480 ? "no-nav" : ""} ${styles[alignment?.value]}`}
-              {...slickSetting}
             >
-              {!isLoading &&
-                getBrandCount()?.map(({ type, data: card }, index) =>
-                  type !== "category" ? (
-                    <BlockRenderer key={index} block={card} />
-                  ) : (
-                    <div key={index} className={styles["custom-slick-slide"]}>
-                      <div
-                        // className={`${styles["animation-fade-up"]}`}
-                        style={{ "--delay": `${150 * (index + 1)}ms` }}
-                      >
-                        <FDKLink to={`/products/?brand=${card?.brand?.slug}`}>
+              <CarouselContent>
+                {!isLoading &&
+                  getBrandCount()?.map(({ type, data: card }, index) => (
+                    <CarouselItem
+                      key={index}
+                      className={styles.carouselItem}
+                      style={{
+                        "--count-desktop":
+                          brands?.length < per_row?.value
+                            ? brands?.length
+                            : Number(per_row?.value),
+                        "--count-mobile": logoOnly?.value ? 3 : 1,
+                        "--count-tablet":
+                          brands?.length < 4 ? brands?.length : 3,
+                      }}
+                    >
+                      {type !== "category" ? (
+                        <BlockRenderer key={index} block={card} />
+                      ) : (
+                        <div
+                          key={index}
+                          className={styles["custom-slick-slide"]}
+                        >
                           <div
-                            data-cardtype="BRANDS"
-                            style={{ position: "relative" }}
-                            // className={`${logoOnly?.value ? styles["logo-carousel"] : ""}`}
+                            // className={`${styles["animation-fade-up"]}`}
+                            style={{ "--delay": `${150 * (index + 1)}ms` }}
                           >
-                            <FyImage
-                              backgroundColor={img_container_bg?.value}
-                              customClass={styles["brand-image"]}
-                              isImageFill={img_fill?.value || logoOnly?.value}
-                              src={getImgSrc(card)}
-                              aspectRatio={logoOnly?.value ? 1 : 0.8}
-                              mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
-                              sources={getImgSrcSet()}
-                            />
-                            {card?.brand?.name?.length > 0 &&
-                              !logoOnly?.value && (
-                                <div className={styles["brand-info"]}>
-                                  <div className={styles["brand-logo"]}>
-                                    <FyImage
-                                      src={
-                                        card?.brand?.logo?.url
-                                          ? card?.brand?.logo?.url
-                                          : placeholderImage
-                                      }
-                                      aspectRatio={1}
-                                      mobileAspectRatio={1}
-                                      sources={[{ width: 100 }]}
-                                    />
-                                  </div>
-                                  <span className={styles["font-body"]}>
-                                    {card?.brand?.name}
-                                  </span>
-                                </div>
-                              )}
+                            <FDKLink
+                              to={`/products/?brand=${card?.brand?.slug}`}
+                            >
+                              <div
+                                data-cardtype="BRANDS"
+                                style={{ position: "relative" }}
+                                // className={`${logoOnly?.value ? styles["logo-carousel"] : ""}`}
+                              >
+                                <FyImage
+                                  backgroundColor={img_container_bg?.value}
+                                  customClass={styles["brand-image"]}
+                                  isImageFill={
+                                    img_fill?.value || logoOnly?.value
+                                  }
+                                  src={getImgSrc(card)}
+                                  aspectRatio={logoOnly?.value ? 1 : 0.8}
+                                  mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
+                                  sources={getImgSrcSet()}
+                                />
+                                {card?.brand?.name?.length > 0 &&
+                                  !logoOnly?.value && (
+                                    <div className={styles["brand-info"]}>
+                                      <div className={styles["brand-logo"]}>
+                                        <FyImage
+                                          src={
+                                            card?.brand?.logo?.url
+                                              ? card?.brand?.logo?.url
+                                              : placeholderImage
+                                          }
+                                          aspectRatio={1}
+                                          mobileAspectRatio={1}
+                                          sources={[{ width: 100 }]}
+                                        />
+                                      </div>
+                                      <span className={styles["font-body"]}>
+                                        {card?.brand?.name}
+                                      </span>
+                                    </div>
+                                  )}
+                              </div>
+                            </FDKLink>
                           </div>
-                        </FDKLink>
-                      </div>
-                    </div>
-                  )
-                )}
-            </Slider>
-          </div>
-          <div
-            className={`${styles["categories-horizontal"]} ${
-              styles[`card-count-${per_row?.value}`]
-            } ${logoOnly?.value ? styles.logoWidth : ""} ${
-              getBrandCount()?.length === 1 ? styles["single-card"] : ""
-            } ${styles.hideOnDesktop}`}
-            style={{
-              "--brand-item": per_row?.value,
-              "--slick-dots": `${Math.ceil(getBrandCount()?.length / per_row?.value) * 22 + 10}px`,
-            }}
-          >
-            <Slider
-              style={{ maxWidth: "100vw" }}
-              className={`${styles["brands-carousel"]} ${logoOnly?.value ? styles[`logo-carousel`] : ""} ${logoOnly?.value ? styles[`card-count-${per_row?.value}`] : ""} ${getBrandCount()?.length <= per_row?.value || windowWidth <= 480 ? "no-nav" : ""} ${styles[alignment?.value]}`}
-              {...slickSettingsMobile}
-            >
-              {!isLoading &&
-                getBrandCount()?.map(({ type, data: card }, index) =>
-                  type !== "category" ? (
-                    <BlockRenderer key={index} block={card} />
-                  ) : (
-                    <div key={index} className={styles["custom-slick-slide"]}>
-                      <div
-                        // className={`${styles["animation-fade-up"]}`}
-                        style={{ "--delay": `${150 * (index + 1)}ms` }}
-                      >
-                        <FDKLink to={`/products/?brand=${card?.brand?.slug}`}>
-                          <div
-                            data-cardtype="BRANDS"
-                            style={{ position: "relative" }}
-                            // className={`${logoOnly?.value ? styles["logo-carousel"] : ""}`}
-                          >
-                            <FyImage
-                              backgroundColor={img_container_bg?.value}
-                              customClass={styles["brand-image"]}
-                              isImageFill={img_fill?.value || logoOnly?.value}
-                              src={getImgSrc(card)}
-                              aspectRatio={logoOnly?.value ? 1 : 0.8}
-                              mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
-                              sources={getImgSrcSet()}
-                            />
-                            {card?.brand?.name?.length > 0 &&
-                              !logoOnly?.value && (
-                                <div className={styles["brand-info"]}>
-                                  <div className={styles["brand-logo"]}>
-                                    <FyImage
-                                      src={
-                                        card?.brand?.logo?.url
-                                          ? card?.brand?.logo?.url
-                                          : placeholderImage
-                                      }
-                                      aspectRatio={1}
-                                      mobileAspectRatio={1}
-                                      sources={[{ width: 100 }]}
-                                    />
-                                  </div>
-                                  <span className={styles["font-body"]}>
-                                    {card?.brand?.name}
-                                  </span>
-                                </div>
-                              )}
-                          </div>
-                        </FDKLink>
-                      </div>
-                    </div>
-                  )
-                )}
-            </Slider>
+                        </div>
+                      )}
+                    </CarouselItem>
+                  ))}
+              </CarouselContent>
+              <CarouselPrevious className={styles.carouselBtn} />
+              <CarouselNext className={styles.carouselBtn} />
+            </Carousel>
           </div>
         </>
       )}

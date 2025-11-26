@@ -53,18 +53,16 @@
 }
 
 .categoryListingSlider {
-  .slick-next {
-    right: 10px !important;
-    inset-inline-start: unset !important;
-  }
-  .slick-prev {
-    left: 10px !important;
-  }
+  .carouselItem {
+    flex: 0 0 calc((100%) / var(--count-desktop, 1));
 
-  .slick-prev::before,
-  .slick-next::before {
-    display: none !important;
-    content: none !important;
+    @media @tablet-strict {
+      flex: 0 0 calc(100% / 3);
+    }
+
+    @media @mobile {
+      flex: 0 0 calc((100% - 50px) / var(--count-mobile, 1));
+    }
   }
 }
 
@@ -79,9 +77,9 @@
     --gap: 12px;
     padding: 0;
   }
-  :global {
-    .slick-list {
-      margin: 0 calc(var(--gap) / 2 * -1);
+  .carouselBtn {
+    @media @tablet {
+      display: none;
     }
   }
   .sliderItem {

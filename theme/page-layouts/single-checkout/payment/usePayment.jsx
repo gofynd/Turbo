@@ -528,7 +528,7 @@ const usePayment = (fpi) => {
             createOrderUserRequestInput: {
               currency: "INR",
               payment_link_id: id,
-              failure_callback_url: window.location.origin + "payment/link",
+              failure_callback_url: window.location.origin + "/payment/link",
               success_callback_url: window.location.origin + "/order-tracking",
               payment_methods: {
                 meta: {
@@ -702,7 +702,7 @@ const usePayment = (fpi) => {
           createOrderUserRequestInput: {
             currency: "INR",
             payment_link_id: id,
-            failure_callback_url: window.location.origin + "payment/link",
+            failure_callback_url: window.location.origin + "/payment/link",
             success_callback_url: window.location.origin + "/order-tracking",
             payment_methods: {
               meta: {
@@ -833,7 +833,7 @@ const usePayment = (fpi) => {
             createOrderUserRequestInput: {
               currency: "INR",
               payment_link_id: id,
-              failure_callback_url: window.location.origin + "payment/link",
+              failure_callback_url: window.location.origin + "/payment/link",
               success_callback_url: window.location.origin + "/order-tracking",
               payment_methods: {
                 meta: {
@@ -966,7 +966,7 @@ const usePayment = (fpi) => {
             createOrderUserRequestInput: {
               currency: "INR",
               payment_link_id: id,
-              failure_callback_url: window.location.origin + "payment/link",
+              failure_callback_url: window.location.origin + "/payment/link",
               success_callback_url: window.location.origin + "/order-tracking",
               payment_methods: {
                 meta: {
@@ -1075,7 +1075,7 @@ const usePayment = (fpi) => {
           createOrderUserRequestInput: {
             currency: "INR",
             payment_link_id: id,
-            failure_callback_url: window.location.origin + "payment/link",
+            failure_callback_url: window.location.origin + "/payment/link",
             success_callback_url: window.location.origin + "/order-tracking",
             payment_methods: {
               meta: {
@@ -1237,7 +1237,7 @@ const usePayment = (fpi) => {
           createOrderUserRequestInput: {
             currency: "INR",
             payment_link_id: id,
-            failure_callback_url: window.location.origin + "payment/link",
+            failure_callback_url: window.location.origin + "/payment/link",
             success_callback_url: window.location.origin + "/order-tracking",
             payment_methods: {
               meta: {
@@ -1368,7 +1368,7 @@ const usePayment = (fpi) => {
           createOrderUserRequestInput: {
             currency: "INR",
             payment_link_id: id,
-            failure_callback_url: window.location.origin + "payment/link",
+            failure_callback_url: window.location.origin + "/payment/link",
             success_callback_url: window.location.origin + "/order-tracking",
             payment_methods: {
               meta: {
@@ -1460,7 +1460,7 @@ const usePayment = (fpi) => {
           createOrderUserRequestInput: {
             currency: "INR",
             payment_link_id: id,
-            failure_callback_url: window.location.origin + "payment/link",
+            failure_callback_url: window.location.origin + "/payment/link",
             success_callback_url: window.location.origin + "/order-tracking",
             payment_methods: {
               meta: {

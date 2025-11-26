@@ -1,11 +1,4 @@
 @import "../main.less";
-.nextArrowStyles {
-  right: 20px;
-  inset-inline-start: "unset";
-}
-.prevArrowStyles {
-  left: 20px;
-}
 .blogTitleWrapper {
   text-align: center;
   padding-inline: @SectionInlinePaddingMobile;
@@ -52,9 +45,31 @@
     position: relative;
     padding: 0 calc(var(--gap) / 2);
   }
-  :global {
-    .slick-list {
-      margin: 0 calc(var(--gap) / 2 * -1);
+  .carouselBtn {
+    @media @tablet {
+      display: none;
+    }
+  }
+
+  .carouselItem {
+    flex: 0 0 calc(100% / 3);
+
+    @media @mobile {
+      flex: 0 0 100%;
+    }
+
+    @media @tablet-strict {
+      flex: 0 0 calc(100% / 2);
+    }
+  }
+
+  .carouselArrows {
+    @media @tablet {
+      display: none;
+    }
+
+    @media @desktop {
+      display: var(--show-arrow);
     }
   }
 }

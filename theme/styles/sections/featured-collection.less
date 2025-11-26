@@ -1,13 +1,5 @@
 @import "../main.less";
 
-.nextArrowStyles {
-  right: 20px;
-  inset-inline-start: "unset";
-}
-.prevArrowStyles {
-  left: 20px;
-}
-
 .addToCartContainer {
   @media @desktop {
     max-width: unset !important;
@@ -173,30 +165,9 @@
     padding: 0;
   }
 
-  :global {
-    .slick-track {
-      display: flex !important;
-      justify-content: center;
-      align-items: stretch !important;
-    }
-    .slick-slide {
-      height: auto !important;
-      & > *,
-      & > * > * {
-        height: 100%;
-      }
-    }
-    .slick-list {
-      margin: 0 calc(var(--gap) / 2 * -1);
-    }
-    .slick-track {
-      display: flex;
-    }
-    .slick-slide {
-      height: auto;
-      & > * {
-        height: 100%;
-      }
+  .carouselBtn {
+    @media @tablet {
+      display: none;
     }
   }
 
@@ -246,6 +217,14 @@
     }
   }
 
+  .slidePeek {
+    flex: 0 0 calc(100% / 2.5);
+  }
+
+  .slidePeekMobile {
+    flex: 0 0 90%;
+  }
+
   .sliderItem {
     padding: 0 calc(var(--gap) / 2);
     height: 100%;
@@ -288,37 +267,40 @@
     @media @tablet {
       margin-top: 24px;
     }
-  }
-}
 
-.customNextBtn,
-.customPrevBtn {
-  width: 48px;
-  height: 48px;
-  position: absolute;
-  top: 45%;
-  inset-inline-end: 4rem;
-  transform: translateY(-50%);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: @PageBackground;
-  border: 1px solid @TextHeading;
-  @media @tablet {
-    display: none;
-  }
-  svg > path {
-    stroke: @TextHeading;
-  }
-}
-.customNextBtn {
-  right: min(5vw, 72px);
-}
+    .customNextBtn,
+    .customPrevBtn {
+      width: 48px;
+      height: 48px;
+      position: absolute;
+      top: 45%;
+      inset-inline-end: 4rem;
+      transform: translateY(-50%);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: @PageBackground;
+      border: 1px solid @TextHeading;
+      border-radius: 0;
 
-.customPrevBtn {
-  left: 25px;
-  transform: translateY(-50%) rotate(180deg);
+      @media @tablet {
+        display: none;
+      }
+
+      svg {
+        fill: @TextHeading;
+      }
+    }
+    .customNextBtn {
+      right: min(5vw, 72px);
+    }
+
+    .customPrevBtn {
+      left: 25px;
+      // transform: translateY(-50%) rotate(180deg);
+    }
+  }
 }
 
 .placeholderContainer {

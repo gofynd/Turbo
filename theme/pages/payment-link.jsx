@@ -111,7 +111,7 @@ function PaymentLink({ fpi }) {
             showPayment={true}
             setShowPayment={setShowPayment}
             showPaymentOptions={true}
-            loader={memoizedLoader}
+            loader={<Loader customClassName={styles.customizedLoader} />}
           />
         </div>
       ) : (

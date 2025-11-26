@@ -1,5 +1,9 @@
 @import "../../../styles/main.less";
 
+.iconAndTextCont {
+  display: flex;
+  flex-direction: row;
+}
 .error {
   background-color: @PageBackground;
   display: flex;
@@ -53,7 +57,7 @@
     flex-direction: row;
     align-items: center;
     gap: 16px;
-    padding: 20px 0;
+    padding: 20px 0px 8px 0px;
 
     @media @tablet {
       padding: 16px 16px 0;
@@ -71,16 +75,42 @@
         line-height: 140%;
       }
     }
+  }
+  .reattemptButtonCont {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
 
-    .status {
+    @media @tablet {
+      padding: 16px 16px 8px 16px;
+    }
+    @media @mobile {
+      padding: 16px 16px 8px 16px;
+      flex-direction: column;
+      align-items: self-start;
+      gap: 8px;
+    }
+    .common-status-styles {
       padding: 4px 12px;
-      display: inline-flex;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       font-weight: 500;
       font-size: 12px;
-      color: @SuccessText;
-      font-weight: 500;
       line-height: 140%;
       border-radius: 4px;
+    }
+
+    .errorStatus {
+      .common-status-styles();
+      color: @ErrorText;
+      background: @ErrorBackground;
+    }
+
+    .status {
+      .common-status-styles();
+      color: @SuccessText;
       background: @SuccessBackground;
 
       @media @mobile {
@@ -88,7 +118,61 @@
         font-size: 10px;
       }
     }
+
+    .info {
+      .common-status-styles();
+      color: @UserAlertsInfoText;
+      background: @UserAlertsInfoBackground;
+    }
+
+    .buttonContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      button {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: @UserAlertButtonLink;
+      }
+      .requestReattempt {
+        button {
+          width: 100%;
+          padding: 8px 12px;
+          background: #3d555f;
+          border-radius: 8px;
+          font-size: 12px;
+          font-weight: 700;
+          color: #fff;
+        }
+
+        .scheduleIconContainer {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          gap: 4px;
+          color: @TextHeading;
+          font-size: 14px;
+          font-weight: 500;
+
+          @media @mobile{
+            padding-left: 10px;
+          }
+          .scheduleIcon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          .scheduleIconText {
+            min-width: 100%;
+          }
+        }
+      }
+    }
   }
+
   .shipmentBagItem {
     width: 100%;
     position: relative;

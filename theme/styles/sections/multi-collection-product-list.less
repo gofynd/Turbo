@@ -3,14 +3,6 @@
 
 @viewAllCtaRight: 16px;
 
-.nextArrowStyles {
-  right: 20px;
-  inset-inline-start: "unset";
-}
-.prevArrowStyles {
-  left: 20px;
-}
-
 .addToCartContainer {
   @media @desktop {
     max-width: unset !important;
@@ -162,22 +154,9 @@
           cursor: pointer;
         }
       }
-      :global {
-        .slick-list {
-          margin: 0 calc(var(--gap) / 2 * -1) !important;
-          @media @mobile {
-            padding-inline-start: 0 !important;
-          }
-        }
-        .slick-track {
-          display: flex !important;
-        }
-        .slick-slide {
-          height: inherit !important;
-          & > div,
-          & > div > div {
-            height: 100%;
-          }
+      .carouselBtn {
+        @media @tablet {
+          display: none;
         }
       }
     }
@@ -188,15 +167,5 @@
   padding-inline-start: 12px;
   @media @mobile {
     line-height: 36px;
-  }
-}
-.hideOnMobile {
-  @media @mobile {
-    display: none;
-  }
-}
-.showOnMobile {
-  @media @mobile-up {
-    display: none;
   }
 }

@@ -218,6 +218,8 @@
       "entered_otp_is_invalid_please_retry": "Entered OTP is invalid, please retry",
       "password_or_username_is_incorrect": "Password or username is incorrect",
       "friends_family": "Friends & Family",
+      "delivery_attempt_requested" : "Delivery Attempt Requested",
+      "delivery_attempt_failed":"Delivery Attempt Failed",
       "this_account_has_been_disabled": "This account has been disabled",
       "work": "Work",
       "home": "Home",
@@ -579,6 +581,7 @@
       "share_caps": "SHARE",
       "failed_to_send_reset_link": "Failed to send the reset link to your primary email address.",
       "reset_link_sent": "The reset link has been sent to your primary email address.",
+      "sent_otp_on_registered_mobile": "Sent OTP to your registered mobile number.",
       "and": "and",
       "with": "with",
       "selected": "selected",
@@ -844,10 +847,12 @@
       "submit_action": "Submit",
       "update": "UPDATE",
       "edit": "Edit",
+      "edit_caps": "EDIT",
       "clear_all_caps": "CLEAR ALL",
       "prev": "Prev",
       "reset_all": "Reset All",
-      "filtering_by": "Filtering by"
+      "filtering_by": "Filtering by",
+      "request_reattempt_facet": "REQUEST REATTEMPT"
     },
     "localization": {
       "select_language": "Select Language",
@@ -1065,7 +1070,17 @@
       "add_email_address": "Add Email Address",
       "no_phone_number_added": "No Phone Number Added",
       "add_phone_number_caps": "ADD PHONE NUMBER",
-      "profile": "Profile"
+      "profile": "Profile",
+      "select_reattempt_date": "Select Reattempt Date",
+      "request_reattempt": "Request Reattempt",
+      "please_select_reattempt_date": "Please select a reattempt date",
+      "date_cant_be_blank": "Date cannot be blank",
+      "additional_comments_optional": "Additional Comments (Optional)",
+      "enter_remarks": "Enter your remarks here",
+      "reattempt_on": "Reattempt On",
+      "choose_reattempt_date": "Choose when you'd like to schedule your delivery reattempt.",
+      "address_details": "Address Details",
+      "max_characters_250": "Maximum allowed charcters is 250"
     },
     "footer": {
       "footer_logo_alt_text": "Footer Logo",
@@ -1279,6 +1294,14 @@
       "refund_amount": "Refund Amount",
       "click_on_send_otp_to_processd": "Click on 'Send OTP' to proceed.",
       "click_on_send_otp_to_proceed": "Click on 'Send OTP' to proceed."
+    },
+    "reattempt_shipment": {
+      "name_alt_text": "name",
+      "reattempt_request_success": "Delivery reattempt requested successfully",
+      "your_delivery_request_schedule": "Your delivery reattempt is scheduled for",
+      "delivery_details" : "Delivery Details",
+      "reattempt_window_closed_on": "Reattempt window closed on",
+      "powered_by": "Powered By"
     },
     "payment": {
       "payment_failed": "Payment Failed",

@@ -1,19 +1,19 @@
 import React, { useEffect, useMemo } from "react";
 import { FDKLink } from "fdk-core/components";
-import Slider from "react-slick";
 import styles from "../styles/sections/feature-blog.less";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import { FETCH_BLOGS_LIST } from "../queries/blogQuery";
 import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
 import { formatLocale } from "../helper/utils";
-import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
-import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
 
 export function Component({ props, globalConfig }) {
   const fpi = useFPI();
@@ -25,64 +25,25 @@ export function Component({ props, globalConfig }) {
   const blogItems = customValues?.featuredBlogSectionData ?? [];
   const { heading, description, padding_top, padding_bottom } = props;
   const { isRTL } = useLocaleDirection();
-  const config = useMemo(
-    () => ({
-      arrows: blogItems.length > 3,
-      dots: false,
-      speed: 500,
-      slidesToShow: 3,
-      slidesToScroll: 1,
-      swipeToSlide: true,
-      autoplay: false,
-      pauseOnHover: true,
-      cssEase: "linear",
-      infinite: blogItems?.length > 3,
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      responsive: [
-        {
-          breakpoint: 780,
-          settings: {
-            slidesToShow: 2,
-            slidesToScroll: 2,
-            initialSlide: 2,
-            swipe: true,
-            swipeToSlide: false,
-            touchThreshold: 80,
-            draggable: false,
-            touchMove: true,
-            dots: blogItems?.length > 2,
-            arrows: false,
-          },
-        },
-      ],
-      rtl: isRTL,
-    }),
-    [blogItems?.length]
-  );
 
-  const configMobile = useMemo(
-    () => ({
-      dots: false,
-      speed: 500,
-      slidesToShow: 1,
+  const len = blogItems.length;
+
+  const options = useMemo(() => {
+    return {
+      align: "start",
+      direction: isRTL ? "rtl" : "ltr",
+      loop: len > 3,
+      draggable: true,
+      containScroll: "trimSnaps",
       slidesToScroll: 1,
-      swipeToSlide: false,
-      swipe: true,
-      autoplay: false,
-      pauseOnHover: true,
-      cssEase: "linear",
-      arrows: false,
-      infinite: blogItems?.length > 3,
-      touchThreshold: 80,
-      draggable: false,
-      touchMove: true,
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
-      rtl: isRTL,
-    }),
-    [blogItems?.length]
-  );
+      duration: 30,
+      breakpoints: {
+        "(max-width: 768px)": {
+          startIndex: 0,
+        },
+      },
+    };
+  }, [isRTL, len]);
 
   useEffect(() => {
     const fetchBlogs = () => {
@@ -144,32 +105,24 @@ export function Component({ props, globalConfig }) {
       {blogItems?.length > 0 && (
         <div
           className={`remove-horizontal-scroll ${blogItems?.length < 3 && styles["single-card-view"]}  ${styles.blogSlider}`}
-          style={{
-            "--slick-dots": `${blogItems?.length * 22 + 10}px`,
-          }}
         >
-          <Slider {...config} className={`${styles.hideOnMobile}`}>
-            {blogItems?.map((blog, index) => (
-              <BlogItem
-                key={index}
-                className={styles.sliderItem}
-                blog={blog}
-                sources={getImgSrcSet()}
-                defer={index > 2}
-              />
-            ))}
-          </Slider>
-          <Slider {...configMobile} className={`${styles.showOnMobile}`}>
-            {blogItems?.map((blog, index) => (
-              <BlogItem
-                key={index}
-                className={styles.sliderItem}
-                blog={blog}
-                sources={getImgSrcSet()}
-                defer={index > 1}
-              />
-            ))}
-          </Slider>
+          <Carousel opts={options}>
+            <CarouselContent>
+              {blogItems?.map((blog, index) => (
+                <CarouselItem key={index} className={styles.carouselItem}>
+                  <BlogItem
+                    key={index}
+                    className={styles.sliderItem}
+                    blog={blog}
+                    sources={getImgSrcSet()}
+                    defer={index > 1}
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className={styles.carouselBtn} />
+            <CarouselNext className={styles.carouselBtn} />
+          </Carousel>
         </div>
       )}
       {!!blogItems?.length && (

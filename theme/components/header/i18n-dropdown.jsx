@@ -425,7 +425,9 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
               </span>
             )
           )}
-          <ArrowDownIcon className={styles.angleDownIcon} />
+          {showI18Dropdown && (
+            <ArrowDownIcon className={styles.angleDownIcon} />
+          )}
         </button>
       )}
       {isI18ModalOpen && (

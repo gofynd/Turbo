@@ -74,6 +74,9 @@ export function Component({ props, globalConfig }) {
 
   const desktopPlaceHolder = Boolean(videoFile?.value || videoUrl?.value);
 
+  // Only show image when there's no video (cover image or placeholder as fallback)
+  const shouldShowImage = !mobilePlaceHolder;
+
   const VideoControls = () => {
     return (
       <>
@@ -110,7 +113,7 @@ export function Component({ props, globalConfig }) {
             <PauseIcon />
           </div>
         )}
-        {
+        {shouldShowImage && (
           <img
             className={`${styles.imagePlaceholder} ${!desktopPlaceHolder ? styles.showDesktopPlaceholder : ""} ${!mobilePlaceHolder ? styles.showImagePlaceholder : ""} `}
             src={coverUrl?.value || placeholderImage}
@@ -118,7 +121,7 @@ export function Component({ props, globalConfig }) {
             style={{ width: "100%" }}
             srcSet={getImgSrcSet()}
           />
-        }
+        )}
       </>
     );
   };

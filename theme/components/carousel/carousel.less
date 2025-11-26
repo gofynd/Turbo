@@ -45,6 +45,9 @@ carouselItemVertical {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--dividerStokes, #d4d1d1);
+  &.hideBtnDisabled[disabled] {
+    display: none;
+  }
   &:hover {
     box-shadow: 0 6px 20px 0 var(--dividerStokes, #c0bebe);
     background: var(--themeAccentL4, #f8f8f8);
@@ -72,13 +75,13 @@ carouselItemVertical {
 .carouselNextBtnHorizontal {
   right: 20px;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .carouselNextBtnVertical {
   bottom: -36px;
   left: 50%;
-  transform: translateX(-50%) rotate(90deg);
+  transform: translateX(-50%) rotate(-90deg);
 }
 
 .srOnly {

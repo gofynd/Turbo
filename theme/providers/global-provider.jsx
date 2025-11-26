@@ -22,18 +22,40 @@ export function ThemeProvider({ children }) {
   const description = sanitizeHTMLTag(seoData?.description);
   const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
   const sections = useGlobalStore(fpi.getters.PAGE)?.sections || [];
+  const { globalConfig, pallete } = useThemeConfig({ fpi });
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => {
-          initializeCopilot().catch(console.error);
-        });
-      } else {
-        initializeCopilot().catch(console.error);
-      }
+    // Strict SSR check - only run in browser
+    if (typeof window === "undefined") {
+      return;
     }
-  }, []);
+
+    // Strict check - document must exist (should exist if window exists, but being safe)
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    // Get Storefront Copilot Actions configuration
+    const storefrontCopilotActions =
+      globalConfig?.storefront_copilot_actions ?? false;
+
+    // Auto-initialize copilot if window.copilot is available
+    // Only register storefront actions if storefront_copilot_actions is enabled
+    const initCopilot = () => {
+      initializeCopilot({
+        storefrontCopilotActions,
+      }).catch(() => {
+        // Silently handle errors
+        // Errors are already handled within initializeCopilot
+      });
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initCopilot);
+    } else {
+      initCopilot();
+    }
+  }, [globalConfig?.storefront_copilot_actions]);
 
   let domainUrl =
     CONFIGURATION?.application?.domains?.find((d) => d.is_primary)?.name || "";
@@ -51,7 +73,6 @@ export function ThemeProvider({ children }) {
   const sellerDetails = JSON.parse(
     useGlobalStore(fpi.getters.SELLER_DETAILS) || "{}"
   );
-  const { globalConfig, pallete } = useThemeConfig({ fpi });
   const { i18nDetails, countryDetails, fetchCountrieDetails } =
     useInternational({ fpi });
 
@@ -297,9 +318,7 @@ export function ThemeProvider({ children }) {
   return content;
 }
 
-
 export const getHelmet = ({ seo }) => {
-  console.log(seo, "seo");
   const title = sanitizeHTMLTag(seo?.title);
   const description = sanitizeHTMLTag(seo?.description);
   const image = sanitizeHTMLTag(seo?.image ? seo?.image : seo?.image_url);

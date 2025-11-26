@@ -141,7 +141,8 @@ function Footer({ fpi }) {
   const isFooterHidden = useMemo(() => {
     const regex =
       /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$|^\/cart\/bag\/?$|^\/cart\/checkout\/?$/;
-    return regex.test(location?.pathname);
+       const reattemptShipmentRegex = /^\/reattempt\/shipment\/[^/]+$/;
+    return regex.test(location?.pathname) || reattemptShipmentRegex.test(location?.pathname);
   }, [location?.pathname]);
 
   const toggleKey = (key, value) => {

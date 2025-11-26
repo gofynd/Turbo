@@ -44,10 +44,10 @@ function HeaderDesktop({
 
     const logoMenuAlignment = globalConfig?.logo_menu_alignment;
     return {
-      layout_1: 6,
-      layout_2: 6,
-      layout_3: 6,
-      layout_4: 5,
+      layout_1: 10,
+      layout_2: 10,
+      layout_3: 10,
+      layout_4: 10,
     }[logoMenuAlignment];
   };
 

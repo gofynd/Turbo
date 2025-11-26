@@ -77,7 +77,7 @@ function Header({ fpi }) {
 
   const [languageIscCode, setLanguageIscCode] = useState([]);
   const [scrolled, setScrolled] = useState(false);
-
+ const isHeaderHiddenForShipmentReattempt = /^\/reattempt\/shipment\/[^/]+$/.test(location.pathname);
   const buyNow = searchParams?.get("buy_now") || false;
 
   const isListingPage = useMemo(() => {
@@ -86,8 +86,10 @@ function Header({ fpi }) {
   }, [location?.pathname]);
 
   const isHeaderHidden = useMemo(() => {
-    const regex = /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$/;
-    return regex.test(location?.pathname);
+     const refundRegex = /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$/;
+    const reattemptShipmentRegex = /^\/reattempt\/shipment\/[^/]+$/;
+
+    return refundRegex.test(location?.pathname) || reattemptShipmentRegex.test(location?.pathname);
   }, [location?.pathname]);
 
   const sections = useGlobalStore(fpi.getters.PAGE)?.sections || [];
@@ -300,7 +302,7 @@ function Header({ fpi }) {
 
   return (
     <>
-      {!isHeaderHidden && !shouldHide && (
+      {!isHeaderHidden  &&(
         <div
           className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${
             transparent_header && isValidSection && !sticky_header

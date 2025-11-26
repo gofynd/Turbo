@@ -99,11 +99,6 @@ div[data-cardtype="BRANDS"] .streach picture {
   padding-inline-end: 0px;
   padding-bottom: 0px;
   padding-inline-start: 16px;
-  // .brand-image{
-  //   & img {
-  //     margin: 0 4px;
-  //   }
-  // }
 
   @media @mobile-up {
     --gap: 24px;
@@ -124,6 +119,11 @@ div[data-cardtype="BRANDS"] .streach picture {
       padding: 0 16px;
     }
   }
+  .carouselBtn {
+    @media @tablet {
+      display: none;
+    }
+  }
   .custom-slick-list {
     margin: 0 calc(var(--gap) / 2 * -1);
     @media @mobile {
@@ -132,6 +132,30 @@ div[data-cardtype="BRANDS"] .streach picture {
   }
   .custom-slick-slide {
     padding: 0 calc(var(--gap) / 2);
+  }
+
+  .brands-carousel {
+    max-width: 100vw;
+  }
+
+  .carouselItem {
+    flex: 0 0 calc(100% / var(--count-desktop, 1));
+
+    @media @mobile {
+      flex: 0 0 calc((100% - 50px) / var(--count-mobile, 1));
+    }
+
+    @media @tablet-strict {
+      flex: 0 0 calc(100% / var(--count-tablet, 1));
+    }
+  }
+
+  .carouselArrows {
+    display: var(--show-arrow);
+
+    @media @tablet {
+      display: none;
+    }
   }
 }
 .slider-container {

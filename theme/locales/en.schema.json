@@ -115,6 +115,7 @@
         "product_details_modal_settings": "Product Details Modal Settings",
         "other_page_configuration": "Other Page Configuration",
         "google_maps": "Google Maps",
+        "copilot_configuration": "Copilot Configuration",
         "mobile_logo_max_height": "Mobile Navigation Logo Max Height",
         "mobile_logo_max_height_info": "Adjust the maximum height of the logo inside the mobile sidebar menu",
         "logo_header": "Desktop Header Logo Max Height",
@@ -169,6 +170,10 @@
       },
       "algolia_configuration": {
         "enable_algolia": "Enable Algolia"
+      },
+      "copilot_configuration": {
+        "storefront_copilot_actions": "Enable UI Actions",
+        "storefront_copilot_actions_info": "Enable UI-based Copilot Actions. When disabled, Copilot will give system based results instead."
       },
       "footer": {
         "logo": "Logo",

@@ -1,16 +1,5 @@
 @import "../../styles/main.less";
 
-.slideshowSlider {
-  :global {
-    .slick-slide > div {
-      display: flex;
-    }
-  }
-}
-
-.blockItem {
-  position: relative;
-}
 .imageContainer {
   width: 100%;
   position: relative;
@@ -54,56 +43,7 @@
     }
   }
 }
-.nextArrowStyles {
-  right: 20px;
-  inset-inline-start: "unset";
-}
-.prevArrowStyles {
-  left: 20px;
-}
-.imageContainer {
-  width: 100%;
-  position: relative;
-  isolation: isolate;
-  @media @tablet {
-    isolation: unset;
-  }
-  overflow: hidden;
-  .box-wrapper {
-    width: var(--box_width);
-    height: var(--box_height);
-    opacity: 0;
-    position: absolute;
-    inset-inline-start: var(--x_position);
-    top: var(--y_position);
-    cursor: pointer;
-    transform: translate(var(--x_offset), var(--y_offset));
-    [dir="rtl"] & {
-      transform: translate(calc(var(--x_offset) * -1), var(--y_offset));
-    }
-  }
 
-  .box-wrapper-visible {
-    background: red;
-    opacity: 0.5;
-  }
-
-  .pointer-wrapper-visible {
-    opacity: 0.5;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  .text-wrapper {
-    flex-grow: 1;
-    width: 66%;
-    @media @tablet-strict {
-      margin-top: 20px;
-    }
-  }
-}
 .overlayItems {
   position: absolute;
   top: var(--top-position-desktop);
@@ -196,6 +136,14 @@
       font-size: 12px;
       margin-top: 24px;
       line-height: 14px;
+    }
+  }
+}
+
+.slideshowCarousel {
+  .carouselBtn {
+    @media @tablet {
+      display: none;
     }
   }
 }

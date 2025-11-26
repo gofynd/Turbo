@@ -247,7 +247,11 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
   );
 
   const handleViewMore = useCallback(() => {
-    navigate(`/product/${productData?.product?.slug}`);
+    navigate(`/product/${productData?.product?.slug}`, {
+      state: {
+        product: productData?.product,
+      },
+    });
   }, [navigate, productData]);
 
   const updatePincode = useCallback((code) => {

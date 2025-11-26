@@ -13,3 +13,4 @@ export * from "./useStateRef";
 export * from "./useGoogleMapConfig";
 export * from "./usePincodeInput";
 export * from "./useLocalStorage";
+export * from "./useLocaleDirection";

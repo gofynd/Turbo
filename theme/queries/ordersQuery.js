@@ -63,6 +63,17 @@ export const ORDER_LISTING = `query orders(
           type
           is_default
         }
+        ndr_details {
+        show_ndr_form
+        non_editable_address_fields
+        delivery_scheduled_date
+        failure_reason
+        allowed_delivery_window {
+            start_date
+            end_date
+            excluded_dates
+        }
+      }
         bags {
           can_cancel
           can_return

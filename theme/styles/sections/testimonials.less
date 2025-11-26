@@ -1,15 +1,6 @@
 @import "../main.less";
 @lg-min: 1024px;
 
-.nextArrowStyles {
-  border: 1px solid red;
-  right: 20px;
-  inset-inline-start: "unset";
-}
-.prevArrowStyles {
-  left: -20px;
-}
-
 .testimonialTitle {
   text-align: center;
   margin-bottom: 32px;
@@ -35,20 +26,9 @@
   @media @mobile {
     padding-inline-start: @SectionInlinePaddingMobile;
   }
-
-  :global {
-    .slick-list {
-      margin: 0 calc(var(--gap) / 2 * -1);
-      padding-inline-start: 0 !important;
-    }
-    .slick-track {
-      display: flex;
-    }
-    .slick-slide {
-      height: auto;
-      & > * {
-        height: 100%;
-      }
+  .carouselBtn {
+    @media @tablet {
+      display: none;
     }
   }
 
@@ -69,6 +49,32 @@
   &.oneItem {
     @media @mobile {
       padding-inline-end: @SectionInlinePaddingMobile;
+    }
+  }
+
+  .carouselItem {
+    flex: 0 0 calc((100% - 150px) / 2);
+
+    @media @mobile {
+      flex: 0 0 calc(100% - 100px);
+    }
+
+    @media @tablet-strict {
+      flex: 0 0 calc((100% - 128px) / 2);
+    }
+
+    @media @tablet-range {
+      flex: 0 0 calc((100% - 100px) / 2);
+    }
+  }
+
+  .carouselArrows {
+    @media @tablet-extend {
+      display: none;
+    }
+
+    @media @tablet-extend-up {
+      display: var(--show-arrow);
     }
   }
 }

@@ -1,26 +1,24 @@
 import React, { useEffect, useMemo } from "react";
 import { FDKLink } from "fdk-core/components";
 import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
-import Slider from "react-slick";
-import { useFPI, useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
+import { useFPI, useGlobalStore } from "fdk-core/utils";
 import styles from "../styles/sections/category-listing.less";
-import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
-import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import useCategories from "../page-layouts/categories/useCategories";
 import placeholderImage from "../assets/images/placeholder/categories-listing.png";
 import CategoriesCard from "../components/categories-card/categories-card";
-import { useParams } from "react-router-dom";
 import { CATEGORIES_LISTING } from "../queries/categoryQuery";
 import { useWindowWidth } from "../helper/hooks";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
-// check for FDKLink here
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
+import Autoplay from "embla-carousel-autoplay";
+
 export function Component({ props, blocks, preset, globalConfig }) {
-  const { locale } = useParams();
-  const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
   const {
     autoplay,
@@ -134,64 +132,41 @@ export function Component({ props, blocks, preset, globalConfig }) {
     return desktop_layout?.value === "horizontal";
   }
   const { isRTL } = useLocaleDirection();
-  const config = useMemo(() => {
-    return {
-      arrows: imagesForScrollView?.length > itemCount,
-      dots: false,
-      speed: 500,
-      slidesToShow: itemCount,
-      slidesToScroll: itemCount,
-      swipeToSlide: true,
-      infinite: imagesForScrollView?.length > itemCount,
-      autoplay: autoplay?.value,
-      autoplaySpeed: (play_slides?.value ?? 3) * 1000,
-      cssEase: "linear",
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      responsive: [
-        {
-          breakpoint: 780,
-          settings: {
-            arrows: false,
-            infinite: imagesForScrollView?.length > 3,
-            slidesToShow: 3,
-            slidesToScroll: 3,
-          },
-        },
-      ],
-      rtl: isRTL,
-    };
-  }, [
-    itemCount,
-    autoplay?.value,
-    play_slides?.value,
-    imagesForScrollView?.length,
-  ]);
 
-  const configMobile = useMemo(
+  const len = imagesForScrollView.length;
+
+  const autoplayEnabled = autoplay?.value && len > 2;
+  const autoplayDelay = Number(play_slides?.value) * 1000 || 3000;
+
+  const plugins = useMemo(
+    () => (autoplayEnabled ? [Autoplay({ delay: autoplayDelay })] : []),
+    [autoplayEnabled, autoplayDelay]
+  );
+
+  const options = useMemo(
     () => ({
-      arrows: false,
-      dots: false,
-      speed: 500,
-      slidesToShow: itemCountMobile,
-      slidesToScroll: 1,
-      swipeToSlide: true,
-      infinite: imagesForScrollView?.length > itemCountMobile,
-      autoplay: autoplay?.value,
-      autoplaySpeed: (play_slides?.value ?? 3) * 1000,
-      cssEase: "linear",
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
-      centerMode: imagesForScrollView?.length > itemCountMobile,
-      centerPadding: "25px",
-      rtl: isRTL,
+      direction: isRTL ? "rtl" : "ltr",
+      align: len > itemCount ? "start" : "center",
+      loop: len > itemCount,
+      draggable: true,
+      containScroll: "trimSnaps",
+      slidesToScroll: itemCount,
+      duration: 30,
+      breakpoints: {
+        "(max-width: 779px)": {
+          align: "start",
+          loop: len > 3,
+          slidesToScroll: 3,
+        },
+        "(max-width: 479px)": {
+          // mobile
+          align: len > itemCountMobile ? "center" : "start",
+          loop: len > itemCountMobile,
+          slidesToScroll: 1,
+        },
+      },
     }),
-    [
-      itemCountMobile,
-      autoplay?.value,
-      play_slides?.value,
-      imagesForScrollView?.length,
-    ]
+    [isRTL, len, itemCount, itemCountMobile]
   );
 
   useEffect(() => {
@@ -244,42 +219,32 @@ export function Component({ props, blocks, preset, globalConfig }) {
       {categories?.length > 0 && showScrollView() && (
         <div
           className={`remove-horizontal-scroll ${styles.categoryListingSlider} ${styles.categorySlider} ${imagesForScrollView?.length === 1 ? styles.singleItem : ""}`}
-          style={{
-            "--slick-dots": `${Math.ceil(imagesForScrollView?.length / itemCount) * 22 + 10}px`,
-          }}
         >
-          <Slider
-            className={`${styles.hideOnMobile}`}
-            {...config}
-            initialSlide={0}
-          >
-            {imagesForScrollView?.map((category, index) => (
-              <CategoriesItem
-                key={`${category.name}_${index}`}
-                className={styles.sliderItem}
-                props={props}
-                category={category}
-                srcset={getImgSrcSet}
-                defer={index > itemCount}
-              />
-            ))}
-          </Slider>
-          <Slider
-            className={`${styles.hideOnDesktop}`}
-            {...configMobile}
-            initialSlide={0}
-          >
-            {imagesForScrollView?.map((category, index) => (
-              <CategoriesItem
-                key={`${category.name}_${index}`}
-                className={styles.sliderItem}
-                props={props}
-                category={category}
-                srcset={getImgSrcSet}
-                defer={index > 2}
-              />
-            ))}
-          </Slider>
+          <Carousel opts={options} plugins={plugins}>
+            <CarouselContent>
+              {imagesForScrollView?.map((category, index) => (
+                <CarouselItem
+                  key={index}
+                  className={styles.carouselItem}
+                  style={{
+                    "--count-desktop": itemCount,
+                    "--count-mobile": itemCountMobile,
+                  }}
+                >
+                  <CategoriesItem
+                    key={`${category.name}_${index}`}
+                    className={styles.sliderItem}
+                    props={props}
+                    category={category}
+                    srcset={getImgSrcSet}
+                    defer={index > 2}
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className={styles.carouselBtn} />
+            <CarouselNext className={styles.carouselBtn} />
+          </Carousel>
         </div>
       )}
       {categories?.length > 0 && showStackedView() && (

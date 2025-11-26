@@ -12,7 +12,10 @@ function Component({ props }) {
   const pageConfig = getConfigFromProps(props);
 
   return (
-    <AuthContainer bannerAlignment={pageConfig?.image_layout}>
+    <AuthContainer
+      bannerAlignment={pageConfig?.image_layout}
+      bannerImage={pageConfig?.image_banner}
+    >
       <Register {...registerProps} pageConfig={pageConfig} />
     </AuthContainer>
   );

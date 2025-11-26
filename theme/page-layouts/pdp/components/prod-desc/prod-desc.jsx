@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FyAccordion from "../../../../components/core/fy-accordion/fy-accordion";
 import styles from "./prod-desc.less";
-import { useRichText } from "../../../../helper/hooks";
+//import { useRichText } from "../../../../helper/hooks";
 import { useGlobalTranslation } from "fdk-core/utils";
 
 function ProdDesc({ product, config, customClass }) {
@@ -70,7 +70,7 @@ function ProdDesc({ product, config, customClass }) {
     isProductDescAvailable() ||
     getGroupedAttributes().some((attr) => isGroupedAttrAvailable(attr));
 
-  const clientMarkedContent = useRichText(productDescription.details);
+  //const clientMarkedContent = useRichText(productDescription.details);
 
   return (
     <div className={customClass}>
@@ -88,7 +88,7 @@ function ProdDesc({ product, config, customClass }) {
                     <div
                       className={`b2 ${styles.pdpDetail}`}
                       dangerouslySetInnerHTML={{
-                        __html: clientMarkedContent,
+                        __html: productDescription.details,
                       }}
                     />
                   )}

@@ -178,6 +178,51 @@ export const SEND_RESET_PASSWORD_EMAIL = `mutation sendResetPasswordEmail(
   }
 }`;
 
+export const SENT_RESET_PASSWORD_MOBILE = `mutation sendForgotOTPOnMobile(
+  $platform: String
+  $sendMobileForgotOtpRequestSchemaInput: SendMobileForgotOtpRequestSchemaInput
+) {
+  sendForgotOTPOnMobile(
+    platform: $platform
+    sendMobileForgotOtpRequestSchemaInput: $sendMobileForgotOtpRequestSchemaInput
+  ) {
+    country_code
+    message
+    mobile
+    register_token
+    request_id
+    resend_timer
+    resend_token
+    success
+  }
+}
+  `;
+
+export const MOBILE_RESET_PASSWORD = `mutation resetForgotPassword(
+  $forgotPasswordRequestSchemaInput: ForgotPasswordRequestSchemaInput
+) {
+  resetForgotPassword(
+    forgotPasswordRequestSchemaInput: $forgotPasswordRequestSchemaInput
+  ) {
+    success
+  }
+}
+`;
+
+export const VERIFY_FORGOT_OTP_MOBILE = `mutation verifyMobileForgotOTP(
+  $platform: String
+  $verifyMobileForgotOtpRequestSchemaInput: VerifyMobileForgotOtpRequestSchemaInput
+) {
+  verifyMobileForgotOTP(
+    platform: $platform
+    verifyMobileForgotOtpRequestSchemaInput: $verifyMobileForgotOtpRequestSchemaInput
+  ) {
+    forgot_token
+    success
+  }
+}
+`;
+
 export const REGISTER_WITH_FORM = `mutation registerWithForm(
   $formRegisterRequestSchemaInput: FormRegisterRequestSchemaInput
   $platform: String

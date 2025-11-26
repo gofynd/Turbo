@@ -1,5 +1,5 @@
 // Import all actions from the actions module
-import { allCopilotActions } from "./actions/index.js";
+import { allCopilotActions } from "./actions/index";
 
 /**
  * Configuration for Copilot registration
@@ -26,16 +26,31 @@ const registerCopilotTools = async (
   const { MAX_RETRIES, INITIAL_DELAY, MAX_DELAY, BACKOFF_FACTOR } = config;
 
   try {
-    const { copilot } = window;
-
-    // Check if copilot exists and is a function
-    if (!copilot || typeof copilot !== "function") {
-      throw new Error("Copilot is not available or not a function");
+    // Strict SSR check - window must exist
+    if (typeof window === "undefined") {
+      throw new Error("Window is not available (SSR environment)");
     }
 
-    // Check if copilot.tools.add method exists
-    if (!copilot.tools?.add || typeof copilot.tools.add !== "function") {
-      throw new Error("Copilot tools.add method is not available");
+    // Strict check - window.copilot must exist
+    if (!window.copilot) {
+      throw new Error("window.copilot is not available");
+    }
+
+    const { copilot } = window;
+
+    // Strict check - copilot must be a function
+    if (typeof copilot !== "function") {
+      throw new Error("Copilot is not a function");
+    }
+
+    // Strict check - copilot.tools must exist
+    if (!copilot.tools) {
+      throw new Error("copilot.tools is not available");
+    }
+
+    // Strict check - copilot.tools.add must exist and be a function
+    if (typeof copilot.tools.add !== "function") {
+      throw new Error("copilot.tools.add is not a function");
     }
 
     // Validate actions before registration
@@ -57,28 +72,25 @@ const registerCopilotTools = async (
     const attemptInfo = `(attempt ${retryCount + 1}/${MAX_RETRIES})`;
 
     if (isLastAttempt) {
-      console.error(
-        "❌ [COPILOT] Failed to register copilot tools after all retries",
-        {
-          error: error.message,
-          totalAttempts: MAX_RETRIES,
-          finalError: error,
-        }
-      );
+      // Use console.debug instead of console.error to avoid unnecessary warnings
+      // when Copilot is intentionally disabled or not loaded
+      console.debug("ℹ️ [COPILOT] Copilot tools registration completed", {
+        error: error.message,
+        totalAttempts: MAX_RETRIES,
+      });
       return false;
     }
 
     // Calculate delay with exponential backoff
-    const baseDelay = INITIAL_DELAY * Math.pow(BACKOFF_FACTOR, retryCount);
+    const baseDelay = INITIAL_DELAY * BACKOFF_FACTOR ** retryCount;
     const delay = Math.min(baseDelay, MAX_DELAY);
 
-    console.warn(
-      `🔄 [COPILOT] Registration failed, retrying in ${delay}ms ${attemptInfo}`,
-      {
-        error: error.message,
+    // Only log debug messages on first few attempts
+    if (retryCount < 2) {
+      console.debug(`🔄 [COPILOT] Registration in progress ${attemptInfo}`, {
         nextDelay: delay,
-      }
-    );
+      });
+    }
 
     // Schedule retry with exponential backoff
     return new Promise((resolve) => {
@@ -93,33 +105,54 @@ const registerCopilotTools = async (
 /**
  * Initialize Copilot registration with safety checks
  * This is the main entry point for copilot initialization
+ * Auto-initializes if window.copilot is available
+ * @param {Object} config - Configuration object (optional)
+ * @param {boolean} config.storefrontCopilotActions - Whether to register Storefront Copilot Actions (defaults to false)
  */
-const initializeCopilot = async () => {
+const initializeCopilot = async (config = {}) => {
   try {
-    console.log("🚀 [COPILOT] Initializing copilot registration...");
-
-    // Check if we're in a browser environment
+    // Strict SSR check - must be in browser environment
     if (typeof window === "undefined") {
-      console.warn(
-        "⚠️ [COPILOT] Not in browser environment, skipping registration"
-      );
+      // Silently skip in SSR environment
       return false;
     }
+
+    // Check if window.copilot is available - if not, silently return (no logs)
+    if (!window.copilot) {
+      // Silently skip if copilot is not available (no console logs)
+      return false;
+    }
+
+    // Get storefront copilot actions configuration
+    const storefrontCopilotActions = config?.storefrontCopilotActions ?? false;
+
+    // If Storefront Copilot Actions is disabled, don't register storefront actions
+    // The Copilot will use Backend API based results instead
+    if (!storefrontCopilotActions) {
+      console.log(
+        "ℹ️ [COPILOT] Storefront Copilot Actions disabled. Copilot will use Backend API based results."
+      );
+      // Return true to indicate Copilot is available but using backend API
+      return true;
+    }
+
+    console.log("🚀 [COPILOT] Initializing copilot registration...", {
+      storefrontCopilotActions,
+    });
 
     const success = await registerCopilotTools();
 
     if (success) {
       console.log("🎉 [COPILOT] Copilot initialization completed successfully");
     } else {
-      console.error("💥 [COPILOT] Copilot initialization failed");
+      console.debug(
+        "ℹ️ [COPILOT] Copilot initialization completed (using backend API)"
+      );
     }
 
     return success;
   } catch (error) {
-    console.error(
-      "💥 [COPILOT] Critical error during copilot initialization:",
-      error
-    );
+    console.debug("ℹ️ [COPILOT] Copilot initialization note:", error.message);
     return false;
   }
 };
@@ -141,4 +174,4 @@ export {
   wishlistActions,
   orderActions,
   navigationActions,
-} from "./actions/index.js";
+} from "./actions/index";

@@ -40,6 +40,8 @@ const useCart = (fpi, isActive = true) => {
     { fpi }
   );
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
+  const page = useGlobalStore(fpi.getters.PAGE) || {};
+  const { sections = [] } = page || {};
   const { cartItemCount } = useHeader(fpi);
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
@@ -69,6 +71,20 @@ const useCart = (fpi, isActive = true) => {
   const { addToWishList } = useWishlist({ fpi });
 
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
+
+  useEffect(() => {
+    const hideRightCanvas =
+      sections
+        ?.filter((section) => section.canvas === "right_panel")
+        ?.some(({ name }) => name === "cart-items") &&
+      cart_items?.items?.length === 0;
+
+    if (hideRightCanvas && typeof document !== "undefined") {
+      const element = document?.getElementById("cart-landing-right-panel");
+
+      element && (element.style.display = "none");
+    }
+  }, [sections, cart_items]);
 
   useEffect(() => {
     if (isActive) {

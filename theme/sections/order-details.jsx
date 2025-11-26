@@ -23,7 +23,8 @@ import {
 import OrderDeliveryIcon from "../assets/images/order-delivery.svg";
 import CrossIcon from "../assets/images/cross-black.svg";
 import DefaultImage from "../assets/images/default-image.svg";
-import OrderPendingIcon from "../assets/images/order-pending.svg";
+import { detectMobileWidth } from "../helper/utils";
+import ScheduleIcon from "../../theme/assets/images/schedule.svg";import OrderPendingIcon from "../assets/images/order-pending.svg";
 import { getGroupedShipmentBags } from "../helper/utils";
 
 import "@gofynd/theme-template/components/core/modal/modal.css";
@@ -62,7 +63,20 @@ export function Component({ blocks, globalConfig, fpi }) {
   const [show, setShow] = useState(false);
   const [selectId, setSelectId] = useState("");
   const [goToLink, setGoToLink] = useState("");
+  const [isMobile, setIsMobile] = useState(detectMobileWidth());
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(detectMobileWidth());
+    };
 
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
   const [mediaLoadError, setMediaLoadError] = useState(false);
@@ -124,6 +138,33 @@ export function Component({ blocks, globalConfig, fpi }) {
   };
 
   const isVideo = (url) => /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(url);
+  const ndrWindowExhausted = () => {
+    const endDateStr =
+      shipmentDetails?.ndr_details?.allowed_delivery_window?.end_date;
+    if (!endDateStr) return false;
+
+    const endDate = new Date(endDateStr);
+    const now = new Date();
+
+    return endDate < now;
+  };
+
+  function formatUTCToDateString(utcString) {
+    if (!utcString) return "";
+
+    const date = new Date(utcString);
+
+    const options = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
+
+    return date
+      .toLocaleDateString("en-GB", options)
+      .replace(" ", " ")
+      .replace(",", ",");
+  }
 
   const openMediaModal = (media) => {
     setSelectedMedia(media);
@@ -170,19 +211,81 @@ export function Component({ blocks, globalConfig, fpi }) {
                   switch (block.type) {
                     case "order_header":
                       return (
-                        <div className={`${styles.shipmentHeader}`} key={key}>
-                          <div className="flexCenter">
-                            <OrderDeliveryIcon />
-                          </div>
-                          <div className={styles.title}>
-                            {shipmentDetails?.shipment_id}
+                         <>
+                          <div className={`${styles.shipmentHeader}`} key={key}>
+                            <div className="flexCenter">
+                              <OrderDeliveryIcon />
+                            </div>
+                            <div className={styles.title}>
+                              {shipmentDetails?.shipment_id}
+                            </div>
                           </div>
                           {shipmentDetails?.shipment_status && (
-                            <div className={`${styles.status}`}>
-                              {shipmentDetails?.shipment_status.title}
+                            <div className={styles.reattemptButtonCont}>
+                              <div
+                                className={`${
+                                  shipmentDetails?.shipment_status?.value ===
+                                  "delivery_attempt_failed"
+                                    ? styles.errorStatus
+                                    : shipmentDetails?.shipment_status
+                                          ?.value ===
+                                        "delivery_reattempt_requested"
+                                      ? styles.info
+                                      : styles.status
+                                }`}
+                              >
+                                {shipmentDetails?.shipment_status.title}
+                              </div>
+                              <div className={styles.buttonContainer}>
+                                {shipmentDetails?.shipment_status?.value ==
+                                  "delivery_attempt_failed" &&
+                                  shipmentDetails?.ndr_details?.allowed_delivery_window
+                    ?.start_date  &&
+                  shipmentDetails?.ndr_details?.allowed_delivery_window
+                    ?.end_date &&
+                                  shipmentDetails?.ndr_details?.show_ndr_form ==
+                                    true &&
+                                  !ndrWindowExhausted() && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(
+                                          `/reattempt/shipment/${shipmentDetails?.shipment_id}`
+                                        );
+                                      }}
+                                    >
+                                      REQUEST REATTEMPT
+                                    </button>
+                                  )}
+                                <div
+                                  className={`${styles.requestReattempt} ${
+                                    shipmentDetails?.shipment_status?.value ===
+                                    "delivery_reattempt_requested"
+                                      ? styles.deliveryReattemptRequested
+                                      : ""
+                                  }`}
+                                >
+                                  {shipmentDetails?.shipment_status?.value ==
+                                    "delivery_reattempt_requested" && (
+                                    <div
+                                      className={styles.scheduleIconContainer}
+                                    >
+                                      <div className={styles.scheduleIcon}>
+                                        {" "}
+                                        <ScheduleIcon />
+                                      </div>
+                                      <div className={styles.scheduleIconText}>
+                                        {shipmentDetails?.ndr_details
+                                          ?.delivery_scheduled_date &&
+                                          `Delivery Reattempt On ${formatUTCToDateString(shipmentDetails?.ndr_details?.delivery_scheduled_date)}`}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
                             </div>
                           )}
-                        </div>
+                        </>
                       );
 
                     case "shipment_items":
@@ -193,11 +296,11 @@ export function Component({ blocks, globalConfig, fpi }) {
                               (item, index) => (
                                 <div
                                   key={item.item.brand.name + index}
-                                  className={
-                                    !(item.can_cancel || item.can_return)
-                                      ? `${styles.updateDisable}`
-                                      : ""
-                                  }
+                                  // className={
+                                  //   !(item.can_cancel || item.can_return)
+                                  //     ? `${styles.updateDisable}`
+                                  //     : ""
+                                  // }
                                 >
                                   <ShipmentItem
                                     key={item.item.brand.name + index}
@@ -215,6 +318,7 @@ export function Component({ blocks, globalConfig, fpi }) {
                                     }
                                     selectId={selectId}
                                     type="my-orders"
+                                    shipmentDetails={shipmentDetails}
                                     globalConfig={globalConfig}
                                   ></ShipmentItem>
                                 </div>

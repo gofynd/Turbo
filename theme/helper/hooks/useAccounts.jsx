@@ -11,9 +11,11 @@ import {
   VERIFY_EMAIL_OTP,
   SEND_OTP_ON_EMAIL,
   SEND_RESET_PASSWORD_EMAIL,
+  SENT_RESET_PASSWORD_MOBILE,
   LOGIN_WITH_EMAIL_AND_PASSWORD,
   LOGOUT,
   FORGOT_PASSWORD,
+  MOBILE_RESET_PASSWORD,
 } from "../../queries/authQuery";
 import { useSnackbar } from "./hooks";
 import { isRunningOnClient, getLocalizedRedirectUrl } from "../utils";
@@ -37,6 +39,8 @@ export const useAccounts = ({ fpi }) => {
   const userData = useGlobalStore(fpi.getters.USER_DATA);
   const platformData = useGlobalStore(fpi.getters.PLATFORM_DATA);
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
+  const [forgotPasswordData, setForgotPasswordData] = useState({});
+  const [isResetSuccess, setIsResetSuccess] = useState(false);
 
   const openLogin = ({ redirect = true } = {}) => {
     const queryParams = isRunningOnClient()
@@ -368,7 +372,7 @@ export const useAccounts = ({ fpi }) => {
     };
     return fpi.executeGQL(SEND_RESET_PASSWORD_EMAIL, payload).then((res) => {
       if (res?.errors) {
-        showSnackbar(t("resource.common.failed_to_send_reset_link"), "error");
+        showSnackbar(res?.errors?.[0], "error");
         throw res?.errors?.[0];
       }
       if (res?.data?.sendResetPasswordEmail?.status === "success") {
@@ -379,7 +383,57 @@ export const useAccounts = ({ fpi }) => {
   };
 
   const sendResetPasswordMobile = (data) => {
-    // return this.$store.dispatch(SEND_RESET_PASSWORD_MOBILE, data);
+    const id = window.APP_DATA.applicationID;
+    const { mobile, country_code, action, token } = data;
+
+    const payload = {
+      platform: id,
+      sendMobileForgotOtpRequestSchemaInput: {
+        android_hash: Math.random().toString(36).substring(2, 15),
+        country_code: country_code,
+        mobile: mobile,
+        action: action,
+        token: token,
+      },
+    };
+    return fpi.executeGQL(SENT_RESET_PASSWORD_MOBILE, payload).then((res) => {
+      if (res?.errors) {
+        showSnackbar(res?.errors?.[0]?.message, "error");
+        throw res?.errors?.[0];
+      }
+      if (res?.data?.sendForgotOTPOnMobile?.success) {
+        showSnackbar(
+          t("resource.common.sent_otp_on_registered_mobile"),
+          "success"
+        );
+        fpi.custom.setValue(
+          "resend_otp_time",
+          res?.data?.sendForgotOTPOnMobile?.resend_timer
+        );
+        setForgotPasswordData(res?.data?.sendForgotOTPOnMobile);
+      }
+      return res?.data?.sendForgotOTPOnMobile;
+    });
+  };
+
+  const sendMobileResetPassword = (data) => {
+    const payload = {
+      forgotPasswordRequestSchemaInput: {
+        code: data?.code,
+        password: data?.password,
+      },
+    };
+    return fpi.executeGQL(MOBILE_RESET_PASSWORD, payload).then((res) => {
+      if (res?.errors?.lenght) {
+        showSnackbar(res?.errors?.[0]?.message, "error");
+        throw res?.errors?.[0];
+      }
+      if (res?.data?.resetForgotPassword?.success) {
+        setIsResetSuccess(true);
+        showSnackbar("Your password has been reset successfully", "success");
+      }
+      return res?.data?.sendResetPasswordMobile;
+    });
   };
 
   const resendVerifyMobileOtp = (data) => {
@@ -620,5 +674,8 @@ export const useAccounts = ({ fpi }) => {
     sendVerificationLinkEmail,
     facebook,
     addEmail,
+    sendMobileResetPassword,
+    forgotPasswordData,
+    isResetSuccess,
   };
 };

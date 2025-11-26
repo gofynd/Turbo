@@ -1,19 +1,23 @@
 import React, { useMemo } from "react";
-import Slider from "react-slick";
+import clsx from "clsx";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/testimonials.less";
 import { useWindowWidth } from "../helper/hooks";
-import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
 import { useGlobalTranslation } from "fdk-core/utils";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import { BlockRenderer } from "fdk-core/components";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 export function Component({ props, globalConfig, blocks, preset }) {
-  const { isRTL } = useLocaleDirection();
+  const { direction } = useLocaleDirection();
   const { title, autoplay, slide_interval, padding_top, padding_bottom } =
     props;
   const windowWidth = useWindowWidth();
@@ -38,59 +42,31 @@ export function Component({ props, globalConfig, blocks, preset }) {
     }
   }, [blocks, preset]);
 
-  const slickSetting = () => {
-    return {
-      dots: false,
-      arrows: testimonialsList.length > 2,
-      focusOnSelect: true,
-      infinite: testimonialsList.length > 2,
-      speed: 600,
-      slidesToShow: 2,
-      slidesToScroll: 2,
-      autoplay: autoplay?.value && testimonialsList.length > 2,
-      autoplaySpeed: Number(slide_interval?.value) * 1000,
-      centerMode: testimonialsList.length > 2,
-      centerPadding: testimonialsList.length > 2 ? "75px" : "0px",
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      responsive: [
-        {
-          breakpoint: 1023,
-          settings: {
-            arrows: false,
-            centerPadding: testimonialsList.length > 2 ? "50px" : "0px",
-          },
-        },
-        {
-          breakpoint: 768,
-          settings: {
-            arrows: false,
-            centerPadding: testimonialsList.length > 2 ? "64px" : "0px",
-          },
-        },
-      ],
-      rtl: isRTL,
-    };
-  };
+  const len = testimonialsList.length;
+  const autoplayEnabled = autoplay?.value && len > 2;
+  const autoplayDelay = Number(slide_interval?.value) * 1000 || 3000;
 
-  const slickSettingMobile = () => {
-    return {
-      dots: false,
-      arrows: false,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      focusOnSelect: true,
-      infinite: testimonialsList.length > 1,
-      speed: 600,
-      autoplay: autoplay?.value && testimonialsList.length > 1,
-      autoplaySpeed: Number(slide_interval?.value) * 1000,
-      centerMode: testimonialsList.length > 1,
-      centerPadding: "50px",
-      nextArrow: <SliderNextArrow />,
-      prevArrow: <SliderPrevArrow />,
-      rtl: isRTL,
+  const carouselProps = useMemo(() => {
+    const opts = {
+      align: len > 2 ? "start" : "center",
+      direction,
+      loop: len > 2,
+      draggable: true,
+      containScroll: "trimSnaps",
+      slidesToScroll: 2,
+      duration: 35,
+      breakpoints: {
+        "(max-width: 480px)": {
+          align: len > 1 ? "start" : "center",
+          loop: len > 1,
+          slidesToScroll: 1,
+        },
+      },
     };
-  };
+
+    const plugins = autoplayEnabled ? [Autoplay({ delay: autoplayDelay })] : [];
+    return { opts, plugins };
+  }, [direction, len, autoplayEnabled, autoplayDelay]);
 
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 16}px`,
@@ -102,50 +78,33 @@ export function Component({ props, globalConfig, blocks, preset }) {
       <h2 className={`fx-title ${styles.testimonialTitle} fontHeader`}>
         {title?.value}
       </h2>
-
       <div
-        className={`remove-horizontal-scroll testimonial-slider ${styles.testimonialSlider} 
-          ${testimonialsList?.length === 1 ? styles.oneItem : ""}  
-          ${testimonialsList?.length === 2 ? styles.twoItem : ""}
-        `}
-        style={{
-          "--slick-dots": `${Math.ceil(testimonialsList?.length) * 22 + 10}px`,
-        }}
+        className={clsx(
+          styles.testimonialSlider,
+          testimonialsList?.length === 1 && styles.oneItem,
+          testimonialsList?.length === 2 && styles.twoItem
+        )}
       >
         {testimonialsList?.length > 0 && (
-          <>
-            <Slider className={`${styles.hideOnMobile}`} {...slickSetting()}>
-              {testimonialsList.map((block, index) =>
-                block?.type === "testimonial" ? (
-                  <TestimonialItem
-                    key={`desktop_${index}`}
-                    className={styles.sliderItem}
-                    testimonial={block.props}
-                    globalConfig={globalConfig}
-                  />
-                ) : (
-                  <BlockRenderer key={`desktop_${index}`} block={block} />
-                )
-              )}
-            </Slider>
-            <Slider
-              className={`${styles.hideOnDesktop}`}
-              {...slickSettingMobile()}
-            >
-              {testimonialsList.map((block, index) =>
-                block?.type === "testimonial" ? (
-                  <TestimonialItem
-                    key={`mobile_${index}`}
-                    className={styles.sliderItem}
-                    testimonial={block.props}
-                    globalConfig={globalConfig}
-                  />
-                ) : (
-                  <BlockRenderer key={`mobile_${index}`} block={block} />
-                )
-              )}
-            </Slider>
-          </>
+          <Carousel {...carouselProps}>
+            <CarouselContent>
+              {testimonialsList?.map((block, index) => (
+                <CarouselItem key={index} className={styles.carouselItem}>
+                  {block?.type === "testimonial" ? (
+                    <TestimonialItem
+                      className={styles.sliderItem}
+                      testimonial={block.props}
+                      globalConfig={globalConfig}
+                    />
+                  ) : (
+                    <BlockRenderer block={block} />
+                  )}
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className={styles.carouselBtn} />
+            <CarouselNext className={styles.carouselBtn} />
+          </Carousel>
         )}
       </div>
     </section>

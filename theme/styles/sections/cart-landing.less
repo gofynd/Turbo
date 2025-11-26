@@ -1,5 +1,4 @@
 @import "../../styles/main.less";
-@import "../base.global.less";
 
 .cart {
   @media @tablet {
@@ -75,6 +74,7 @@
         }
       }
     }
+
     .cartTitleContainer {
       border: 1px solid @DividerStokes;
       padding: 24px;
@@ -87,9 +87,6 @@
       align-items: center;
       width: 100%;
       border-radius: 8px 8px 0px 0px;
-      @media @tablet {
-        border-radius: 0;
-      }
       @media @mobile {
         padding: 16px;
         border-width: 1px 0;
@@ -123,7 +120,7 @@
           font-weight: 500;
           @media @mobile {
             font-size: 12px;
-            margin-inline-start: 8px;
+            margin-left: 8px;
           }
         }
       }
@@ -157,7 +154,6 @@
     }
 
     .priceSummaryLoginButton {
-      .btnPrimary();
       border-radius: @ButtonRadius;
       background: @ButtonPrimary;
       cursor: pointer;

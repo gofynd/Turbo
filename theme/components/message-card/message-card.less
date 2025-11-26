@@ -1,0 +1,57 @@
+@import "../../styles/main.less";
+.messageCardWrapper {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border-radius: 4px;
+
+  background: var(--old-color-palette-semantic-color-error-light, #fbeaea);
+  box-sizing: border-box;
+
+  &.success {
+    background: #edfaf4;
+    border-left: 4.5px solid #0d5e25;
+    color: @DiscountBadgeBackground;
+  }
+
+  &.failure {
+    background: #fbeaea;
+    border-left: 4.5px solid #d93131;
+    color: @ErrorText;
+  }
+
+  &.info {
+    background: #fff9dc;
+    border-left: 4.5px solid #e7ca3f;
+    color: #1f1f1f;
+  }
+  .infoContainer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4px;
+    padding: 16px;
+    .infoIconContainer {
+      padding-top: 16px;
+    }
+    .messageContent {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 16px 24px 16px 12px;
+      .messageText {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .secondaryMessageText {
+        color: @OldColorPaletteTextColorPrimary;
+        font-size: 12px;
+        font-weight: 400;
+
+        span {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}

@@ -177,7 +177,8 @@
             "footer_description": "Rooted in care, grown with purpose. Bloom is more than a brand — it’s a reminder that meaningful growth starts with connection. Whether it's people, products, or planet — we nurture what matters.",
             "footer_image": true,
             "footer_image_desktop": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/desktop-footer-image.jpg",
-            "footer_image_mobile": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/mobile-footer-image.jpg"
+            "footer_image_mobile": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/mobile-footer-image.jpg",
+            "storefront_copilot_actions": false
           }
         }
       },
@@ -1053,6 +1054,51 @@
           {
             "blocks": [
               {
+                "type": "delivery_header",
+                "name": "Delivery Header",
+                "props": {}
+              },
+              {
+                "type": "cart_items",
+                "name": "Cart Items",
+                "props": {
+                  "show_share_bag": {
+                    "type": "checkbox",
+                    "value": true
+                  }
+                }
+              }
+            ],
+            "label": "Cart Items",
+            "name": "cart-items",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "canvas": "left_panel",
+            "preset": {},
+            "props": {
+              "show_sticky_footer": {
+                "type": "checkbox",
+                "value": false
+              }
+            }
+          },
+          {
+            "blocks": [
+              {
                 "type": "coupon",
                 "name": "Coupon",
                 "props": {}
@@ -1060,6 +1106,11 @@
               {
                 "type": "comment",
                 "name": "Comment",
+                "props": {}
+              },
+              {
+                "type": "loyalty_points",
+                "name": "Loyalty Points",
                 "props": {}
               },
               {
@@ -1079,12 +1130,12 @@
               },
               {
                 "type": "share_cart",
-                "name": "Share Cart",
+                "name": "Share Cart (Desktop)",
                 "props": {}
               }
             ],
-            "label": "Cart Landing",
-            "name": "cart-landing",
+            "label": "Cart Items",
+            "name": "cart-items",
             "predicate": {
               "route": {
                 "exact_url": "",
@@ -1101,11 +1152,112 @@
                 "authenticated": true
               }
             },
+            "canvas": "right_panel",
+            "preset": {},
+            "props": {
+              "show_sticky_footer": {
+                "type": "checkbox",
+                "value": true
+              }
+            }
+          }
+        ],
+        "value": "cart-landing"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "type": "stepper",
+                "name": "Stepper",
+                "props": {}
+              },
+              {
+                "type": "delivery_header",
+                "name": "Delivery Header",
+                "props": {}
+              },
+              {
+                "type": "order_summary",
+                "name": "Order Summary",
+                "props": {}
+              },
+              {
+                "type": "payment_method",
+                "name": "Payment Method",
+                "props": {}
+              }
+            ],
+            "label": "Checkout",
+            "name": "checkout",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "canvas": "left_panel",
+            "preset": {},
+            "props": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "coupons",
+                "name": "Coupons",
+                "props": {}
+              },
+              {
+                "type": "comment",
+                "name": "Comment",
+                "props": {}
+              },
+              {
+                "type": "price_breakup",
+                "name": "Price Breakup",
+                "props": {}
+              },
+              {
+                "type": "place_order",
+                "name": "Place Order Button",
+                "props": {}
+              }
+            ],
+            "label": "Checkout",
+            "name": "checkout",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "canvas": "right_panel",
             "preset": {},
             "props": {}
           }
         ],
-        "value": "cart-landing"
+        "value": "single-page-checkout"
       },
       {
         "sections": [

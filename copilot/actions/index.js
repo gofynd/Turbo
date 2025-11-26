@@ -1,6 +1,5 @@
 // Import all action modules
 import { searchActions } from "./search-actions.js";
-import { cartActions } from "./cart-actions.js";
 import { cartActionsV2 } from "./cart-actions-v2.js"; // NEW: Advanced cart actions with data chaining
 import { redirectActions } from "./redirect-actions.js";
 import { productActions } from "./product-actions.js";
@@ -25,7 +24,6 @@ export const allCopilotActions = [
 // Export individual action arrays for granular control if needed
 export {
   searchActions,
-  cartActions,
   cartActionsV2, // NEW: Export the new cart actions
   redirectActions,
   productActions,

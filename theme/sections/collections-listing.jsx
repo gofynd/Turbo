@@ -1,19 +1,18 @@
-import React, { useEffect, useMemo } from "react";
-import Slider from "react-slick";
+import React, { useEffect, useMemo, useState } from "react";
 import { BlockRenderer } from "fdk-core/components";
 import styles from "../styles/sections/collections-listing.less";
-import SliderRightIcon from "../assets/images/glide-arrow-right.svg";
-import SliderLeftIcon from "../assets/images/glide-arrow-left.svg";
 import { COLLECTION } from "../queries/collectionsQuery";
 import { useGlobalStore, useFPI } from "fdk-core/utils";
 import placeholderImage from "../assets/images/placeholder/collections-listing.png";
 import CollectionCard from "../components/collection-card/collection-card";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
-import { isRunningOnClient } from "../helper/utils";
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
 
 export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const fpi = useFPI();
@@ -142,63 +141,55 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
   } ${layout_mobile?.value === "stacked" ? styles.hideOnTablet : ""} ${
     layout_desktop?.value === "grid" ? styles.hideOnDesktop : ""
   }`;
-  const { isRTL } = useLocaleDirection();
-  const config = useMemo(
-    () => ({
-      arrows: collectionsForScrollView?.length > itemsPerRow,
-      dots: false,
-      speed: collectionsForScrollView?.length / itemsPerRow > 2 ? 700 : 400,
-      slidesToShow: itemsPerRow,
-      slidesToScroll: itemsPerRow,
-      swipeToSlide: true,
-      autoplay: false,
-      autoplaySpeed: 3000,
-      infinite: collectionsForScrollView?.length > itemsPerRow,
-      cssEase: "linear",
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      responsive: [
-        {
-          breakpoint: 780,
-          settings: {
-            speed: 400,
-            arrows: false,
-            slidesToShow: 3,
-            slidesToScroll: 3,
-          },
-        },
-      ],
-      rtl: isRTL,
-    }),
-    [collectionsForScrollView?.length, itemsPerRow]
-  );
-
-  const configMobile = useMemo(
-    () => ({
-      dots: false,
-      speed: 400,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      swipeToSlide: true,
-      autoplay: false,
-      autoplaySpeed: 3000,
-      infinite: collectionsForScrollView?.length > 1,
-      arrows: false,
-      nextArrow: <SliderRightIcon />,
-      prevArrow: <SliderLeftIcon />,
-      centerMode: collectionsForScrollView?.length > 1,
-      centerPadding: "25px",
-      cssEase: "linear",
-      rtl: isRTL,
-    }),
-    [collectionsForScrollView?.length]
-  );
+  const { direction } = useLocaleDirection();
 
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 16}px`,
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
     "--bg-color": `${img_container_bg?.value || "#00000000"}`,
   };
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 480px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
+  const len = collectionsForScrollView.length;
+
+  const toShow = isMobile ? 1 : Math.max(itemsPerRow, 1);
+
+  const desktopSpeedMs = len / Math.max(itemsPerRow, 1) > 2 ? 700 : 400;
+  const speedMs = isMobile ? 400 : desktopSpeedMs;
+  const duration = speedMs <= 400 ? 25 : 40;
+
+  const carouselProps = useMemo(() => {
+    const opts = {
+      align: len > 1 ? "center" : "start",
+      direction,
+      loop: len > 1,
+      draggable: true,
+      containScroll: "trimSnaps",
+      slidesToScroll: 1,
+      duration,
+      breakpoints: {
+        "(min-width: 481px)": {
+          align: "start",
+          loop: len > itemsPerRow,
+          slidesToScroll: itemsPerRow,
+        },
+      },
+    };
+    return { opts };
+  }, [isMobile, direction, itemsPerRow, duration, len]);
+
+  const slideBasis = isMobile ? `calc(100% - 38px)` : `${100 / toShow}%`;
+
+  const viewportStyle = isMobile && len > 1 ? { paddingInline: "25px" } : {};
 
   return (
     <section className={styles.collections__template} style={dynamicStyles}>
@@ -234,44 +225,34 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
       {isHorizontalView && !!collectionsForScrollView.length && (
         <div
           className={`remove-horizontal-scroll ${styles.collectionSlider} ${horizontalViewClassName}`}
-          style={{
-            "--slick-dots": `${Math.ceil(collectionsForScrollView?.length / itemsPerRow) * 22 + 10}px`,
-          }}
         >
-          <Slider {...config} className={`${styles.hideOnMobile}`}>
-            {collectionsForScrollView?.map(
-              ({ type, data: card, slug }, index) =>
-                type !== "collection-item" ? (
-                  <BlockRenderer key={slug} block={card} />
-                ) : (
-                  <CollectionItem
-                    className={styles.sliderItem}
-                    key={`${card?.collection?.name}_${index}`}
-                    collection={card?.collection}
-                    props={props}
-                    srcset={getImgSrcSet()}
-                    defer={index >= itemsPerRow}
-                  />
+          <Carousel {...carouselProps}>
+            <CarouselContent>
+              {collectionsForScrollView?.map(
+                ({ type, data: card, slug }, index) => (
+                  <CarouselItem
+                    key={index}
+                    style={{ flex: `0 0 ${slideBasis}` }}
+                  >
+                    {type !== "collection-item" ? (
+                      <BlockRenderer key={slug} block={card} />
+                    ) : (
+                      <CollectionItem
+                        className={styles.sliderItem}
+                        key={`${card?.collection?.name}_${index}`}
+                        collection={card?.collection}
+                        props={props}
+                        srcset={getImgSrcSet()}
+                        defer={index >= itemsPerRow}
+                      />
+                    )}
+                  </CarouselItem>
                 )
-            )}
-          </Slider>
-          <Slider {...configMobile} className={`${styles.showOnMobile}`}>
-            {collectionsForScrollView?.map(
-              ({ type, data: card, slug }, index) =>
-                type !== "collection-item" ? (
-                  <BlockRenderer key={slug} block={card} />
-                ) : (
-                  <CollectionItem
-                    className={styles.sliderItem}
-                    key={`${card?.collection?.name}_${index}`}
-                    collection={card?.collection}
-                    props={props}
-                    srcset={getImgSrcSet()}
-                    defer={index >= 1}
-                  />
-                )
-            )}
-          </Slider>
+              )}
+            </CarouselContent>
+            <CarouselPrevious className={styles.carouselBtn} />
+            <CarouselNext className={styles.carouselBtn} />
+          </Carousel>
         </div>
       )}
       {isDemoBlock() && (

@@ -1,35 +1,54 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
-import Slider from "react-slick";
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  lazy,
+  Suspense,
+} from "react";
 import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
 import {
   useAccounts,
   useViewport,
   useWishlist,
   useThemeFeature,
+  useLocaleDirection,
 } from "../helper/hooks";
-import ArrowLeftIcon from "../assets/images/glide-arrow-left.svg";
-import ArrowRightIcon from "../assets/images/glide-arrow-right.svg";
 import { FEATURED_COLLECTION } from "../queries/collectionsQuery";
 import styles from "../styles/sections/multi-collection-product-list.less";
 import ProductCard from "@gofynd/theme-template/components/product-card/product-card";
 import "@gofynd/theme-template/components/product-card/product-card.css";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
-import Modal from "@gofynd/theme-template/components/core/modal/modal";
 import "@gofynd/theme-template/components/core/modal/modal.css";
-import AddToCart from "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart";
 import "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
-import SizeGuide from "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide";
 import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide.css";
 import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
 import useAddToCartModal from "../page-layouts/plp/useAddToCartModal";
 import { FDKLink, BlockRenderer } from "fdk-core/components";
-import {
-  SliderNextArrow,
-  SliderPrevArrow,
-} from "../components/slider-arrow/slider-arrow";
 import { useNavigate } from "react-router-dom";
-import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../components/carousel";
+const Modal = lazy(
+  () => import("@gofynd/theme-template/components/core/modal/modal")
+);
+const SizeGuide = lazy(
+  () =>
+    import(
+      "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide"
+    )
+);
+const AddToCart = lazy(
+  () =>
+    import(
+      "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart"
+    )
+);
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const { t } = useGlobalTranslation("translation");
@@ -69,7 +88,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const pincodeDetails = useGlobalStore(fpi?.getters?.PINCODE_DETAILS);
   const isTablet = useViewport(0, 768);
-  const { isRTL } = useLocaleDirection();
+  const { direction } = useLocaleDirection();
 
   const addToCartConfigs = {
     mandatory_pincode,
@@ -112,65 +131,6 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     }
     toggleWishlist(data);
   };
-
-  const config = useMemo(() => {
-    const colCount = Number(per_row?.value ?? 4);
-    const isCollectionExceedCount = activeCollectionItems?.length > colCount;
-    return {
-      dots: false,
-      arrows: isCollectionExceedCount,
-      infinite: isCollectionExceedCount,
-      speed: 400,
-      swipeToSlide: true,
-      touchMove: true,
-      touchThreshold: 8,
-      slidesToShow: colCount,
-      slidesToScroll: colCount,
-      autoplay: false,
-      autoplaySpeed: 3000,
-      centerMode: false,
-      cssEase: "ease-in-out",
-      nextArrow: <SliderNextArrow nextArrowStyles={styles.nextArrowStyles} />,
-      prevArrow: <SliderPrevArrow prevArrowStyles={styles.prevArrowStyles} />,
-      responsive: [
-        {
-          breakpoint: 780,
-          settings: {
-            arrows: false,
-          },
-        },
-      ],
-      rtl: isRTL,
-    };
-  }, [activeCollectionItems?.length, per_row?.value]);
-
-  const configMobile = useMemo(() => {
-    const colCount = Number(per_row?.value ?? 4);
-    const isCollectionExceedCount = activeCollectionItems?.length > colCount;
-    return {
-      infinite: isCollectionExceedCount,
-      speed: 400,
-      swipeToSlide: true,
-      touchMove: true,
-      touchThreshold: 8, // Increase for smoother swiping
-      autoplay: false,
-      autoplaySpeed: 3000,
-      cssEase: "ease-in-out",
-      nextArrow: <ArrowRightIcon />,
-      prevArrow: <ArrowLeftIcon />,
-      dots: false,
-      arrows: false,
-      slidesToShow: activeCollectionItems?.length >= 2 ? 2 : 1,
-      slidesToScroll: 1,
-      draggable: true, // Allow dragging for swipe gestures
-      focusOnSelect: false, // Avoid snapping to selected slide on tap
-      centerMode: false, // Prevent sticky slides on swipe
-      initialSlide: 0, // Start from the first slide
-      waitForAnimate: false, // Avoid delays between slides during swipe
-      edgeFriction: 0.35, // Provide some resistance at the edges
-      rtl: isRTL,
-    };
-  }, [activeCollectionItems?.length, per_row?.value]);
 
   const handleLinkChange = (index) => {
     setActiveLink(index);
@@ -246,6 +206,48 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
+  const colCount = Number(per_row?.value ?? 4);
+  const len = activeCollectionItems?.length;
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 480px)");
+    const onChange = () => setIsMobile(mq.matches);
+    onChange();
+    mq.addEventListener?.("change", onChange);
+
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+
+  const slidesToShow = isMobile
+    ? Math.min(2, Math.max(len, 1))
+    : Math.max(colCount, 1);
+
+  const carouselProps = useMemo(() => {
+    const mobileSlidesToShow = Math.min(2, Math.max(len, 1));
+    const opts = {
+      align: "start",
+      direction,
+      loop: len > mobileSlidesToShow,
+      draggable: true,
+      containScroll: "trimSnaps",
+      slidesToScroll: mobileSlidesToShow,
+      duration: 25,
+      startIndex: 0,
+      breakpoints: {
+        "(min-width: 481px)": {
+          align: "start",
+          loop: len > colCount,
+          slidesToScroll: colCount,
+        },
+      },
+    };
+    return { opts };
+  }, [direction, len, colCount]);
+
+  const slideBasis = `${100 / slidesToShow}%`;
+
   return (
     <>
       <section className={styles.sectionWrapper} style={dynamicStyles}>
@@ -293,98 +295,60 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
           ) : (
             <>
               {activeCollectionItems?.length > 0 && (
-                <div
-                  className={`remove-horizontal-scroll ${styles.slideWrap}`}
-                  style={{
-                    "--slick-dots": `${Math.ceil(activeCollectionItems?.length / per_row?.value) * 22 + 10}px`,
-                  }}
-                >
-                  <Slider className={`${styles.hideOnMobile}`} {...config}>
-                    {activeCollectionItems?.map((product, index) => (
-                      <div
-                        data-cardtype="'Products'"
-                        key={index}
-                        className={styles.sliderView}
-                      >
-                        <div
-                          className={styles.productCardWrapper}
-                          onClick={() => {
-                            navigate?.(`/product/${product.slug}`, {
-                              state: {
-                                product,
-                              },
-                            });
-                          }}
+                <div className={`remove-horizontal-scroll ${styles.slideWrap}`}>
+                  <Carousel {...carouselProps}>
+                    <CarouselContent>
+                      {activeCollectionItems?.map((product, index) => (
+                        <CarouselItem
+                          key={index}
+                          style={{ flex: `0 0 ${slideBasis}` }}
                         >
-                          <ProductCard
-                            product={product}
-                            listingPrice={listingPrice}
-                            isSaleBadge={enable_sales_badge?.value}
-                            isWishlistDisplayed={false}
-                            isWishlistIcon={show_wishlist_icon?.value}
-                            columnCount={columnCount}
-                            isPrice={globalConfig?.show_price}
-                            isImageFill={img_fill?.value}
-                            onWishlistClick={handleWishlistToggle}
-                            followedIdList={followedIdList}
-                            showAddToCart={showAddToCart}
-                            actionButtonText={
-                              card_cta_text?.value ??
-                              t("resource.common.add_to_cart")
-                            }
-                            handleAddToCart={handleAddToCart}
-                            aspectRatio={getProductImgAspectRatio(globalConfig)}
-                            imgSrcSet={imgSrcSet}
-                            isSlider
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </Slider>
-                  <Slider
-                    className={`${styles.showOnMobile}`}
-                    {...configMobile}
-                  >
-                    {activeCollectionItems?.map((product, index) => (
-                      <div
-                        data-cardtype="'Products'"
-                        key={index}
-                        className={styles.sliderView}
-                      >
-                        <div
-                          onClick={() => {
-                            navigate?.(`/product/${product.slug}`, {
-                              state: {
-                                product,
-                              },
-                            });
-                          }}
-                        >
-                          <ProductCard
-                            product={product}
-                            listingPrice={listingPrice}
-                            isSaleBadge={enable_sales_badge?.value}
-                            isWishlistDisplayed={false}
-                            isWishlistIcon={show_wishlist_icon?.value}
-                            columnCount={columnCount}
-                            isPrice={globalConfig?.show_price}
-                            isImageFill={img_fill?.value}
-                            onWishlistClick={handleWishlistToggle}
-                            followedIdList={followedIdList}
-                            showAddToCart={showAddToCart}
-                            actionButtonText={
-                              card_cta_text?.value ??
-                              t("resource.common.add_to_cart")
-                            }
-                            handleAddToCart={handleAddToCart}
-                            aspectRatio={getProductImgAspectRatio(globalConfig)}
-                            imgSrcSet={imgSrcSet}
-                            isSlider
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </Slider>
+                          <div
+                            data-cardtype="'Products'"
+                            key={index}
+                            className={styles.sliderView}
+                          >
+                            <div
+                              className={styles.productCardWrapper}
+                              onClick={() => {
+                                navigate?.(`/product/${product.slug}`, {
+                                  state: {
+                                    product,
+                                  },
+                                });
+                              }}
+                            >
+                              <ProductCard
+                                product={product}
+                                listingPrice={listingPrice}
+                                isSaleBadge={enable_sales_badge?.value}
+                                isWishlistDisplayed={false}
+                                isWishlistIcon={show_wishlist_icon?.value}
+                                columnCount={columnCount}
+                                isPrice={globalConfig?.show_price}
+                                isImageFill={img_fill?.value}
+                                onWishlistClick={handleWishlistToggle}
+                                followedIdList={followedIdList}
+                                showAddToCart={showAddToCart}
+                                actionButtonText={
+                                  card_cta_text?.value ??
+                                  t("resource.common.add_to_cart")
+                                }
+                                handleAddToCart={handleAddToCart}
+                                aspectRatio={getProductImgAspectRatio(
+                                  globalConfig
+                                )}
+                                imgSrcSet={imgSrcSet}
+                                isSlider
+                              />
+                            </div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className={styles.carouselBtn} />
+                    <CarouselNext className={styles.carouselBtn} />
+                  </Carousel>
                 </div>
               )}
             </>
@@ -393,23 +357,36 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
       </section>
       {showAddToCart && (
         <>
-          <Modal
-            isOpen={isAddToCartOpen}
-            hideHeader={!isTablet}
-            bodyClassName={styles.addToCartBody}
-            title={
-              isTablet ? restAddToModalProps?.productData?.product?.name : ""
-            }
-            closeDialog={restAddToModalProps?.handleClose}
-            containerClassName={styles.addToCartContainer}
-          >
-            <AddToCart {...restAddToModalProps} globalConfig={globalConfig} />
-          </Modal>
-          <SizeGuide
-            isOpen={showSizeGuide}
-            onCloseDialog={handleCloseSizeGuide}
-            productMeta={restAddToModalProps?.productData?.product?.sizes}
-          />
+          {isAddToCartOpen && (
+            <Suspense>
+              <Modal
+                isOpen={isAddToCartOpen}
+                hideHeader={!isTablet}
+                bodyClassName={styles.addToCartBody}
+                title={
+                  isTablet
+                    ? restAddToModalProps?.productData?.product?.name
+                    : ""
+                }
+                closeDialog={restAddToModalProps?.handleClose}
+                containerClassName={styles.addToCartContainer}
+              >
+                <AddToCart
+                  {...restAddToModalProps}
+                  globalConfig={globalConfig}
+                />
+              </Modal>
+            </Suspense>
+          )}
+          {showSizeGuide && (
+            <Suspense>
+              <SizeGuide
+                isOpen={showSizeGuide}
+                onCloseDialog={handleCloseSizeGuide}
+                productMeta={restAddToModalProps?.productData?.product?.sizes}
+              />
+            </Suspense>
+          )}
         </>
       )}
     </>

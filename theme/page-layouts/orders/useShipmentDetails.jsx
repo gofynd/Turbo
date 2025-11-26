@@ -22,7 +22,7 @@ const useShipmentDetails = (fpi) => {
   const [isLoading, setIsLoading] = useState(true);
   const [attempts, setAttempts] = useState(0);
   const [showPolling, setShowPolling] = useState(false);
-
+  
   const fetchShipmentDetails = useCallback(() => {
     setTimeout(() => {
       const values = {
@@ -62,6 +62,8 @@ const useShipmentDetails = (fpi) => {
     }
   }, [params.shipmentId, location.search]);
 
+  console.log("shipmentDetails", shipmentDetails)
+  console.log("showpolling",showPolling)
   useEffect(() => {
     if (params.shipmentId) {
       if (attempts < 5 && Object.keys(shipmentDetails).length === 0) {
@@ -176,6 +178,24 @@ const useShipmentDetails = (fpi) => {
       console.log({ error });
     }
   }
+
+  const refetchShipmentDetails = async () => {
+    setIsLoading(true);
+    try {
+      const values = {
+        shipmentId: params.shipmentId,
+      };
+      const res = await fpi.executeGQL(GET_SHIPMENT_DETAILS, values);
+      if (res?.data?.shipment) {
+        const data = res?.data?.shipment?.detail;
+        setShipmentDetails({ ...data });
+      }
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   return {
     isLoading,
@@ -185,6 +205,7 @@ const useShipmentDetails = (fpi) => {
     getBagReasons,
     getInvoice,
     updateShipment,
+    refetchShipmentDetails,
     showPolling,
     attempts,
   };

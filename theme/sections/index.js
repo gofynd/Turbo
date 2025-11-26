@@ -9,11 +9,15 @@ const BrandListingSectionChunk = loadable(() => import(/* webpackChunkName:"Bran
 
 const BrandsLandingSectionChunk = loadable(() => import(/* webpackChunkName:"BrandsLandingSectionChunk" */ './brands-landing.jsx'));
 
+const CartItemsSectionChunk = loadable(() => import(/* webpackChunkName:"CartItemsSectionChunk" */ './cart-items.jsx'));
+
 const CartLandingSectionChunk = loadable(() => import(/* webpackChunkName:"CartLandingSectionChunk" */ './cart-landing.jsx'));
 
 const CategoriesListingSectionChunk = loadable(() => import(/* webpackChunkName:"CategoriesListingSectionChunk" */ './categories-listing.jsx'));
 
 const CategoriesSectionChunk = loadable(() => import(/* webpackChunkName:"CategoriesSectionChunk" */ './categories.jsx'));
+
+const CheckoutSectionChunk = loadable(() => import(/* webpackChunkName:"CheckoutSectionChunk" */ './checkout.jsx'));
 
 const CollectionListingSectionChunk = loadable(() => import(/* webpackChunkName:"CollectionListingSectionChunk" */ './collection-listing.jsx'));
 
@@ -53,6 +57,8 @@ const RawHtmlSectionChunk = loadable(() => import(/* webpackChunkName:"RawHtmlSe
 
 const RegisterSectionChunk = loadable(() => import(/* webpackChunkName:"RegisterSectionChunk" */ './register.jsx'));
 
+const SiteMapSectionChunk = loadable(() => import(/* webpackChunkName:"SiteMapSectionChunk" */ './site-map.jsx'));
+
 const TestimonialsSectionChunk = loadable(() => import(/* webpackChunkName:"TestimonialsSectionChunk" */ './testimonials.jsx'));
 
 const TrustMarkerSectionChunk = loadable(() => import(/* webpackChunkName:"TrustMarkerSectionChunk" */ './trust-marker.jsx'));
@@ -68,12 +74,16 @@ const getbundle = (type) => {
             return (props) => <BrandListingSectionChunk {...props}/>;
         case 'brands-landing':
             return (props) => <BrandsLandingSectionChunk {...props}/>;
+        case 'cart-items':
+            return (props) => <CartItemsSectionChunk {...props}/>;
         case 'cart-landing':
             return (props) => <CartLandingSectionChunk {...props}/>;
         case 'categories-listing':
             return (props) => <CategoriesListingSectionChunk {...props}/>;
         case 'categories':
             return (props) => <CategoriesSectionChunk {...props}/>;
+        case 'checkout':
+            return (props) => <CheckoutSectionChunk {...props}/>;
         case 'collection-listing':
             return (props) => <CollectionListingSectionChunk {...props}/>;
         case 'collections-listing':
@@ -112,6 +122,8 @@ const getbundle = (type) => {
             return (props) => <RawHtmlSectionChunk {...props}/>;
         case 'register':
             return (props) => <RegisterSectionChunk {...props}/>;
+        case 'site-map':
+            return (props) => <SiteMapSectionChunk {...props}/>;
         case 'testimonials':
             return (props) => <TestimonialsSectionChunk {...props}/>;
         case 'trust-marker':
@@ -127,9 +139,11 @@ export default {
         'blog': { ...BlogSectionChunk, Component: getbundle('blog') },
         'brand-listing': { ...BrandListingSectionChunk, Component: getbundle('brand-listing') },
         'brands-landing': { ...BrandsLandingSectionChunk, Component: getbundle('brands-landing') },
+        'cart-items': { ...CartItemsSectionChunk, Component: getbundle('cart-items') },
         'cart-landing': { ...CartLandingSectionChunk, Component: getbundle('cart-landing') },
         'categories-listing': { ...CategoriesListingSectionChunk, Component: getbundle('categories-listing') },
         'categories': { ...CategoriesSectionChunk, Component: getbundle('categories') },
+        'checkout': { ...CheckoutSectionChunk, Component: getbundle('checkout') },
         'collection-listing': { ...CollectionListingSectionChunk, Component: getbundle('collection-listing') },
         'collections-listing': { ...CollectionsListingSectionChunk, Component: getbundle('collections-listing') },
         'collections': { ...CollectionsSectionChunk, Component: getbundle('collections') },
@@ -149,6 +163,7 @@ export default {
         'product-listing': { ...ProductListingSectionChunk, Component: getbundle('product-listing') },
         'raw-html': { ...RawHtmlSectionChunk, Component: getbundle('raw-html') },
         'register': { ...RegisterSectionChunk, Component: getbundle('register') },
+        'site-map': { ...SiteMapSectionChunk, Component: getbundle('site-map') },
         'testimonials': { ...TestimonialsSectionChunk, Component: getbundle('testimonials') },
         'trust-marker': { ...TrustMarkerSectionChunk, Component: getbundle('trust-marker') },
         };
