@@ -168,7 +168,7 @@ export {
 // Export individual action categories for granular imports if needed
 export {
   searchActions,
-  cartActions,
+  cartActionsV2,
   redirectActions,
   productActions,
   wishlistActions,
