@@ -361,7 +361,7 @@ export const settings = {
         {
           type: "text",
           id: "image_text",
-          default: "Image Text",
+          default: "",
           label: "Image Text",
         },
         {
@@ -495,7 +495,7 @@ export const settings = {
         {
           type: "text",
           id: "button_text",
-          default: "button text",
+          default: "",
           label: "Button Text",
         },
         {
@@ -561,6 +561,7 @@ export const settings = {
     blocks: [
       {
         name: "t:resource.common.image_card",
+        type: "gallery",
         props: {
           image: {
             type: "image_picker",
@@ -574,6 +575,7 @@ export const settings = {
       },
       {
         name: "t:resource.common.image_card",
+        type: "gallery",
         props: {
           image: {
             type: "image_picker",
