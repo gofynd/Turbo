@@ -469,6 +469,10 @@ export function spaNavigate(path) {
 }
 
 export function translateDynamicLabel(input, t) {
+  if (input == null || typeof input !== "string") {
+    return input ?? "";
+  }
+
   const safeInput = input
     .toLowerCase()
     .replace(/\//g, "_") // replace slashes with underscores
