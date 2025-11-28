@@ -29,14 +29,48 @@ function Home({ numberOfSections, fpi }) {
   const mergedSeo = { ...seoData, title, description };
 
   useEffect(() => {
-    const handleScroll = () => {
+    // Skip on server-side
+    if (typeof window === "undefined") return;
+
+    const showAllSections = () => {
       setVisibleCount(sections.length);
       window?.removeEventListener("scroll", handleScroll);
+      // Mark that home sections have been loaded in this session
+      try {
+        sessionStorage.setItem("home_sections_loaded", "true");
+      } catch (e) {
+        // Ignore sessionStorage errors (e.g., private browsing)
+      }
     };
 
+    const handleScroll = () => {
+      showAllSections();
+    };
+
+    // Check if home sections were loaded before in this session (handles SPA back navigation)
+    let hasLoadedBefore = false;
+    try {
+      hasLoadedBefore =
+        sessionStorage.getItem("home_sections_loaded") === "true";
+    } catch (e) {
+      // Ignore sessionStorage errors
+    }
+
+    // Check if user has already scrolled
+    const hasScrolled = window.scrollY > 0;
+
+    if (hasLoadedBefore || hasScrolled) {
+      // Immediately show all sections on return visit or if already scrolled
+      showAllSections();
+      return;
+    }
+
+    // Add scroll listener for first visit
     window?.addEventListener("scroll", handleScroll);
 
-    return () => window?.removeEventListener("scroll", handleScroll);
+    return () => {
+      window?.removeEventListener("scroll", handleScroll);
+    };
   }, [sections]);
 
   if (error) {
