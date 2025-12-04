@@ -80,10 +80,10 @@ export default function useSiteMap() {
     }
   };
   useEffect(() => {
-    if (!siteMapSectionData) {
-      callApisFromClient();
-    }
-  }, []);
+  if (Object.keys(siteMapSectionData).length === 0) {
+    callApisFromClient();
+  }
+}, [siteMapSectionData]); 
 
   const convertedSocialLinks = useMemo(
     () => convertSocialLinks(SOCIAL_LINKS),
