@@ -48,6 +48,8 @@ const useProductDescription = ({
   const { isPdpSsrFetched, isI18ModalOpen, ssrProductInfo } = useGlobalStore(
     fpi?.getters?.CUSTOM_VALUE
   );
+  const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION) || {};
+  const { order = {} } = app_features || {};
   const { buybox, fulfillment_option } = useGlobalStore(
     fpi.getters.APP_FEATURES
   );
@@ -416,6 +418,15 @@ const useProductDescription = ({
   ) {
     if (event) {
       event.stopPropagation();
+    }
+    if (!order?.enabled) {
+      showSnackbar(
+        translateDynamicLabel(order?.message, t) ||
+          t("resource.common.order_not_accepting"),
+        "error"
+      );
+
+      return;
     }
     if (isLoadingPriceBySize) {
       return;

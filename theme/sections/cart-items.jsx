@@ -1,5 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useFPI, useGlobalTranslation, useNavigate } from "fdk-core/utils";
+import {
+  useFPI,
+  useGlobalTranslation,
+  useNavigate,
+  useGlobalStore,
+} from "fdk-core/utils";
 import { BlockRenderer } from "fdk-core/components";
 import PriceBreakup from "@gofynd/theme-template/components/price-breakup/price-breakup";
 import DeliveryLocation from "@gofynd/theme-template/page-layouts/cart/Components/delivery-location/delivery-location";
@@ -24,6 +29,7 @@ import EmptyCartIcon from "../assets/images/empty-cart.svg";
 import RewardIcon from "../assets/images/rewards.svg";
 import RewardBagIcon from "../assets/images/reward-bag.svg";
 import StarIcon from "../assets/images/starIcon.svg";
+import ErrorInfoIcon from "../assets/images/error-info-icon.svg";
 import RadioIcon from "../assets/images/radio";
 import { Skeleton } from "../components/core/skeletons";
 import ChipItemSkeleton from "../components/cart/chip-item-skeleton";
@@ -32,9 +38,8 @@ import {
   convertUTCDateToLocalDate,
   translateDynamicLabel,
 } from "../helper/utils";
-import { useGlobalStore } from "fdk-core/utils";
 
-export function Component({ props, blocks }) {
+export function Component({ props, globalConfig = {}, blocks }) {
   const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
 
@@ -86,6 +91,8 @@ export function Component({ props, blocks }) {
     fpi,
     cartData,
   });
+  const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION) || {};
+  const { order = {} } = app_features || {};
 
   const [sizeModal, setSizeModal] = useState(null);
   const [currentSizeModalSize, setCurrentSizeModalSize] = useState(null);
@@ -99,6 +106,10 @@ export function Component({ props, blocks }) {
   const redirectToLogin = () => {
     navigate("/auth/login?redirectUrl=/cart/bag");
   };
+
+  useEffect(() => {
+    fpi.custom.setValue("currentStep", null);
+  }, []);
 
   useEffect(() => {
     if (!cartData?.id) return;
@@ -200,6 +211,7 @@ export function Component({ props, blocks }) {
                     <DeliveryLocation
                       {...cartDeliveryLocation}
                       isGuestUser={!isLoggedIn}
+                      acceptOrder={order?.enabled}
                     />
                   );
 
@@ -239,6 +251,26 @@ export function Component({ props, blocks }) {
                         <>
                           {cartItemsArray?.length > 0 && (
                             <>
+                              {!order?.enabled && (
+                                <div className={`${styles.minCartContainer}`}>
+                                  <div
+                                    className={`${styles.minCartValidBox} ${styles.notAcceptingOrder}`}
+                                  >
+                                    <span className={styles.errorIcon}>
+                                      <ErrorInfoIcon />
+                                    </span>
+                                    <span className={styles.errMsg}>
+                                      {translateDynamicLabel(
+                                        order?.message,
+                                        t
+                                      ) ||
+                                        t(
+                                          "resource.common.order_not_accepting"
+                                        )}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
                               {firstWord === "Minimum" &&
                                 secondWord === "order" && (
                                   <div className={styles.minCartContainer}>
@@ -277,6 +309,7 @@ export function Component({ props, blocks }) {
                                     isSoldBy={true}
                                     singleItemDetails={singleItemDetails}
                                     productImage={productImage}
+                                    globalConfig={globalConfig}
                                     onUpdateCartItems={onUpdateCartItems}
                                     currentSize={currentSize}
                                     itemIndex={itemIndex}
@@ -491,7 +524,10 @@ export function Component({ props, blocks }) {
                                 <button
                                   className={styles.priceSummaryGuestButton}
                                   disabled={
-                                    !isValid || isOutOfStock || isNotServicable
+                                    !isValid ||
+                                    isOutOfStock ||
+                                    isNotServicable ||
+                                    !order?.enabled
                                   }
                                   onClick={onGotoCheckout}
                                 >
@@ -505,7 +541,10 @@ export function Component({ props, blocks }) {
                             <button
                               className={styles.priceSummaryLoginButton}
                               disabled={
-                                !isValid || isOutOfStock || isNotServicable
+                                !isValid ||
+                                isOutOfStock ||
+                                isNotServicable ||
+                                !order?.enabled
                               }
                               onClick={onGotoCheckout}
                             >
@@ -545,6 +584,7 @@ export function Component({ props, blocks }) {
             onLoginClick={redirectToLogin}
             onCheckoutClick={onGotoCheckout}
             onPriceDetailsClick={onPriceDetailsClick}
+            order={order}
           />
         )}
         <RemoveCartItem

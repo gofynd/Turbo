@@ -47,8 +47,9 @@ function SiteMap({ props }) {
       return len > max ? len : max;
     }, 0);
   }
-const sitemapContainerLength = Math.max(getMaxSectionLength(sitemapSections) * 43 + 20 , 600);
 
+const sitemapContainerLength = Math.max(getMaxSectionLength(sitemapSections) * 43 + 20 , 600);
+  
   return (
     <div className={styles.sitemapContainer} style={{"--dynamicHeight" : `${sitemapContainerLength }px` }}>
       <div className={styles.sitemapTitle}>{props?.sitemap_text?.value}</div>

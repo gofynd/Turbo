@@ -1,0 +1,49 @@
+@import "../../styles/main.less";
+
+.storeListShimmer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+
+  @media @desktop {
+    gap: 24px;
+  }
+
+  .storeCard {
+    background: @White;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media @mobile-up {
+      padding: 24px;
+      gap: 18px;
+    }
+
+    .storeName {
+      margin-bottom: 4px;
+    }
+
+    .storeInfo {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+
+      .icon {
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .infoText {
+        flex: 1;
+      }
+    }
+
+    .pickupBadge {
+      margin-top: 4px;
+    }
+  }
+}

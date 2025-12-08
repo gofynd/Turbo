@@ -77,7 +77,8 @@ function Header({ fpi }) {
 
   const [languageIscCode, setLanguageIscCode] = useState([]);
   const [scrolled, setScrolled] = useState(false);
- const isHeaderHiddenForShipmentReattempt = /^\/reattempt\/shipment\/[^/]+$/.test(location.pathname);
+  const isHeaderHiddenForShipmentReattempt =
+    /^\/reattempt\/shipment\/[^/]+$/.test(location.pathname);
   const buyNow = searchParams?.get("buy_now") || false;
 
   const isListingPage = useMemo(() => {
@@ -86,10 +87,13 @@ function Header({ fpi }) {
   }, [location?.pathname]);
 
   const isHeaderHidden = useMemo(() => {
-     const refundRegex = /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$/;
+    const refundRegex = /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$/;
     const reattemptShipmentRegex = /^\/reattempt\/shipment\/[^/]+$/;
 
-    return refundRegex.test(location?.pathname) || reattemptShipmentRegex.test(location?.pathname);
+    return (
+      refundRegex.test(location?.pathname) ||
+      reattemptShipmentRegex.test(location?.pathname)
+    );
   }, [location?.pathname]);
 
   const sections = useGlobalStore(fpi.getters.PAGE)?.sections || [];
@@ -97,7 +101,8 @@ function Header({ fpi }) {
     sections[0]?.name === "application-banner" ||
     sections[0]?.name === "image-slideshow" ||
     sections[0]?.name === "hero-image" ||
-    sections[0]?.name === "image-gallery";
+    sections[0]?.name === "image-gallery" ||
+    sections[0]?.name === "hero-video";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -302,7 +307,7 @@ function Header({ fpi }) {
 
   return (
     <>
-      {!isHeaderHidden  &&(
+      {!isHeaderHidden && (
         <div
           className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${
             transparent_header && isValidSection && !sticky_header

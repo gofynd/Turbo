@@ -4,6 +4,7 @@ import { SectionRenderer } from "fdk-core/components";
 
 import { useThemeConfig } from "../helper/hooks";
 import styles from "../styles/single-page-checkout.less";
+import { getHelmet } from "../providers/global-provider";
 
 function SingleCheckoutPage({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
@@ -13,28 +14,36 @@ function SingleCheckoutPage({ fpi }) {
   return (
     <>
       {page?.value === "single-page-checkout" && (
-        <div className={`basePageContainer margin0auto fontBody`}>
-          <div className={styles.checkoutContainer}>
-            <div className={styles.leftPanel}>
-              <SectionRenderer
-                sections={sections.filter(
-                  (section) => section.canvas === "left_panel"
-                )}
-                fpi={fpi}
-                globalConfig={globalConfig}
-              />
-            </div>
-            <div className={styles.rightPanel}>
-              <SectionRenderer
-                sections={sections.filter(
-                  (section) => section.canvas === "right_panel"
-                )}
-                fpi={fpi}
-                globalConfig={globalConfig}
-              />
+        <>
+          {getHelmet({
+            title: "Checkout",
+            description: "Complete your purchase securely in a single step.",
+            robots: "noindex, nofollow",
+            ogType: "website",
+          })}
+          <div className={`basePageContainer margin0auto fontBody`}>
+            <div className={styles.checkoutContainer}>
+              <div className={styles.leftPanel}>
+                <SectionRenderer
+                  sections={sections.filter(
+                    (section) => section.canvas === "left_panel"
+                  )}
+                  fpi={fpi}
+                  globalConfig={globalConfig}
+                />
+              </div>
+              <div className={styles.rightPanel}>
+                <SectionRenderer
+                  sections={sections.filter(
+                    (section) => section.canvas === "right_panel"
+                  )}
+                  fpi={fpi}
+                  globalConfig={globalConfig}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

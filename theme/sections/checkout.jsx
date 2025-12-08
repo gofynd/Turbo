@@ -63,6 +63,8 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const [mopPayload, setMopPayload] = useState("");
   const cart_id = searchParams.get("id");
   const { isLoading, isPaymentLoading = false } = payment;
+  const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION) || {};
+  const { order = {} } = app_features || {};
 
   const currencySymbol = useMemo(
     () => bagData?.currency?.symbol || "₹",
@@ -105,9 +107,15 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       // setShowShipment(false);
       // showPaymentHandler(true);
       const finalAmount = checkoutAmount ? checkoutAmount : amount;
+      // Use cartData?.id as fallback when cart_id from URL is null
+      const resolvedCartId = cart_id || cartData?.id;
+      if (!resolvedCartId) {
+        console.error("Cart ID not available for payment options");
+        return;
+      }
       const paymentPayload = {
         pincode: localStorage?.getItem("pincode") || "",
-        cartId: cart_id,
+        cartId: resolvedCartId,
         checkoutMode: "self",
         amount: finalAmount ? finalAmount * 100 : 0,
       };
@@ -269,6 +277,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                 isApiLoading={isApiLoading}
                 getTotalValue={payment?.getTotalValue}
                 showPaymentOptions={showPaymentOptions}
+                acceptOrder={order?.enabled}
               ></SingleAddress>
             );
 

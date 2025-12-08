@@ -49,6 +49,10 @@ const MultiCollectionProductListSectionChunk = loadable(() => import(/* webpackC
 
 const OrderDetailsSectionChunk = loadable(() => import(/* webpackChunkName:"OrderDetailsSectionChunk" */ './order-details.jsx'));
 
+const OrderTrackingDetailsSectionChunk = loadable(() => import(/* webpackChunkName:"OrderTrackingDetailsSectionChunk" */ './order-tracking-details.jsx'));
+
+const OrderTrackingSectionChunk = loadable(() => import(/* webpackChunkName:"OrderTrackingSectionChunk" */ './order-tracking.jsx'));
+
 const ProductDescriptionSectionChunk = loadable(() => import(/* webpackChunkName:"ProductDescriptionSectionChunk" */ './product-description.jsx'));
 
 const ProductListingSectionChunk = loadable(() => import(/* webpackChunkName:"ProductListingSectionChunk" */ './product-listing.jsx'));
@@ -58,6 +62,8 @@ const RawHtmlSectionChunk = loadable(() => import(/* webpackChunkName:"RawHtmlSe
 const RegisterSectionChunk = loadable(() => import(/* webpackChunkName:"RegisterSectionChunk" */ './register.jsx'));
 
 const SiteMapSectionChunk = loadable(() => import(/* webpackChunkName:"SiteMapSectionChunk" */ './site-map.jsx'));
+
+const StoreLocatorSectionChunk = loadable(() => import(/* webpackChunkName:"StoreLocatorSectionChunk" */ './store-locator.jsx'));
 
 const TestimonialsSectionChunk = loadable(() => import(/* webpackChunkName:"TestimonialsSectionChunk" */ './testimonials.jsx'));
 
@@ -114,6 +120,10 @@ const getbundle = (type) => {
             return (props) => <MultiCollectionProductListSectionChunk {...props}/>;
         case 'order-details':
             return (props) => <OrderDetailsSectionChunk {...props}/>;
+        case 'order-tracking-details':
+            return (props) => <OrderTrackingDetailsSectionChunk {...props}/>;
+        case 'order-tracking':
+            return (props) => <OrderTrackingSectionChunk {...props}/>;
         case 'product-description':
             return (props) => <ProductDescriptionSectionChunk {...props}/>;
         case 'product-listing':
@@ -124,6 +134,8 @@ const getbundle = (type) => {
             return (props) => <RegisterSectionChunk {...props}/>;
         case 'site-map':
             return (props) => <SiteMapSectionChunk {...props}/>;
+        case 'store-locator':
+            return (props) => <StoreLocatorSectionChunk {...props}/>;
         case 'testimonials':
             return (props) => <TestimonialsSectionChunk {...props}/>;
         case 'trust-marker':
@@ -159,11 +171,14 @@ export default {
         'media-with-text': { ...MediaWithTextSectionChunk, Component: getbundle('media-with-text') },
         'multi-collection-product-list': { ...MultiCollectionProductListSectionChunk, Component: getbundle('multi-collection-product-list') },
         'order-details': { ...OrderDetailsSectionChunk, Component: getbundle('order-details') },
+        'order-tracking-details': { ...OrderTrackingDetailsSectionChunk, Component: getbundle('order-tracking-details') },
+        'order-tracking': { ...OrderTrackingSectionChunk, Component: getbundle('order-tracking') },
         'product-description': { ...ProductDescriptionSectionChunk, Component: getbundle('product-description') },
         'product-listing': { ...ProductListingSectionChunk, Component: getbundle('product-listing') },
         'raw-html': { ...RawHtmlSectionChunk, Component: getbundle('raw-html') },
         'register': { ...RegisterSectionChunk, Component: getbundle('register') },
         'site-map': { ...SiteMapSectionChunk, Component: getbundle('site-map') },
+        'store-locator': { ...StoreLocatorSectionChunk, Component: getbundle('store-locator') },
         'testimonials': { ...TestimonialsSectionChunk, Component: getbundle('testimonials') },
         'trust-marker': { ...TrustMarkerSectionChunk, Component: getbundle('trust-marker') },
         };

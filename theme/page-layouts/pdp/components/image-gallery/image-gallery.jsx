@@ -15,6 +15,7 @@ import ArrowLeftIcon from "../../../../assets/images/arrow-left.svg";
 import ArrowRightIcon from "../../../../assets/images/arrow-right.svg";
 import { useGlobalTranslation, useGlobalStore, useFPI } from "fdk-core/utils";
 import { Skeleton } from "../../../../components/core/skeletons";
+import { createPortal } from "react-dom";
 
 const LightboxImage = React.lazy(
   () => import("../lightbox-image/lightbox-image")
@@ -597,21 +598,23 @@ function PdpImageGallery({
         />
       </div>
 
-      {enableLightBox && (
-        <Suspense fallback={<div />}>
-          <LightboxImage
-            images={images}
-            showCaption={false}
-            showLightBox={enableLightBox}
-            iconColor={iconColor}
-            toggleResumeVideo={() => setResumeVideo((prev) => !prev)}
-            globalConfig={globalConfig}
-            closeGallery={() => setEnableLightBox(false)}
-            currentIndex={selectedImageIndex}
-            imgSources={imgSources}
-          />
-        </Suspense>
-      )}
+      {enableLightBox &&
+        createPortal(
+          <Suspense fallback={<div />}>
+            <LightboxImage
+              images={images}
+              showCaption={false}
+              showLightBox={enableLightBox}
+              iconColor={iconColor}
+              toggleResumeVideo={() => setResumeVideo((prev) => !prev)}
+              globalConfig={globalConfig}
+              closeGallery={() => setEnableLightBox(false)}
+              currentIndex={selectedImageIndex}
+              imgSources={imgSources}
+            />
+          </Suspense>,
+          document.body
+        )}
     </div>
   );
 }

@@ -14,3 +14,4 @@ export * from "./useGoogleMapConfig";
 export * from "./usePincodeInput";
 export * from "./useLocalStorage";
 export * from "./useLocaleDirection";
+export * from "./useSeoMeta";

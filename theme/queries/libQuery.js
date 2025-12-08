@@ -392,6 +392,10 @@ export const GLOBAL_DATA = `query ApplicationConfiguration {
         revenue_engine_coupon
         staff_selection
       }
+        order {
+        enabled
+        message
+      }
     }
   }
   applicationContent {

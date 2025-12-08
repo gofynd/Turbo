@@ -1,0 +1,66 @@
+@import "../../styles/main.less";
+
+.searchSuggestionsShimmer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.searchSuggestionsShimmerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.searchSuggestionsShimmerTitle {
+  font-weight: 600;
+  text-transform: capitalize;
+  font-size: 14px;
+  line-height: 20px;
+  color: @TextHeading;
+}
+
+.searchSuggestionsShimmerList,
+.searchSuggestionsShimmerProducts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.searchSuggestionsShimmerListItem {
+  width: 100%;
+}
+
+.searchSuggestionsShimmerPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.searchSuggestionsShimmerPill {
+  flex: 0 1 auto;
+}
+
+.searchSuggestionsShimmerProductItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.searchSuggestionsShimmerThumb {
+  flex: 0 0 56px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.searchSuggestionsShimmerProductMeta {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+

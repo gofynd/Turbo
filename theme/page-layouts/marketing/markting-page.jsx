@@ -6,6 +6,8 @@ import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { getHelmet } from "../../providers/global-provider";
 import EmptyState from "../../components/empty-state/empty-state";
 import styles from "./marketing-page.less";
+import useSeoMeta from "../../helper/hooks/useSeoMeta";
+import { sanitizeHTMLTag } from "../../helper/utils";
 
 function MarketingPage({ fpi, defaultSlug }) {
   const { t } = useGlobalTranslation("translation");
@@ -21,6 +23,19 @@ function MarketingPage({ fpi, defaultSlug }) {
     published,
     slug: pageSlug,
   } = customPage || {};
+  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+    useSeoMeta({ fpi, seo });
+
+  const title = useMemo(() => {
+    const raw = sanitizeHTMLTag(seo?.title || slug || pageSlug || "");
+    if (raw && brandName) return `${raw} | ${brandName}`;
+    return raw || brandName || "";
+  }, [seo?.title, slug, pageSlug, brandName]);
+
+  const description = useMemo(() => {
+    const raw = sanitizeHTMLTag(seo?.description || "");
+    return trimDescription(raw, 160);
+  }, [seo?.description, trimDescription]);
 
   useEffect(() => {
     if (!slug || slug === pageSlug) return;
@@ -61,7 +76,15 @@ function MarketingPage({ fpi, defaultSlug }) {
 
   return (
     <>
-      {getHelmet({ seo })}
+      {getHelmet({
+        title,
+        description,
+        image: socialImage,
+        canonicalUrl,
+        url: pageUrl,
+        siteName: brandName,
+        ogType: "website",
+      })}
       <div
         id={`custom-page-${slug}`}
         className={`${styles.marketingPage} basePageContainer margin0auto`}

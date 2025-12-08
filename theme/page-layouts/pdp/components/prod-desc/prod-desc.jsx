@@ -217,7 +217,10 @@ function ProdDesc({ product, config, customClass }) {
                           <span className={styles.prop}>
                             {`${property.key} :`}{" "}
                           </span>
-                          <span className={styles.val}>{property.value}</span>
+                          <span
+                            className={styles.val}
+                            dangerouslySetInnerHTML={{ __html: property.value }}
+                          />
                         </li>
                       )
                     )}

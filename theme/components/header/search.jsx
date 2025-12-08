@@ -11,10 +11,11 @@ import SearchIcon from "../../assets/images/single-row-search.svg";
 import CloseIcon from "../../assets/images/close.svg";
 import InputSearchIcon from "../../assets/images/search.svg";
 import styles from "./styles/search.less";
-import { SEARCH_PRODUCT, AUTOCOMPLETE } from "../../queries/headerQuery";
+import { AUTOCOMPLETE } from "../../queries/headerQuery";
 import OutsideClickHandler from "react-outside-click-handler";
 import { FDKLink } from "fdk-core/components";
 import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
+import SearchSuggestionsShimmer from "../shimmer/search-suggestions-shimmer";
 
 function Search({
   screen,
@@ -34,6 +35,7 @@ function Search({
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [hasInputValue, setHasInputValue] = useState(false); // Track if input has text immediately
   const [collectionsData, setCollectionsData] = useState([]);
+  const [querySuggestions, setQuerySuggestions] = useState([]);
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
@@ -72,6 +74,9 @@ function Search({
     setSearchText("");
     setIsSearchFocused(false);
     setHasInputValue(false);
+    setSearchData([]);
+    setCollectionsData([]);
+    setQuerySuggestions([]);
     if (inputRef?.current) inputRef.current.value = "";
   };
 
@@ -100,48 +105,62 @@ function Search({
           if (productDataNormalization.length) {
             setSearchData(productDataNormalization);
             setTotalCount(data.page?.item_total || 0);
+            setQuerySuggestions([]);
           } else {
             setSearchData([]);
             setTotalCount(0);
+            setQuerySuggestions([]);
           }
         })
         .finally(() => {
           setShowSearchSuggestions(searchText?.length > 2);
         });
     } else {
-      const payload = {
-        pageNo: 1,
-        search: searchText,
-        filterQuery: "",
-        enableFilter: false,
-        sortOn: "",
-        first: 8,
-        after: "",
-        pageType: "number",
-      };
+      // Use only AUTOCOMPLETE API and handle products from the response
       fpi
-        .executeGQL(SEARCH_PRODUCT, payload, { skipStoreUpdate: true })
+        .executeGQL(AUTOCOMPLETE, { query: searchText })
         .then((res) => {
-          setSearchData(res?.data?.products?.items);
-          setTotalCount(res?.data?.products?.page?.item_total || 0);
+          const { items = [] } = res?.data?.searchProduct || {};
+          
+          const products = items.filter((item) => item.type === "product");
+          const collections = items.filter(
+            (item) => item.type === "brand" || item.type === "category"
+          );
+          const queries = items.filter(
+            (item) => item.type === "query suggestions"
+          );
+
+          // Set product data (limit to 4 for consistency with UI)
+          const limitedProducts = products.slice(0, 4);
+          setSearchData(limitedProducts);
+          setTotalCount(products.length); // Total product count for "See all" link
+
+          // Set collections data
+          setCollectionsData(
+            collections.map((item) => ({
+              ...item,
+              action: item.action,
+            }))
+          );
+          setQuerySuggestions(
+            queries.map((item) => ({
+              ...item,
+              action: item.action,
+            }))
+          );
+        })
+        .catch((error) => {
+          console.error("Search API error:", error);
+          // Fallback: clear data on error
+          setSearchData([]);
+          setTotalCount(0);
+          setCollectionsData([]);
+          setQuerySuggestions([]);
         })
         .finally(() => {
           setShowSearchSuggestions(searchText?.length > 2);
         });
     }
-    fpi
-      .executeGQL(AUTOCOMPLETE, { query: searchText })
-      .then((res) => {
-        const { items } = res?.data?.searchProduct || {};
-        const filteredCollections = items
-          ?.filter((item) => item.type === "brand" || item.type === "category")
-          ?.map((item) => ({
-            ...item,
-            action: item.action,
-          }));
-        setCollectionsData(filteredCollections || []);
-      })
-      .finally(() => {});
   };
   const groupedCollections = collectionsData.reduce((acc, item) => {
     if (!acc[item.type]) acc[item.type] = [];
@@ -185,14 +204,16 @@ function Search({
   };
 
   const getDisplayData = (product) => {
+    // Handle both name (from products API) and display (from autocomplete API)
+    const productName = product.display || product.name || "";
     let displayName;
 
-    if (screen === "mobile" && product.name.length > 40) {
-      displayName = `${product.name.substring(0, 40)}...`;
-    } else if (product.name.length > 95) {
-      displayName = `${product.name.substring(0, 95)}...`;
+    if (screen === "mobile" && productName.length > 40) {
+      displayName = `${productName.substring(0, 40)}...`;
+    } else if (productName.length > 95) {
+      displayName = `${productName.substring(0, 95)}...`;
     } else {
-      displayName = product.name;
+      displayName = productName;
     }
 
     // Use displayName in your JSX
@@ -200,8 +221,13 @@ function Search({
   };
 
   const getImage = (product) => {
+    // Handle both media array (from products API) and logo object (from autocomplete API)
     if (Array.isArray(product?.media)) {
       return product.media?.find((item) => item.type === "image") || "";
+    }
+    // For autocomplete API products, check logo field
+    if (product?.logo && product.logo.type === "image") {
+      return product.logo;
     }
     return "";
   };
@@ -294,6 +320,38 @@ function Search({
               <div className={styles["search__suggestions--products"]}>
                 {showSearchSuggestions ? (
                   <>
+                    {/* Query Suggestions Section */}
+                    {querySuggestions.length > 0 && (
+                      <div
+                        className={`${styles.collectionsSection} ${styles.querySuggestionsSection}`.trim()}
+                      >
+                        <div
+                          className={`b1 ${styles["search__suggestions--title"]} fontBody`}
+                        >
+                          Suggestions
+                        </div>
+                        <ul>
+                          {querySuggestions.map((item, index) => (
+                            <li
+                              key={index}
+                              className={styles["search__suggestions--item"]}
+                            >
+                              <FDKLink
+                                action={item.action}
+                                className={styles.linkButton}
+                                title={item.display}
+                                onClick={() =>
+                                  redirectToProduct(item.action?.path || "/")
+                                }
+                              >
+                                {item.display}
+                              </FDKLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
                     {/* Collections Section */}
                     {Object.keys(groupedCollections).length > 0 && (
                       <div className={styles.collectionsSection}>
@@ -344,17 +402,12 @@ function Search({
                         <ul>
                           {getProductSearchSuggestions(searchData)?.map(
                             (product, index) => {
-                              const productUrl = `/product/${product.slug}`;
+                              const productUrl = `/product/${product.action?.page?.params?.slug}`;
                               return (
                                 <FDKLink
                                   key={index}
                                   action={product.action}
-                                  onClick={() =>
-                                    redirectToProduct(
-                                      product.action?.path ||
-                                        `/product/${product.slug}`
-                                    )
-                                  }
+                                  onClick={() => redirectToProduct(productUrl)}
                                   className={
                                     styles["search__suggestions--item-link"]
                                   }
@@ -427,11 +480,7 @@ function Search({
                       )}
                   </>
                 ) : (
-                  <div
-                    className={`${styles["search__suggestions--item"]} ${styles.fontBody}`}
-                  >
-                    {t("resource.common.loading")}
-                  </div>
+                  <SearchSuggestionsShimmer />
                 )}
               </div>
             </div>

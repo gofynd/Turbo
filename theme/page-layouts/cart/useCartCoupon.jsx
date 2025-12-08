@@ -107,6 +107,14 @@ const useCartCoupon = ({
       buyNow,
     };
 
+    const waitForModalClose = () =>
+      new Promise((resolve) => {
+        setTimeout(() => {
+          setIsCouponSuccessModalOpen(false);
+          resolve();
+        }, 2000);
+      });
+
     fpi
       .executeGQL(APPLY_COUPON, payload)
       .then((res) => {
@@ -124,15 +132,16 @@ const useCartCoupon = ({
         setIsCouponListModalOpen(false);
         setIsCouponSuccessModalOpen(true);
 
-        // IMPORTANT: return the promise so the next .then waits
-        return fetchCartDetails(fpi, { buyNow });
+        // Wait for modal timeout to finish before calling cart API
+        return waitForModalClose().then(() =>
+          fetchCartDetails(fpi, { buyNow })
+        );
       })
       .then((data) => {
         if (currentStepIdx >= 1) {
           couponPaymentOptions(data);
         }
         setIsLoading(false);
-        setTimeout(() => setIsCouponSuccessModalOpen(false), 2000);
       })
       .catch((err) => {
         console.error("Error applying coupon or fetching cart:", err);

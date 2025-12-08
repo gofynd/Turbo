@@ -56,6 +56,19 @@
         background: @ErrorBackground;
         border-radius: 4px;
         color: @ErrorText;
+        &.notAcceptingOrder {
+          @media @tablet {
+            align-items: flex-start;
+            padding: 16px;
+          }
+          .errorIcon {
+            width: 22px;
+            height: 22px;
+            display: flex;
+          }
+          justify-content: unset;
+          gap: 4px;
+        }
         .continueBtn {
           cursor: pointer;
           color: @ButtonLink;

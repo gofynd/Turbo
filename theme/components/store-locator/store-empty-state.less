@@ -1,0 +1,132 @@
+@import "../../styles/main.less";
+
+.emptyStateContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  min-height: 400px;
+  box-sizing: border-box;
+  padding: 24px 0;
+
+  @media @tablet {
+    min-height: 400px;
+  }
+
+  @media @mobile {
+    min-height: 300px;
+    padding: 16px 0;
+  }
+}
+
+.emptyStateContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.emptyStateIconWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
+.emptyStateIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 142px;
+  height: 142px;
+  flex-shrink: 0;
+  position: relative;
+
+  img,
+  svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  @media @tablet {
+    width: 142px;
+    height: 142px;
+  }
+
+  @media @mobile {
+    width: 142px;
+    height: 142px;
+  }
+}
+
+.emptyStateIllustration {
+  width: 100%;
+  height: 100%;
+}
+
+.emptyStateText {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  text-align: center;
+  width: 100%;
+  color: @TextBody;
+}
+
+.emptyStateTitle {
+  // font-family: "Work Sans", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  color: @TextBody;
+  letter-spacing: -0.32px;
+  margin: 0;
+  text-align: center;
+  width: 100%;
+
+  @media @tablet {
+    font-size: 16px;
+  }
+
+  @media @mobile {
+    font-size: 16px;
+  }
+}
+
+.emptyStateDescription {
+  // font-family: "Work Sans", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  color: @TextBody;
+  letter-spacing: -0.24px;
+  margin: 0;
+  text-align: center;
+  width: 100%;
+
+  p {
+    margin: 0;
+    margin-bottom: 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  @media @tablet {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  @media @mobile {
+    font-size: 12px;
+    line-height: 16px;
+  }
+}

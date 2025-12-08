@@ -534,9 +534,9 @@ export const settings = {
       max: 100,
       step: 1,
       unit: "px",
-      label: "t:resource.sections.image_slideshow.top_padding",
+      label: "t:resource.sections.categories.top_padding",
       default: 0,
-      info: "t:resource.sections.image_slideshow.top_padding_info",
+      info: "t:resource.sections.categories.top_padding_for_section",
     },
     {
       type: "range",

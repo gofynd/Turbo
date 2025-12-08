@@ -1,0 +1,153 @@
+@import "../../styles/main.less";
+
+.storeCard {
+  background-color: @color-white;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  &:focus {
+    outline-offset: 2px;
+  }
+
+  @media @mobile {
+    padding: 12px;
+  }
+}
+
+.selectedStore {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.storeHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.storeName {
+  flex: 1 0 0;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 100%;
+  color: @TextBody;
+  letter-spacing: -0.4px;
+  text-transform: capitalize;
+  margin: 0;
+
+  @media @mobile {
+    font-size: 16px;
+    letter-spacing: -0.32px;
+  }
+}
+
+.storeDistance {
+  font-weight: 500;
+  font-size: 14px;
+  color: @TextLabel;
+  flex-shrink: 0;
+
+  @media @mobile {
+    color: #7d7676;
+  }
+}
+
+.storeDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.storeInfo {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+}
+
+.infoIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+
+  @media @mobile {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.storeText {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: @TextBody;
+  letter-spacing: -0.28px;
+  margin: 0;
+
+  @media @mobile {
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: -0.24px;
+  }
+}
+
+.storeHours {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: @SaleBadgeText;
+  letter-spacing: -0.28px;
+  margin: 0;
+}
+
+.storeBadges {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 0;
+}
+
+.badge {
+  border-radius: 24px;
+  background: @ThemeAccentL3;
+  padding: 6px 12px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+  @media @mobile {
+    background: #edece9;
+  }
+}
+
+.badgeIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.badgeText {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 100%;
+  color: @TextBody;
+  letter-spacing: -0.24px;
+  white-space: nowrap;
+}

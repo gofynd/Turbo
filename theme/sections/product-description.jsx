@@ -1,4 +1,12 @@
-import React, { useEffect, useMemo, useState, useRef, Fragment } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  Fragment,
+  lazy,
+  Suspense,
+} from "react";
 import styles from "../styles/sections/product-description.less";
 import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
 import { FDKLink, BlockRenderer } from "fdk-core/components";
@@ -12,14 +20,12 @@ import ProductCompareButton from "../page-layouts/compare/product-compare-button
 import useProductDescription from "../page-layouts/pdp/product-description/useProductDescription";
 import PdpImageGallery from "../page-layouts/pdp/components/image-gallery/image-gallery";
 import ProductVariants from "../page-layouts/pdp/components/product-variants/product-variants";
-import SizeGuide from "../page-layouts/pdp/size-guide/size-guide";
 import DeliveryInfo from "../page-layouts/pdp/components/delivery-info/delivery-info";
 import Offers from "../page-layouts/pdp/components/offers/offers";
 import ProdDesc from "../page-layouts/pdp/components/prod-desc/prod-desc";
 import BreadCrumb from "../page-layouts/pdp/components/breadcrumb/breadcrumb";
 import Badges from "../page-layouts/pdp/components/badges/badges";
 import StickyAddToCart from "../page-layouts/pdp/components/sticky-addtocart/sticky-addtocart";
-import MoreOffers from "../page-layouts/pdp/components/offers/more-offers";
 // import StoreModal from "../page-layouts/pdp/components/store/store-modal";
 import EmptyState from "../components/empty-state/empty-state";
 import {
@@ -49,6 +55,14 @@ import Fulfillment from "../page-layouts/pdp/components/fulfillment/fulfillment"
 import { Skeleton } from "../components/core/skeletons";
 import ProductBundles from "../page-layouts/pdp/components/bundle/product-bundles/product-bundles";
 import BundleItems from "../page-layouts/pdp/components/bundle/bundle-items/bundle-items";
+// import SizeGuide from "../page-layouts/pdp/size-guide/size-guide";
+// import MoreOffers from "../page-layouts/pdp/components/offers/more-offers";
+const SizeGuide = lazy(
+  () => import("../page-layouts/pdp/size-guide/size-guide")
+);
+const MoreOffers = lazy(
+  () => import("../page-layouts/pdp/components/offers/more-offers")
+);
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
@@ -69,6 +83,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     zoom_in,
     show_sale_tag,
     display_mode,
+    enable_sticky_images,
   } = props;
 
   const addToCartBtnRef = useRef(null);
@@ -253,7 +268,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   const { isProductNotFound } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const isMto = productDetails?.custom_order?.is_custom_order || false;
-  const { show_price, disable_cart, show_quantity_control } = globalConfig;
+  const {
+    show_price,
+    disable_cart,
+    show_quantity_control,
+    limited_stock_quantity: limitedStockQuantity = 11,
+  } = globalConfig;
 
   const priceDataBySize = productPriceBySlug?.price;
   const isSizeSelectionBlock = (block) =>
@@ -604,7 +624,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
           customClass={styles.isDesktop}
         />
         <div className={styles.productDescContainer}>
-          <div className={styles.left}>
+          <div
+            className={`${styles.left} ${enable_sticky_images?.value ? styles.leftSticky : ""}`}
+          >
             <div className={styles.imgWrap}>
               <div onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
                 <PdpImageGallery
@@ -1240,6 +1262,20 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                   )}
                                 </div>
                               )}
+                            {getBlockConfigValue(block, "is_limited_stock") &&
+                              productPriceBySlug?.quantity &&
+                              productPriceBySlug?.quantity <=
+                                limitedStockQuantity && (
+                                <p className={styles.limitedQuantity}>
+                                  {getBlockConfigValue(
+                                    block,
+                                    "limited_stock_label"
+                                  ).replace(
+                                    /\{\{qty\}\}/g,
+                                    productPriceBySlug?.quantity
+                                  )}
+                                </p>
+                              )}
                           </div>
                         </Fragment>
                       );
@@ -1645,19 +1681,27 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
           />,
           document?.getElementById("sticky-add-to-cart")
         )}
-      <MoreOffers
-        isOpen={showMoreOffers}
-        onCloseDialog={() => setShowMoreOffers(false)}
-        couponsList={coupons}
-        promotionsList={promotions}
-        sidebarActiveTab={sidebarActiveTab}
-      />
-      <SizeGuide
-        isOpen={showSizeGuide}
-        onCloseDialog={() => setShowSizeGuide(false)}
-        customClass={styles.sizeGuide}
-        productMeta={productMeta}
-      />
+      {showMoreOffers && (
+        <Suspense>
+          <MoreOffers
+            isOpen={showMoreOffers}
+            onCloseDialog={() => setShowMoreOffers(false)}
+            couponsList={coupons}
+            promotionsList={promotions}
+            sidebarActiveTab={sidebarActiveTab}
+          />
+        </Suspense>
+      )}
+      {showSizeGuide && (
+        <Suspense>
+          <SizeGuide
+            isOpen={showSizeGuide}
+            onCloseDialog={() => setShowSizeGuide(false)}
+            customClass={styles.sizeGuide}
+            productMeta={productMeta}
+          />
+        </Suspense>
+      )}
     </>
   );
 }
@@ -1677,6 +1721,14 @@ export const settings = {
       id: "zoom_in",
       label: "t:resource.sections.product_description.zoom_in",
       info: "t:resource.sections.product_description.zoom_in_info",
+      default: false,
+    },
+    {
+      type: "checkbox",
+      id: "enable_sticky_images",
+      label:
+        "t:resource.sections.product_description.enable_scrollable_product_data",
+      info: "t:resource.sections.product_description.keep_product_image_visible_msg",
       default: false,
     },
     {
@@ -1919,6 +1971,19 @@ export const settings = {
             { value: "dropdown", text: "t:resource.common.dropdown_style" },
             { value: "block", text: "t:resource.common.block_style" },
           ],
+        },
+        {
+          type: "checkbox",
+          id: "is_limited_stock",
+          label: "t:resource.common.is_limited_stock",
+          default: true,
+        },
+        {
+          type: "text",
+          id: "limited_stock_label",
+          label: "t:resource.common.limited_stock_label",
+          default: "t:resource.default_values.limited_stock_label",
+          info: "t:resource.common.limited_stock_info",
         },
       ],
     },

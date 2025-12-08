@@ -26,7 +26,20 @@
     .right__icons {
       justify-content: flex-end;
       .column-gap(16px);
-
+      .navButton {
+        display: flex;
+        gap: 4px;
+        width: auto !important;
+        align-items: center;
+        span {
+          color: @TextHeading;
+          font-size: 14px;
+          width: max-content;
+          @media @tablet {
+            display: none;
+          }
+        }
+      }
       .icon {
         width: 24px;
         height: 24px;

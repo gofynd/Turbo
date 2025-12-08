@@ -218,8 +218,8 @@
       "entered_otp_is_invalid_please_retry": "Entered OTP is invalid, please retry",
       "password_or_username_is_incorrect": "Password or username is incorrect",
       "friends_family": "Friends & Family",
-      "delivery_attempt_requested" : "Delivery Attempt Requested",
-      "delivery_attempt_failed":"Delivery Attempt Failed",
+      "delivery_attempt_requested": "Delivery Attempt Requested",
+      "delivery_attempt_failed": "Delivery Attempt Failed",
       "this_account_has_been_disabled": "This account has been disabled",
       "work": "Work",
       "home": "Home",
@@ -436,6 +436,8 @@
         "wishlist": "Wishlist",
         "blog": "Blog"
       },
+      "show_fewer_addresses":"SHOW FEWER ADDRESSES",
+      "show_more_addresses":"SHOW MORE ADDRESSES",
       "email_cannot_exceed_50_characters": "Email cannot exceed 50 characters",
       "invalid_mobile_number": "Invalid Mobile Number",
       "mobile_number_required": "Mobile number is required",
@@ -677,15 +679,19 @@
         "product_listing": "Product Listing",
         "wishlist": "Wishlist",
         "about_us": "About Us",
-        "blog": "Blog"
+        "blog": "Blog",
+        "categories": "Categories"
       },
       "size_not_available_info_heading": "Size guide currently unavailable",
       "size_not_available_info_description": "We’re adding our universal size table soon. Please contact us for assistance.",
       "size_measure_not_available_info_heading": "How to measure guide currently unavailable",
-      "size_measure_not_available_info_description": "We’re adding how to measure guide soon. Please contact us for assistance."
+      "size_measure_not_available_info_description": "We’re adding how to measure guide soon. Please contact us for assistance.",
+      "order_not_accepting": "We’re currently not accepting new orders at this time. Please try again later."
     },
     "categories": {
-      "empty_state": "No category found"
+      "empty_state": "No category found",
+      "categories_description": "Explore our wide range of categories to find the perfect products that suit your needs and preferences.",
+      "collection_listing_description": "Discover our curated collections featuring the latest trends, exclusive designs, and must-have items to elevate your style and lifestyle."
     },
     "payment_link": {
       "expired_text": "Payment Link Expired",
@@ -878,7 +884,8 @@
       "product_removed": "Products Removed From Wishlist",
       "no_product_in_wishlist": "You do not have any product added to wishlist",
       "add_products_to_wishlist": "Add products to wishlist",
-      "seo_description": "Save the products you love and build your wishlist. Easily revisit and purchase your favorite items anytime with just a few clicks."
+      "seo_description": "Save the products you love and build your wishlist. Easily revisit and purchase your favorite items anytime with just a few clicks.",
+      "wishlist_icon_default_text": "Wishlist"
     },
     "cart": {
       "no_items": "There are no items in cart",
@@ -947,7 +954,8 @@
       "pay_now": "PAY NOW",
       "add_to_cart_caps": "ADD TO CART",
       "merge": "merge",
-      "replace": "replace"
+      "replace": "replace",
+      "cart_icon_default_text": "Cart"
     },
     "compare": {
       "product_comparison_limit": "You can only compare 4 products at a time",
@@ -1071,6 +1079,7 @@
       "no_phone_number_added": "No Phone Number Added",
       "add_phone_number_caps": "ADD PHONE NUMBER",
       "profile": "Profile",
+      "profile_icon_default_text": "Profile",
       "select_reattempt_date": "Select Reattempt Date",
       "request_reattempt": "Request Reattempt",
       "please_select_reattempt_date": "Please select a reattempt date",
@@ -1299,7 +1308,7 @@
       "name_alt_text": "name",
       "reattempt_request_success": "Delivery reattempt requested successfully",
       "your_delivery_request_schedule": "Your delivery reattempt is scheduled for",
-      "delivery_details" : "Delivery Details",
+      "delivery_details": "Delivery Details",
       "reattempt_window_closed_on": "Reattempt window closed on",
       "powered_by": "Powered By"
     },

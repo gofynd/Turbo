@@ -174,4 +174,6 @@ export {
   wishlistActions,
   orderActions,
   navigationActions,
+  checkoutActions,
+  paymentActions,
 } from "./actions/index";

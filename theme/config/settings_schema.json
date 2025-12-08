@@ -95,6 +95,38 @@
       "label": "t:resource.settings_schema.header.sticky_header",
       "info": "t:resource.settings_schema.header.sticky_header_info"
     },
+     {
+      "type": "checkbox",
+      "id": "show_icon_text_in_header",
+      "default": false,
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.show_icon_text_in_header",
+      "info": "t:resource.settings_schema.header.show_icon_text_in_header_info"
+    },
+    {
+      "type": "text",
+      "id": "profile_icon_text",
+      "default": "",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.profile_icon_text_label",
+      "info": "t:resource.settings_schema.header.profile_icon_text_info"
+    },
+    {
+      "type": "text",
+      "id": "wishlist_icon_text",
+      "default": "",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.wishlist_icon_text_label",
+      "info": "t:resource.settings_schema.header.wishlist_icon_text_info"
+    },
+    {
+      "type": "text",
+      "id": "cart_icon_text",
+      "default": "",
+      "category": "t:resource.common.header",
+      "label": "t:resource.settings_schema.header.cart_icon_text_label",
+      "info": "t:resource.settings_schema.header.cart_icon_text_info"
+    },
     {
       "type": "select",
       "id": "logo_menu_alignment",
@@ -417,7 +449,17 @@
       "info": "t:resource.settings_schema.product_card_configuration.hover_image_display",
       "default": false
     },
-
+    {
+      "type": "range",
+      "id": "limited_stock_quantity",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
+      "min": 1,
+      "max": 100,
+      "unit": "",
+      "label": "t:resource.settings_schema.product_card_configuration.limited_stock_quantity",
+      "default": 11,
+      "info": "t:resource.settings_schema.product_card_configuration.limited_stock_quantity_info"
+    },
     {
       "type": "header",
       "category": "t:resource.settings_schema.common.other_page_configuration",
@@ -570,6 +612,16 @@
       "type": "header",
       "category": "t:resource.settings_schema.common.copilot_configuration",
       "value": "Copilot Configuration"
+    },
+    {
+      "type": "range",
+      "category": "t:resource.settings_schema.common.home_page",
+      "id": "initial_sections_count",
+      "label": "t:resource.settings_schema.home_page.initial_sections_count_label",
+      "min": 3,
+      "max": 10,
+      "default": 3,
+      "info": "t:resource.settings_schema.home_page.initial_sections_count_load_info"
     },
     {
       "type": "checkbox",

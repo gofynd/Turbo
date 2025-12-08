@@ -664,3 +664,91 @@ export function getGroupedShipmentBags(
     ),
   };
 }
+
+/**
+ * Format time from hour and minute to 12-hour format with lowercase am/pm
+ * @param {number} hour - Hour in 24-hour format (0-23)
+ * @param {number} minute - Minute (0-59)
+ * @returns {string} Formatted time string (e.g., "8:00am", "11:30pm")
+ */
+export const formatStoreTime = (hour, minute) => {
+  const period = hour >= 12 ? "pm" : "am";
+  const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+  const displayMinute = minute.toString().padStart(2, "0");
+  return `${displayHour}:${displayMinute}${period}`;
+};
+
+/**
+ * Get today's weekday name
+ * @returns {string} Weekday name (e.g., "Monday", "Tuesday")
+ */
+export const getTodayWeekday = () => {
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  return days[new Date().getDay()];
+};
+
+/**
+ * Format order acceptance timing for today
+ * @param {Array} timingArray - Array of timing objects with weekday, open, opening, and closing properties
+ * @returns {string|null} Formatted timing string (e.g., "Open today: 8:00am - 11:00pm") or null if no timing found
+ */
+export const formatOrderAcceptanceTiming = (timingArray) => {
+  if (!timingArray || !Array.isArray(timingArray) || timingArray.length === 0) {
+    return null;
+  }
+
+  // Get today's weekday
+  const todayWeekday = getTodayWeekday();
+
+  // Find today's timing - try exact match first, then case-insensitive
+  let todayTiming = timingArray.find(
+    (day) => day.weekday === todayWeekday && day.open === true
+  );
+
+  // If not found, try case-insensitive match
+  if (!todayTiming) {
+    todayTiming = timingArray.find(
+      (day) =>
+        day.weekday?.toLowerCase() === todayWeekday.toLowerCase() &&
+        day.open === true
+    );
+  }
+
+  // If still not found, try to find any open day as fallback
+  if (!todayTiming) {
+    todayTiming = timingArray.find((day) => day.open === true);
+  }
+
+  // Validate that we have the required data structure
+  if (
+    !todayTiming ||
+    !todayTiming.opening ||
+    typeof todayTiming.opening.hour !== "number" ||
+    typeof todayTiming.opening.minute !== "number" ||
+    !todayTiming.closing ||
+    typeof todayTiming.closing.hour !== "number" ||
+    typeof todayTiming.closing.minute !== "number"
+  ) {
+    return null;
+  }
+
+  // Format as "Open today: [opening]am - [closing]pm"
+  const openingTime = formatStoreTime(
+    todayTiming.opening.hour,
+    todayTiming.opening.minute
+  );
+  const closingTime = formatStoreTime(
+    todayTiming.closing.hour,
+    todayTiming.closing.minute
+  );
+
+  return `Open today: ${openingTime} - ${closingTime}`;
+};

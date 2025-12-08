@@ -1,0 +1,280 @@
+@import "../../styles/main.less";
+
+.fieldContainer {
+  position: relative;
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 16px;
+  border: 1px solid @DividerStokes;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &.inputWrapperActive {
+    border-color: @ButtonPrimary;
+    box-shadow: 0 0 0 0px @ButtonPrimary inset;
+  }
+
+  @media @mobile {
+    height: 40px;
+    padding: 12px;
+  }
+}
+
+.floatingLabel {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  background-color: @PageBackground;
+  padding: 0 4px;
+  z-index: 1;
+
+  @media @mobile {
+    left: 12px;
+  }
+}
+
+.labelText {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.4;
+  color: @ButtonPrimary;
+  margin: 0;
+}
+
+.inputContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 0 0;
+  min-width: 0;
+  min-height: 0;
+
+  @media @mobile {
+    gap: 4px;
+  }
+}
+
+.fieldInput {
+  flex: 1 0 0;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: @TextBody;
+  background: transparent;
+
+  &::placeholder {
+    color: @TextLabel;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  @media @mobile {
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: -0.24px;
+  }
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dropdownIconContainer {
+  cursor: pointer;
+
+  @media @mobile {
+    cursor: none;
+  }
+}
+
+.fieldIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.dropdownIcon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+
+  &.dropdownIconOpen {
+    transform: rotate(180deg);
+  }
+}
+
+// Suggestions Dropdown (for search mode)
+.suggestionsDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background-color: @ThemeAccentL5;
+  border: 1px solid @DividerStokes;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.suggestionsList {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 238px;
+  padding: 8px;
+
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: @ThemeAccentD3;
+    border-radius: 2px;
+    border: none;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: @ThemeAccentD2;
+  }
+}
+
+.suggestionItem {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+
+  &:hover,
+  &.suggestionItemSelected {
+    background-color: #edece9;
+    border-radius: 8px;
+  }
+}
+
+.suggestionIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.suggestionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.suggestionName {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: @TextHeading;
+  letter-spacing: -0.28px;
+  margin: 0;
+}
+
+.suggestionAddress {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: normal;
+  color: @TextLabel;
+  letter-spacing: -0.24px;
+  margin: 0;
+}
+
+// Options Dropdown (for dropdown mode)
+.optionsDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background-color: @ThemeAccentL5;
+  border: 1px solid @DividerStokes;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.optionsList {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  padding: 8px;
+
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: @ThemeAccentD3;
+    border-radius: 2px;
+    border: none;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: @ThemeAccentD2;
+  }
+}
+
+.optionItem {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: @TextBody;
+
+  &:hover {
+    background-color: #edece9;
+    border-radius: 8px;
+  }
+}

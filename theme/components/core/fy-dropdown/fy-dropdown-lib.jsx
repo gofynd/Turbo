@@ -12,6 +12,7 @@
  * @param {boolean} [showAsterik=true] - If true, an asterisk (*) will be displayed next to the label to indicate a required field.
  * @param {string} [labelClassName] - Optional custom CSS class(es) to apply to the label element.
  * @param {string} [containerClassName] - Optional custom CSS class(es) to apply to the dropdown container element.
+ * @param {string} [dropdownButtonClassName] - Optional custom CSS class(es) to apply to the dropdown button element.
  * @param {object} [value] - The currently selected option, should be an object with `key` and `display` properties.
  * @param {function} onChange - Callback function triggered when an option is selected. Receives the selected option object as an argument.
  *
@@ -40,10 +41,11 @@ const FyDropdown = ({
   showAsterik = true,
   labelClassName,
   containerClassName,
+  dropdownButtonClassName,
   value,
   disabled = false,
   // optionLabel = "display",
-  onChange = (value) => { },
+  onChange = (value) => {},
   dataKey = "key",
   getOptionLabel = (option) => option.display ?? option,
 }) => {
@@ -55,14 +57,14 @@ const FyDropdown = ({
   const dropdownList = useRef(null);
   const [dropdownStyles, setDropdownStyles] = useState({});
 
-  const [query, setQuery] = useState(getOptionLabel(value || {}) || "");
+  const [query, setQuery] = useState(value ? getOptionLabel(value) || "" : "");
   const [filteredOptions, setFilteredOptions] = useState([]);
   //   const [selectedOption, setSelectedOption] = useState(null);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     // setSelectedValue(options?.find((option) => option[dataKey] === value[dataKey]));
-    setQuery(getOptionLabel(value || {}) || "");
+    setQuery(value ? getOptionLabel(value) || "" : "");
   }, [value]);
 
   useEffect(() => {
@@ -76,6 +78,10 @@ const FyDropdown = ({
   const customContainerClassName = useMemo(
     () => `${styles.dropdownContainer}  ${containerClassName ?? ""}`,
     [containerClassName]
+  );
+  const customDropdownButtonClassName = useMemo(
+    () => `${styles.dropdownButton} ${dropdownButtonClassName ?? ""}`,
+    [dropdownButtonClassName]
   );
 
   const toggleDropdown = (event) => {
@@ -180,7 +186,9 @@ const FyDropdown = ({
 
   const handleBlur = () => {
     if (value) {
-      setQuery(getOptionLabel(value || {}) || "");
+      setQuery(getOptionLabel(value) || "");
+    } else {
+      setQuery("");
     }
   };
 
@@ -211,7 +219,7 @@ const FyDropdown = ({
           />
         </div> */}
         <div
-          className={styles.dropdownButton}
+          className={customDropdownButtonClassName}
           disabled={disabled}
           onClick={toggleDropdown}
           ref={dropdownButton}
@@ -240,33 +248,34 @@ const FyDropdown = ({
             className={`${styles.dropdownIcon} ${isOpen ? styles.open : ""}`}
           />
         </div>
-        {isRunningOnClient() && createPortal(
-          <ul
-            className={`${styles.dropdownList}  ${isOpen ? styles.open : ""}`}
-            ref={dropdownList}
-            style={dropdownStyles}
-          >
-            <div className={`fydrop ${styles.listWrapper}`}>
-              {filteredOptions.length ? (
-                filteredOptions?.map((option, index) => (
-                  <li
-                    className={`${styles.dropdownOption} ${styles.hover}`}
-                    key={option?.[dataKey] || index}
-                    onClick={() => handleChange(option)}
-                  >
-                    {/* {option?.[optionLabel]} */}
-                    {getOptionLabel(option)}
+        {isRunningOnClient() &&
+          createPortal(
+            <ul
+              className={`${styles.dropdownList}  ${isOpen ? styles.open : ""}`}
+              ref={dropdownList}
+              style={dropdownStyles}
+            >
+              <div className={`fydrop ${styles.listWrapper}`}>
+                {filteredOptions.length ? (
+                  filteredOptions?.map((option, index) => (
+                    <li
+                      className={`${styles.dropdownOption} ${styles.hover}`}
+                      key={option?.[dataKey] || index}
+                      onClick={() => handleChange(option)}
+                    >
+                      {/* {option?.[optionLabel]} */}
+                      {getOptionLabel(option)}
+                    </li>
+                  ))
+                ) : (
+                  <li className={`${styles.dropdownOption} ${styles.noOption}`}>
+                    {t("resource.common.no_options")}
                   </li>
-                ))
-              ) : (
-                <li className={`${styles.dropdownOption} ${styles.noOption}`}>
-                  {t("resource.common.no_options")}
-                </li>
-              )}
-            </div>
-          </ul>,
-          document.body
-        )}
+                )}
+              </div>
+            </ul>,
+            document.body
+          )}
       </div>
       {isOpen && (
         <div className={styles.emptyDiv} onClickCapture={toggleDropdown}></div>

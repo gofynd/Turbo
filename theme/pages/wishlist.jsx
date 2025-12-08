@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import useWishlist from "../page-layouts/wishlist/useWishlist";
 import styles from "../styles/wishlist.less";
 import { isLoggedIn } from "../helper/auth-guard";
@@ -8,6 +8,7 @@ import WishlistShimmer from "../components/shimmer/wishlist-shimmer";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { getHelmet } from "../providers/global-provider";
 import { sanitizeHTMLTag } from "../helper/utils";
+import useSeoMeta from "../helper/hooks/useSeoMeta";
 
 function WishlistPage({ fpi }) {
   const { t } = useGlobalTranslation("translation");
@@ -16,14 +17,21 @@ function WishlistPage({ fpi }) {
   const { loading, ...wishlistProps } = useWishlist({ fpi });
 
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(
-    seoData?.title || t("resource.common.page_titles.wishlist")
-  );
-  const description = sanitizeHTMLTag(
-    seoData?.description || t("resource.wishlist.seo_description")
-  );
-
-  const mergedSeo = { ...seoData, title, description };
+  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+    useSeoMeta({ fpi, seo: seoData });
+  const title = useMemo(() => {
+    const raw = sanitizeHTMLTag(
+      seoData?.title || t("resource.common.page_titles.wishlist")
+    );
+    if (raw && brandName) return `${raw} | ${brandName}`;
+    return raw || brandName || "";
+  }, [seoData?.title, brandName, t]);
+  const description = useMemo(() => {
+    const raw = sanitizeHTMLTag(
+      seoData?.description || t("resource.wishlist.seo_description")
+    );
+    return trimDescription(raw, 160);
+  }, [seoData?.description, t, trimDescription]);
 
   if (loading) {
     return <WishlistShimmer />;
@@ -31,7 +39,15 @@ function WishlistPage({ fpi }) {
 
   return (
     <>
-      {getHelmet({ seo: mergedSeo })}
+      {getHelmet({
+        title,
+        description,
+        image: socialImage,
+        canonicalUrl,
+        url: pageUrl,
+        siteName: brandName,
+        ogType: "website",
+      })}
       <div className="basePageContainer margin0auto">
         <div className={`${styles.wishlistWrap} ${styles.flexColumn}`}>
           <Wishlist {...wishlistProps} />

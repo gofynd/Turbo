@@ -12,6 +12,7 @@ import EmptyState from "../components/empty-state/empty-state";
 import OrderPendingIcon from "../assets/images/order-pending.svg";
 import { getGroupedShipmentBags } from "../helper/utils";
 import { useThemeConfig } from "../helper/hooks";
+import { getHelmet } from "../providers/global-provider";
 
 function OrderPolling({ isLoggedIn }) {
   const { t } = useGlobalTranslation("translation");
@@ -62,20 +63,28 @@ function OrderStatus({ fpi }) {
   }, [success, attempts, fetchOrder, orderData]);
 
   return (
-    <div className="basePageContainer margin0auto">
-      <OrderStatusPage
-        success={success}
-        orderData={orderData}
-        isLoggedIn={isloggedIn}
-        orderFailImg={empty}
-        showPolling={showPolling}
-        pollingComp={<OrderPolling isLoggedIn={isloggedIn} />}
-        onOrderFailure={() => navigate("/cart/bag")}
-        loader={<Loader />}
-        getGroupedShipmentBags={getGroupedShipmentBags}
-        globalConfig={globalConfig}
-      />
-    </div>
+    <>
+      {getHelmet({
+        title: "Order Status",
+        description: "Check the latest status of your order.",
+        robots: "noindex, nofollow",
+        ogType: "website",
+      })}
+      <div className="basePageContainer margin0auto">
+        <OrderStatusPage
+          success={success}
+          orderData={orderData}
+          isLoggedIn={isloggedIn}
+          orderFailImg={empty}
+          showPolling={showPolling}
+          pollingComp={<OrderPolling isLoggedIn={isloggedIn} />}
+          onOrderFailure={() => navigate("/cart/bag")}
+          loader={<Loader />}
+          getGroupedShipmentBags={getGroupedShipmentBags}
+          globalConfig={globalConfig}
+        />
+      </div>
+    </>
   );
 }
 

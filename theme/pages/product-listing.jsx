@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { SectionRenderer } from "fdk-core/components";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
+import { useSearchParams } from "react-router-dom";
 import { useThemeConfig } from "../helper/hooks";
 import { getHelmet } from "../providers/global-provider";
 import { sanitizeHTMLTag } from "../helper/utils";
+import useSeoMeta from "../helper/hooks/useSeoMeta";
 
 const ProductListing = ({ fpi }) => {
   const { t } = useGlobalTranslation("translation");
@@ -11,18 +13,55 @@ const ProductListing = ({ fpi }) => {
   const { globalConfig } = useThemeConfig({ fpi });
   const { sections = [] } = page || {};
   const seoData = page?.seo || {};
+  const [searchParams] = useSearchParams();
+  const department = searchParams.get("department") || "";
+  const brand = searchParams.get("brand") || "";
+  const category = searchParams.get("category") || "";
+  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+    useSeoMeta({ fpi, seo: seoData });
+  console.log("brand", brand);
+  const title = useMemo(() => {
+    const seoTitle = sanitizeHTMLTag(seoData?.title);
 
-  const title = sanitizeHTMLTag(seoData?.title || t("resource.common.page_titles.product_listing"));
-  const description = sanitizeHTMLTag(
-    seoData?.description || t("resource.product.seo_description")
-  );
+    if (category && department) {
+      return `${sanitizeHTMLTag(category)} | ${sanitizeHTMLTag(department)}`;
+    }
 
-  const mergedSeo = { ...seoData, title, description };
+    if (brand) {
+      const base = sanitizeHTMLTag(brand);
+      const suffix = brandName ? ` | ${brandName}` : "";
+      return `${base}${suffix}`;
+    }
+
+    const fallback =
+      seoTitle || t("resource.common.page_titles.product_listing");
+
+    if (fallback && brandName) {
+      return `${fallback} | ${brandName}`;
+    }
+
+    return fallback || brandName || "";
+  }, [seoData?.title, category, department, brand, brandName, t]);
+
+  const description = useMemo(() => {
+    const raw = sanitizeHTMLTag(
+      seoData?.description || t("resource.product.seo_description")
+    );
+    return trimDescription(raw, 160);
+  }, [seoData?.description, t, trimDescription]);
 
   return (
     page?.value === "product-listing" && (
       <>
-        {getHelmet({ seo: mergedSeo })}
+        {getHelmet({
+          title,
+          description,
+          image: socialImage,
+          canonicalUrl,
+          url: pageUrl,
+          siteName: brandName,
+          ogType: "website",
+        })}
         <SectionRenderer
           sections={sections}
           fpi={fpi}

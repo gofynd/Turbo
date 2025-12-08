@@ -103,7 +103,10 @@
       "login": "Login",
       "hide_single_size_info": "Hide single size",
       "default": "default",
-      "default_menu": "Default Menu"
+      "default_menu": "Default Menu",
+      "is_limited_stock": "Display limited stock label",
+      "limited_stock_label": "Limited Stock label",
+      "limited_stock_info": "Use {{qty}} in your message to automatically show the remaining quantity. Example: Hurry! Only {{qty}} left"
     },
     "settings_schema": {
       "common": {
@@ -120,7 +123,8 @@
         "mobile_logo_max_height_info": "Adjust the maximum height of the logo inside the mobile sidebar menu",
         "logo_header": "Desktop Header Logo Max Height",
         "mobile_logo_header": "Mobile Header Logo Max Height",
-        "mobile_logo_header_info": "Adjust the maximum height of the logo in the top mobile header"
+        "mobile_logo_header_info": "Adjust the maximum height of the logo in the top mobile header",
+        "home_page": "Home Page"
       },
       "typography": {
         "font_header": "Font Header",
@@ -166,7 +170,15 @@
         "sticky_header": "Sticky Header",
         "sticky_header_info": "Enable/Disable Sticky Header",
         "show_secondary_header_on_checkout": "Simplify Header on Cart/Checkout",
-        "show_secondary_header_on_checkout_info": "Hide Navigation and make header simple and user friendly. It Hides Navigation search, account icon etc"
+        "show_secondary_header_on_checkout_info": "Hide Navigation and make header simple and user friendly. It Hides Navigation search, account icon etc",
+        "show_icon_text_in_header": "Show Icon Text in Header",
+        "show_icon_text_in_header_info": "Enable to show text labels alongside the icons in the header (e.g., Cart, Wishlist, Profile)",
+        "profile_icon_text_label": "Profile Text",
+        "wishlist_icon_text_label": "Wishlist Text",
+        "cart_icon_text_label": "Cart Text",
+        "profile_icon_text_info": "Enter the text to display beside the profile icon",
+        "wishlist_icon_text_info": "Enter the text to display beside the wishlist icon",
+        "cart_icon_text_info": "Enter the text to display beside the cart icon"
       },
       "algolia_configuration": {
         "enable_algolia": "Enable Algolia"
@@ -222,7 +234,9 @@
         "show_image_on_hover": "Show image on hover",
         "hover_image_display": "This option controls whether an additional image is displayed when hovering over the product card",
         "badge_border_radius": "Badge Border Radius",
-        "badge_border_radius_info": "Border radius for Badge"
+        "badge_border_radius_info": "Border radius for Badge",
+        "limited_stock_quantity": "Limited stock quantity",
+        "limited_stock_quantity_info": "Quantity below which limited stock label is displayed"
       },
       "product_details_modal_settings": {
         "hide_brand_name": "Hide Brand Name",
@@ -244,6 +258,10 @@
         "enable_google_maps": "Enable Google Maps",
         "google_maps_api_key": "Google Maps API Key",
         "google_maps_api_key_info": "This API key helps connect your site to Google Maps so you can display interactive maps and location details"
+      },
+      "home_page": {
+        "initial_sections_count_label": "Initial Sections to Load",
+        "initial_sections_count_load_info": "Number of sections to load initially before user scrolls. Remaining sections load on scroll."
       }
     },
     "sections": {
@@ -506,7 +524,9 @@
         "badge_url_4": "Badge URL 4",
         "badge_logo_5": "Badge logo 5",
         "badge_label_5": "Badge label 5",
-        "badge_url_5": "Badge URL 5"
+        "badge_url_5": "Badge URL 5",
+        "enable_scrollable_product_data": "Enable scrollable product data",
+        "keep_product_image_visible_msg": "Keep product images visible while scrolling product details."
       },
       "raw_html": {
         "custom_html": "Custom HTML",
@@ -599,6 +619,7 @@
         "custom_html": "Custom HTML"
       },
       "brand_landing": {
+        "brands": "Brands",
         "brands_landing": "Brands Landing",
         "back_to_top_info": "Enable a 'Back to Top' button to help users quickly return to the top of the page.",
         "only_logo_info": "Display only brand logos",
@@ -662,7 +683,8 @@
       "trust_maker_title": "Title",
       "add_description": "Add description",
       "free_delivery": "Free Delivery",
-      "marker_description": "Don`t love it? Don`t worry. Return delivery is free"
+      "marker_description": "Don`t love it? Don`t worry. Return delivery is free",
+      "limited_stock_label": "Hurry! Only {{qty}} Left"
     }
   }
 }

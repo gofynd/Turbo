@@ -1,6 +1,16 @@
 import { useGlobalStore } from "fdk-core/utils";
 
 export const useThemeConfig = ({ fpi, page = "" }) => {
+  // Handle case when fpi or fpi.getters is undefined
+  if (!fpi || !fpi.getters) {
+    return {
+      globalConfig: null,
+      pageConfig: {},
+      pallete: {},
+      listingPrice: "range",
+    };
+  }
+
   const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION);
   const THEME = useGlobalStore(fpi.getters.THEME);
   const mode = THEME?.config?.list.find(
@@ -8,7 +18,7 @@ export const useThemeConfig = ({ fpi, page = "" }) => {
   );
   const globalConfig = mode?.global_config?.custom?.props;
   const { general_setting, advance_setting } =
-    mode.global_config.static.props.palette;
+    mode?.global_config?.static?.props?.palette || {};
 
   if (page) {
     const pageConfig =

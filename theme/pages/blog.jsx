@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { SectionRenderer } from "fdk-core/components";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { getHelmet } from "../providers/global-provider";
 import { sanitizeHTMLTag } from "../helper/utils";
+import useSeoMeta from "../helper/hooks/useSeoMeta";
 
 function Blog({ fpi }) {
   const { t } = useGlobalTranslation("translation");
@@ -15,21 +16,37 @@ function Blog({ fpi }) {
   const globalConfig = mode?.global_config?.custom?.props;
   const { sections = [] } = page || {};
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(
-    seoData?.title || t("resource.common.page_titles.blog")
-  );
-  const description = sanitizeHTMLTag(
-    seoData?.description || t("resource.blog.seo_description")
-  );
-  const mergedSeo = { ...seoData, title, description };
+  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+    useSeoMeta({ fpi, seo: seoData });
 
-  console.log({ mergedSeo });
+  const title = useMemo(() => {
+    const raw = sanitizeHTMLTag(
+      seoData?.title || t("resource.common.page_titles.blog")
+    );
+    if (raw && brandName) return `${raw} | ${brandName}`;
+    return raw || brandName || "";
+  }, [seoData?.title, brandName, t]);
+
+  const description = useMemo(() => {
+    const raw = sanitizeHTMLTag(
+      seoData?.description || t("resource.blog.seo_description")
+    );
+    return trimDescription(raw, 160);
+  }, [seoData?.description, t, trimDescription]);
 
   return (
     <>
       {page?.value === "blog" && (
         <>
-          {getHelmet({ seo: mergedSeo })}
+          {getHelmet({
+            title,
+            description,
+            image: socialImage,
+            canonicalUrl,
+            url: pageUrl,
+            siteName: brandName,
+            ogType: "article",
+          })}
           <SectionRenderer
             sections={sections}
             fpi={fpi}

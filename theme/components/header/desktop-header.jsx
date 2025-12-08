@@ -15,6 +15,7 @@ import CartIcon from "../../assets/images/single-row-cart.svg";
 import { FDKLink } from "fdk-core/components";
 import TruckIcon from "../../assets/images/truck.svg";
 import Shimmer from "../shimmer/shimmer";
+import { translateDynamicLabel } from "../../helper/utils";
 
 function HeaderDesktop({
   checkLogin,
@@ -35,6 +36,12 @@ function HeaderDesktop({
   hideNavList,
 }) {
   const { t } = useGlobalTranslation("translation");
+  const {
+    profile_icon_text,
+    wishlist_icon_text,
+    cart_icon_text,
+    show_icon_text_in_header = false,
+  } = globalConfig || {};
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
 
   const getMenuMaxLength = () => {
@@ -173,19 +180,26 @@ function HeaderDesktop({
           {!hideNavList && (
             <button
               type="button"
-              className={`${styles.icon} ${styles["right__icons--profile"]}`}
+              className={`${styles.icon} ${styles["right__icons--profile"]} ${show_icon_text_in_header ? styles.navButton : ""}`}
               aria-label={t("resource.profile.profile")}
               onClick={() => checkLogin("profile")}
             >
               <UserIcon
                 className={`${styles.user} ${styles.headerIcon} ${styles.singleRowIcon}`}
               />
+              {show_icon_text_in_header && (
+                <span>
+                  {profile_icon_text
+                    ? translateDynamicLabel(profile_icon_text, t)
+                    : t("resource.profile.profile_icon_default_text")}
+                </span>
+              )}
             </button>
           )}
           {!hideNavList && (
             <button
               type="button"
-              className={` ${styles["right__icons--wishlist"]}`}
+              className={` ${styles["right__icons--wishlist"]} ${show_icon_text_in_header ? styles.navButton : ""}`}
               aria-label="wishlist"
               onClick={() => checkLogin("wishlist")}
             >
@@ -197,13 +211,20 @@ function HeaderDesktop({
                   <span className={styles.count}>{wishlistCount}</span>
                 )}
               </div>
+              {show_icon_text_in_header && (
+                <span>
+                  {wishlist_icon_text
+                    ? translateDynamicLabel(wishlist_icon_text, t)
+                    : t("resource.wishlist.wishlist_icon_default_text")}
+                </span>
+              )}
             </button>
           )}
           {!globalConfig?.disable_cart &&
             globalConfig?.button_options !== "none" && (
               <button
                 type="button"
-                className={`${styles.icon} ${styles["right__icons--bag"]}`}
+                className={`${styles.icon} ${styles["right__icons--bag"]} ${show_icon_text_in_header ? styles.navButton : ""}`}
                 aria-label={`${cartItemCount ?? 0} item in cart`}
                 onClick={() => checkLogin("cart")}
               >
@@ -215,6 +236,13 @@ function HeaderDesktop({
                     <span className={styles.count}>{cartItemCount}</span>
                   )}
                 </div>
+                {show_icon_text_in_header && (
+                  <span>
+                    {cart_icon_text
+                      ? translateDynamicLabel(cart_icon_text, t)
+                      : t("resource.cart.cart_icon_default_text")}
+                  </span>
+                )}
               </button>
             )}
         </div>

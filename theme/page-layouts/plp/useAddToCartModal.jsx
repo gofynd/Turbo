@@ -35,6 +35,8 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const pincodeDetails = useGlobalStore(fpi?.getters?.PINCODE_DETAILS);
   const { fulfillment_option } = useGlobalStore(fpi?.getters?.APP_FEATURES);
+  const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION) || {};
+  const { order = {} } = app_features || {};
   const { isServiceabilityModalOpen = false, selectedAddress } = useGlobalStore(
     fpi?.getters?.CUSTOM_VALUE
   );
@@ -158,6 +160,16 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
 
   const handleAddToCart = useCallback(
     async (productSlug) => {
+      if (!order?.enabled) {
+        console.log("triggered");
+
+        showSnackbar(
+          translateDynamicLabel(order?.message, t) ||
+            t("resource.common.order_not_accepting"),
+          "error"
+        );
+        return;
+      }
       setIsLoading(true);
       setSlug(productSlug);
       if (

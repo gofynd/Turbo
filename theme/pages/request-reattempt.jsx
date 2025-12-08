@@ -571,13 +571,16 @@ const RequestReattempt = ({ fpi }) => {
     };
   };
 
- function convertISOToDDMMYYYY(utcString) {
+  function convertISOToDDMMYYYY(utcString) {
     if (!utcString) return "";
+
     // Extract only the date part before 'T'
     const [datePart] = utcString.split("T");
     if (!datePart) return "";
+
     const [year, month, day] = datePart.split("-");
     if (!year || !month || !day) return "";
+
     return `${day}-${month}-${year}`;
   }
 
@@ -587,7 +590,7 @@ const RequestReattempt = ({ fpi }) => {
     const shipmentDateUTC = new Date(receivedUTCFromShipment);
     const currentDateUTC = new Date();
 
-    if (isNaN(shipmentDateUTC.getTime())) return currentDateUTC.toISOString();
+    if (Number.isNaN(shipmentDateUTC.getTime())) return currentDateUTC.toISOString();
 
     const maxDate =
       shipmentDateUTC > currentDateUTC ? shipmentDateUTC : currentDateUTC;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useFPI } from "fdk-core/utils";
 import { useParams } from "react-router-dom";
 import { PLPShimmer } from "../components/core/skeletons";
@@ -6,11 +6,12 @@ import ProductListing from "@gofynd/theme-template/pages/product-listing/product
 import "@gofynd/theme-template/pages/product-listing/index.css";
 import useCollectionListing from "../page-layouts/collection-listing/useCollectionListing";
 import { getHelmet } from "../providers/global-provider";
-import { isRunningOnClient } from "../helper/utils";
+import { isRunningOnClient, sanitizeHTMLTag } from "../helper/utils";
 import {
   COLLECTION_DETAILS,
   COLLECTION_WITH_ITEMS,
 } from "../queries/collectionsQuery";
+import useSeoMeta from "../helper/hooks/useSeoMeta";
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const fpi = useFPI();
@@ -21,6 +22,25 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const listingProps = useCollectionListing({ fpi, slug, props });
 
   const { seo } = listingProps;
+  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+    useSeoMeta({
+      fpi,
+      seo,
+      fallbackImage: props?.desktop_banner?.value || props?.mobile_banner?.value,
+    });
+
+  const title = useMemo(() => {
+    const raw = sanitizeHTMLTag(seo?.title || listingProps?.title || "Collection");
+    if (raw && brandName) return `${raw} | ${brandName}`;
+    return raw || brandName || "";
+  }, [seo?.title, listingProps?.title, brandName]);
+
+  const description = useMemo(() => {
+    const raw = sanitizeHTMLTag(
+      seo?.description || listingProps?.description || ""
+    );
+    return trimDescription(raw, 160);
+  }, [seo?.description, listingProps?.description, trimDescription]);
 
   if (listingProps?.isPageLoading && isRunningOnClient()) {
     return (
@@ -38,7 +58,15 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
 
   return (
     <>
-      {getHelmet({ seo })}
+      {getHelmet({
+        title,
+        description,
+        image: socialImage,
+        canonicalUrl,
+        url: pageUrl,
+        siteName: brandName,
+        ogType: "website",
+      })}
       <div className="margin0auto basePageContainer">
         <ProductListing {...listingProps} />
       </div>

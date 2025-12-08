@@ -23,6 +23,12 @@ export function ThemeProvider({ children }) {
   const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
   const sections = useGlobalStore(fpi.getters.PAGE)?.sections || [];
   const { globalConfig, pallete } = useThemeConfig({ fpi });
+  const siteName = sanitizeHTMLTag(
+    globalConfig?.site_name ||
+      globalConfig?.brand_name ||
+      CONFIGURATION?.application?.name ||
+      CONFIGURATION?.app?.name
+  );
 
   useEffect(() => {
     // Strict SSR check - only run in browser
@@ -62,6 +68,8 @@ export function ThemeProvider({ children }) {
   if (domainUrl && !/^https?:\/\//i.test(domainUrl)) {
     domainUrl = `https://${domainUrl}`;
   }
+  const baseUrl =
+    domainUrl || (isRunningOnClient() ? window?.location?.origin : "");
   const image = sanitizeHTMLTag(
     seoData?.image ||
       seoData?.image_url ||
@@ -69,6 +77,18 @@ export function ThemeProvider({ children }) {
       ""
   );
   const canonicalPath = sanitizeHTMLTag(seoData?.canonical_url);
+  const canonicalUrl = canonicalPath
+    ? /^https?:\/\//i.test(canonicalPath)
+      ? canonicalPath
+      : `${baseUrl}${canonicalPath.startsWith("/") ? canonicalPath : `/${canonicalPath}`}`
+    : baseUrl && location?.pathname
+      ? `${baseUrl}${location.pathname}`
+      : "";
+  const resolvedImage =
+    image && baseUrl && !/^https?:\/\//i.test(image)
+      ? `${baseUrl}${image.startsWith("/") ? image : `/${image}`}`
+      : image;
+
   const { defaultCurrency } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
   const sellerDetails = JSON.parse(
     useGlobalStore(fpi.getters.SELLER_DETAILS) || "{}"
@@ -83,7 +103,8 @@ export function ThemeProvider({ children }) {
     sections[0]?.name === "application-banner" ||
     sections[0]?.name === "image-slideshow" ||
     sections[0]?.name === "hero-image" ||
-    sections[0]?.name === "image-gallery";
+    sections[0]?.name === "image-gallery" ||
+    sections[0]?.name === "hero-video";
 
   const headerPosition = useMemo(() => {
     if (
@@ -299,17 +320,31 @@ export function ThemeProvider({ children }) {
         {fontLinks}
         <style type="text/css">{fontStyles}</style>
         <title>{title}</title>
-        <meta name="og:title" content={title} />
-        <meta name="twitter:title" content={title} />
-        <meta name="description" content={description} />
-        <meta name="og:description" content={description} />
-        <meta name="twitter:description" content={description} />
-        <meta name="image" content={image} />
-        <meta name="og:image" content={image} />
-        <meta name="twitter:image" content={image} />
-        <meta name="og:url" content={domainUrl} />
-        <meta name="og:type" content="website" />
-        {canonicalPath && <link rel="canonical" href={canonicalPath} />}
+        {description && <meta name="description" content={description} />}
+        {siteName && <meta property="og:site_name" content={siteName} />}
+        {title && <meta property="og:title" content={title} />}
+        <meta property="og:type" content="website" />
+        {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+        {description && (
+          <meta property="og:description" content={description} />
+        )}
+        {resolvedImage && (
+          <>
+            <meta name="image" content={resolvedImage} />
+            <meta property="og:image" content={resolvedImage} />
+            <meta property="og:image:secure_url" content={resolvedImage} />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="628" />
+          </>
+        )}
+        <meta name="twitter:card" content={image}/>
+        {title && <meta name="twitter:title" content={title} />}
+        {description && (
+          <meta name="twitter:description" content={description} />
+        )}
+        {resolvedImage && <meta name="twitter:image" content={resolvedImage} />}
+        {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+        
       </Helmet>
       {children}
     </>
@@ -318,31 +353,56 @@ export function ThemeProvider({ children }) {
   return content;
 }
 
-export const getHelmet = ({ seo }) => {
-  const title = sanitizeHTMLTag(seo?.title);
-  const description = sanitizeHTMLTag(seo?.description);
-  const image = sanitizeHTMLTag(seo?.image ? seo?.image : seo?.image_url);
-  const url = sanitizeHTMLTag(seo?.url || seo?.canonical_url);
-  const canonicalPath = sanitizeHTMLTag(seo?.canonical_url);
+export const getHelmet = ({
+  seo = {},
+  title: overrideTitle,
+  description: overrideDescription,
+  image: overrideImage,
+  canonicalUrl: overrideCanonicalUrl,
+  url: overrideUrl,
+  siteName: overrideSiteName,
+  robots: overrideRobots,
+  ogType = "product",
+}) => {
+  const title = sanitizeHTMLTag(overrideTitle || seo?.title);
+  const description = sanitizeHTMLTag(overrideDescription || seo?.description);
+  const image = sanitizeHTMLTag(
+    overrideImage || (seo?.image ? seo?.image : seo?.image_url)
+  );
+  const url = sanitizeHTMLTag(overrideUrl || seo?.url || seo?.canonical_url);
+  const canonicalPath = sanitizeHTMLTag(
+    overrideCanonicalUrl || seo?.canonical_url
+  );
+  const siteName = sanitizeHTMLTag(
+    overrideSiteName || seo?.site_name || seo?.brand || title
+  );
+  const robots = sanitizeHTMLTag(overrideRobots || seo?.robots);
+  const canonicalUrl = canonicalPath || url;
   return (
     <Helmet>
       <title>{title}</title>
-      <meta name="description" content={description} />
+      {description && <meta name="description" content={description} />}
+      {robots && <meta name="robots" content={robots} />}
+      {siteName && <meta property="og:site_name" content={siteName} />}
       {/* Open Graph for product */}
-      <meta property="og:type" content="product" />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      {url && <meta property="og:url" content={url} />}
-      {image && <meta property="og:image" content={image} />}
-      {image && <meta property="og:image:secure_url" content={image} />}
+      <meta property="og:type" content={ogType} />
+      {title && <meta property="og:title" content={title} />}
+      {description && <meta property="og:description" content={description} />}
+      <meta property="og:url" content={url} />
+
+      <meta property="og:image" content={image} />
+      <meta property="og:image:secure_url" content={image} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="628" />
+      <meta name="image" content={image} />
 
       {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:card" content={image} />
+      {title && <meta name="twitter:title" content={title} />}
+      {description && <meta name="twitter:description" content={description} />}
       {image && <meta name="twitter:image" content={image} />}
 
-      {canonicalPath && <link rel="canonical" href={canonicalPath} />}
+      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     </Helmet>
   );
 };

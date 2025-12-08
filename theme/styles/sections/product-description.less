@@ -116,6 +116,14 @@
         box-sizing: border-box;
       }
     }
+    .leftSticky {
+      @media @desktop {
+        position: sticky;
+        top: 130px;
+        align-self: flex-start;
+        height: fit-content;
+      }
+    }
     .right {
       width: 41.82%;
       box-sizing: border-box;
@@ -962,4 +970,12 @@
   @media @desktop {
     display: none;
   }
+}
+
+.limitedQuantity {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 140%;
+  color: @ErrorText;
+  margin-top: 8px;
 }

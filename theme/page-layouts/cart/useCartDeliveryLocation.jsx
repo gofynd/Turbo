@@ -24,6 +24,35 @@ import {
   translateDynamicLabel,
 } from "../../helper/utils";
 
+function sanitizeAddressPayload(formValues = {}) {
+  const payload = { ...formValues };
+
+  
+  if (
+    payload?.geo_location?.latitude === "" &&
+    payload?.geo_location?.longitude === ""
+  ) {
+    delete payload.geo_location;
+  }
+
+  // drop undefined fields
+  Object.keys(payload).forEach((k) => {
+    if (payload[k] === undefined) delete payload[k];
+  });
+
+  
+  if (
+    typeof payload?.phone === "object" &&
+    payload?.phone?.mobile &&
+    payload?.phone?.countryCode
+  ) {
+    payload.country_phone_code = `+${payload.phone.countryCode}`;
+    payload.phone = payload.phone.mobile;
+  }
+
+  return payload;
+}
+
 const useCartDeliveryLocation = ({ fpi }) => {
   const { t } = useGlobalTranslation("translation");
   const [searchParams] = useSearchParams();
@@ -39,12 +68,15 @@ const useCartDeliveryLocation = ({ fpi }) => {
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
   const [error, setError] = useState(null);
   const [addrError, setAddrError] = useState(null);
+  const [isNewAddress, setIsNewAddress] = useState(true);
   const {
     fetchAddresses,
     allAddress = [],
     defaultAddress,
     otherAddresses = [],
-    addAddress,
+    addAddress: addAddressMutation,
+    updateAddress: updateAddressMutation,
+    removeAddress: removeAddressMutation,
   } = useAddress({ fpi, pageName: "cart" });
   const { isServiceability } = useThemeFeature({ fpi });
   const { isHeaderMap, isCheckoutMap, mapApiKey } = useGoogleMapConfig({ fpi });
@@ -97,6 +129,15 @@ const useCartDeliveryLocation = ({ fpi }) => {
     addressFields: countryDetails?.fields?.address,
   });
   const pincodeInput = usePincodeInput();
+  const [addressFormItem, setAddressFormItem] = useState(defaultAddressItem);
+  const [editingAddressId, setEditingAddressId] = useState(null);
+  const isEditing = Boolean(editingAddressId);
+
+  useEffect(() => {
+    if (!editingAddressId) {
+      setAddressFormItem(defaultAddressItem);
+    }
+  }, [defaultAddressItem, editingAddressId]);
 
   function convertDropDownField(inputField) {
     return {
@@ -185,6 +226,12 @@ const useCartDeliveryLocation = ({ fpi }) => {
       });
   };
 
+  const resetAddressFlowState = () => {
+    setIsNewAddress(true)
+    setEditingAddressId(null);
+    setAddressFormItem(defaultAddressItem);
+  };
+
   function handleButtonClick() {
     if (isLoggedIn) {
       setIsAddressModalOpen(true);
@@ -198,6 +245,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
     // }
   }
   function handleAddButtonClick() {
+    resetAddressFlowState();
     setIsAddressModalOpen(false);
     setIsAddAddressModalOpen(true);
   }
@@ -207,6 +255,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
     setIsPincodeModalOpen(false);
     setIsAddAddressModalOpen(false);
     setError(null);
+    resetAddressFlowState();
   }
   function gotoCheckout(id) {
     if (cart_items?.id && id) {
@@ -299,34 +348,120 @@ const useCartDeliveryLocation = ({ fpi }) => {
     });
   };
 
-  function addAddressCaller(data) {
-    if (
-      data?.geo_location?.latitude === "" &&
-      data?.geo_location?.longitude === ""
-    ) {
-      delete data.geo_location;
-    }
-    for (const key in data) {
-      if (data[key] === undefined) {
-        delete data[key]; // Removes undefined values directly from the original object
+  const addAddressCaller = async (formData) => {
+    const payload = sanitizeAddressPayload(formData);
+
+    // choose the right mutation
+    const runMutation = isEditing
+      ? updateAddressMutation?.(payload, editingAddressId)
+      : addAddressMutation?.(payload);
+
+    if (!runMutation) return; 
+
+    try {
+      const res = await runMutation;
+
+      // EDIT FLOW
+      if (isEditing) {
+        const success = res?.data?.updateAddress?.success;
+        if (!success) {
+          showSnackbar(
+            res?.errors?.[0]?.message ??
+              t("resource.common.address.address_update_failure"),
+            "error"
+          );
+          return;
+        }
+
+        const updatedId = res?.data?.updateAddress?.id || editingAddressId;
+
+        showSnackbar(
+          t("resource.common.address.address_update_success"),
+          "success"
+        );
+
+        await fetchAddresses();
+        setSelectedAddressId(updatedId);
+        setIsAddAddressModalOpen(false);
+        setIsAddressModalOpen(true);
+        setAddrError(null);
+        resetAddressFlowState();
+        return;
       }
-    }
-    data.country_phone_code = `+${data.phone.countryCode}`;
-    data.phone = data.phone.mobile;
-    addAddress?.(data)?.then((res) => {
-      if (res?.data?.addAddress?.success) {
-        fetchAddresses().then(() => {
-          gotoCheckout(res?.data?.addAddress?.id);
-        });
-      } else {
+
+      // ADD FLOW
+      const success = res?.data?.addAddress?.success;
+      if (!success) {
         showSnackbar(
           res?.errors?.[0]?.message ??
             t("resource.common.address.address_addition_failure"),
           "error"
         );
+        return;
+      }
+
+      const newId = res?.data?.addAddress?.id;
+      await fetchAddresses();
+      setSelectedAddressId(newId);
+      gotoCheckout(newId);
+      setAddrError(null);
+    } catch (e) {
+      // network/unknown error for both add & update
+      showSnackbar(
+        t("resource.common.address.address_addition_failure"),
+        "error"
+      );
+    }
+  };
+
+  // simplified: just set state when an id exists
+  const handleEditAddress = (address = {}) => {
+    if (!address?.id) return;
+    setIsNewAddress(false);
+    setEditingAddressId(address.id);
+    setAddressFormItem(address);
+    setIsAddressModalOpen(true);
+    setIsAddAddressModalOpen(true);
+  };
+
+  const getFallbackAddressId = (removedId) => {
+    const availableAddresses = (allAddress || []).filter(
+      (item) => item?.id && item.id !== removedId
+    );
+    if (!availableAddresses.length) {
+      return "";
+    }
+    const fallbackDefault = availableAddresses.find(
+      (item) => item?.is_default_address
+    );
+    return fallbackDefault?.id || availableAddresses?.[0]?.id || "";
+  };
+
+  const handleRemoveAddress = (addressId) => {
+    if (!addressId) {
+      return;
+    }
+    removeAddressMutation?.(addressId)?.then((res) => {
+      if (res?.data?.removeAddress?.is_deleted) {
+        const fallbackId = getFallbackAddressId(addressId);
+        setSelectedAddressId(fallbackId);
+        setAddrError(null);
+        showSnackbar(
+          t("resource.common.address.address_deletion_success"),
+          "success"
+        );
+        fetchAddresses();
+        if (!fallbackId) {
+          setIsAddressModalOpen(false);
+        }
+      } else {
+        showSnackbar(
+          t("resource.common.address.address_deletion_failure"),
+          "error"
+        );
       }
     });
-  }
+  };
 
   const deliveryLocation = useMemo(() => {
     if (selectedAddress) {
@@ -361,16 +496,19 @@ const useCartDeliveryLocation = ({ fpi }) => {
     mapApiKey,
     getLocality,
     isAddAddressModalOpen,
+    isNewAddress,
     selectAddress,
     addrError,
     isInternationalShippingEnabled: isInternational,
     addressFormSchema: formSchema,
-    addressItem: defaultAddressItem,
+    addressItem: addressFormItem,
     onCountryChange: handleCountryChange,
     handleCountrySearch,
     getFilteredCountries,
     selectedCountry,
     countryDetails,
+    updateAddress: handleEditAddress,
+    removeAddress: handleRemoveAddress,
   };
 };
 

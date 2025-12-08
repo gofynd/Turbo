@@ -6,27 +6,38 @@ import Loader from "../components/loader/loader";
 import InfiniteLoader from "../components/infinite-loader/infinite-loader";
 import { sanitizeHTMLTag } from "../helper/utils";
 import { getHelmet } from "../providers/global-provider";
+import useSeoMeta from "../helper/hooks/useSeoMeta";
 
 function Home({ numberOfSections, fpi }) {
   const { t } = useGlobalTranslation("translation");
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const { isEdit = false } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
-  const { globalConfig } = useThemeConfig({ fpi });
+  const { globalConfig, pageConfig } = useThemeConfig({ fpi, page: "home" });
   const seoData = page?.seo || {};
-  const title = sanitizeHTMLTag(
-    seoData?.title || t("resource.common.page_titles.home")
-  );
   const { sections = [], error, isLoading } = page || {};
-  const [visibleCount, setVisibleCount] = useState(3);
+  const initialSectionsCount = globalConfig?.initial_sections_count || 3;
+
+  const [visibleCount, setVisibleCount] = useState(initialSectionsCount);
+  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+    useSeoMeta({ fpi, seo: seoData });
+
+  const title = useMemo(() => {
+    const baseTitle = sanitizeHTMLTag(
+      seoData?.title || brandName || t("resource.common.page_titles.home")
+    );
+    return baseTitle ? `${baseTitle} - Official Online Store` : "";
+  }, [seoData?.title, brandName, t]);
 
   const renderSections = useMemo(
     () => (isEdit ? sections : sections?.slice(0, visibleCount)),
     [sections, visibleCount]
   );
-  const description = sanitizeHTMLTag(
-    seoData?.description || t("resource.common.home_seo_description")
-  );
-  const mergedSeo = { ...seoData, title, description };
+  const description = useMemo(() => {
+    const raw = sanitizeHTMLTag(
+      seoData?.description || t("resource.common.home_seo_description")
+    );
+    return trimDescription(raw, 160);
+  }, [seoData?.description, t, trimDescription]);
 
   useEffect(() => {
     // Skip on server-side
@@ -84,7 +95,15 @@ function Home({ numberOfSections, fpi }) {
 
   return (
     <>
-      {getHelmet({ seo: mergedSeo })}
+      {getHelmet({
+        title,
+        description,
+        image: socialImage,
+        canonicalUrl,
+        url: pageUrl,
+        siteName: brandName,
+        ogType: "website",
+      })}
       <div className="margin0auto basePageContainer">
         <h1 className="visually-hidden">{title}</h1>
         {page?.value === "home" && (
@@ -101,7 +120,17 @@ function Home({ numberOfSections, fpi }) {
 }
 
 export const settings = JSON.stringify({
-  props: [],
+  props: [
+    {
+      type: "range",
+      id: "initial_sections_count",
+      label: "Initial Sections to Load",
+      min: 3,
+      max: 10,
+      default: 3,
+      info: "Number of sections to load initially before user scrolls. Remaining sections load on scroll.",
+    },
+  ],
 });
 
 export const sections = JSON.stringify([

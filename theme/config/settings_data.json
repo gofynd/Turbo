@@ -304,7 +304,8 @@
           "page": "home",
           "settings": {
             "props": {
-              "code": ""
+              "code": "",
+              "initial_sections_count": 3
             }
           }
         },
@@ -359,6 +360,24 @@
               "show_icons": true,
               "show_working_hours": true,
               "show_description": true
+            }
+          }
+        },
+        {
+          "page": "order-tracking",
+          "settings": {
+            "props": {
+              "show_header": true,
+              "show_footer": true
+            }
+          }
+        },
+        {
+          "page": "order-tracking-details",
+          "settings": {
+            "props": {
+              "show_header": true,
+              "show_footer": true
             }
           }
         }
@@ -1049,6 +1068,63 @@
         ],
         "value": "product-description"
       },
+      {
+        "sections": [
+                     {
+                      "blocks": [],
+                      "label": "Order Tracking",
+                      "name": "order-tracking",
+                      "predicate": {
+                      "route": {
+                      "exact_url": "",
+                      "query": null,
+                      "selected": "none"
+                      },
+        "screen": {
+          "desktop": true,
+          "mobile": true,
+          "tablet": true
+        },
+        "user": {
+          "anonymous": true,
+          "authenticated": true
+        }
+      },
+      "preset": {},
+      "props": {}
+    }
+  ],
+  "value": "order-tracking"
+},
+{
+  "sections": [
+    {
+      "blocks": [],
+      "label": "Order Tracking Details",
+      "name": "order-tracking-details",
+      "predicate": {
+        "route": {
+          "exact_url": "",
+          "query": null,
+          "selected": "none"
+        },
+        "screen": {
+          "desktop": true,
+          "mobile": true,
+          "tablet": true
+        },
+        "user": {
+          "anonymous": true,
+          "authenticated": true
+        }
+      },
+      "preset": {},
+      "props": {}
+    }
+  ],
+  "value": "order-tracking-details"
+}
+,
       {
         "sections": [
           {
@@ -1919,6 +1995,39 @@
           }
         ],
         "value": "brands"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Store Locator",
+            "name": "store-locator",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "section_title": {
+                "type": "text",
+                "value": "Find a Store Near You"
+              }
+            }
+          }
+        ],
+        "value": "locate-us"
       }
     ]
   }

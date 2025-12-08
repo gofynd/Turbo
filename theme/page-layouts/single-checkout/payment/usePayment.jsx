@@ -1719,15 +1719,19 @@ const usePayment = (fpi) => {
             (item) => item.key === "total"
           )?.value * 100 || 0;
 
-        // if (amount) {
+        // Use cart_id from URL or fallback to cart ID from response data
+        const resolvedCartId = cart_id || data?.cart?.id;
+        if (!resolvedCartId) {
+          console.error("Cart ID not available for payment options");
+          return;
+        }
         const paymentPayload = {
           pincode: localStorage?.getItem("pincode") || "",
-          cartId: cart_id,
+          cartId: resolvedCartId,
           checkoutMode: "self",
           amount,
         };
         await fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload);
-        // }
       });
 
       return data;

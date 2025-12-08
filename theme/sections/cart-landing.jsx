@@ -24,17 +24,20 @@ import EmptyCartIcon from "../assets/images/empty-cart.svg";
 import RewardIcon from "../assets/images/rewards.svg";
 import RewardBagIcon from "../assets/images/reward-bag.svg";
 import StarIcon from "../assets/images/starIcon.svg";
+import ErrorInfoIcon from "../assets/images/error-info-icon.svg";
 import RadioIcon from "../assets/images/radio";
 import { translateDynamicLabel } from "../helper/utils";
 import { Skeleton } from "../components/core/skeletons";
 import ChipItemSkeleton from "../components/cart/chip-item-skeleton";
 import { useGlobalStore } from "fdk-core/utils";
 
-export function Component({ globalConfig = {}, blocks }) {
+export function Component({ props = {}, globalConfig = {}, blocks }) {
   const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
   const { isInternational } = useThemeFeature({ fpi });
   const { getFormattedPromise } = useDeliverPromise({ fpi });
+  const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION) || {};
+  const { order = {} } = app_features || {};
   const {
     isLoading,
     isLoyaltyLoading,
@@ -73,6 +76,8 @@ export function Component({ globalConfig = {}, blocks }) {
     fetchProductPrice = () => {},
   } = useCart(fpi);
 
+  const { is_limited_stock, limited_stock_label } = props;
+
   const cartDeliveryLocation = useCartDeliveryLocation({ fpi });
   const cartShare = useCartShare({ fpi, cartData });
   const cartComment = useCartComment({ fpi, cartData });
@@ -95,11 +100,11 @@ export function Component({ globalConfig = {}, blocks }) {
 
   useEffect(() => {
     if (!cartData?.id) return;
-  
+
     const savedLoyaltyChecked = localStorage.getItem(
       `isLoyaltyChecked_${cartData.id}`
     );
-  
+
     if (savedLoyaltyChecked === "true") {
       setIsLoyaltyChecked(true);
       onApplyLoyaltyPoints(true, false) // 👈 false = silent, no toast
@@ -115,7 +120,7 @@ export function Component({ globalConfig = {}, blocks }) {
         });
     }
   }, [cartData?.id]);
-  
+
   useEffect(() => {
     if (cartData?.id) {
       // Clear loyalty state from old carts
@@ -129,7 +134,7 @@ export function Component({ globalConfig = {}, blocks }) {
       });
     }
   }, [cartData?.id]);
-  
+
   useEffect(() => {}, [cartData]);
   const handleLoyaltyCheckboxChange = async (event) => {
     const checked = event.target.checked;
@@ -198,6 +203,7 @@ export function Component({ globalConfig = {}, blocks }) {
               {...cartDeliveryLocation}
               isGuestUser={!isLoggedIn}
               user={userDetails}
+              acceptOrder={order?.enabled}
             />
             <div className={styles.cartTitleContainer}>
               <div className={styles.bagDetailsContainer}>
@@ -233,6 +239,21 @@ export function Component({ globalConfig = {}, blocks }) {
               <>
                 {cartItemsArray?.length > 0 && (
                   <>
+                    {!order?.enabled && (
+                      <div className={`${styles.minCartContainer}`}>
+                        <div
+                          className={`${styles.minCartValidBox} ${styles.notAcceptingOrder}`}
+                        >
+                          <span className={styles.errorIcon}>
+                            <ErrorInfoIcon />
+                          </span>
+                          <span className={styles.errMsg}>
+                            {translateDynamicLabel(order?.message, t) ||
+                              t("resource.common.order_not_accepting")}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                     {firstWord === "Minimum" && secondWord === "order" && (
                       <div className={styles.minCartContainer}>
                         <div className={styles.minCartValidBox}>
@@ -289,6 +310,8 @@ export function Component({ globalConfig = {}, blocks }) {
                           pincode={cartDeliveryLocation?.pincode}
                           isCartValid={isValid}
                           inValidCartMsg={cartData?.message}
+                          isLimitedStock={is_limited_stock?.value ?? false}
+                          limitedStockLabel={limited_stock_label?.value}
                           getDeliveryPromise={(promise) =>
                             getFormattedPromise(promise?.iso)
                           }
@@ -316,88 +339,84 @@ export function Component({ globalConfig = {}, blocks }) {
                     />
                     // )
                   );
-                  case "loyalty_points":
-                    return (
-                      <div className={styles.loyaltyWrapper}>
-                        <div className={styles.loyaltyCard}>
-                          <section className={styles.rewardsTitle}>
-                            LOYALTY BENEFITS
-                          </section>
-                          <div className={styles.rewardsContainer}>
-                            <RewardIcon className={styles.Icon} />
-                            <div>
-                              <div className={styles.loyaltyMainText}>
-                                {cartData?.breakup_values?.loyalty_points?.earn_title}
-
-                              </div>
-                              <div className={styles.loyaltySubText}>
-                                You’ll earn{" "}
-                                {cartData?.breakup_values?.loyalty_points
-                                  ?.earn_points || 0}{" "}
-                                points from this order!
-                              </div>
+                case "loyalty_points":
+                  return (
+                    <div className={styles.loyaltyWrapper}>
+                      <div className={styles.loyaltyCard}>
+                        <section className={styles.rewardsTitle}>
+                          LOYALTY BENEFITS
+                        </section>
+                        <div className={styles.rewardsContainer}>
+                          <RewardIcon className={styles.Icon} />
+                          <div>
+                            <div className={styles.loyaltyMainText}>
+                              {
+                                cartData?.breakup_values?.loyalty_points
+                                  ?.earn_title
+                              }
                             </div>
-                          </div>
-                        </div>
-
-                        <div className={styles.loyaltyCard} >
-                          <div className={styles.rewardsContainer}>
-                            <StarIcon className={styles.Icon} />
-                            <div>
-                              <div className={styles.loyaltyMainText}>
-                                You’ve{" "}
-                                {
-                                  cartData?.breakup_values?.loyalty_points
-                                    ?.total_points
-                                }{" "}
-                                points
-                              </div>
-                              <div className={styles.loyaltySubText}>
-                                Save additional ₹
-                                {
-                                  cartData?.breakup_values?.loyalty_points
-                                    ?.amount
-                                }
-                              </div>
-                            </div>
-                          </div>
-
-                          <label className={styles.loyaltyPointsTitle}>
-                            <input
-                              type="checkbox"
-                              checked={isLoyaltyChecked}
-                              onChange={handleLoyaltyCheckboxChange}
-                              className={styles.loyaltyCheckbox}
-                              disabled={!isLoggedIn || cartData?.breakup_values?.loyalty_points
-                                ?.total_points<=0}
-                            />
-                            Redeem all available points
-                          </label>
-                        </div>
-                        <div className={styles.loyaltyCard}>
-                          <div className={styles.rewardsContainer}>
-                            <RewardBagIcon className={styles.Icon} />
-                            <div>
-                              <div className={styles.loyaltyMainText}>
-                                {cartData?.breakup_values?.loyalty_points?.title}
-                              </div>
-                                    <div className={styles.loyaltySubText}>
-                                You’ll redeem{" "}
-                                {
-                                  cartData?.breakup_values?.loyalty_points
-                                    ?.points
-                                }{" "}
-                                points for this order and save ₹
-                                {
-                                  cartData?.breakup_values?.loyalty_points
-                                    ?.amount
-                                }
-                              </div>
+                            <div className={styles.loyaltySubText}>
+                              You’ll earn{" "}
+                              {cartData?.breakup_values?.loyalty_points
+                                ?.earn_points || 0}{" "}
+                              points from this order!
                             </div>
                           </div>
                         </div>
                       </div>
-                    );
+
+                      <div className={styles.loyaltyCard}>
+                        <div className={styles.rewardsContainer}>
+                          <StarIcon className={styles.Icon} />
+                          <div>
+                            <div className={styles.loyaltyMainText}>
+                              You’ve{" "}
+                              {
+                                cartData?.breakup_values?.loyalty_points
+                                  ?.total_points
+                              }{" "}
+                              points
+                            </div>
+                            <div className={styles.loyaltySubText}>
+                              Save additional ₹
+                              {cartData?.breakup_values?.loyalty_points?.amount}
+                            </div>
+                          </div>
+                        </div>
+
+                        <label className={styles.loyaltyPointsTitle}>
+                          <input
+                            type="checkbox"
+                            checked={isLoyaltyChecked}
+                            onChange={handleLoyaltyCheckboxChange}
+                            className={styles.loyaltyCheckbox}
+                            disabled={
+                              !isLoggedIn ||
+                              cartData?.breakup_values?.loyalty_points
+                                ?.total_points <= 0
+                            }
+                          />
+                          Redeem all available points
+                        </label>
+                      </div>
+                      <div className={styles.loyaltyCard}>
+                        <div className={styles.rewardsContainer}>
+                          <RewardBagIcon className={styles.Icon} />
+                          <div>
+                            <div className={styles.loyaltyMainText}>
+                              {cartData?.breakup_values?.loyalty_points?.title}
+                            </div>
+                            <div className={styles.loyaltySubText}>
+                              You’ll redeem{" "}
+                              {cartData?.breakup_values?.loyalty_points?.points}{" "}
+                              points for this order and save ₹
+                              {cartData?.breakup_values?.loyalty_points?.amount}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
 
                 case "comment":
                   return <Comment key={key} {...cartComment} />;
@@ -482,7 +501,10 @@ export function Component({ globalConfig = {}, blocks }) {
                                 <button
                                   className={styles.priceSummaryGuestButton}
                                   disabled={
-                                    !isValid || isOutOfStock || isNotServicable
+                                    !isValid ||
+                                    isOutOfStock ||
+                                    isNotServicable ||
+                                    !order?.enabled
                                   }
                                   onClick={onGotoCheckout}
                                 >
@@ -496,7 +518,10 @@ export function Component({ globalConfig = {}, blocks }) {
                             <button
                               className={styles.priceSummaryLoginButton}
                               disabled={
-                                !isValid || isOutOfStock || isNotServicable
+                                !isValid ||
+                                isOutOfStock ||
+                                isNotServicable ||
+                                !order?.enabled
                               }
                               onClick={onGotoCheckout}
                             >
@@ -532,6 +557,7 @@ export function Component({ globalConfig = {}, blocks }) {
           onLoginClick={redirectToLogin}
           onCheckoutClick={onGotoCheckout}
           onPriceDetailsClick={onPriceDetailsClick}
+          order={order}
         />
         <RemoveCartItem
           isOpen={isRemoveModalOpen}
@@ -547,7 +573,21 @@ export function Component({ globalConfig = {}, blocks }) {
 
 export const settings = {
   label: "t:resource.sections.cart_landing.cart_landing",
-  props: [],
+  props: [
+    {
+      type: "checkbox",
+      id: "is_limited_stock",
+      label: "t:resource.common.is_limited_stock",
+      default: true,
+    },
+    {
+      type: "text",
+      id: "limited_stock_label",
+      label: "t:resource.common.limited_stock_label",
+      default: "t:resource.default_values.limited_stock_label",
+      info: "t:resource.common.limited_stock_info",
+    },
+  ],
   blocks: [
     {
       type: "coupon",

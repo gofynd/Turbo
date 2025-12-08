@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, act } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FDKLink } from "fdk-core/components";
 import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
@@ -14,6 +14,8 @@ import { useGlobalTranslation } from "fdk-core/utils";
 import { useParams } from "react-router-dom";
 import I18Dropdown from "./i18n-dropdown";
 import MegaMenuLarge from "./mega-menu-large";
+import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
+import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 
 function Navigation({
   fallbackLogo,
@@ -130,8 +132,10 @@ function Navigation({
         setSidebarl3Nav((prev) => ({ ...prev, title: false, state: false }));
         setSidebarl2Nav({
           state: true,
-          title: menu.display,
-          navigation: menu.sub_navigation,
+          title: menu?.display,
+          image: menu?.image,
+          action: menu?.action,
+          navigation: menu?.sub_navigation,
         });
       }
       if (level === "l3") {
@@ -155,6 +159,8 @@ function Navigation({
       setShowSidebarNav(true);
     }
   };
+
+  console.log(navigationList, "navigationList");
 
   return (
     <div className={customClass}>
@@ -494,6 +500,27 @@ function Navigation({
                     )}
                   </li>
                 ))}
+                {!!sidebarl2Nav?.image && (
+                  <div className={styles.navigationImage}>
+                    <FDKLink action={sidebarl2Nav?.action}>
+                      <FyImage
+                        src={sidebarl2Nav.image}
+                        sources={[
+                          { breakpoint: { min: 1728 }, width: 725 },
+                          { breakpoint: { min: 1512 }, width: 634 },
+                          { breakpoint: { min: 1296 }, width: 542 },
+                          { breakpoint: { min: 1080 }, width: 447 },
+                          { breakpoint: { min: 900 }, width: 370 },
+                          { breakpoint: { min: 720 }, width: 294 },
+                          { breakpoint: { min: 0 }, width: 260 },
+                        ]}
+                        defer={true}
+                        alt={sidebarl2Nav?.title}
+                        isFixedAspectRatio={false}
+                      />
+                    </FDKLink>
+                  </div>
+                )}
               </ul>
             )}
             {sidebarl3Nav.state && (
