@@ -48,16 +48,52 @@ function SiteMap({ props }) {
     }, 0);
   }
 
-const sitemapContainerLength = Math.max(getMaxSectionLength(sitemapSections) * 43 + 20 , 600);
-  
+  function getSecondMaxSectionLength(sections = []) {
+    if (sections.length < 2) return 0;
+
+    let max = -Infinity;
+    let secondMax = -Infinity;
+
+    for (const s of sections) {
+      const len = Array.isArray(s?.data) ? s.data.length : 0;
+
+      if (len > max) {
+        secondMax = max;
+        max = len;
+      } else if (len > secondMax && len < max) {
+        secondMax = len;
+      }
+    }
+
+    return secondMax === -Infinity ? 0 : secondMax;
+  }
+
+  function getSitemapContainerLength(sitemapSections) {
+    const max = getMaxSectionLength(sitemapSections);
+    const second = getSecondMaxSectionLength(sitemapSections);
+
+    let length;
+
+    if (max < 15) {
+      length = max * 50 + second * 50 + 150;
+    } else if (max > 15 && max < 30) {
+      length = max * 43 + 200;
+    } else {
+      length = max * 43 + 20;
+    }
+
+    return Math.max(length, 0);
+  }
+
+  const sitemapContainerLength = getSitemapContainerLength(sitemapSections);
   return (
-    <div className={styles.sitemapContainer} style={{"--dynamicHeight" : `${sitemapContainerLength }px` }}>
+    <div
+      className={styles.sitemapContainer}
+      style={{ "--dynamicHeight": `${sitemapContainerLength}px` }}
+    >
       <div className={styles.sitemapTitle}>{props?.sitemap_text?.value}</div>
 
-      <div
-        ref={containerRef}
-        className={styles.sitemapSections}
-      >
+      <div ref={containerRef} className={styles.sitemapSections}>
         {isLoading ? (
           <Loader />
         ) : (
