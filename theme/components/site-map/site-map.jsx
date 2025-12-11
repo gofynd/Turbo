@@ -74,9 +74,9 @@ function SiteMap({ props }) {
 
     let length;
 
-    if (max < 15) {
+    if (max <= 15) {
       length = max * 50 + second * 50 + 150;
-    } else if (max > 15 && max < 30) {
+    } else if (max > 15 && max <= 30) {
       length = max * 43 + 200;
     } else {
       length = max * 43 + 20;

@@ -67,6 +67,7 @@ export default function ProductComboCard({
         isLazyLoaded={true}
         aspectRatio={getProductImgAspectRatio(globalConfig)}
         defer={true}
+        alt={title || brand || t("resource.common.product")}
       />
       <div className={styles.productComboDetails}>
         {isBrand && <div className={styles.brand}>{brand}</div>}

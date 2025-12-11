@@ -274,7 +274,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                       }
                       isImageFill={img_fill?.value || logoOnly?.value}
                       src={getImgSrc(card)}
-                      alt={card?.brand?.name || ""}
+                      alt={card?.brand?.name || "Brand banner"}
                       aspectRatio={logoOnly?.value ? "1" : "0.8"}
                       mobileAspectRatio={logoOnly?.value ? "1" : "0.8"}
                       sources={getImgSrcSet()}
@@ -288,7 +288,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                                 ? card?.brand?.logo?.url
                                 : placeholderImage
                             }
-                            alt={card?.brand?.name || ""}
+                            alt={card?.brand?.name || "Brand logo"}
                             aspectRatio="1"
                             mobileAspectRatio="1"
                             sources={[{ width: 100 }]}
@@ -370,6 +370,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                                   aspectRatio={logoOnly?.value ? 1 : 0.8}
                                   mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
                                   sources={getImgSrcSet()}
+                                  alt={card?.brand?.name || "Brand banner"}
                                 />
                                 {card?.brand?.name?.length > 0 &&
                                   !logoOnly?.value && (
@@ -384,6 +385,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                                           aspectRatio={1}
                                           mobileAspectRatio={1}
                                           sources={[{ width: 100 }]}
+                                          alt={card?.brand?.name || "Brand logo"}
                                         />
                                       </div>
                                       <span className={styles["font-body"]}>
@@ -423,6 +425,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                   aspectRatio={logoOnly?.value ? 1 : 0.8}
                   mobileAspectRatio={logoOnly?.value ? 1 : 0.8}
                   sources={getImgSrcSet()}
+                  alt="Brand placeholder"
                 />
 
                 {!logoOnly?.value && (
@@ -433,6 +436,7 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                         aspectRatio={1}
                         mobileAspectRatio={1}
                         sources={[{ width: 100 }]}
+                        alt="Brand placeholder logo"
                       />
                     </div>
                     <span className={styles.fontBody}>{item}</span>

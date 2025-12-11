@@ -23,7 +23,9 @@ const EmptyState = ({
   }, []);
   return (
     <div className={`${styles.error} ${customClassName} fontBody`}>
-      {iconSrc && <img src={iconSrc} alt="" />}
+      {iconSrc && (
+        <img src={iconSrc} alt={title || t("resource.common.no_data_found")} />
+      )}
       {Icon && <div className={styles.icon}>{Icon}</div>}
       {showTitle && (
         <h3 className={`${styles.heading} ${customHeaderClass} fontHeader`}>

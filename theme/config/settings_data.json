@@ -108,6 +108,10 @@
             "logo_width": 774,
             "logo_menu_alignment": "layout_4",
             "header_layout": "double",
+            "is_header_map": false,
+            "is_checkout_map": false,
+            "is_store_locator_map": false,
+            "map_api_key": "",
             "font_header": {
               "variants": {
                 "light": {
@@ -1070,61 +1074,60 @@
       },
       {
         "sections": [
-                     {
-                      "blocks": [],
-                      "label": "Order Tracking",
-                      "name": "order-tracking",
-                      "predicate": {
-                      "route": {
-                      "exact_url": "",
-                      "query": null,
-                      "selected": "none"
-                      },
-        "screen": {
-          "desktop": true,
-          "mobile": true,
-          "tablet": true
-        },
-        "user": {
-          "anonymous": true,
-          "authenticated": true
-        }
+          {
+            "blocks": [],
+            "label": "Order Tracking",
+            "name": "order-tracking",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "order-tracking"
       },
-      "preset": {},
-      "props": {}
-    }
-  ],
-  "value": "order-tracking"
-},
-{
-  "sections": [
-    {
-      "blocks": [],
-      "label": "Order Tracking Details",
-      "name": "order-tracking-details",
-      "predicate": {
-        "route": {
-          "exact_url": "",
-          "query": null,
-          "selected": "none"
-        },
-        "screen": {
-          "desktop": true,
-          "mobile": true,
-          "tablet": true
-        },
-        "user": {
-          "anonymous": true,
-          "authenticated": true
-        }
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Order Tracking Details",
+            "name": "order-tracking-details",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "order-tracking-details"
       },
-      "preset": {},
-      "props": {}
-    }
-  ],
-  "value": "order-tracking-details"
-}
-,
       {
         "sections": [
           {

@@ -39,6 +39,7 @@ function CardLogo({ card, cardType, globalConfig }) {
           src={getCardLogo()}
           customClass={styles.logoCard}
           sources={[{ width: 200 }]}
+          alt={getTitle()}
           globalConfig={globalConfig}
         />
       </FDKLink>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styles from "./store-locator.less";
 import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
 import StoreCard from "./store-card";
@@ -52,60 +52,6 @@ function StoreLocator({
   // Options
   cityOptions = [],
 }) {
-  // Update map center programmatically when stores change (prevents flickering)
-  useEffect(() => {
-    if (mapRef.current && storesWithCoordinates.length > 0 && !selectedStore) {
-      const newCenter = mapCenter;
-      if (
-        newCenter &&
-        newCenter.lat !== DEFAULT_CENTER.lat &&
-        newCenter.lng !== DEFAULT_CENTER.lng
-      ) {
-        // Only update if center actually changed
-        const currentCenter = mapRef.current.getCenter();
-        if (
-          !currentCenter ||
-          Math.abs(currentCenter.lat() - newCenter.lat) > 0.001 ||
-          Math.abs(currentCenter.lng() - newCenter.lng) > 0.001
-        ) {
-          // Use smooth panning to prevent flicker
-          if (storesWithCoordinates.length > 1) {
-            const bounds = calculateBounds(storesWithCoordinates);
-            if (bounds) {
-              mapRef.current.fitBounds(bounds);
-            } else {
-              mapRef.current.panTo(newCenter);
-            }
-          } else {
-            mapRef.current.panTo(newCenter);
-          }
-        }
-      }
-    }
-  }, [
-    storesWithCoordinates,
-    mapCenter,
-    selectedStore,
-    mapRef,
-    calculateBounds,
-  ]);
-
-  // Update map when selected store changes
-  useEffect(() => {
-    if (selectedStore && mapRef.current) {
-      const coords = getStoreCoordinates(selectedStore);
-      if (coords) {
-        setTimeout(() => {
-          if (mapRef.current) {
-            mapRef.current.panTo(coords);
-            mapRef.current.setZoom(15);
-          }
-        }, 100);
-      }
-    }
-  }, [selectedStore, mapRef]);
-
-
   return (
     <div className={styles.storeLocatorContainer}>
       {/* Header Section */}
@@ -191,7 +137,8 @@ function StoreLocator({
           ) : hasStores ? (
             <>
               <p className={styles.storesCount}>
-                {displayStores.length} Store{displayStores.length !== 1 ? 's' : ''} Found
+                {displayStores.length} Store
+                {displayStores.length !== 1 ? "s" : ""} Found
               </p>
               {displayStores.map((store) => (
                 <StoreCard
@@ -344,7 +291,7 @@ function StoreLocator({
             ) : (
               <div className={styles.mapFallback}>
                 {!mapApiKey ? (
-                  <p>Map API key not configured</p>
+                  <p>Unable to load the map</p>
                 ) : (
                   <p>Loading map...</p>
                 )}

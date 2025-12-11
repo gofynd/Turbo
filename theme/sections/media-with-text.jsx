@@ -228,6 +228,7 @@ export function Component({ props, globalConfig, blocks, fpi }) {
           src={getDesktopImage}
           sources={getImgSrcSet()}
           isFixedAspectRatio={false}
+          alt={title?.value || "Media banner"}
         />
         {!isMobile &&
           getHotspots()?.desktop?.map((hotspot, index) => {

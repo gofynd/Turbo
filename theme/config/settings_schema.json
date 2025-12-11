@@ -593,6 +593,14 @@
       "label": "Checkout"
     },
     {
+      "type": "checkbox",
+      "id": "is_store_locator_map",
+      "category": "t:resource.settings_schema.common.google_maps",
+      "default": false,
+      "label": "Store Locator",
+      "info": "Enable Google Maps on the Store Locator page"
+    },
+    {
       "type": "text",
       "id": "map_api_key",
       "category": "t:resource.settings_schema.common.google_maps",
@@ -618,8 +626,8 @@
       "category": "t:resource.settings_schema.common.home_page",
       "id": "initial_sections_count",
       "label": "t:resource.settings_schema.home_page.initial_sections_count_label",
-      "min": 3,
-      "max": 10,
+      "min": 2,
+      "max": 4,
       "default": 3,
       "info": "t:resource.settings_schema.home_page.initial_sections_count_load_info"
     },

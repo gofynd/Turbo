@@ -1327,6 +1327,10 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                       "custom_button_icon"
                                     )}
                                     globalConfig={globalConfig}
+                                    alt={`${getBlockConfigValue(
+                                      block,
+                                      "custom_button_text"
+                                    )} icon`}
                                   />
                                 )}
                                 {getBlockConfigValue(

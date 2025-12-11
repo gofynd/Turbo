@@ -337,14 +337,13 @@ export function ThemeProvider({ children }) {
             <meta property="og:image:height" content="628" />
           </>
         )}
-        <meta name="twitter:card" content={image}/>
+        <meta name="twitter:card" content="summary_large_image" />
         {title && <meta name="twitter:title" content={title} />}
         {description && (
           <meta name="twitter:description" content={description} />
         )}
         {resolvedImage && <meta name="twitter:image" content={resolvedImage} />}
         {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-        
       </Helmet>
       {children}
     </>
@@ -365,6 +364,7 @@ export const getHelmet = ({
   ogType = "product",
 }) => {
   const title = sanitizeHTMLTag(overrideTitle || seo?.title);
+  
   const description = sanitizeHTMLTag(overrideDescription || seo?.description);
   const image = sanitizeHTMLTag(
     overrideImage || (seo?.image ? seo?.image : seo?.image_url)
@@ -397,7 +397,7 @@ export const getHelmet = ({
       <meta name="image" content={image} />
 
       {/* Twitter */}
-      <meta name="twitter:card" content={image} />
+      <meta name="twitter:card" content="summary_large_image" />
       {title && <meta name="twitter:title" content={title} />}
       {description && <meta name="twitter:description" content={description} />}
       {image && <meta name="twitter:image" content={image} />}

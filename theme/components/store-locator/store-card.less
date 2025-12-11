@@ -10,6 +10,7 @@
   align-items: flex-start;
   box-sizing: border-box;
   width: 100%;
+  border: 1px solid transparent;
   cursor: pointer;
   transition:
     border-color 0.2s ease,
@@ -29,7 +30,7 @@
 }
 
 .selectedStore {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid @DividerStokes;
 }
 
 .storeHeader {

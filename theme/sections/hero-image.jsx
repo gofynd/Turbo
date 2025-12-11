@@ -288,6 +288,7 @@ export function Component({ props, globalConfig, blocks }) {
           overlayColor={getOverlayColor}
           defer={false}
           isFixedAspectRatio={false}
+          alt={heading?.value || "Hero banner"}
         />
         <div className={styles.overlayItems} style={getOverlayPositionStyles()}>
           {heading?.value && (

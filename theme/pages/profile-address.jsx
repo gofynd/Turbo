@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
+import { useGlobalTranslation } from "fdk-core/utils";
 import { isLoggedIn } from "../helper/auth-guard";
 import ProfileRoot from "../components/profile/profile-root";
 import ProfileAddressPage from "../page-layouts/profile-address/profile-address-page";
@@ -8,19 +9,17 @@ import { sanitizeHTMLTag } from "../helper/utils";
 import { getHelmet } from "../providers/global-provider";
 
 function ProfileAddress({ fpi }) {
+  const { t } = useGlobalTranslation("translation");
   const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
     useSeoMeta({ fpi, seo: {} });
 
   const title = useMemo(() => {
-    const base = brandName ? `My Account – ${brandName}` : "My Account";
+    const base = brandName ? `My Account | ${brandName}` : "My Account";
     return sanitizeHTMLTag(base);
   }, [brandName]);
 
   const description = useMemo(() => {
-    const base =
-      brandName && brandName.length
-        ? `Manage your addresses securely in your ${brandName} account.`
-        : "Manage your addresses securely in your account.";
+    const base = t("resource.profile_details.seo_description")
     return trimDescription(sanitizeHTMLTag(base), 160);
   }, [brandName, trimDescription]);
 

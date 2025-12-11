@@ -21,7 +21,7 @@ function Blog({ fpi }) {
 
   const title = useMemo(() => {
     const raw = sanitizeHTMLTag(
-      seoData?.title || t("resource.common.page_titles.blog")
+      seoData?.title || t("resource.common.page_titles.blogs_and_resources")
     );
     if (raw && brandName) return `${raw} | ${brandName}`;
     return raw || brandName || "";
@@ -34,6 +34,7 @@ function Blog({ fpi }) {
     return trimDescription(raw, 160);
   }, [seoData?.description, t, trimDescription]);
 
+  console.log("Blog Page Rendered", sections);
   return (
     <>
       {page?.value === "blog" && (

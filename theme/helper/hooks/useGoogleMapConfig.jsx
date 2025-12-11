@@ -11,6 +11,8 @@ export const useGoogleMapConfig = ({ fpi }) => {
     isHeaderMap: !!globalConfig?.is_header_map && !!globalConfig?.map_api_key,
     isCheckoutMap:
       !!globalConfig?.is_checkout_map && !!globalConfig?.map_api_key,
+    isStoreLocatorMap:
+      !!globalConfig?.is_store_locator_map && !!globalConfig?.map_api_key,
     mapApiKey: mapApiKey,
   };
 };

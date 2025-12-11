@@ -149,22 +149,33 @@ export function Component({ blocks, globalConfig, fpi }) {
     return endDate < now;
   };
 
+  /**
+   * Formats a UTC date string to a localized date string, using the browser's
+   * local timezone. For users in Saudi it will use browser time zone (usually Asia/Riyadh if their browser/device is set to that timezone),
+   * and for Indian users the same (Asia/Kolkata), so output depends on the user's system/browser time zone.
+   */
   function formatUTCToDateString(utcString) {
     if (!utcString) return "";
 
     const date = new Date(utcString);
 
+    // Use browser's local timezone with fallback to UTC
+    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+
     const options = {
       day: "2-digit",
       month: "short",
       year: "numeric",
+      timeZone: browserTimezone,
     };
 
+    // Use 'en-GB' for DD MMM YYYY pattern and replace for formatting if needed
     return date
       .toLocaleDateString("en-GB", options)
       .replace(" ", " ")
       .replace(",", ",");
   }
+
 
   const openMediaModal = (media) => {
     setSelectedMedia(media);

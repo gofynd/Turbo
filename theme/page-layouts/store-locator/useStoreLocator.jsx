@@ -68,10 +68,20 @@ const calculateBounds = (stores) => {
 };
 
 const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
-  const { mapApiKey } = useGoogleMapConfig({ fpi });
+  const { mapApiKey: globalMapApiKey, isStoreLocatorMap } = useGoogleMapConfig({
+    fpi,
+  });
+  const mapApiKey = isStoreLocatorMap ? globalMapApiKey : "";
   const [searchValue, setSearchValue] = useState("");
   const [cityValue, setCityValue] = useState("");
-  const [selectedStore, setSelectedStore] = useState(null);
+  const initialSelectedStore = useMemo(() => {
+    const firstWithCoords = propStores.find(
+      (store) => getStoreCoordinates(store) !== null
+    );
+    if (firstWithCoords) return firstWithCoords;
+    return propStores[0] || null;
+  }, [propStores]);
+  const [selectedStore, setSelectedStore] = useState(initialSelectedStore);
   const [apiStores, setApiStores] = useState([]);
   const [allStores, setAllStores] = useState([]); // All stores for building filter options
   const [isGeocoding, setIsGeocoding] = useState(false);
@@ -83,6 +93,8 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
   const [mobileView, setMobileView] = useState("list"); // "list" or "map"
   const abortControllerRef = useRef(null); // For cancelling in-flight requests
   const searchDebounceRef = useRef(null);
+  const mapUpdateTimeoutRef = useRef(null);
+  const fetchStoresRef = useRef(null);
 
   // Calculate distance between two coordinates using Haversine formula
   const calculateDistance = useCallback((lat1, lng1, lat2, lng2) => {
@@ -182,9 +194,17 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
     [userLocation, calculateDistance, geocodeAddress]
   );
 
+  const selectFirstStore = useCallback((stores = []) => {
+    if (!stores.length) return;
+    const firstStoreWithCoords = stores.find(
+      (store) => getStoreCoordinates(store) !== null
+    );
+    setSelectedStore(firstStoreWithCoords || stores[0]);
+  }, []);
+
   // Fetch stores from API
   const fetchStores = useCallback(
-    async (filters = {}, isInitialFetch = false) => {
+    async (filters = {}, isInitialFetch = false, shouldAutoSelect = true) => {
       if (!fpi) {
         return;
       }
@@ -200,6 +220,9 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
       setIsGeocoding(false);
       if (!isInitialFetch) {
         setIsLoading(true);
+      }
+      if (shouldAutoSelect) {
+        setSelectedStore(null);
       }
 
       try {
@@ -235,6 +258,9 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
 
           // Set stores immediately for list rendering
           setApiStores(initialStores);
+          if (shouldAutoSelect) {
+            selectFirstStore(initialStores);
+          }
 
           // Then geocode addresses in background (only if map is loaded and Geocoder is available)
           if (
@@ -254,6 +280,11 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
               // Update allStores with geocoded data if initial fetch
               if (isInitialFetch) {
                 setAllStores(transformedStores);
+              }
+
+              // Auto-select first store after geocoding completes, but only if shouldAutoSelect is true
+              if (shouldAutoSelect) {
+                selectFirstStore(transformedStores);
               }
             } catch (geocodeError) {
               console.error("Geocoding error:", geocodeError);
@@ -280,38 +311,32 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
         setIsLoading(false);
       }
     },
-    [fpi, transformStoreData]
+    [fpi, transformStoreData, selectFirstStore]
   );
 
-  // Cleanup on unmount
+  // Combined effect: Initial fetch, filter changes, and ref updates
   useEffect(() => {
-    return () => {
-      if (searchDebounceRef.current) {
-        clearTimeout(searchDebounceRef.current);
-      }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
+    // Update ref with latest fetchStores function
+    fetchStoresRef.current = fetchStores;
 
-  // Fetch initial stores on mount for building filter options
-  useEffect(() => {
+    // Initial fetch on mount
     if (!fpi) return;
 
-    fetchStores(
-      {
-        pageNo: 1,
-        pageSize: INITIAL_PAGE_SIZE,
-      },
-      true
-    ); // isInitialFetch = true
-  }, [fpi, fetchStores]);
+    const isInitialMount = allStores.length === 0;
 
-  // Fetch stores when filters change
-  useEffect(() => {
-    if (!fpi || allStores.length === 0) return; // Wait for initial fetch to complete
+    if (isInitialMount) {
+      fetchStores(
+        {
+          pageNo: 1,
+          pageSize: INITIAL_PAGE_SIZE,
+        },
+        true, // isInitialFetch
+        true // shouldAutoSelect
+      );
+      return; // Don't proceed with filter fetch on initial mount
+    }
 
+    // Fetch stores when filters change (after initial fetch)
     const filters = {
       pageNo: 1,
       pageSize: 50,
@@ -328,20 +353,35 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
     // Debounce search
     const timeoutId = setTimeout(
       () => {
-        fetchStores(filters, false);
+        fetchStores(filters, false, true);
       },
       searchValue ? SEARCH_DEBOUNCE_MS : 0
     );
 
     return () => clearTimeout(timeoutId);
   }, [
+    fpi,
+    fetchStores,
     cityValue,
     searchValue,
     userLocation,
-    fpi,
-    fetchStores,
     allStores.length,
   ]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      if (mapUpdateTimeoutRef.current) {
+        clearTimeout(mapUpdateTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Use API stores if available, otherwise fall back to props
   const displayStores = propStores.length > 0 ? propStores : apiStores;
@@ -410,14 +450,37 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
     return newCenter;
   }, [storesWithCoordinates]);
 
-  // Update map center programmatically when stores change (prevents flickering)
+  // Combined effect: Update map center and handle selected store changes
   useEffect(() => {
-    if (
-      mapRef.current &&
-      mapInitialized &&
-      storesWithCoordinates.length > 0 &&
-      !selectedStore
-    ) {
+    if (!mapRef.current || !mapInitialized) {
+      return;
+    }
+
+    // Clear any existing timeout
+    if (mapUpdateTimeoutRef.current) {
+      clearTimeout(mapUpdateTimeoutRef.current);
+    }
+
+    // Priority 1: Handle selected store change (takes precedence)
+    if (selectedStore) {
+      const coords = getStoreCoordinates(selectedStore);
+      if (coords) {
+        mapUpdateTimeoutRef.current = setTimeout(() => {
+          if (mapRef.current) {
+            mapRef.current.panTo(coords);
+            mapRef.current.setZoom(15);
+          }
+        }, 100);
+      }
+      return;
+    }
+
+    // Priority 2: Handle stores change (when no store is selected)
+    if (storesWithCoordinates.length === 0) {
+      return;
+    }
+
+    mapUpdateTimeoutRef.current = setTimeout(() => {
       const newCenter = mapCenter;
       if (
         newCenter &&
@@ -433,29 +496,31 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
         ) {
           // Use smooth panning to prevent flicker
           if (storesWithCoordinates.length > 1) {
-            mapRef.current.fitBounds(calculateBounds(storesWithCoordinates));
+            const bounds = calculateBounds(storesWithCoordinates);
+            if (bounds) {
+              mapRef.current.fitBounds(bounds);
+            } else {
+              mapRef.current.panTo(newCenter);
+            }
           } else {
             mapRef.current.panTo(newCenter);
           }
         }
       }
-    }
-  }, [storesWithCoordinates, mapCenter, selectedStore, mapInitialized]);
+    }, SEARCH_DEBOUNCE_MS);
 
-  // Update map when selected store changes
-  useEffect(() => {
-    if (selectedStore && mapRef.current) {
-      const coords = getStoreCoordinates(selectedStore);
-      if (coords) {
-        setTimeout(() => {
-          if (mapRef.current) {
-            mapRef.current.panTo(coords);
-            mapRef.current.setZoom(15);
-          }
-        }, 100);
+    return () => {
+      if (mapUpdateTimeoutRef.current) {
+        clearTimeout(mapUpdateTimeoutRef.current);
       }
-    }
-  }, [selectedStore]);
+    };
+  }, [
+    selectedStore,
+    storesWithCoordinates,
+    mapCenter,
+    mapInitialized,
+    calculateBounds,
+  ]);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;

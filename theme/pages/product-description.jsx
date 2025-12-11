@@ -34,7 +34,7 @@ function ProductDescription({ fpi }) {
   }, [seo?.title, productName, brandName]);
 
   const description = useMemo(() => {
-    const raw = sanitizeHTMLTag(seo?.description || productDescription || "");
+    const raw = sanitizeHTMLTag(seo?.description || productDescription || title ||brandName ||"");
     return trimDescription(raw, 160);
   }, [seo?.description, productDescription, trimDescription]);
 

@@ -151,6 +151,7 @@ const Hotspot = ({
               src={getProductImage}
               sources={[{ width: 100 }]}
               aspectRatio={aspectRatio}
+              alt={product?.name || product?.brand?.name || "Product image"}
             />
             <div className={styles.product__meta}>
               <div className={styles.product__info}>

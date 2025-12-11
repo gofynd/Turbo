@@ -140,6 +140,7 @@ const StackLayout = ({
               sources={sources}
               globalConfig={globalConfig}
               isFixedAspectRatio={false}
+              alt={block?.image?.alt || "Gallery image"}
             />
           </FDKLink>
         </div>
@@ -215,6 +216,11 @@ const HorizontalLayout = ({
                       sources={sources}
                       globalConfig={globalConfig}
                       isFixedAspectRatio={false}
+                      alt={
+                        block?.props?.image?.alt ||
+                        block?.props?.title?.value ||
+                        "Gallery image"
+                      }
                     />
                   </FDKLink>
                 </div>

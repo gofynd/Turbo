@@ -83,6 +83,7 @@ export function Component({ props, blocks, globalConfig }) {
             isLazyLoaded={false}
             defer={false}
             isFixedAspectRatio={false}
+            alt={hover_application_banner?.value ? "Application banner with hotspots" : "Application banner"}
           />
         </FDKLink>
       ) : (
@@ -93,6 +94,7 @@ export function Component({ props, blocks, globalConfig }) {
           isLazyLoaded={false}
           defer={false}
           isFixedAspectRatio={false}
+          alt="Application banner"
         />
       )}
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useGlobalStore, useNavigate } from "fdk-core/utils";
+import { useGlobalStore, useNavigate,useGlobalTranslation } from "fdk-core/utils";
 import { SectionRenderer } from "fdk-core/components";
 import { useThemeConfig } from "../helper/hooks";
 import styles from "../styles/cart-landing.less";
@@ -8,6 +8,8 @@ import { getHelmet } from "../providers/global-provider";
 function CartPage({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const navigate = useNavigate();
+  const { t } = useGlobalTranslation("translation");
+  
   const { globalConfig } = useThemeConfig({ fpi });
   const { sections = [] } = page || {};
 
@@ -22,7 +24,7 @@ function CartPage({ fpi }) {
       <>
         {getHelmet({
           title: "Cart",
-          description: "Review your items and proceed to checkout.",
+          description: t("resource.cart_landing.seo_description"),
           robots: "noindex, nofollow",
           ogType: "website",
         })}

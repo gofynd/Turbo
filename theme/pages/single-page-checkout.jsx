@@ -1,5 +1,5 @@
 import React from "react";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { SectionRenderer } from "fdk-core/components";
 
 import { useThemeConfig } from "../helper/hooks";
@@ -9,6 +9,8 @@ import { getHelmet } from "../providers/global-provider";
 function SingleCheckoutPage({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const { globalConfig } = useThemeConfig({ fpi });
+  const { t } = useGlobalTranslation("translation");
+
   const { sections = [] } = page || {};
 
   return (
@@ -17,7 +19,7 @@ function SingleCheckoutPage({ fpi }) {
         <>
           {getHelmet({
             title: "Checkout",
-            description: "Complete your purchase securely in a single step.",
+            description: t("resource.checkout.seo_description"),
             robots: "noindex, nofollow",
             ogType: "website",
           })}

@@ -61,6 +61,7 @@ function Card({ card, cardType, isImageFill, globalConfig, img_fill = false }) {
               aspectRatio="0.8"
               mobileAspectRatio="0.8"
               customClass={styles.cardImg}
+              alt={card?.name || cardType}
               sources={[
                 { breakpoint: { min: 768 }, width: 800 },
                 { breakpoint: { max: 767 }, width: 700 },
@@ -82,6 +83,7 @@ function Card({ card, cardType, isImageFill, globalConfig, img_fill = false }) {
                     src={getCardLogo()}
                     aspectRatio="1"
                     mobileAspectRatio="1"
+                    alt={card?.name || card?.logo?.alt || "brand logo"}
                     placeholder={placeholder1X1}
                     sources={[
                       {

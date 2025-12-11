@@ -124,6 +124,7 @@ const TestimonialItem = ({ className = "", testimonial, globalConfig }) => {
             src={author_image?.value}
             sources={globalConfig?.img_hd ? [] : [{ width: 700 }]}
             isFixedAspectRatio={false}
+            alt={author_name?.value || t("resource.section.testimonials.author_image")}
           />
         )}
         <div

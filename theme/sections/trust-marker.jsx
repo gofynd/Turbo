@@ -191,6 +191,7 @@ const Trustmark = ({ className = "", props = {}, globalConfig }) => {
             backgroundColor={globalConfig?.img_container_bg}
             src={markerLogo}
             isFixedAspectRatio={false}
+            alt={markerTitle || "Trust badge"}
           />
         )}
         <div className={styles.trustmarkData}>

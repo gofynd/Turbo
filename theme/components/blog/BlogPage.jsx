@@ -91,10 +91,16 @@ function BlogDetails({ fpi }) {
 
   const pageUrl = canonicalUrl || absoluteUrl(location?.pathname);
 
+  const cleanHTML = s => s?.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')?.replace(/<[^>]*>/g, '');
+
   const description = useMemo(() => {
     const value = sanitizeHTMLTag(
-      blogDetails?.seo?.description || blogDetails?.summary || ""
+      blogDetails?.seo?.description || blogDetails?.summary || cleanHTML(blogDetails?.content?.[0]?.value) || ""
     );
+    console.log("blogDetails",blogDetails)
+    console.log("Blog Description:", value);
+    console.log("logDetails?.seo?.description",blogDetails?.seo?.description)
+    console.log("blogDetails?.summary",blogDetails?.summary)
     return trimDescription(value);
   }, [blogDetails?.seo?.description, blogDetails?.summary]);
 

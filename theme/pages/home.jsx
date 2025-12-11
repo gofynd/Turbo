@@ -120,17 +120,7 @@ function Home({ numberOfSections, fpi }) {
 }
 
 export const settings = JSON.stringify({
-  props: [
-    {
-      type: "range",
-      id: "initial_sections_count",
-      label: "Initial Sections to Load",
-      min: 3,
-      max: 10,
-      default: 3,
-      info: "Number of sections to load initially before user scrolls. Remaining sections load on scroll.",
-    },
-  ],
+  props: [],
 });
 
 export const sections = JSON.stringify([

@@ -35,15 +35,11 @@ const Modal = React.lazy(
 );
 const AddToCart = React.lazy(
   () =>
-    import(
-      "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart"
-    )
+    import("@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart")
 );
 const SizeGuide = React.lazy(
   () =>
-    import(
-      "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide"
-    )
+    import("@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide")
 );
 
 export function Component({ props, globalConfig }) {
@@ -105,6 +101,7 @@ export function Component({ props, globalConfig }) {
   const showAddToCart =
     !isInternational && show_add_to_cart?.value && !globalConfig?.disable_cart;
   const customValues = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
+
   const getGallery =
     customValues?.[`featuredCollectionData-${collection?.value}`]?.data
       ?.collection?.products?.items ?? [];
@@ -254,19 +251,26 @@ export function Component({ props, globalConfig }) {
 
   useEffect(() => {
     setIsClient(true);
-    if (collection?.value) {
-      const payload = {
-        slug: collection?.value,
-        first: 20,
-        pageNo: 1,
-      };
-      fpi.executeGQL(FEATURED_COLLECTION, payload).then((res) => {
-        setIsLoading(false);
-        return fpi.custom.setValue(
-          `featuredCollectionData-${collection?.value}`,
-          res
-        );
-      });
+    try {
+      if (!customValues?.featuredCollectionSsrFteched) {
+        if (collection?.value) {
+          const payload = {
+            slug: collection?.value,
+            first: 20,
+            pageNo: 1,
+          };
+          fpi.executeGQL(FEATURED_COLLECTION, payload).then((res) => {
+            setIsLoading(false);
+            return fpi.custom.setValue(
+              `featuredCollectionData-${collection?.value}`,
+              res
+            );
+          });
+        }
+      }
+    } catch (error) {
+    } finally {
+      fpi.custom.setValue("featuredCollectionSsrFteched", false);
     }
   }, [collection, locationDetails?.pincode, i18nDetails?.currency?.code]);
 
@@ -654,6 +658,7 @@ export function Component({ props, globalConfig }) {
                 sources={getImgSrcSet()}
                 aspectRatio="0.8"
                 mobileAspectRatio="0.8"
+                alt={imgAlt || heading?.value || "Featured collection banner"}
               />
             </div>
             <div className={styles.slideWrapBanner}>
@@ -1257,6 +1262,7 @@ Component.serverFetch = async ({ fpi, props, id }) => {
       pageNo: 1,
     };
     await fpi.executeGQL(FEATURED_COLLECTION, payload).then((res) => {
+      fpi.custom.setValue("featuredCollectionSsrFteched", true);
       return fpi.custom.setValue(
         `featuredCollectionData-${props.collection.value}`,
         res
