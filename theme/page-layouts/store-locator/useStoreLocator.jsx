@@ -342,8 +342,13 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
       pageSize: 50,
     };
 
-    if (cityValue) filters.city = cityValue;
-    if (searchValue) filters.query = searchValue;
+    // Prioritize city over query - if city is selected, don't send query
+    // This prevents API conflicts when both parameters are present
+    if (cityValue) {
+      filters.city = cityValue;
+    } else if (searchValue) {
+      filters.query = searchValue;
+    }
     if (userLocation) {
       filters.latitude = userLocation.lat;
       filters.longitude = userLocation.lng;
@@ -526,11 +531,32 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
     const value = e.target.value;
     setSearchValue(value);
 
+    // Clear city when search is entered
+    if (value && cityValue) {
+      setCityValue("");
+    }
+
     // Clear selected store when search changes
     if (selectedStore) {
       setSelectedStore(null);
     }
   };
+
+  // Handle city change - clear search when city is selected
+  const handleCityChange = useCallback((e) => {
+    const value = e?.target?.value || "";
+    setCityValue(value);
+
+    // Clear search when city is selected
+    if (value && searchValue) {
+      setSearchValue("");
+    }
+
+    // Clear selected store when city changes
+    if (selectedStore) {
+      setSelectedStore(null);
+    }
+  }, [searchValue, selectedStore]);
 
   // Handle get direction click - redirect to Google Maps
   const handleGetDirection = useCallback((store) => {
@@ -569,6 +595,7 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
     setMapInitialized,
     setMobileView,
     handleSearchChange,
+    handleCityChange,
     handleGetDirection,
   };
 };

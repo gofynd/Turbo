@@ -1140,7 +1140,7 @@
       "no_blogs_found": "No blogs found",
       "showing_results": "Showing {{count}} results of",
       "no_blog_found": "No Blog Found",
-      "seo_description": " Explore our latest blogs, tips and guides. Browse categories, discover insights and stay updated with our newest posts."
+      "blog_seo_description": "Explore our latest blogs, tips and guides. Browse categories, discover insights and stay updated with our newest posts."
     },
     "about_us": {
       "seo_description": "We’re dedicated to delivering high-quality products and exceptional service. Learn more about our journey, values, and what makes us a trusted choice."

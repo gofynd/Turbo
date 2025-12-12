@@ -24,16 +24,27 @@ function OrderTracking({ fpi }) {
   const description = useMemo(() => {
     const base = t("resource.order_tracking.seo_description");
     return trimDescription(sanitizeHTMLTag(base), 160);
-  }, [brandName, trimDescription]);
+  }, [t, trimDescription]);
   return (
     <>
-      
       {page?.value === "order-tracking" && (
-        <SectionRenderer
-          sections={sections}
-          fpi={fpi}
-          globalConfig={globalConfig}
-        />
+        <>
+          {getHelmet({
+            title,
+            description,
+            image: socialImage,
+            canonicalUrl,
+            url: pageUrl,
+            siteName: brandName,
+            ogType: "website",
+          })}
+          <h1 className="visually-hidden">{title}</h1>
+          <SectionRenderer
+            sections={sections}
+            fpi={fpi}
+            globalConfig={globalConfig}
+          />
+        </>
       )}
     </>
   );

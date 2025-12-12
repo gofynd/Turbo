@@ -29,7 +29,7 @@ function Blog({ fpi }) {
 
   const description = useMemo(() => {
     const raw = sanitizeHTMLTag(
-      seoData?.description || t("resource.blog.seo_description")
+      seoData?.description || t("resource.blog.blog_seo_description")
     );
     return trimDescription(raw, 160);
   }, [seoData?.description, t, trimDescription]);
