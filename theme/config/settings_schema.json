@@ -503,15 +503,15 @@
     },
     {
       "type": "header",
-      "category": "Performance and caching",
-      "value": "Performance and caching"
+      "category": "t:resource.settings_schema.common.performance_and_caching",
+      "value": "Performance & Caching"
     },
     {
-      "type": "toggle",
+      "type": "checkbox",
       "id": "enable_swr_caching",
       "default": false,
-      "category": "Performance and caching",
-      "label": "Enable caching",
+      "category": "t:resource.settings_schema.common.performance_and_caching",
+      "label": "Enable Caching",
       "info": "Enable SWR (stale-while-revalidate) caching for improved performance and reduced API calls"
     },
     {

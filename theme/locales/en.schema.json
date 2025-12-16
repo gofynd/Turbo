@@ -116,7 +116,8 @@
         "cart_and_button_configuration": "Cart & Button Configuration",
         "product_card_configuration": "Product Card Configuration",
         "product_details_modal_settings": "Product Details Modal Settings",
-        "other_page_configuration": "Other Page Configuration",
+      "other_page_configuration": "Other Page Configuration",
+      "performance_and_caching": "Performance & Caching",
         "google_maps": "Google Maps",
         "copilot_configuration": "Copilot Configuration",
         "mobile_logo_max_height": "Mobile Navigation Logo Max Height",
@@ -253,6 +254,11 @@
         "button_border_radius": "Button Border Radius",
         "border_radius_for_button": "Border radius for Button",
         "use_original_images": "Use Original Images"
+      },
+      "performance_and_caching": {
+        "performance_and_caching": "Performance & Caching",
+        "enable_caching": "Enable caching",
+        "enable_caching_info": "Enable SWR (stale-while-revalidate) caching for improved performance and reduced API calls"
       },
       "google_maps": {
         "enable_google_maps": "Enable Google Maps",
