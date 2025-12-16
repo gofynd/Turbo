@@ -9,7 +9,10 @@ import { globalDataResolver, pageDataResolver } from "./helper/lib";
 import Loader from "./components/loader/loader";
 import Footer from "./components/footer/footer";
 import { ThemeProvider } from "./providers/global-provider";
-
+import {
+  wrapFpiWithSWR,
+  setupAutoRevalidation,
+} from "./helper/fpi-swr-wrapper";
 export default async ({
   applicationID,
   applicationToken,
@@ -25,6 +28,28 @@ export default async ({
     storeInitialData,
   };
   const { client } = new FPIClient(fpiOptions);
+
+  // Get theme config from store state
+  const state = client.store.getState();
+  const THEME = client.getters?.THEME(state);
+  const mode = THEME?.config?.list?.find(
+    (f) => f.name === THEME?.config?.current
+  );
+  const ENABLE_SWR_CACHE =
+    mode?.global_config?.custom?.props?.enable_swr_caching ?? false;
+
+  if (ENABLE_SWR_CACHE) {
+    // Initialize True SWR wrapper with caching and background revalidation
+    wrapFpiWithSWR(client, {
+      staleTime: 0, // Always revalidate in background
+      cacheTime: 5 * 60 * 1000, // Cache for 5 minutes
+      dedupingInterval: 2000, // Dedupe requests within 2 seconds
+      maxCacheSize: 100, // Maximum cache entries (LRU eviction)
+      maxCacheMemoryMB: 5, // Maximum cache memory: 5 MB
+    });
+    // Enable auto-revalidation on window focus and network reconnect
+    setupAutoRevalidation(client);
+  }
 
   return {
     globalDataResolver,
@@ -166,8 +191,10 @@ export default async ({
       import(/* webpackChunkName:"getAboutUs" */ "./pages/about-us"),
     getLocateUs: () =>
       import(/* webpackChunkName:"getLocateUs" */ "./pages/locate-us"),
-    getRequestReattempt:()=>
-      import(/* webpackChunkName:"getRequestReattempt" */ "./pages/request-reattempt"),
+    getRequestReattempt: () =>
+      import(
+        /* webpackChunkName:"getRequestReattempt" */ "./pages/request-reattempt"
+      ),
     getPaymentLink: () =>
       import(/* webpackChunkName:"getPaymentLink" */ "./pages/payment-link"),
   };

@@ -95,7 +95,7 @@
       "label": "t:resource.settings_schema.header.sticky_header",
       "info": "t:resource.settings_schema.header.sticky_header_info"
     },
-     {
+    {
       "type": "checkbox",
       "id": "show_icon_text_in_header",
       "default": false,
@@ -154,7 +154,7 @@
     },
     {
       "type": "radio",
-      "id":"header_mega_menu",
+      "id": "header_mega_menu",
       "category": "t:resource.common.header",
       "label": "t:resource.settings_schema.header.switch_to_mega_menu",
 
@@ -162,21 +162,20 @@
       "default": "t:resource.common.default",
       "options": [
         {
-        "value": "t:resource.common.default",
-        "text": "t:resource.common.default_menu"
+          "value": "t:resource.common.default",
+          "text": "t:resource.common.default_menu"
         },
         {
-        "value": "header_mega_menu",
-        "text": "t:resource.settings_schema.header.switch_to_mega_menu"
+          "value": "header_mega_menu",
+          "text": "t:resource.settings_schema.header.switch_to_mega_menu"
         },
         {
-        "value": "header_mega_menu_fullwidth",
-        "text": "t:resource.settings_schema.header.use_full_width_mega_menu",
-        "info": "t:resource.settings_schema.header.use_full_width_mega_menu_info"
+          "value": "header_mega_menu_fullwidth",
+          "text": "t:resource.settings_schema.header.use_full_width_mega_menu",
+          "info": "t:resource.settings_schema.header.use_full_width_mega_menu_info"
         }
-      ] 
-    }
-    ,
+      ]
+    },
     {
       "type": "select",
       "id": "nav_weight",
@@ -254,7 +253,7 @@
       "default": false,
       "category": "t:resource.settings_schema.common.footer",
       "label": "t:resource.settings_schema.footer.show_collapsible_footer_menu",
-       "info": "t:resource.settings_schema.footer.collapsible_footer_menu_info"
+      "info": "t:resource.settings_schema.footer.collapsible_footer_menu_info"
     },
     {
       "type": "checkbox",
@@ -426,7 +425,7 @@
       "label": "t:resource.common.fit_image_to_container",
       "info": "t:resource.common.clip_image_to_fit_container"
     },
-     {
+    {
       "type": "checkbox",
       "id": "hide_brand_name",
       "category": "t:resource.settings_schema.common.product_details_modal_settings",
@@ -501,6 +500,19 @@
       "category": "t:resource.settings_schema.common.other_page_configuration",
       "label": "Enable Page Max Width",
       "info": "Sets a maximum width of 1440px for better layout on wide screens"
+    },
+    {
+      "type": "header",
+      "category": "Performance and caching",
+      "value": "Performance and caching"
+    },
+    {
+      "type": "toggle",
+      "id": "enable_swr_caching",
+      "default": false,
+      "category": "Performance and caching",
+      "label": "Enable caching",
+      "info": "Enable SWR (stale-while-revalidate) caching for improved performance and reduced API calls"
     },
     {
       "type": "header",

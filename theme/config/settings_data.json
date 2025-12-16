@@ -182,7 +182,8 @@
             "footer_image": true,
             "footer_image_desktop": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/desktop-footer-image.jpg",
             "footer_image_mobile": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/mobile-footer-image.jpg",
-            "storefront_copilot_actions": false
+            "storefront_copilot_actions": false,
+            "enable_swr_caching": false
           }
         }
       },

@@ -341,3 +341,4 @@ export const MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT = {
   variants: [],
   action: null,
 };
+export const ENABLE_SWR_CACHE = false;
