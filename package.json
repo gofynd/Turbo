@@ -1,6 +1,6 @@
 {
   "name": "Turbo",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "",
   "main": "index.js",
   "license": "ISC",
@@ -76,7 +76,7 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "embla-carousel-wheel-gestures": "^8.1.0",
-    "fdk-store": "github:gofynd/fdk-store-gql#v3.0.65",
+    "fdk-store": "github:gofynd/fdk-store-gql#v3.0.67",
     "framer-motion": "^11.3.28",
     "google-libphonenumber": "^3.2.38",
     "html-react-parser": "^5.1.8",
