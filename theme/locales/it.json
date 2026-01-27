@@ -487,6 +487,8 @@
         "my_address": "I MIEI INDIRIZZI",
         "add_new_address": "Aggiungi nuovo indirizzo",
         "add_new_address_caps": "AGGIUNGI NUOVO INDIRIZZO",
+        "default_address": "Indirizzo Predefinito",
+        "other_addresses": "Altri Indirizzi",
         "no_address_available": "Nessun indirizzo disponibile",
         "address_not_found": "Indirizzo non trovato!",
         "return_to_my_address": "TORNA AL MIO INDIRIZZO",
@@ -498,7 +500,6 @@
         "pincode_six_digits_required": "Il codice PIN deve essere lungo esattamente 6 cifre",
         "invalid_phone_number": "Numero di telefono non valido",
         "enter_pincode": "Inserisci il codice PIN",
-        "default_address": "Indirizzo predefinito",
         "other_address": "Altro indirizzo",
         "address_type": "Tipo di indirizzo",
         "make_this_my_default_address": "Rendi questo il mio indirizzo predefinito"

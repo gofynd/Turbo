@@ -43,11 +43,16 @@ const useForgetPassword = ({ fpi }) => {
       })
       .catch((err) => {
         setIsFormSubmitSuccess(false);
+        // Handle error message extraction - details.error might be an object or string
+        const errorMessage = 
+          (typeof err?.details?.error === "string" 
+            ? translateDynamicLabel(err?.details?.error, t) 
+            : null) ||
+          err?.message ||
+          (err?.details?.error?.message) ||
+          t("resource.common.error_message");
         setError({
-          message:
-            translateDynamicLabel(err?.details?.error, t) ||
-            err?.message ||
-            t("resource.common.error_message"),
+          message: errorMessage,
         });
       });
   };

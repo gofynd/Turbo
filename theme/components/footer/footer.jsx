@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { FDKLink } from "fdk-core/components";
-import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
+import { convertActionToUrl } from "fdk-core/utils";
 import styles from "./footer.less";
 import useHeader from "../header/useHeader";
 import SocialLinks from "../socail-media/socail-media";

@@ -45,6 +45,7 @@ const usePayment = (fpi) => {
   const [partialPaymentOption, setPartialPaymentOption] = useState(undefined);
   const [breakUpValues, setBreakupValues] = useState([]);
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+  const [isCreditNoteApplied, setIsCreditNoteApplied] = useState(false);
   const cart = useGlobalStore(fpi.getters.CART) || {};
 
   const { user_id = "" } = useGlobalStore(fpi.getters.USER_DATA) || {};
@@ -59,6 +60,7 @@ const usePayment = (fpi) => {
   const disbaleCheckout = useGlobalStore(fpi?.getters?.SHIPMENTS);
   const customValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
   const { shared_cart_staff_data = null } = customValue;
+  const { currentStep = null } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
 
   // Restore staff data from sessionStorage on mount if not already in store
   useEffect(() => {
@@ -439,30 +441,6 @@ const usePayment = (fpi) => {
     if (disbaleCheckout?.message) {
       return;
     }
-
-    // Implement the logic to proceed with the payment
-
-    // const a = {
-    //   address_id: "67a1da51ce832dc4d253a6ca",
-    //   billing_address_id: "67a1da51ce832dc4d253a6ca",
-    //   aggregator: "creditnote",
-    //   merchant_code: "CREDITNOTE",
-    //   payment_mode: "CREDITNOTE",
-    //   payment_methods: [
-    //     {
-    //       mode: "CREDITNOTE",
-    //       name: "CREDITNOTE",
-    //       payment: "required",
-    //       payment_identifier: "CREDITNOTE",
-    //       payment_meta: {
-    //         merchant_code: "CREDITNOTE",
-    //         payment_gateway: "creditnote",
-    //         payment_identifier: "CREDITNOTE",
-    //       },
-    //     },
-    //   ],
-    //   payment_identifier: "CREDITNOTE",
-    // };
 
     let { mrp_total, store_credit, subtotal = 0, total } = breakUpValues;
     const isStoreCreditApplied =
@@ -1486,7 +1464,20 @@ const usePayment = (fpi) => {
             name: selectedOtherPayment.code ?? "",
             payment: selectedOtherPayment,
             queryParams: getQueryParams(),
-            data: res?.data,
+            data: {
+              // amount: linkOrderInfo?.data?.amount,
+              // callback_url: linkOrderInfo?.data?.callback_url,
+              // contact: linkOrderInfo?.data?.contact,
+              // currency: linkOrderInfo?.data?.currency,
+              // customer_id: linkOrderInfo?.data?.customer_id,
+              // email: linkOrderInfo?.data?.email,
+              // method: linkOrderInfo?.data?.method,
+              // order_id: linkOrderInfo?.data?.order_id,
+              merchant_order_id: linkOrderInfo?.data?.merchant_order_id,
+              merchant_transaction_id:
+                linkOrderInfo?.data?.merchant_transaction_id || "",
+              upi_app: "",
+            },
             ...getStaffPayload(),
             success: linkOrderInfo?.success,
             enableLinkPaymentOption: enableLinkPaymentOption,
@@ -1623,7 +1614,9 @@ const usePayment = (fpi) => {
       if (errors) {
         throw errors;
       }
-
+      setIsCreditNoteApplied(
+        data?.validateCustomerAndCreditSummary?.is_applied
+      );
       return data?.validateCustomerAndCreditSummary;
     } catch (error) {
       console.error(error);
@@ -1682,6 +1675,8 @@ const usePayment = (fpi) => {
   };
 
   const updateStoreCredits = async (store_credit = false) => {
+    setIsLoading(true);
+    setIsCreditNoteApplied(store_credit);
     setPartialPaymentOption((prev) => ({
       ...prev,
       list: [
@@ -1739,23 +1734,18 @@ const usePayment = (fpi) => {
       console.error(error);
     } finally {
       setCreditUpdating(false);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (paymentOption?.payment_option?.length > 0) {
-      if (
-        bagData?.breakup_values?.display[
-          bagData?.breakup_values?.display?.length - 1
-        ]?.value > 0
-      ) {
-        setCallOnce((prev) => {
-          if (prev === false) {
-            updatePartialPayment();
-            return true;
-          }
-        });
-      }
+    if (paymentOption?.payment_option?.length > 0 && currentStep === 2) {
+      setCallOnce((prev) => {
+        if (prev === false) {
+          updatePartialPayment();
+          return true;
+        }
+      });
     }
   }, [paymentOption, bagData]);
 
@@ -1801,6 +1791,9 @@ const usePayment = (fpi) => {
     getLinkOrderDetails,
     creditUpdating,
     isPaymentLoading,
+    fetchCreditNoteBalance,
+    isCreditNoteApplied,
+    setIsPaymentLoading,
   };
 };
 

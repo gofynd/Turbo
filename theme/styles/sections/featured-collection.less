@@ -303,6 +303,89 @@
   }
 }
 
+.bannerVerticalWrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  padding-inline: @SectionInlinePaddingDesktop;
+  @media @tablet {
+    padding-inline: @SectionInlinePaddingTablet;
+    gap: 24px;
+  }
+  @media @mobile {
+    flex-direction: column;
+    padding-inline: @SectionInlinePaddingMobile;
+    gap: 24px;
+  }
+
+  .bannerImageVertical {
+    flex: 0 0 50%;
+    border-radius: 24px;
+    overflow: hidden;
+    @media @tablet {
+      min-height: 500px;
+    }
+    @media @mobile {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+    }
+  }
+
+  .bannerVerticalContent {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    @media @tablet {
+      gap: 20px;
+    }
+    @media @mobile {
+      gap: 16px;
+    }
+
+    .bannerVerticalTitleBlock {
+      padding-inline: 0;
+      padding-bottom: 0;
+      @media @mobile {
+        padding-inline: 0;
+      }
+
+      p {
+        margin-top: 0;
+        margin-bottom: 16px;
+        @media @mobile {
+          margin-bottom: 12px;
+        }
+      }
+    }
+
+    .bannerVerticalGrid {
+      width: 100%;
+      min-width: 0;
+      padding-inline: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px 16px;
+      align-items: start;
+      @media @tablet {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px 12px;
+      }
+      @media @mobile {
+        grid-template-columns: repeat(var(--per-row-mobile), minmax(0, 1fr));
+        gap: 12px;
+        align-items: start;
+      }
+      
+      & > * {
+        height: auto;
+        min-height: 0;
+      }
+    }
+  }
+}
+
 .placeholderContainer {
   overflow: hidden;
   margin-inline: @SectionInlinePaddingDesktop;
@@ -354,16 +437,35 @@
   .hideOnDesktop {
     display: none;
   }
+  .hideOnAllScreens {
+    display: none;
+  }
 }
 @media @tablet {
   .mobileVisible {
-    display: block;
+    display: block !important;
+  }
+  .mobileVisible.bannerVerticalWrap,
+  .mobileVisible.bannerImageSliderWrap {
+    display: flex !important;
   }
   .mobileHidden {
-    display: none;
+    display: none !important;
   }
   .hideOnDesktop {
     display: block;
+  }
+  .desktopVisibleFlex {
+    display: flex;
+  }
+  .desktopHiddenFlex.mobileVisible {
+    display: flex !important;
+  }
+  .desktopHiddenFlex:not(.mobileVisible) {
+    display: none;
+  }
+  .hideOnAllScreens {
+    display: none;
   }
 }
 @media @mobile {
@@ -372,6 +474,28 @@
   }
   .hideOnDesktop {
     display: block;
+  }
+  .desktopVisibleFlex {
+    display: flex;
+  }
+  .mobileVisible {
+    display: block !important;
+  }
+  .mobileVisible.bannerVerticalWrap,
+  .mobileVisible.bannerImageSliderWrap {
+    display: flex !important;
+  }
+  .mobileHidden {
+    display: none !important;
+  }
+  .desktopHiddenFlex.mobileVisible {
+    display: flex !important;
+  }
+  .desktopHiddenFlex:not(.mobileVisible) {
+    display: none;
+  }
+  .hideOnAllScreens {
+    display: none;
   }
 }
 @media @mobile-up {

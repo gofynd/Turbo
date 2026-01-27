@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import styles from "./address-list.less";
 import { useGlobalStore } from "fdk-core/utils";
 import ListRenderer from "../list-renderer/list-renderer";
@@ -9,30 +9,58 @@ import WorkIcon from "../../../../../assets/images/office-type.svg";
 import FriendsFamilyIcon from "../../../../../assets/images/friends-family.svg";
 import LocationIcon from "../../../../../assets/images/location.svg";
 
-function AddressList({ className, searchText = "", onSelect = () => {}, onListUpdate = () => {} }) {
+function AddressList({
+  fpi,
+  className,
+  searchText = "",
+  onSelect = () => {},
+  onListUpdate = () => {},
+  countryCode = null,
+}) {
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
   const { address } = useGlobalStore(fpi.getters.ADDRESS);
 
-  const formatttedAddress = useMemo(
-    () => {
-      if (!address) return [];
-      return address.map((item) => ({
-        ...item,
-        display_address: getAddressStr(item),
-      }));
-    },
-    [address]
-  );
+  const formatttedAddress = useMemo(() => {
+    if (!address) return [];
+    return address.map((item) => ({
+      ...item,
+      display_address: getAddressStr(item),
+    }));
+  }, [address]);
 
   const filteredAddress = useMemo(() => {
-    if (!searchText) return formatttedAddress;
+    let filtered = formatttedAddress;
 
-    return formatttedAddress.filter((item) =>
-      item.display_address.toLowerCase().includes(searchText.toLowerCase())
-    );
-  }, [searchText, formatttedAddress]);
+    // Filter by country code if provided
+    if (countryCode) {
+      const upperCountryCode = String(countryCode).toUpperCase();
+      filtered = filtered.filter((item) => {
+        // Check country_iso_code first (primary field)
+        if (item.country_iso_code) {
+          return (
+            String(item.country_iso_code).toUpperCase() === upperCountryCode
+          );
+        }
+        // Fallback to country_code if country_iso_code is not available
+        if (item.country_code) {
+          return String(item.country_code).toUpperCase() === upperCountryCode;
+        }
+        // If address doesn't have country info, exclude it when filtering by country
+        return false;
+      });
+    }
 
-  function getAddressIcon({ address_type }) {
+    // Filter by search text if provided
+    if (searchText) {
+      filtered = filtered.filter((item) =>
+        item.display_address.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    return filtered;
+  }, [searchText, formatttedAddress, countryCode]);
+
+  const getAddressIcon = useCallback(({ address_type }) => {
     if (address_type === "Home") {
       return (
         <span>
@@ -52,10 +80,12 @@ function AddressList({ className, searchText = "", onSelect = () => {}, onListUp
         </span>
       );
     }
-    return <span>
-      <LocationIcon />
-    </span>;
-  }
+    return (
+      <span>
+        <LocationIcon />
+      </span>
+    );
+  }, []);
 
   useEffect(() => {
     if (isLoggedIn && !address) {
@@ -65,7 +95,7 @@ function AddressList({ className, searchText = "", onSelect = () => {}, onListUp
 
   useEffect(() => {
     onListUpdate(filteredAddress);
-  }, [filteredAddress]);
+  }, [filteredAddress, onListUpdate]);
 
   return (
     <ListRenderer

@@ -10,7 +10,7 @@ function LocateUsPage({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const THEME = useGlobalStore(fpi.getters.THEME);
   const seoData = page?.seo || {};
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo: seoData });
   const title = useMemo(() => {
     const raw = sanitizeHTMLTag(
@@ -23,8 +23,9 @@ function LocateUsPage({ fpi }) {
     const raw = sanitizeHTMLTag(
       seoData?.description || t("resource.common.locate_us_seo_description")
     );
-    return trimDescription(raw, 160);
-  }, [seoData?.description, t, trimDescription]);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seoData?.description, t, seoDescription]);
 
   const mode = THEME?.config?.list.find(
     (f) => f.name === THEME?.config?.current

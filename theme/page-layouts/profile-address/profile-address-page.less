@@ -28,7 +28,7 @@
 }
 
 .main {
-  padding: 24px 0;
+  padding: 8px 0 24px 0;
   height: 100%;
 
   @media @tablet {
@@ -38,6 +38,83 @@
   .emptyState {
     max-height: 75vh;
   }
+
+  .addressListWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 24px;
+
+    @media @tablet {
+      padding: 16px;
+      gap: 24px;
+    }
+
+    @media @mobile {
+      padding: 0;
+      gap: 12px;
+    }
+  }
+
+  .addressSection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media @mobile {
+      gap: 0;
+      background: @White !important;
+      border-radius: 0;
+      margin-bottom: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .sectionHeader {
+    display: flex;
+    align-items: center;
+    padding: 0;
+
+    @media @mobile {
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      background-color: @OverlayPopupHighlightColor;
+    }
+  }
+
+  .sectionTitle {
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.4;
+    color: @UserAlertTextLabel;
+    white-space: pre-wrap;
+    flex: 1;
+  }
+
+  .addressCardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media @mobile {
+      padding: 0 16px 12px;
+      background: @White;
+      gap: 16px;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 0;
+    }
+  }
+
   .addressItemContainer {
     padding-top: 24px;
 
@@ -63,6 +140,9 @@
     @media @tablet {
       padding: 16px;
     }
+    @media @mobile {
+      border-bottom: none;
+    }
     .addressHeader {
       display: flex;
       justify-content: space-between;
@@ -84,6 +164,14 @@
           font-size: 12px;
           font-weight: 400;
           line-height: 140%;
+
+          @media @mobile {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            position: absolute;
+          }
         }
       }
 
@@ -169,7 +257,6 @@
     font-weight: bold;
     background-color: var(--secondaryColor);
     border-radius: @ButtonRadius;
-    
   }
   .cancelBtn {
     background-color: @White;

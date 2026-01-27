@@ -91,18 +91,24 @@ export const ADD_BENEFICIARY_DETAILS = `mutation addBeneficiaryDetails(
   }
 }`;
 
-export const ADD_REFUND_BANK_DETAILS = `mutation addRefundBankAccountUsingOTP(
-  $addBeneficiaryDetailsOTPRequestInput: AddBeneficiaryDetailsOTPRequestInput
-) {
-  addRefundBankAccountUsingOTP(
-    addBeneficiaryDetailsOTPRequestInput: $addBeneficiaryDetailsOTPRequestInput
+export const ADD_REFUND_BANK_DETAILS = `
+  mutation addRefundBeneficiaryUsingOTPSession(
+    $addBeneficiaryInput: AddBeneficiaryInput
   ) {
-    data
-    is_verified_flag
-    message
-    success
+    addRefundBeneficiaryUsingOTPSession(
+      addBeneficiaryInput: $addBeneficiaryInput
+    ) {
+      message
+      is_verified
+      id
+      account_no
+      account_holder
+      bank_name
+      upi
+      logo
+    }
   }
-}`;
+`;
 
 export const VERIFY_OTP_FOR_WALLET = `mutation verifyOtpAndAddBeneficiaryForWallet(
   $walletOtpRequestInput: WalletOtpRequestInput
@@ -152,3 +158,171 @@ export const VERIFY_OTP_FOR_REFUND_BANK_DETAILS = `mutation verifyOtpForRefundBa
   }
 }
 `;
+
+export const GET_REFUND_MODES = `query getRefundModes(
+  $shipmentId: String!
+  $lineNumbers: [Int!]
+) {
+  getRefundModes(
+    shipmentId: $shipmentId
+    lineNumbers: $lineNumbers
+  ) {
+    refund_options {
+      slug
+      display_name
+      beneficiary_type
+      amount
+      currency_symbol
+      message
+      logo
+      suggested_list
+      refund_modes {
+        refund_mode
+        display_name
+        payment_identifiers
+      }
+    }
+    refund_price_breakup {
+      name
+      display
+      value
+      currency_symbol
+      currency_code
+      sub_values {
+        name
+        display
+        value
+        currency_symbol
+        currency_code
+      }
+    }
+    is_refund_config_enabled
+  }
+}
+`;
+
+export const GET_REFUND_BENEFICIARIES = `query Refund($orderId: String!, $shipmentId: String!) {
+  refund {
+    order_user_beneficiaries(orderId: $orderId, shipmentId: $shipmentId) {
+      upi {
+        is_active
+        is_verified
+        transfer_mode
+        display_name
+        vpa_address
+        customer_name
+        id
+        logo
+      }
+      bank {
+        ifsc_code
+        is_active
+        is_verified
+        transfer_mode
+        display_name
+        account_holder
+        logo
+        account_no
+        id
+      }
+    }
+  }
+}
+`;
+
+export const ADD_BENEFICIARY_BANK = `
+  mutation AddBeneficiary(
+    $account_holder: String!
+    $account_no: String!
+    $ifsc_code: String!
+    $order_id: String!
+    $shipment_id: String!
+  ) {
+    addBeneficiary(
+      addBeneficiaryInput: {
+        details: {
+          account_holder: $account_holder
+          account_no: $account_no
+          ifsc_code: $ifsc_code
+        }
+        order_id: $order_id
+        shipment_id: $shipment_id
+      }
+    ) {
+      message
+      is_verified
+      id
+      account_no
+      account_holder
+      bank_name
+      upi
+      logo
+    }
+  }
+`;
+
+export const ADD_BENEFICIARY_UPI = `mutation AddBeneficiary($upi: String!, $order_id: String!, $shipment_id: String!) {
+  addBeneficiary(
+    addBeneficiaryInput: {
+      details: {
+        upi: $upi
+      }
+      order_id: $order_id
+      shipment_id: $shipment_id
+    }
+  ) {
+    message
+    is_verified
+    id
+    account_no
+    account_holder
+    bank_name
+    upi
+    logo
+  }
+}`;
+
+export const UPDATE_DEFAULT_BENEFICIARY = `mutation updateDefaultBeneficiary(
+  $setDefaultBeneficiaryRequestInput: SetDefaultBeneficiaryRequestInput
+) {
+  updateDefaultBeneficiary(
+    setDefaultBeneficiaryRequestInput: $setDefaultBeneficiaryRequestInput
+  ) {
+    is_beneficiary_set
+    success
+  }
+}`;
+
+export const GETREFUNDBENEFICIARIESUSINGOTPSESSION = `mutation getRefundBeneficiariesUsingOTPSession(
+  $orderId: String
+  $shipmentId: String
+  $filterBy: FilterByEnum
+) {
+  getRefundBeneficiariesUsingOTPSession(
+    orderId: $orderId
+    shipmentId: $shipmentId
+    filterBy: $filterBy
+  ) {
+    upi {
+      is_active
+      is_verified
+      transfer_mode
+      display_name
+      vpa_address
+      customer_name
+      id
+      logo
+    }
+    bank {
+      ifsc_code
+      is_active
+      is_verified
+      transfer_mode
+      display_name
+      account_holder
+      logo
+      account_no
+      id
+    }
+  }
+}`;

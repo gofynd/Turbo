@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "الطباعة",
-        "algolia_configuration": "تكوين Algolia",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "تذييل",
         "cart_and_button_configuration": "تكوين عربة التسوق والأزرار",
         "product_card_configuration": "تكوين بطاقة المنتج",
@@ -158,8 +158,8 @@
         "transparent_header": "رأس شفاف",
         "transparent_header_info": "تطبيق رأس شفاف عند عرض لافتة التطبيق أو شريحة الصورة في الأعلى"
       },
-      "algolia_configuration": {
-        "enable_algolia": "تمكين Algolia"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "الشعار",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "محاذاة المحتوى في سطح المكتب",
         "banner_horizontal_scroll": "لافتة ذات تمرير أفقي",
         "banner_with_stack": "لافتة مع كومة",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "التخطيط (المحمول)",
         "content_alignment_mobile": "محاذاة المحتوى في الهاتف المحمول",
         "text_alignment": "محاذاة النص",

@@ -664,7 +664,7 @@ export const addToCart = async ({
       );
     }
 
-    const priceData = productPriceData.data.productPrice;
+    const priceData = productPriceData?.data?.productPrice;
 
     // Step 7: Enhanced MOQ and Maximum Quantity Validation (Optimized)
     const moq = product.moq;
@@ -1064,9 +1064,9 @@ export const getProductInfo = async ({ product_id, pincode }) => {
 
           if (priceData?.data?.productPrice) {
             productInfo.pricing_info = {
-              price: priceData.data.productPrice.price,
-              quantity_available: priceData.data.productPrice.quantity,
-              delivery_promise: priceData.data.productPrice.delivery_promise,
+              price: priceData?.data?.productPrice?.price,
+              quantity_available: priceData?.data?.productPrice?.quantity,
+              delivery_promise: priceData?.data?.productPrice?.delivery_promise,
             };
           }
         } else {

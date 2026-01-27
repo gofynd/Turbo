@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { FDKLink } from "fdk-core/components";
-import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
+import { convertActionToUrl } from "fdk-core/utils";
 import { useFPI, useGlobalStore } from "fdk-core/utils";
 import styles from "../styles/sections/category-listing.less";
 import useCategories from "../page-layouts/categories/useCategories";

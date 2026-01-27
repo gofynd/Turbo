@@ -486,6 +486,8 @@
         "my_address": "អាសយដ្ឋានរបស់ខ្ញុំ",
         "add_new_address": "បន្ថែមអាសយដ្ឋានថ្មី។",
         "add_new_address_caps": "បន្ថែមអាសយដ្ឋានថ្មី។",
+        "default_address": "អាសយដ្ឋានលំនាំដើម",
+        "other_addresses": "អាសយដ្ឋានផ្សេងទៀត",
         "no_address_available": "មិនមានអាសយដ្ឋានទេ។",
         "address_not_found": "រកមិនឃើញអាសយដ្ឋាន!",
         "return_to_my_address": "ត្រឡប់ទៅអាសយដ្ឋានរបស់ខ្ញុំ",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "កូដ PIN ត្រូវតែមាន 6 ខ្ទង់យ៉ាងពិតប្រាកដ",
         "invalid_phone_number": "លេខទូរស័ព្ទមិនត្រឹមត្រូវ",
         "enter_pincode": "បញ្ចូលកូដ PIN",
-        "default_address": "អាសយដ្ឋានលំនាំដើម",
         "other_address": "អាស័យដ្ឋានផ្សេងទៀត។",
         "address_type": "ប្រភេទអាសយដ្ឋាន",
         "make_this_my_default_address": "ធ្វើឱ្យនេះជាអាសយដ្ឋានលំនាំដើមរបស់ខ្ញុំ"

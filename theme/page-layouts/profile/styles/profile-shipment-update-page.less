@@ -68,14 +68,37 @@
 .shipment {
   border-radius: 3px;
   background-color: @PageBackground;
-
-  &.reasonsList {
-    @media @tablet {
-      padding-top: 0;
-      margin-top: 0;
+  .orderHeaderContainer {
+    background-color: @PageBackground;
+    // background-color: @DialogBackground;
+    padding: 24px;
+    border-radius: 4px;
+    border: 1px solid @DividerStokes;
+    @media @mobile, @tablet {
+      border-radius: 0px;
+      padding: 16px;
     }
   }
 
+  .reasonsList {
+    padding: 24px;
+    background: @PageBackground;
+    // background: @DialogBackground;
+    margin: 16px 0;
+    border-radius: 4px;
+    border: 1px solid @DividerStokes;
+    @media @mobile, @tablet {
+      border-radius: 0px;
+      margin: 8px 0;
+      padding: 16px;
+    }
+  }
+
+  .dividerLine {
+    height: 1px;
+    background-color: @DividerStokes;
+    margin: 16px 0;
+  }
   .accordion {
     &__header {
       display: flex;
@@ -85,7 +108,7 @@
   }
   .refundTitle {
     /deep/.title {
-      margin-inline-start: 0;
+      margin-left: 0;
       font-size: 14px;
     }
   }
@@ -108,55 +131,71 @@
     margin-top: 10px;
     border-top: 1px solid @LightGray;
   }
-  .updateBtns {
-    margin-top: 25px;
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    // flex-wrap: wrap;
-    margin-top: 16px;
+}
 
+.refundSummaryContainer {
+  padding: 24px;
+  margin-bottom: 16px;
+  background: @PageBackground;
+  // background: @DialogBackground;
+  border-radius: 4px;
+  border: 1px solid @DividerStokes;
+
+  @media @mobile, @tablet {
+    padding: 16px;
+    margin-bottom: 8px;
+    border-radius: 0px !important;
+  }
+
+  .amountFontClass {
+    font-size: 14px !important;
+
+    @media @mobile {
+      font-size: 12px !important;
+    }
     @media @tablet {
-      padding: 0 16px;
-    }
-
-    button[disabled] {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn {
-      padding: 15px;
-      border-radius: @ButtonRadius;
-      margin: 10px auto;
-      width: 100%;
-      margin: 10px 0px;
-      border: none;
-      font-weight: 800;
-      text-transform: uppercase;
-      background-color: @ButtonPrimary;
-      color: @ButtonSecondary;
-      &:hover {
-        background-color: @ButtonPrimaryL1;
-        color: @ButtonSecondary;
-      }
-      // margin-inline-end: 10px;
-      @media @mobile {
-        margin-inline-end: 0;
-      }
-    }
-    .cancelBtn {
-      background-color: @PageBackground;
-      color: @ButtonPrimary;
-      border: 1px solid @ButtonPrimary;
-      &:hover {
-        background-color: @ButtonPrimaryL1;
-        color: @ButtonSecondary;
-        border: 1px solid @ButtonPrimaryL1;
-      }
+      font-size: 12px !important;
     }
   }
+
+  .deductionAmountFont {
+    color: @TextLabel !important;
+    font-weight: 400 !important;
+
+    @media @mobile {
+      font-size: 12px !important;
+    }
+    @media @tablet {
+      font-size: 12px !important;
+    }
+  }
+
+  .refundTitle,
+  .refundSubTitle {
+    font-size: 16px;
+    @media @tablet {
+      font-size: 14px;
+    }
+    @media @mobile {
+      font-size: 14px;
+    }
+  }
+
+  .refundTitle {
+    @media @tablet {
+      font-weight: 600;
+    }
+    @media @mobile {
+      font-weight: 600;
+    }
+    font-weight: 700;
+  }
+
+  .refundSubTitle {
+    font-weight: 600;
+  }
 }
+
 .accordion {
   &__header {
     display: flex;
@@ -267,7 +306,7 @@
     .svg {
       position: absolute;
       top: 6px;
-      inset-inline-end: 9px;
+      right: 9px;
       cursor: pointer;
     }
 
@@ -282,21 +321,23 @@
 .textarea {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 24px;
 
   @media @tablet {
     margin-top: 0;
     gap: 16px;
-    padding: 16px 16px 0;
   }
 
-  div {
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 140%;
-    span {
-      font-weight: 500;
+  .commentOptionalTitle {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    @media @tablet {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    @media @mobile {
+      font-size: 14px;
+      font-weight: 600;
     }
   }
   textarea {
@@ -311,10 +352,27 @@
     border: 1px solid @DividerStokes;
     border-radius: 4px;
   }
+
+  .commentTextCount {
+    display: flex;
+    justify-content: end;
+    margin-top: 8px;
+
+    span {
+      color: @TextLabel;
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
 }
 .headerWidth {
+  background: @PageBackground;
   flex: 1;
-  background-color: @PageBackground;
+  padding-top: 0px !important;
+  margin-bottom: 16px;
+  @media @mobile, @tablet {
+    margin-bottom: 12px;
+  }
 }
 .borderBottom {
   border-bottom: 1px solid @DividerStokes;
@@ -327,7 +385,864 @@
 .unsetPadding {
   padding: 0;
   padding-bottom: 16px;
+  margin-bottom: 0 !important;
+
   @media @mobile {
     padding: 12px 0;
+  }
+}
+
+.refundOptionContainer {
+  border-radius: 4px;
+  padding: 24px;
+  margin: 16px 0;
+  // background: @DialogBackground;
+  background: @PageBackground;
+  border-radius: 4px;
+  border: 1px solid @DividerStokes;
+  @media @mobile, @tablet {
+    padding: 16px !important;
+    margin: 8px 0;
+    border-radius: 0px;
+  }
+
+  .bankSectionContainer {
+    margin-left: 32px;
+
+    .newUserbankFormMessage {
+      margin-top: 16px;
+    }
+
+    .enterBankDetailsTitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: @ButtonLink;
+    }
+    .recentlyUseBankTitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: @ButtonLink;
+      cursor: pointer;
+      padding-bottom: 16px;
+      line-height: 140%;
+
+      @media @mobile {
+        padding-bottom: 12px;
+      }
+    }
+  }
+
+  .msgContainer {
+    margin-left: 32px;
+  }
+
+  .checkboxContainer {
+    padding-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .checkbox {
+      accent-color: @SaleTimer;
+      height: 16px;
+      width: 16px;
+    }
+
+    .label {
+      color: @TextLabel;
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
+
+  h5,
+  .refundTitleText {
+    padding-bottom: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    color: @TextHeading;
+    display: inline-block;
+    @media @mobile {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    @media @tablet {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+
+  .page__refundTitleText {
+  }
+
+  .optionWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .optionLabel span {
+      font-size: 14px;
+      font-weight: 600;
+      color: @TextHeading;
+    }
+
+    .radioWrapper {
+      display: flex;
+      align-items: center;
+      min-height: 24px;
+
+      .refundOptionRadio {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        width: fit-content;
+
+        .regularRadio {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          color: @TextHeading;
+
+          &.checked {
+            color: @ButtonPrimary;
+          }
+        }
+
+        .refundOptionText {
+          color: @TextHeading;
+          font-size: 14px;
+          font-weight: 600;
+          line-height: 140%;
+        }
+      }
+    }
+
+    .radioInput {
+      margin-right: 8px;
+      height: 16px;
+      width: 16px;
+      color: @ButtonPrimary;
+    }
+  }
+
+  .msg {
+    margin-left: 32px;
+    padding: 6px 0 12px 0;
+    color: @Mako;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .refundMsgContainer {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    margin-left: 20px;
+    background: @SuccessBackground;
+
+    p {
+      padding: 16px 24px;
+      font-size: 12px;
+      font-weight: 400;
+      color: @SuccessText;
+    }
+  }
+
+  .upiWrapper,
+  .bankAccountForm {
+    h5 {
+      font-size: 14px;
+      color: @TextHeading;
+    }
+
+    .regularxs {
+      font-size: 14px;
+      font-weight: 400;
+
+      @media @mobile {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .upiWrapper {
+    margin-left: 32px !important;
+    .upiMsgCard {
+      margin-top: 16px;
+    }
+  }
+
+  .sidebarHeader {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .modelFooterBtn {
+    padding: 16px;
+    background: @ThemeAccentL5;
+    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.12);
+    .saveBankDetailBtn {
+      display: flex;
+      height: 48px;
+      padding: 20px 24px;
+      justify-content: center;
+      align-items: center;
+      border-radius: 4px;
+      background: @ButtonPrimary;
+      width: 100% !important;
+    }
+  }
+  .addbankFormBtnWapper {
+    width: 100%;
+    gap: 16px;
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      display: flex;
+      height: 40px;
+      padding: 16px;
+      justify-content: center;
+      align-items: center;
+      border-radius: 4px;
+      border: 1px solid @ButtonPrimary;
+    }
+    .saveBtn {
+      background: @ButtonPrimary;
+      color: #fff;
+    }
+  }
+
+  .addUpiErrorContainer {
+    margin-top: 16px;
+  }
+
+  .getUpiInput {
+    width: 390px;
+    margin-top: 16px;
+    @media @mobile {
+      width: 100%;
+    }
+    @media @tablet {
+      width: 100%;
+    }
+  }
+
+  .upiWrapper {
+    margin-left: 25px;
+  }
+
+  .upiContainer {
+    cursor: pointer;
+  }
+  .addMarginToUpiForm {
+    margin-bottom: 16px;
+  }
+
+  .useUPIWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .otherUpiContainer {
+      margin-bottom: 16px;
+      cursor: pointer;
+      .customRadio {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+        color: @TextHeading;
+        cursor: pointer;
+
+        &.checked {
+          color: @ButtonPrimary;
+        }
+      }
+    }
+
+    .upiContainer {
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      padding: 16px;
+      border-radius: 4px;
+      border: 1px solid @DividerStokes;
+      background: @PageBackground;
+      // background: @DialogBackground;
+      cursor: pointer !important;
+      @media @mobile {
+        padding: 12px;
+      }
+    }
+
+    .upiContainer.selected {
+      .upi {
+        .OtherUpiName {
+          p {
+            font-weight: 600;
+          }
+        }
+      }
+    }
+
+    .upi {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 38px;
+
+      .OtherUpiName {
+        display: flex;
+        align-items: center;
+
+        .upiImg {
+          width: 38px;
+          height: 38px;
+          padding: 8px 4px;
+          margin-right: 8px;
+          border: 1px solid @DividerStokes;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        p {
+          font-size: 14px;
+          font-weight: 400;
+          color: @TextHeading;
+
+          @media @mobile {
+            font-size: 12px;
+          }
+        }
+      }
+
+      .radioInput {
+        margin-right: 8px;
+        height: 16px;
+        width: 16px;
+        color: @ButtonPrimary;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .refundMsgCard {
+    margin-top: 16px;
+  }
+  .mainRenderBankInputWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .msgCardContainer {
+    padding-top: 16px;
+  }
+  .rednerBankInputContainer {
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .addNewBankInputContainer {
+    padding: 16px;
+
+    @media @mobile {
+      padding: 0;
+    }
+
+    @media @tablet {
+      padding: 0;
+    }
+  }
+
+  .addBankHeadingTitle {
+    padding-left: 16px !important;
+  }
+
+  .bankAccountForm {
+    width: 100% !important;
+    max-width: none !important;
+
+    .addAccountForm {
+      display: flex;
+      flex-direction: column;
+      gap: 12px !important;
+      width: 100%;
+    }
+
+    .branchName {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      font-size: 12px;
+      color: @Profit;
+
+      .inlineSvg {
+        margin-right: 5px;
+        width: 25px;
+        height: 25px;
+      }
+    }
+  }
+  .bankFormInput {
+    position: relative;
+    width: 100%;
+    input {
+      width: 100% !important;
+      padding-right: 40px;
+      box-sizing: border-box;
+
+      @media @mobile {
+        font-size: 12px;
+      }
+    }
+
+    .ifscIcon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      pointer-events: none;
+      &.withFloatingLabel {
+        top: calc(50% + 8px);
+      }
+    }
+  }
+
+  .saveBank {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media @mobile {
+      gap: 12px;
+    }
+  }
+  .addNewBank {
+    font-size: 14px;
+    font-weight: 600;
+    color: @ButtonLink;
+    cursor: pointer;
+    padding: 0 !important ;
+  }
+}
+
+.contactSupportBox {
+  background: @PageBackground !important;
+  border: 1px solid @DividerStokes;
+  border-radius: 4px;
+}
+
+.renderNewBankAccount {
+  margin-top: 24px !important;
+
+  @media @mobile, @tablet {
+    margin-top: 16px;
+  }
+}
+
+.addNewBankWrapper {
+  padding: 16px;
+  border-radius: 4px;
+  background: var(--Theme-Page-Background, #fff);
+  border: 1px solid var(--Overlay-Popup-Divider-Stroke, #e0e0e0);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer !important;
+
+  @media @mobile, @tablet {
+    padding: 12px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .iconLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    span {
+      color: @TextHeading;
+      font-size: 14px;
+      font-weight: 400;
+
+      @media @mobile {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .iconWrapper {
+    height: 42px;
+    width: 42px;
+    padding: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--Overlay-Popup-Divider-Stroke, #e0e0e0);
+  }
+
+  .radioWrapper {
+    cursor: pointer;
+  }
+}
+
+.addNewBankWrapper.selected {
+  .iconLabel {
+    span {
+      font-weight: 600;
+    }
+  }
+}
+
+.refundSidebarHeader {
+  padding: 16px 16px 24px;
+  border: none;
+  margin: 0 !important;
+  border-radius: none;
+}
+.cancelOrderSidebarHeader {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  border-radius: none;
+  border-bottom: 1px solid @DividerStokes;
+  color: @TextHeading;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.modelBtnContainer {
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+
+  button {
+    padding: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    width: 100% !important;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .cancelOrderNo {
+    border: 1px solid @ButtonPrimary;
+    background: @ButtonSecondary;
+    color: @ButtonPrimary;
+
+    &:hover {
+      background: @ButtonPrimary;
+      color: @ButtonSecondary;
+    }
+  }
+  .cancelOrderYes {
+    color: @ButtonSecondary;
+    background: @ButtonPrimary;
+  }
+}
+
+.sidebarHeader {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.upiAutoCompleteWrapper {
+  border: 1px solid var(--dividerStokes);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 5px;
+  border-radius: 5px;
+  max-height: 150px;
+  height: auto;
+  scrollbar-width: auto;
+  -ms-overflow-style: auto;
+  overflow-y: auto;
+  width: 390px;
+  background: #ffffff;
+  @media @tablet {
+    width: 100%;
+  }
+}
+.upiAutoCompleteItem {
+  border-bottom: 1px solid var(--dividerStokes);
+  width: 100%;
+  padding: 15.5px 16px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 400;
+  color: @TextBody;
+  line-height: 18px;
+}
+.upiAutoCompleteItem:last-child {
+  border-bottom: none;
+}
+
+.upiAutoCompleteItem:hover {
+  background-color: #f8f8f8;
+}
+
+.upiChipsWrapper {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .upiChip {
+    padding: 4px 12px;
+    border: 1px solid var(--dividerStokes);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16.8px;
+    flex-shrink: 0;
+  }
+}
+
+.upiSuggestionsDesktop {
+  position: absolute;
+  width: 390px;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.08);
+}
+
+.buttonSectionWrapper {
+  .checkboxContainer {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    // background: @DialogBackground;
+    background: @PageBackground;
+
+    @media @mobile, @tablet {
+      padding: 16px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+
+    .checboxInputContainer {
+      height: 20px;
+      width: 20px;
+
+      .termAndConditioncheckbox {
+        accent-color: @SaleTimer;
+        height: 20px;
+        width: 20px;
+
+        &:checked {
+          accent-color: @ButtonPrimary;
+        }
+      }
+    }
+
+    .label {
+      color: @TextLabel;
+      font-size: 12px;
+      font-weight: 400;
+
+      .viewPolicyText {
+        color: @TextHeading;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .termsLink {
+        color: @ButtonLink;
+        font-weight: 600;
+        text-decoration: underline;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+          opacity: 0.8;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+.updateBtns {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background: @PageBackground;
+  // background: @DialogBackground;
+  border-radius: 4px;
+  border: 1px solid @DividerStokes;
+  margin-bottom: 40px;
+
+  @media @mobile, @tablet {
+    position: sticky;
+    bottom: 0;
+    border-radius: 0px;
+    gap: 32px;
+    align-items: center;
+    padding: 16px;
+    border-top: 1px solid @DividerStokes;
+    box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.06);
+    z-index: 999 !important;
+    margin-bottom: 0px;
+  }
+
+  button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn {
+    padding: 15px;
+    border-radius: @ButtonRadius;
+    width: 100%;
+    margin: 0 !important;
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    background-color: @ButtonPrimary;
+    color: @ButtonSecondary;
+    flex: 1 0 0;
+
+    &:hover {
+      background-color: @ButtonPrimaryL1;
+      color: @ButtonSecondary;
+    }
+  }
+
+  .cancelBtn {
+    background-color: @PageBackground;
+    color: @ButtonPrimary;
+    border: 1px solid @ButtonPrimary;
+
+    &:hover {
+      background-color: @ButtonPrimaryL1;
+      color: @ButtonSecondary;
+      border: 1px solid @ButtonPrimaryL1;
+    }
+  }
+
+  .priceBreakupSection {
+    display: flex;
+    flex-direction: column;
+
+    .viewBreakupBtn {
+      color: @ButtonPrimary;
+      font-size: 12px;
+      font-weight: 500;
+      display: block;
+      line-height: 140%;
+      cursor: pointer;
+    }
+
+    .refundAmount {
+      color: @TextHeading;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+  }
+}
+
+.btnContainerWrapper {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+
+  @media @mobile, @tablet {
+    gap: 32px;
+  }
+}
+
+.outsideBtnSectionCheckbox {
+  display: none;
+  @media @mobile, @tablet {
+    display: block;
+  }
+}
+
+.insideBtnSectionCheckbox {
+  display: block;
+  @media @mobile, @tablet {
+    display: none;
+  }
+}
+
+.orderActionButtons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 16px 0;
+  border-top: 1px solid @OverlayPopupDividerStroke;
+  margin-top: 16px;
+
+  @media @mobile {
+    padding: 12px 0;
+    margin-top: 12px;
+  }
+}
+
+.orderActionButton {
+  background: transparent;
+  border: none;
+  color: @TextHeading;
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 8px 16px;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  &:active {
+    opacity: 0.5;
+  }
+
+  @media @mobile {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}
+
+.buttonDivider {
+  width: 1px;
+  height: 20px;
+  background-color: @OverlayPopupDividerStroke;
+  margin: 0 8px;
+
+  @media @mobile {
+    height: 16px;
+    margin: 0 4px;
   }
 }

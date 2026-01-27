@@ -1,65 +1,66 @@
-import React from "react";
-import useFaq from "../page-layouts/faq/useFaq";
-import FaqPage from "@gofynd/theme-template/pages/faq";
-import "@gofynd/theme-template/pages/faq/faq.css";
-import EmptyState from "../components/empty-state/empty-state";
-import EmptyFaqIcon from "../assets/images/no-faq.svg";
-import { FAQ_CATEGORIES, FAQS_BY_CATEGORY } from "../queries/faqQuery";
-import { useGlobalTranslation } from "fdk-core/utils";
+import React, { useMemo } from "react";
+import { SectionRenderer } from "fdk-core/components";
+import { useGlobalStore } from "fdk-core/utils";
+import { getHelmet } from "../providers/global-provider";
+import getSeoMeta from "../helper/hooks/useSeoMeta";
+import { sanitizeHTMLTag } from "../helper/utils";
 
-function Faqs({ fpi }) {
-  const { t } = useGlobalTranslation("translation");
-  const faqProps = useFaq({ fpi });
+function FaqPage({ fpi }) {
+  const page = useGlobalStore(fpi.getters.PAGE) || {};
+  const THEME = useGlobalStore(fpi.getters.THEME);
+
+  const mode = THEME?.config?.list.find(
+    (f) => f.name === THEME?.config?.current
+  );
+  const globalConfig = mode?.global_config?.custom?.props;
+
+  const { sections = [] } = page || {};
+  const seoData = page?.seo || {};
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
+    getSeoMeta({ fpi, seo: seoData });
+
+  const title = useMemo(() => {
+    const raw = sanitizeHTMLTag(seoData?.title || "FAQ");
+    if (raw && brandName) return `${raw} | ${brandName}`;
+    return raw || brandName || "";
+  }, [seoData?.title, brandName]);
+
+  const description = useMemo(() => {
+    const raw = sanitizeHTMLTag(
+      seoData?.description || "Frequently asked questions"
+    );
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seoData?.description, seoDescription]);
 
   return (
-    <FaqPage
-      {...faqProps}
-      EmptyStateComponent={(props) => (
-        <EmptyState
-          customClassName={props.customClassName}
-          title={t("resource.faq.no_frequently_asked_questions_found")}
-          Icon={<EmptyFaqIcon />}
-          showButton={false}
+    page?.value === "faq" && (
+      <>
+        {getHelmet({
+          title,
+          description,
+          image: socialImage,
+          canonicalUrl,
+          url: pageUrl,
+          siteName: brandName,
+          ogType: "website",
+        })}
+        <SectionRenderer
+          sections={sections}
+          fpi={fpi}
+          globalConfig={globalConfig}
         />
-      )}
-    />
+      </>
+    )
   );
 }
 
-Faqs.serverFetch = async ({ fpi, router }) => {
-  try {
-    const { filterQuery = {} } = router;
-    const paramsValue = filterQuery?.category;
-    const res = await fpi.executeGQL(FAQ_CATEGORIES);
-    const faqCategories =
-      res?.data?.applicationContent?.faq_categories?.categories;
+export const sections = JSON.stringify([
+  {
+    attributes: {
+      page: "faq",
+    },
+  },
+]);
 
-    const defaultSlug = !paramsValue ? faqCategories[0]?.slug : paramsValue;
-    const activeCategory =
-      faqCategories.find((i) => i.slug === defaultSlug) ?? null;
-
-    fpi.custom.setValue("activeFaqCategories", activeCategory);
-
-    if (defaultSlug) {
-      try {
-        await fpi.executeGQL(FAQS_BY_CATEGORY, {
-          slug: defaultSlug,
-        });
-      } catch (err) {
-        fpi.custom.setValue(
-          "faqError",
-          `Error fetching FAQs: ${err?.message || err}`
-        );
-      }
-    }
-  } catch (err) {
-    fpi.custom.setValue(
-      "faqCategoryError",
-      `Error fetching FAQ categories: ${err?.message || err}`
-    );
-  }
-};
-
-export const sections = JSON.stringify([]);
-
-export default Faqs;
+export default FaqPage;

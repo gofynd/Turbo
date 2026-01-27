@@ -407,7 +407,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
   if (pageNo) payload.pageNo = pageNo;
 
   if (isAlgoliaEnabled) {
-    const BASE_URL = `https://${fpiState?.custom?.appHostName}/ext/algolia/application/api/v1.0/products`;
+    const BASE_URL = `https://${fpiState?.custom?.appHostName}/ext/search/application/api/v1.0/products`;
 
     const url = new URL(BASE_URL);
     url.searchParams.append(

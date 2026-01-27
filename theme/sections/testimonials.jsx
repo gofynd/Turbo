@@ -13,6 +13,7 @@ import {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 } from "../components/carousel";
 import Autoplay from "embla-carousel-autoplay";
 
@@ -103,6 +104,8 @@ export function Component({ props, globalConfig, blocks, preset }) {
               ))}
             </CarouselContent>
             <CarouselPrevious className={styles.carouselBtn} />
+            {/* NOTE:  Enable if dots are required to be added in carousel */}
+            {/* <CarouselDots/> */}
             <CarouselNext className={styles.carouselBtn} />
           </Carousel>
         )}

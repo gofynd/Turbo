@@ -98,6 +98,7 @@ export default function ProductBundles({
         if (addToCartErrors || !addToCartData?.addItemsToCart?.success) {
           throw (
             translateDynamicLabel(addToCartErrors?.[0]?.message, t) ||
+            translateDynamicLabel(addToCartData?.addItemsToCart?.message, t) ||
             t("resource.common.add_cart_failure")
           );
         }

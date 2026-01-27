@@ -1,23 +1,23 @@
 import React, { useMemo } from "react";
-import useWishlist from "../page-layouts/wishlist/useWishlist";
-import styles from "../styles/wishlist.less";
-import { isLoggedIn } from "../helper/auth-guard";
-import Wishlist from "@gofynd/theme-template/pages/wishlist/wishlist";
-import "@gofynd/theme-template/pages/wishlist/wishlist.css";
-import WishlistShimmer from "../components/shimmer/wishlist-shimmer";
+import { motion } from "framer-motion";
+import { SectionRenderer } from "fdk-core/components";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
+import { isLoggedIn } from "../helper/auth-guard";
+import { useThemeConfig } from "../helper/hooks";
+import ProfileRoot from "../components/profile/profile-root";
 import { getHelmet } from "../providers/global-provider";
 import { sanitizeHTMLTag } from "../helper/utils";
 import useSeoMeta from "../helper/hooks/useSeoMeta";
+import "@gofynd/theme-template/components/profile-navigation/profile-navigation.css";
 
 function WishlistPage({ fpi }) {
   const { t } = useGlobalTranslation("translation");
   const page = useGlobalStore(fpi.getters.PAGE) || {};
-  const THEME = useGlobalStore(fpi.getters.THEME);
-  const { loading, ...wishlistProps } = useWishlist({ fpi });
+  const { globalConfig } = useThemeConfig({ fpi });
+  const { sections = [] } = page || {};
 
   const seoData = page?.seo || {};
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo: seoData });
   const title = useMemo(() => {
     const raw = sanitizeHTMLTag(
@@ -30,30 +30,59 @@ function WishlistPage({ fpi }) {
     const raw = sanitizeHTMLTag(
       seoData?.description || t("resource.wishlist.seo_description")
     );
-    return trimDescription(raw, 160);
-  }, [seoData?.description, t, trimDescription]);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seoData?.description, t, seoDescription]);
 
-  if (loading) {
-    return <WishlistShimmer />;
-  }
+  // Filter sections by canvas
+  const leftSections = sections.filter(
+    (section) => (section.canvas?.value || section.canvas) === "left_side"
+  );
+  const rightSections = sections.filter(
+    (section) => (section.canvas?.value || section.canvas) === "right_side"
+  );
 
   return (
-    <>
-      {getHelmet({
-        title,
-        description,
-        image: socialImage,
-        canonicalUrl,
-        url: pageUrl,
-        siteName: brandName,
-        ogType: "website",
-      })}
-      <div className="basePageContainer margin0auto">
-        <div className={`${styles.wishlistWrap} ${styles.flexColumn}`}>
-          <Wishlist {...wishlistProps} />
-        </div>
-      </div>
-    </>
+    page?.value === "wishlist" && (
+      <>
+        {getHelmet({
+          title,
+          description,
+          image: socialImage,
+          canonicalUrl,
+          url: pageUrl,
+          siteName: brandName,
+          ogType: "website",
+        })}
+        <ProfileRoot
+          fpi={fpi}
+          leftSections={leftSections}
+          rightSections={rightSections}
+          globalConfig={globalConfig}
+        >
+          <motion.div
+            key={page?.value}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1, transition: { duration: 0.5 } },
+            }}
+            initial="hidden"
+            animate="visible"
+            style={{ height: "100%" }}
+          >
+            {leftSections.length > 0 && (
+              <SectionRenderer
+                fpi={fpi}
+                sections={leftSections}
+                blocks={[]}
+                preset={{}}
+                globalConfig={globalConfig}
+              />
+            )}
+          </motion.div>
+        </ProfileRoot>
+      </>
+    )
   );
 }
 
@@ -99,6 +128,45 @@ export const settings = JSON.stringify({
   ],
 });
 
-export const sections = JSON.stringify([]);
+export const sections = JSON.stringify([
+  {
+    canvas: {
+      value: "left_side",
+      label: "Left Panel",
+    },
+    attributes: {
+      page: "wishlist",
+    },
+    blocks: [
+      {
+        type: "profile-wishlist",
+        name: "Profile Wishlist",
+        props: [
+          {
+            type: "text",
+            id: "title",
+            value: "My Wishlist",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    canvas: {
+      value: "right_side",
+      label: "Right Panel",
+    },
+    attributes: {
+      page: "wishlist",
+    },
+    blocks: [
+      {
+        type: "profile-navigation-menu",
+        name: "Profile Navigation Menu",
+        props: [],
+      },
+    ],
+  },
+]);
 
 export default WishlistPage;

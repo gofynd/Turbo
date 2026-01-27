@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "การจัดพิมพ์",
-        "algolia_configuration": "การกำหนดค่า Algolia",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "ส่วนท้าย",
         "cart_and_button_configuration": "การกำหนดค่ารถเข็นและปุ่ม",
         "product_card_configuration": "การกำหนดค่าการ์ดผลิตภัณฑ์",
@@ -158,8 +158,8 @@
         "transparent_header": "ส่วนหัวโปร่งใส",
         "transparent_header_info": "ใช้ส่วนหัวโปร่งใสเมื่อแอปพลิเคชันแบนเนอร์หรือภาพสไลด์แสดงอยู่ด้านบน"
       },
-      "algolia_configuration": {
-        "enable_algolia": "เปิดใช้งาน Algolia"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "โลโก้",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "การจัดวางเนื้อหาบนเดสก์ท็อป",
         "banner_horizontal_scroll": "แบนเนอร์แบบเลื่อนแนวนอน",
         "banner_with_stack": "แบนเนอร์พร้อมสแต็ค",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "เค้าโครง (แบบเคลื่อนที่)",
         "content_alignment_mobile": "การจัดวางเนื้อหาในมือถือ",
         "text_alignment": "การจัดตำแหน่งข้อความ",

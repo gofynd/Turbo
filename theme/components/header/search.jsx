@@ -90,7 +90,7 @@ function Search({
     setShowSearchSuggestions(false);
 
     if (isAlgoliaEnabled) {
-      const BASE_URL = `${window.location.origin}/ext/algolia/application/api/v1.0/products`;
+      const BASE_URL = `${window.location.origin}/ext/search/application/api/v1.0/products`;
       const url = new URL(BASE_URL);
       url.searchParams.append("page_size", "4");
       url.searchParams.append("q", searchText);
@@ -120,15 +120,18 @@ function Search({
       fpi
         .executeGQL(AUTOCOMPLETE, { query: searchText })
         .then((res) => {
-          const { items = [] } = res?.data?.searchProduct || {};
-          
-          const products = items.filter((item) => item.type === "product");
-          const collections = items.filter(
-            (item) => item.type === "brand" || item.type === "category"
-          );
-          const queries = items.filter(
-            (item) => item.type === "query suggestions"
-          );
+          const { items } = res?.data?.searchProduct || {};
+
+          // Separate products from brands/categories based on type
+          const products =
+            items?.filter((item) => item.type === "product") || [];
+          const collections =
+            items?.filter(
+              (item) =>
+                item.type === "brand" ||
+                item.type === "category" ||
+                item.type === "collection"
+            ) || [];
 
           // Set product data (limit to 4 for consistency with UI)
           const limitedProducts = products.slice(0, 4);
@@ -142,12 +145,9 @@ function Search({
               action: item.action,
             }))
           );
-          setQuerySuggestions(
-            queries.map((item) => ({
-              ...item,
-              action: item.action,
-            }))
-          );
+          // Current AUTOCOMPLETE response does not return separate query suggestions,
+          // so we clear any previous suggestions.
+          setQuerySuggestions([]);
         })
         .catch((error) => {
           console.error("Search API error:", error);
@@ -361,7 +361,7 @@ function Search({
                               <div
                                 className={styles["search__suggestions--title"]}
                               >
-                                {type}
+                                {type.charAt(0).toUpperCase() + type.slice(1)}
                               </div>
                               <ul>
                                 {items.map((item, index) => (

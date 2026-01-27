@@ -1,0 +1,111 @@
+@import "../../styles/main.less";
+
+.logoutModalContent {
+  display: flex;
+  flex-direction: column;
+  width: 473px;
+  background: @White;
+  overflow: hidden;
+
+  @media @mobile {
+    width: 100%;
+  }
+}
+
+.modalHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 24px;
+  border-bottom: 1px solid @DividerStokes;
+  border-radius: 4px 4px 0 0;
+
+  @media @mobile {
+    gap: 12px;
+    padding: 16px;
+  }
+}
+
+.modalTitle {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: @TextHeading;
+  margin: 0;
+}
+
+.modalMessage {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: @TextHeading;
+  margin: 0;
+
+  @media @mobile {
+    font-size: 12px;
+  }
+}
+
+.modalActions {
+  display: flex;
+  gap: 16px;
+  padding: 24px;
+  border-top: none;
+  background: @White;
+
+  @media @mobile {
+    padding: 24px 16px;
+  }
+}
+
+.modalButton {
+  flex: 1;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 24px;
+  border-radius: 4px;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+
+  &:focus {
+    outline: 2px solid @ButtonPrimary;
+    outline-offset: 2px;
+  }
+}
+
+.primaryButton {
+  background: @ButtonPrimary;
+  color: @ButtonSecondary;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.secondaryButton {
+  background: @White;
+  color: @ButtonPrimary;
+  border: 1px solid @ButtonPrimary;
+
+  &:hover {
+    background: rgba(27, 97, 99, 0.05);
+  }
+
+  &:active {
+    background: rgba(27, 97, 99, 0.1);
+  }
+}

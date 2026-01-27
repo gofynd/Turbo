@@ -6,6 +6,8 @@ import {
   COLLECTION_DETAILS,
   COLLECTION_WITH_ITEMS,
 } from "../../queries/collectionsQuery";
+import { FOLLOWED_PRODUCTS_IDS } from "../../queries/wishlistQuery";
+import { WISHLIST_PAGE_SIZE } from "../../helper/constant";
 import {
   getProductImgAspectRatio,
   isRunningOnClient,
@@ -28,7 +30,21 @@ const useCollectionListing = ({ fpi, slug, props }) => {
   const { t } = useGlobalTranslation("translation");
   const location = useLocation();
   const navigate = useNavigate();
-  const { toggleWishlist, followedIdList } = useWishlist({ fpi });
+  const { toggleWishlist, followedIdList, followedCount } = useWishlist({
+    fpi,
+  });
+
+  // Refresh wishlist IDs when collection page loads if store appears incomplete
+  // This ensures we have all wishlisted items after navigating from wishlist page
+  useEffect(() => {
+    if (followedCount > 0 && followedIdList?.length < followedCount) {
+      // Store appears incomplete (has fewer items than total count)
+      // Refresh to get all wishlist IDs
+      fpi
+        .executeGQL(FOLLOWED_PRODUCTS_IDS, { pageSize: WISHLIST_PAGE_SIZE })
+        .catch(() => {});
+    }
+  }, [slug, followedCount, followedIdList?.length]);
   const { isInternational, i18nDetails, defaultCurrency } = useInternational({
     fpi,
   });
@@ -132,11 +148,9 @@ const useCollectionListing = ({ fpi, slug, props }) => {
 
   useEffect(() => {
     if (!isCollectionsSsrFetched && isAlgoliaEnabled) {
-      fpi
-        .executeGQL(COLLECTION_DETAILS, { slug })
-        .then((res) => {
-          fpi.custom.setValue("customCollection", res?.data?.collection);
-        });
+      fpi.executeGQL(COLLECTION_DETAILS, { slug }).then((res) => {
+        fpi.custom.setValue("customCollection", res?.data?.collection);
+      });
     }
   }, [isAlgoliaEnabled]);
 
@@ -202,7 +216,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     setApiLoading(true);
 
     if (isAlgoliaEnabled) {
-      const BASE_URL = `${window.location.origin}/ext/algolia/application/api/v1.0/collections/${slug}/items`;
+      const BASE_URL = `${window.location.origin}/ext/search/application/api/v1.0/collections/${slug}/items`;
 
       const url = new URL(BASE_URL);
       url.searchParams.append(
@@ -335,7 +349,8 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     searchParams?.delete("page_no");
     navigate?.(
       location?.pathname +
-        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+        (searchParams?.toString() ? `?${searchParams.toString()}` : ""),
+      { replace: true }
     );
   };
 
@@ -351,7 +366,8 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     searchParams?.delete("page_no");
     navigate?.(
       location?.pathname +
-        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+        (searchParams?.toString() ? `?${searchParams.toString()}` : ""),
+      { replace: true }
     );
   };
 
@@ -365,7 +381,8 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     searchParams?.delete("page_no");
     navigate?.(
       location?.pathname +
-        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+        (searchParams?.toString() ? `?${searchParams.toString()}` : ""),
+      { replace: true }
     );
   }
 

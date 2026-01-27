@@ -486,6 +486,8 @@
         "my_address": "ALAMAT SAYA",
         "add_new_address": "Tambahkan Alamat Baru",
         "add_new_address_caps": "TAMBAHKAN ALAMAT BARU",
+        "default_address": "Alamat Default",
+        "other_addresses": "Alamat Lainnya",
         "no_address_available": "Tidak ada alamat yang tersedia",
         "address_not_found": "Alamat tidak ditemukan!",
         "return_to_my_address": "KEMBALI KE ALAMAT SAYA",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "Kode pin harus tepat terdiri dari 6 digit",
         "invalid_phone_number": "Nomor Telepon Tidak Valid",
         "enter_pincode": "Masukkan Kode Pin",
-        "default_address": "Alamat Default",
         "other_address": "Alamat Lainnya",
         "address_type": "Jenis Alamat",
         "make_this_my_default_address": "Jadikan ini alamat default saya"

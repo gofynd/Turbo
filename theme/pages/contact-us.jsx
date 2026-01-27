@@ -17,7 +17,7 @@ function ContactUsPage({ fpi }) {
   const { sections = [] } = page || {};
 
   const seoData = page?.seo || {};
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo: seoData });
 
   const title = useMemo(() => {
@@ -32,8 +32,9 @@ function ContactUsPage({ fpi }) {
     const raw = sanitizeHTMLTag(
       seoData?.description || t("resource.contact_us.seo_description")
     );
-    return trimDescription(raw, 160);
-  }, [seoData?.description, t, trimDescription]);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seoData?.description, t, seoDescription]);
 
 
   return (

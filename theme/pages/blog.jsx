@@ -16,7 +16,7 @@ function Blog({ fpi }) {
   const globalConfig = mode?.global_config?.custom?.props;
   const { sections = [] } = page || {};
   const seoData = page?.seo || {};
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo: seoData });
 
   const title = useMemo(() => {
@@ -31,8 +31,9 @@ function Blog({ fpi }) {
     const raw = sanitizeHTMLTag(
       seoData?.description || t("resource.blog.blog_seo_description")
     );
-    return trimDescription(raw, 160);
-  }, [seoData?.description, t, trimDescription]);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seoData?.description, t, seoDescription]);
 
   console.log("Blog Page Rendered", sections);
   return (

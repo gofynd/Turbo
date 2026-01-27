@@ -314,6 +314,14 @@ export function Component({ props, globalConfig }) {
     return getGallery.slice(0, itemCount * 2);
   }
 
+  function imagesForBannerVerticalView() {
+    if (!getGallery) return [];
+    // Use max_count configuration to determine how many products to show
+    // Default is 10 as per settings, but use max_count?.value if available
+    const maxProducts = max_count?.value ?? 10;
+    return getGallery.slice(0, maxProducts);
+  }
+
   function showStackedView() {
     if (windowWidth <= 768) {
       return (
@@ -336,6 +344,13 @@ export function Component({ props, globalConfig }) {
       return mobile_layout?.value === "banner_horizontal_scroll";
     }
     return desktop_layout?.value === "banner_horizontal_scroll";
+  }
+
+  function showBannerVerticalView() {
+    if (windowWidth <= 768) {
+      return mobile_layout?.value === "banner_vertical";
+    }
+    return desktop_layout?.value === "banner_vertical";
   }
 
   const handleWishlistToggle = (data) => {
@@ -369,7 +384,7 @@ export function Component({ props, globalConfig }) {
     <>
       <section className={styles.sectionWrapper} style={dynamicStyles}>
         <div
-          className={`fx-title-block ${styles.titleBlock} ${desktop_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""}  ${mobile_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""}`}
+          className={`fx-title-block ${styles.titleBlock} ${desktop_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""}  ${mobile_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""} ${showBannerVerticalView() ? styles.hideOnAllScreens : ""}`}
           style={{
             alignItems:
               text_alignment?.value === "left"
@@ -520,6 +535,128 @@ export function Component({ props, globalConfig }) {
                   <CarouselPrevious className={styles.carouselBtn} />
                   <CarouselNext className={styles.carouselBtn} />
                 </Carousel>
+              </div>
+              {show_view_all?.value && (
+                <div
+                  className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]} ${button_position?.value === "below_products" ? "" : styles.visibleOnMobile}`}
+                >
+                  <FDKLink to={`/collection/${slug}`}>
+                    <button
+                      type="button"
+                      className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
+                    >
+                      {button_text?.value
+                        ? button_text?.value
+                        : t("resource.facets.view_all")}
+                    </button>
+                  </FDKLink>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {getGallery?.length > 0 && (
+          <div
+            className={`${styles.bannerVerticalWrap} ${
+              desktop_layout?.value === "banner_vertical"
+                ? styles.desktopVisibleFlex
+                : styles.desktopHiddenFlex
+            } ${
+              mobile_layout?.value === "banner_vertical"
+                ? styles.mobileVisible
+                : styles.mobileHidden
+            }`}
+          >
+            <FDKLink
+              to={`/collection/${slug}`}
+              className={styles.bannerImageVertical}
+            >
+              <FyImage
+                globalConfig={globalConfig}
+                src={bannerUrl}
+                sources={getImgSrcSet()}
+                aspectRatio="0.8"
+                mobileAspectRatio="0.8"
+                alt={imgAlt}
+              />
+            </FDKLink>
+            <div className={styles.bannerVerticalContent}>
+              <div
+                className={`${styles.titleBlock} ${styles.bannerVerticalTitleBlock}`}
+                style={{
+                  alignItems:
+                    text_alignment?.value === "left"
+                      ? "flex-start"
+                      : text_alignment?.value === "right"
+                        ? "flex-end"
+                        : "center",
+                }}
+              >
+                {heading?.value?.length > 0 && (
+                  <h2
+                    className={`fx-title ${styles.sectionHeading} fontHeader`}
+                    style={{
+                      textAlign: text_alignment?.value,
+                      fontSize:
+                        windowWidth > 768 ? titleSizeDesktop : titleSizeTablet,
+                    }}
+                  >
+                    {heading?.value}
+                  </h2>
+                )}
+                {description?.value?.length > 0 && (
+                  <p
+                    className={`fx-description ${styles.description} b2`}
+                    style={{ textAlign: text_alignment?.value }}
+                  >
+                    {description?.value}
+                  </p>
+                )}
+                {show_view_all?.value &&
+                  button_position?.value !== "below_products" && (
+                    <div
+                      className={`${styles["gap-above-button"]} ${styles.visibleOnDesktop}`}
+                    >
+                      <FDKLink to={`/collection/${slug}`}>
+                        <button
+                          type="button"
+                          className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
+                        >
+                          {button_text?.value
+                            ? button_text?.value
+                            : t("resource.facets.view_all")}
+                        </button>
+                      </FDKLink>
+                    </div>
+                  )}
+              </div>
+              <div
+                className={`${styles.imageGrid} ${styles.bannerVerticalGrid} ${
+                  imagesForBannerVerticalView().length === 1
+                    ? styles.singleItem
+                    : ""
+                }`}
+                style={{
+                  "--per-row": 2,
+                  "--per-row-mobile": itemCountMobile,
+                  "--brand-item": 2,
+                }}
+              >
+                {imagesForBannerVerticalView().map((product, index) => (
+                  <ProductCardItem
+                    key={`${product.uid}_${index}`}
+                    product={product}
+                    imgSrcSet={imgSrcSet}
+                    listingPrice={listingPrice}
+                    props={props}
+                    globalConfig={globalConfig}
+                    showAddToCart={showAddToCart}
+                    actionButtonText={card_cta_text?.value}
+                    followedIdList={followedIdList}
+                    handleWishlistToggle={handleWishlistToggle}
+                    handleAddToCart={handleAddToCart}
+                  />
+                ))}
               </div>
               {show_view_all?.value && (
                 <div
@@ -723,6 +860,95 @@ export function Component({ props, globalConfig }) {
         )}
         {!getGallery.length && !isLoading && (
           <div
+            className={`${styles.bannerVerticalWrap} ${
+              desktop_layout?.value === "banner_vertical"
+                ? styles.desktopVisibleFlex
+                : styles.desktopHiddenFlex
+            } ${
+              mobile_layout?.value === "banner_vertical"
+                ? styles.mobileVisible
+                : styles.mobileHidden
+            }`}
+          >
+            <div className={styles.bannerImageVertical}>
+              <FyImage
+                globalConfig={globalConfig}
+                src={bannerUrl || placeholderBanner}
+                sources={getImgSrcSet()}
+                aspectRatio="0.8"
+                mobileAspectRatio="0.8"
+                alt={imgAlt || heading?.value || "Featured collection banner"}
+              />
+            </div>
+            <div className={styles.bannerVerticalContent}>
+              <div
+                className={styles.titleBlock}
+                style={{ paddingInlineStart: "10px" }}
+              >
+                {heading?.value?.length > 0 && (
+                  <h2
+                    className={`${styles.sectionHeading} fontHeader`}
+                    style={{ textAlign: "start" }}
+                  >
+                    {heading?.value}
+                  </h2>
+                )}
+                {description?.value?.length > 0 && (
+                  <p
+                    className={`${styles.description} b2`}
+                    style={{ textAlign: "start" }}
+                  >
+                    {description?.value}
+                  </p>
+                )}
+              </div>
+              <div
+                className={`${styles.imageGrid} ${styles.bannerVerticalGrid}`}
+                style={{
+                  "--per-row": 2,
+                  "--per-row-mobile": itemCountMobile,
+                  "--brand-item": 2,
+                }}
+              >
+                {FEATURED_COLLECTION_PLACEHOLDER_PRODUCTS.slice(0, 6).map(
+                  (product, index) => (
+                    <ProductCardItem
+                      key={`${product.uid}_${index}`}
+                      product={product}
+                      imgSrcSet={imgSrcSet}
+                      listingPrice={listingPrice}
+                      props={props}
+                      globalConfig={globalConfig}
+                      showAddToCart={showAddToCart}
+                      actionButtonText={card_cta_text?.value}
+                      followedIdList={[]}
+                      handleWishlistToggle={() => {}}
+                      handleAddToCart={() => {}}
+                    />
+                  )
+                )}
+              </div>
+              {show_view_all?.value && (
+                <div
+                  className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]}`}
+                >
+                  <FDKLink to={`/collection/${slug}`}>
+                    <button
+                      type="button"
+                      className={`fx-button btn-secondary ${styles["section-button"]} ${styles.fontBody}`}
+                    >
+                      {button_text?.value
+                        ? button_text?.value
+                        : t("resource.facets.view_all")}
+                    </button>
+                  </FDKLink>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {!getGallery.length && !isLoading && (
+          <div
             className={`${
               desktop_layout?.value === "grid" ||
               desktop_layout?.value === "horizontal"
@@ -782,6 +1008,7 @@ export function Component({ props, globalConfig }) {
         )}
         {show_view_all?.value &&
           !showBannerScrollView() &&
+          !showBannerVerticalView() &&
           getGallery?.length > 0 && (
             <div
               className={`${styles["flex-justify-center"]} ${
@@ -944,6 +1171,10 @@ export const settings = {
           value: "banner_horizontal_scroll",
           text: "t:resource.sections.featured_collection.banner_horizontal_carousel",
         },
+        {
+          value: "banner_vertical",
+          text: "t:resource.sections.featured_collection.banner_vertical",
+        },
       ],
       default: "banner_horizontal_scroll",
       label: "t:resource.sections.featured_collection.layout_desktop",
@@ -968,6 +1199,10 @@ export const settings = {
         {
           value: "banner_stacked",
           text: "t:resource.sections.featured_collection.banner_with_stack",
+        },
+        {
+          value: "banner_vertical",
+          text: "t:resource.sections.featured_collection.banner_vertical",
         },
       ],
       default: "horizontal",

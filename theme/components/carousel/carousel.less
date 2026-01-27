@@ -12,11 +12,11 @@
   display: flex;
 }
 
-carouselTrackHorizontal {
+.carouselTrackHorizontal {
   margin-left: -1rem;
 }
 
-carouselTrackVertical {
+.carouselTrackVertical {
   flex-direction: column;
   margin-top: -1rem;
 }
@@ -26,11 +26,11 @@ carouselTrackVertical {
   flex: 0 0 100%;
 }
 
-carouselItemHorizontal {
+.carouselItemHorizontal {
   padding-left: 1rem;
 }
 
-carouselItemVertical {
+.carouselItemVertical {
   padding-top: 1rem;
 }
 
@@ -82,6 +82,35 @@ carouselItemVertical {
   bottom: -36px;
   left: 50%;
   transform: translateX(-50%) rotate(-90deg);
+}
+
+.carouselDots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.carouselDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 25px;
+  background-color: var(--textSecondary, #6b6b6b);
+  color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.carouselDotActive {
+  background-color: var(--textHeading, #222222);
+}
+
+.carouselDotInactive {
+  background-color: var(--textSecondary, #6b6b6b);
 }
 
 .srOnly {

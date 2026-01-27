@@ -1,0 +1,93 @@
+@import "../../styles/main.less";
+
+.bankAccountItem {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid @DividerStokes;
+  border-radius: 4px;
+  height: 122px;
+  // background-color: @DialogBackground;
+  background: @PageBackground;
+  cursor: pointer;
+  @media @mobile, @tablet {
+    height: 114px;
+    padding: 12px;
+  }
+
+  .bankInfo {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    .logo {
+      padding: 4px 5px;
+      img {
+        width: 32px;
+        height: 24px;
+        height: auto;
+        display: block;
+      }
+    }
+
+    .details {
+      display: flex;
+      flex-direction: column;
+
+      h6 {
+        font-size: 16px;
+        font-weight: 600;
+        color: @TextHeading;
+        display: flex;
+        height: 22px;
+        align-self: stretch;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 4px;
+        .greenCheckBox {
+          width: 20px;
+          height: 20px;
+        }
+
+        .greenCheckIcon {
+          color: green;
+          margin-top: 1px;
+
+          .radio {
+            cursor: pointer;
+          }
+        }
+      }
+
+      span {
+        margin-bottom: 2px;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 140%;
+        color: #1e1e1e;
+      }
+    }
+  }
+
+  .customRadio {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px !important;
+    flex-shrink: 0;
+    color: @TextHeading;
+    cursor: pointer;
+
+    &.checked {
+      color: @ButtonPrimary;
+    }
+  }
+}

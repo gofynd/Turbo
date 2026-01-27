@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./verify-otp.less";
 import CloseIcon from "../../assets/images/close.svg";
 import MessageCard from "../message-card/MessageCard";
+import { useGlobalTranslation } from "fdk-core/utils";
 
 const VerifyOtp = ({
   onOpen,
@@ -17,10 +18,11 @@ const VerifyOtp = ({
   handleResendDisable,
   showOTPpopup,
 }) => {
+  const { t } = useGlobalTranslation("translation");
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [cooldown, setCooldown] = useState(coolDownSecondsRef?.current || 55);
   const [inlineError, setInlineError] = useState(""); // New state for inline errors
-  
+
   useEffect(() => {
     let timer;
     if (showOTPpopup && isResendDisabled && cooldown > 0) {
@@ -48,12 +50,12 @@ const VerifyOtp = ({
   }, [otpResponseError]);
 
   const handleChange = (index, value) => {
-    if (!/^\d?$/.test(value)) return; 
+    if (!/^\d?$/.test(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
-    
+
     // Clear inline error when user starts typing
     if (inlineError) {
       setInlineError("");
@@ -149,43 +151,44 @@ const VerifyOtp = ({
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     className={`${styles.otpInput} ${styles.errorStyles}`}
                     style={
-                      displayError?.length > 0
-                        ? { borderColor: "#D93131" }
-                        : {}
+                      displayError?.length > 0 ? { borderColor: "#D93131" } : {}
                     }
                   />
                 ))}
               </div>
               {displayError?.length > 0 && (
-                <div className={styles.otpResponseError}>
-                  {displayError}
-                </div>
+                <div className={styles.otpResponseError}>{displayError}</div>
               )}
             </div>
-            <div
-              className={`${styles.resendOtp} ${isResendDisabled ? styles.disabled : ""}`}
-              onClick={() => {
-                if (!isResendDisabled && typeof onResend === "function") {
-                  onResend();
-                }
-              }}
-            >
-              {isResendDisabled ? (
-                <span className={styles.resendTimerTextStyles}>
-                  {`Resend OTP in ${cooldown} Sec`}
-                </span>
-              ) : (
-                <span
-                  onClick={() => {
-                    setOtp((prev) => ["", "", "", ""]);
-                    setInlineError(""); // Clear inline error when resending
-                    removeErrorMessage();
-                  }}
-                  className={styles.resendOtpTextStyles}
-                >
-                  RESEND OTP
-                </span>
-              )}
+            <div className={styles.resendOtpContainer}>
+              <span className={styles.didntReceiveText}>
+                {t("resource.common.didnt_receive_otp")}
+              </span>
+              <div
+                className={`${styles.resendOtp} ${isResendDisabled ? styles.disabled : ""}`}
+                onClick={() => {
+                  if (!isResendDisabled && typeof onResend === "function") {
+                    onResend();
+                  }
+                }}
+              >
+                {isResendDisabled ? (
+                  <span className={styles.resendTimerTextStyles}>
+                    {`Resend OTP in ${cooldown} Sec`}
+                  </span>
+                ) : (
+                  <span
+                    onClick={() => {
+                      setOtp((prev) => ["", "", "", ""]);
+                      setInlineError(""); // Clear inline error when resending
+                      removeErrorMessage();
+                    }}
+                    className={styles.resendOtpTextStyles}
+                  >
+                    RESEND OTP
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

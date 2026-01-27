@@ -1,0 +1,127 @@
+@import "./main.less";
+
+.navContainer {
+  // border-inline-start: 1px solid @DividerStokes;
+  // padding: 16px;
+
+  .userData {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .defaultImage {
+      height: 50px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+
+      .accountIcon {
+        height: 100%;
+        aspect-ratio: 1;
+      }
+
+      .initialsAvatar {
+        height: 100%;
+        width: 100%;
+        border-radius: 50%;
+        background-color: #2e93ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 18px;
+      }
+    }
+    .nameContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+      .name {
+        font-weight: 700;
+        color: @TextHeading;
+        .text-line-clamp(1);
+        min-height: 16px;
+      }
+
+      .editLink {
+        font-size: 14px;
+        line-height: 16px;
+        cursor: pointer;
+        color: @ButtonLink;
+      }
+    }
+  }
+
+  .accountHeader {
+    text-transform: uppercase;
+    padding: 24px 0 8px;
+    font-weight: 700;
+  }
+
+  .nav {
+    display: flex;
+    padding: 16px 0;
+    align-items: center;
+    border-bottom: 1px solid @DividerStokes;
+    cursor: pointer;
+    color: @TextBody;
+
+    &.selected,
+    &:hover {
+      font-weight: 600;
+      color: @ButtonPrimary;
+    }
+
+    .menuIcon {
+      height: 20px;
+      aspect-ratio: 1;
+      margin-inline-end: 12px;
+    }
+
+    .itemTitle {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+
+  .versionContainer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 0;
+
+    .signOut {
+      font-weight: 600;
+      cursor: pointer;
+      color: @ButtonLink;
+    }
+  }
+
+  @media @tablet {
+    width: 100%;
+    border-inline-start: 0;
+
+    .userData {
+      .nameContainer {
+        .name {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .accountHeader,
+    .nav {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .accountHeader {
+      padding: 16px 0 4px;
+    }
+
+    .nav {
+      padding: 12px 0;
+    }
+  }
+}

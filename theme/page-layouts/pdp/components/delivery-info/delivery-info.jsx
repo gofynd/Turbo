@@ -38,6 +38,7 @@ function DeliveryInfo({
   const locale = language?.locale;
   const [postCode, setPostCode] = useState(pincode || "");
   const [tatMessage, setTatMessage] = useState("");
+  const [pincodeLoading, setPincodeLoading] = useState(false);
   const { getFormattedPromise } = useDeliverPromise({ fpi });
   const { isServiceability, deliveryAddress } = useHyperlocal(fpi);
   const { isHeaderMap } = useGoogleMapConfig({ fpi });
@@ -46,14 +47,28 @@ function DeliveryInfo({
   useEffect(() => {
     if (isValidDeliveryLocation) {
       getDeliveryDate();
+      setPincodeLoading(false);
     }
   }, [deliveryPromise, isValidDeliveryLocation]);
+
+  useEffect(() => {
+    if (pincodeErrorMessage) {
+      setPincodeLoading(false);
+    }
+  }, [pincodeErrorMessage]);
+
+  const getDeliveryDate = () => {
+    setTatMessage(getFormattedPromise(deliveryPromise));
+  };
 
   function changePostCode(pincode) {
     setPostCode(pincode);
     setTatMessage("");
     setPincodeErrorMessage("");
-    if (validatePincode(pincode) === true) {
+
+    const isValid = validatePincode(pincode);
+    if (isValid === true) {
+      setPincodeLoading(true);
       checkPincode(pincode);
     }
   }
@@ -66,11 +81,8 @@ function DeliveryInfo({
       return;
     }
     setPincodeErrorMessage("");
+    setPincodeLoading(true);
     checkPincode(pincode);
-  };
-
-  const getDeliveryDate = () => {
-    setTatMessage(getFormattedPromise(deliveryPromise));
   };
 
   const deliveryLoc = () => {
@@ -165,27 +177,33 @@ function DeliveryInfo({
             <div
               className={`${styles.deliveryDate} ${styles.dateInfoContainer}`}
             >
-              {isValidDeliveryLocation && tatMessage?.length > 0 && (
-                <>
-                  {isServiceabilityPincodeOnly && (
-                    <DeliveryIcon className={`${styles.deliveryIcon}`} />
-                  )}
-                  <div className={`${styles.deliveryText} captionNormal`}>
-                    {tatMessage}
-                    {showLogo && (
-                      <div className={styles.fyndLogo}>
-                        <span>{t("resource.common.with")}</span>
-                        <FyndLogoIcon style={{ marginInlineStart: "2px" }} />
-                        <span className={styles.fyndText}>Fynd</span>
-                      </div>
+              {pincodeLoading ? (
+                <Shimmer height="16px" width="50%" />
+              ) : (
+                isValidDeliveryLocation &&
+                tatMessage?.length > 0 && (
+                  <>
+                    {isServiceabilityPincodeOnly && (
+                      <DeliveryIcon className={styles.deliveryIcon} />
                     )}
-                  </div>
-                </>
+
+                    <div className={`${styles.deliveryText} captionNormal`}>
+                      {tatMessage}
+                      {showLogo && (
+                        <div className={styles.fyndLogo}>
+                          <span>{t("resource.common.with")}</span>
+                          <FyndLogoIcon style={{ marginInlineStart: "2px" }} />
+                          <span className={styles.fyndText}>Fynd</span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )
               )}
             </div>
           )}
       </div>
-      {pincodeErrorMessage && (
+      {pincodeErrorMessage && !pincodeLoading && (
         <div className={`captionNormal ${styles.error}`}>
           {translateDynamicLabel(pincodeErrorMessage, t)}
         </div>
@@ -246,7 +264,9 @@ const DeliveryLocation = ({
 
   return (
     <div
-      className={`${styles.locationWrapper} ${!selectedLocation ? styles.clickable : ""}`}
+      className={`${styles.locationWrapper} ${
+        !selectedLocation ? styles.clickable : ""
+      }`}
       onClick={!selectedLocation ? handleButtonClick : undefined}
     >
       <LocationIcon className={styles.locationPin} />

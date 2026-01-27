@@ -142,6 +142,8 @@
         "my_address": "آدرس های من",
         "add_new_address": "اضافه کردن آدرس جدید",
         "add_new_address_caps": "افزودن آدرس جدید",
+        "default_address": "آدرس پیش‌فرض",
+        "other_addresses": "آدرس‌های دیگر",
         "no_address_available": "آدرسی در دسترس نیست",
         "address_not_found": "آدرس پیدا نشد!",
         "return_to_my_address": "به آدرس من برگرد",
@@ -153,7 +155,6 @@
         "pincode_six_digits_required": "کد پین باید دقیقاً 6 رقمی باشد",
         "invalid_phone_number": "شماره تلفن نامعتبر",
         "enter_pincode": "کد پین را وارد کنید",
-        "default_address": "آدرس پیش فرض",
         "other_address": "آدرس دیگر",
         "address_type": "نوع آدرس",
         "make_this_my_default_address": "این را آدرس پیش فرض من قرار دهید"

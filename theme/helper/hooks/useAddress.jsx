@@ -20,7 +20,7 @@ export const useAddress = ({ fpi }) => {
   );
 
   const otherAddresses = useMemo(
-    () => allAddress?.filter((item) => item.is_default_address !== true),
+    () => allAddress?.filter((item) => !Boolean(item?.is_default_address)),
     [allAddress]
   );
 
@@ -68,6 +68,11 @@ export const useAddress = ({ fpi }) => {
   };
 
   const addAddress = (obj) => {
+    // Convert country object to string (uid/id/iso2) if it's an object
+    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    if (obj.country && typeof obj.country === "object" && obj.country !== null) {
+      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
+    }
     const payload = {
       address2Input: {
         ...obj,
@@ -78,6 +83,11 @@ export const useAddress = ({ fpi }) => {
 
   const updateAddress = (data, addressId) => {
     const add = data;
+    // Convert country object to string (uid/id/iso2) if it's an object
+    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    if (add.country && typeof add.country === "object" && add.country !== null) {
+      add.country = add.country.uid || add.country.id || add.country.iso2 || String(add.country);
+    }
     delete add?.custom_json;
     delete add?.otherAddressType;
     /* eslint-disable no-underscore-dangle */

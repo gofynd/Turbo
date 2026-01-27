@@ -1,0 +1,62 @@
+@import "../../styles//main.less";
+
+.upi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 38px;
+
+  .upiName {
+    display: flex;
+    align-items: center;
+
+    .upiImg {
+      width: 38px !important;
+      height: 38px !important;
+      padding: 8px 4px;
+      margin-right: 8px;
+      border: 1px solid @DividerStokes;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 400;
+      color: @TextHeading;
+
+      @media @mobile {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .customRadio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    color: @TextHeading;
+    cursor: pointer;
+
+    &.checked {
+      color: @ButtonPrimary;
+    }
+  }
+  &.selected {
+    .upiName p {
+      font-weight: 600;
+    }
+  }
+}

@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useGlobalStore, useGlobalTranslation, useFPI } from "fdk-core/utils";
 
 import SinglePageShipment from "@gofynd/theme-template/page-layouts/single-checkout/shipment/single-page-shipment";
@@ -48,28 +48,51 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   const { isCheckoutMap, mapApiKey } = useGoogleMapConfig({ fpi });
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const buy_now = searchParams.get("buy_now") || false;
   const address_id = searchParams.get("address_id");
   const error = searchParams.get("error");
   const transactionFailed = searchParams.get("failed");
 
   const cartComment = useCartComment({ fpi, cartData: bagData });
-  const { setIsLoading, ...payment } = usePayment(fpi);
-  const { getTotalValue } = payment;
+  const { ...payment } = usePayment(fpi);
+  const { getTotalValue, isCreditNoteApplied, fetchCreditNoteBalance } =
+    payment;
   const { currentStep = null } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
 
   const [cancelQrPayment, setCancelQrPayment] = useState(null);
   const [checkoutAmount, setCheckoutAmount] = useState(0);
   const [mopPayload, setMopPayload] = useState("");
-  const cart_id = searchParams.get("id");
-  const { isLoading, isPaymentLoading = false } = payment;
+  // Use cart ID from cartData if available, otherwise fall back to URL param
+  const cart_id = cartData?.id || bagData?.id || searchParams.get("id");
+  const { isLoading, setIsLoading, isPaymentLoading = false } = payment;
   const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION) || {};
   const { order = {} } = app_features || {};
+  const { user_id = "" } = useGlobalStore(fpi.getters.USER_DATA) || {};
 
+  const hasAddressFromQuery = useRef(false);
+  const isHandlingBrowserBack = useRef(false);
+  const currentStepIdxRef = useRef(0);
+  const checkoutAmountRef = useRef(0);
+  const previousStepIdx = useRef(0);
+  const navigateRef = useRef(navigate);
   const currencySymbol = useMemo(
     () => bagData?.currency?.symbol || "₹",
     [bagData]
   );
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    currentStepIdxRef.current = currentStepIdx;
+  }, [currentStepIdx]);
+
+  useEffect(() => {
+    checkoutAmountRef.current = checkoutAmount;
+  }, [checkoutAmount]);
+
+  useEffect(() => {
+    navigateRef.current = navigate;
+  }, [navigate]);
 
   useEffect(() => {
     fpi.custom.setValue("currentStep", currentStepIdx);
@@ -83,6 +106,101 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     }
   }, [currentStep]);
 
+  // Handle browser back button navigation
+  useEffect(() => {
+    // Safety check for SSR
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    let timeoutId = null;
+
+    const handlePopState = (event) => {
+      // Only handle if we're not already handling a browser back navigation
+      if (isHandlingBrowserBack.current) {
+        return;
+      }
+
+      const currentStep = currentStepIdxRef.current;
+
+      // If we're on step 0, check if we're navigating to another checkout URL
+      // If so, navigate away to cart page instead
+      if (currentStep === 0) {
+        // Check if the current URL is still a checkout URL
+        // If it is, it means we're just changing parameters, not leaving checkout
+        // In that case, navigate to cart page
+        try {
+          const currentPath = window.location.pathname;
+          const isStillOnCheckout = currentPath.includes("/checkout");
+
+          if (isStillOnCheckout && navigateRef.current) {
+            // Still on checkout page (just different params) - navigate to cart
+            // Use React Router navigate with replace to avoid full page reload
+            navigateRef.current("/cart/bag", { replace: true });
+          }
+        } catch (error) {
+          console.error(
+            "Error handling browser back navigation on step 0:",
+            error
+          );
+        }
+        return;
+      }
+
+      // If we're on step 1 or 2, navigate to previous step
+      const previousStep = currentStep - 1;
+      if (previousStep >= 0) {
+        isHandlingBrowserBack.current = true;
+
+        try {
+          switch (previousStep) {
+            case 0:
+              setCurrentStepIdx(0);
+              setShowShipment(false);
+              setShowPayment(false);
+              previousStepIdx.current = 0;
+              break;
+
+            case 1:
+              setCurrentStepIdx(1);
+              setShowShipment(true);
+              setShowPayment(false);
+              previousStepIdx.current = 1;
+              break;
+
+            case 2:
+              setCurrentStepIdx(2);
+              setShowShipment(false);
+              setShowPayment(true);
+              previousStepIdx.current = 2;
+              break;
+
+            default:
+              break;
+          }
+
+          // Reset flag after state updates
+          timeoutId = setTimeout(() => {
+            isHandlingBrowserBack.current = false;
+            timeoutId = null;
+          }, 100);
+        } catch (error) {
+          console.error("Error handling browser back navigation:", error);
+          isHandlingBrowserBack.current = false;
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, []);
+
   const priceFormatCurrencySymbol = (symbol, price) => {
     const hasAlphabeticCurrency = /^[A-Za-z]+$/.test(symbol);
 
@@ -94,12 +212,18 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   };
 
   useEffect(() => {
-    if (cartData?.id) {
+    // Only update URL if we have a valid cart ID and it's different from current
+    const currentCartId = searchParams.get("id");
+    if (
+      cartData?.id &&
+      cartData.id !== currentCartId &&
+      cartData.id !== "None"
+    ) {
       const newParams = new URLSearchParams(searchParams);
       newParams.set("id", cartData?.id);
-      setSearchParams(newParams);
+      setSearchParams(newParams, { replace: true });
     }
-  }, [cartData?.id]);
+  }, [cartData?.id, searchParams, setSearchParams]);
 
   async function showPaymentOptions(amount) {
     try {
@@ -119,9 +243,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
         checkoutMode: "self",
         amount: finalAmount ? finalAmount * 100 : 0,
       };
-      await fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload);
+      const res = await fpi.executeGQL(PAYMENT_OPTIONS, paymentPayload);
     } catch (error) {
-      console.log(error, "error");
+      console.error("Error fetching payment options:", error);
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +293,13 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     };
 
     fetchCheckoutData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fpi, buy_now]);
+
+  useEffect(() => {
+    if (user_id && checkoutAmount === 0) fetchCreditNoteBalance();
+  }, [user_id, checkoutAmount]);
+
   function showPaymentHandler(flag) {
     setShowPayment(flag);
     if (flag) {
@@ -189,6 +319,84 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     }
   }, [showShipment, showPayment]);
 
+  useEffect(() => {}, [user_id]);
+
+  // Push history states when moving forward through steps programmatically
+  useEffect(() => {
+    // Safety check for SSR
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    // Don't push history if we're handling browser back navigation
+    if (isHandlingBrowserBack.current) {
+      return;
+    }
+
+    try {
+      // Push history state when moving to step 1 (summary/shipment)
+      if (showShipment && currentStepIdx === 1 && previousStepIdx.current < 1) {
+        window.history.pushState({ step: 1 }, "", window.location.href);
+        previousStepIdx.current = 1;
+      }
+
+      // Push history state when moving to step 2 (payment)
+      if (showPayment && currentStepIdx === 2 && previousStepIdx.current < 2) {
+        window.history.pushState({ step: 2 }, "", window.location.href);
+        previousStepIdx.current = 2;
+      }
+
+      // Update previous step ref when on step 0
+      // Also replace history state to ensure browser back works correctly
+      if (!showShipment && !showPayment && currentStepIdx === 0) {
+        previousStepIdx.current = 0;
+        // Replace current history state to ensure browser back works correctly
+        // Use empty object instead of null to avoid React Router issues
+        const currentState = window.history.state;
+        if (currentState && currentState.step !== undefined) {
+          // Only replace if current state has a step property
+          // This ensures browser back can navigate to cart page
+          window.history.replaceState({}, "", window.location.href);
+        }
+      }
+    } catch (error) {
+      console.error("Error managing history state:", error);
+    }
+  }, [showShipment, showPayment, currentStepIdx]);
+
+  // Initialize history state if we start on a step > 0
+  // Also ensure step 0 has clean history state for browser back to work
+  useEffect(() => {
+    // Safety check for SSR
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      if (
+        currentStepIdx > 0 &&
+        previousStepIdx.current === 0 &&
+        !isHandlingBrowserBack.current
+      ) {
+        window.history.replaceState(
+          { step: currentStepIdx },
+          "",
+          window.location.href
+        );
+        previousStepIdx.current = currentStepIdx;
+      } else if (currentStepIdx === 0) {
+        // Ensure step 0 has clean history state for browser back to work
+        const currentState = window.history.state;
+        if (currentState && currentState.step !== undefined) {
+          window.history.replaceState({}, "", window.location.href);
+        }
+        previousStepIdx.current = 0;
+      }
+    } catch (error) {
+      console.error("Error initializing history state:", error);
+    }
+  }, [currentStepIdx]);
+
   const { isShipmentLoading, isCartValid, ...address } = useAddress(
     showShipmentHandler,
     showPaymentHandler,
@@ -198,18 +406,20 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const { onFailedGetCartShipmentDetails } = address;
 
   useEffect(() => {
-    if (address_id?.length && address?.allAddresses?.length) {
-      address?.selectAddress();
+    if (!address_id || hasAddressFromQuery.current) return;
+    if (showShipment) {
+      hasAddressFromQuery.current = true;
+      return;
     }
-  }, []);
+    hasAddressFromQuery.current = true;
+    try {
+      address?.selectAddress?.(address_id);
+    } catch (error) {
+      console.error("Error selecting address:", error);
+      hasAddressFromQuery.current = false;
+    }
+  }, [address_id, showShipment, address]);
 
-  // To be added with zero payment changes
-  //  useEffect(() => {
-  //    if (getTotalValue?.() === 0 && currentStepIdx !== 0) {
-  //      setShowPayment(false);
-  //      setShowShipment(true);
-  //    }
-  //  }, [getTotalValue?.()]);
   const addressId = useMemo(() => {
     return address?.getDefaultAddress?.find(
       ({ is_default_address }) => is_default_address
@@ -222,29 +432,88 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     showPaymentHandler(true);
   };
 
+  // Only set default address in URL if there's no address_id in URL params
+  // This prevents overriding user's address selection
   useEffect(() => {
-    if (addressId) {
+    const currentAddressId = searchParams.get("address_id");
+    if (addressId && !currentAddressId) {
       const newParams = new URLSearchParams(searchParams);
       newParams.set("address_id", addressId);
-      setSearchParams(newParams);
+      // Use replace: true to avoid creating history entries
+      // This prevents browser back from navigating through URL parameter changes
+      setSearchParams(newParams, { replace: true });
     }
-  }, [addressId]);
+  }, [addressId, searchParams, setSearchParams]);
 
   const handlePlaceOrder = async () => {
-    if (payment?.storeCreditApplied?.isFullyApplied) {
-      const { merchant_code, code, aggregator_name } =
-        payment?.partialPaymentOption?.list[0];
+    setIsLoading(true);
+    try {
+      if (payment?.storeCreditApplied?.isFullyApplied) {
+        const { merchant_code, code, aggregator_name } =
+          payment?.partialPaymentOption?.list[0];
 
-      const paymentModePayload = {
-        id: cart_id,
-        address_id,
-        payment_mode: code,
-        aggregator_name,
-        payment_identifier: code,
-        merchant_code,
-      };
-      await payment?.selectPaymentMode(paymentModePayload);
-      await payment?.proceedToPay("CREDITNOTE");
+        const paymentModePayload = {
+          id: cart_id,
+          address_id,
+          payment_mode: code,
+          aggregator_name,
+          payment_identifier: code,
+          merchant_code,
+        };
+        await payment?.selectPaymentMode(paymentModePayload);
+        await payment?.proceedToPay("CREDITNOTE");
+      }
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleStepClick = async (stepIndex, step) => {
+    if (stepIndex >= currentStepIdx) {
+      return;
+    }
+
+    // When clicking on a step, we're going backward, so we don't push history
+    // History is pushed when moving forward programmatically
+
+    try {
+      switch (stepIndex) {
+        case 0: {
+          setCurrentStepIdx(0);
+          setShowShipment(false);
+          setShowPayment(false);
+          const newParams = new URLSearchParams(searchParams);
+          newParams.delete("address_id");
+          // Use replace: true to avoid creating history entries
+          // This prevents browser back from navigating through URL parameter changes
+          setSearchParams(newParams, { replace: true });
+          previousStepIdx.current = 0;
+          break;
+        }
+
+        case 1:
+          setCurrentStepIdx(1);
+          setShowShipment(true);
+          setShowPayment(false);
+          previousStepIdx.current = 1;
+          break;
+
+        case 2:
+          setCurrentStepIdx(2);
+          setShowShipment(false);
+          setShowPayment(true);
+          if (checkoutAmount) {
+            await showPaymentOptions(checkoutAmount);
+          }
+          previousStepIdx.current = 2;
+          break;
+
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error("Error handling step click:", error);
     }
   };
 
@@ -258,8 +527,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
         switch (block.type) {
           case "stepper":
             return (
-              <div className={styles["view-mobile"]}>
-                <Stepper steps={steps} currentStepIdx={currentStepIdx} />
+              <div key={key} className={styles["view-mobile"]}>
+                <Stepper
+                  steps={steps}
+                  currentStepIdx={currentStepIdx}
+                  onStepClick={handleStepClick}
+                />
               </div>
             );
 
@@ -278,6 +551,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                 getTotalValue={payment?.getTotalValue}
                 showPaymentOptions={showPaymentOptions}
                 acceptOrder={order?.enabled}
+                isCreditNoteApplied={isCreditNoteApplied}
               ></SingleAddress>
             );
 
@@ -339,6 +613,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                 {...restCouponProps}
                 currencySymbol={currencySymbol}
                 handleRemoveQr={cancelQrPayment}
+                isCreditNoteApplied={isCreditNoteApplied}
               />
             );
 
@@ -366,10 +641,11 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   showPayment={showPayment}
                   loader={loader}
                   onPriceDetailsClick={onPriceDetailsClick}
+                  isCreditNoteApplied={isCreditNoteApplied}
                 />
-                {payment?.storeCreditApplied?.isFullyApplied &&
-                  showPayment &&
-                  !isLoading && (
+                {getTotalValue?.() === 0 &&
+                  isCreditNoteApplied &&
+                  showPayment && (
                     <FyButton
                       onClick={handlePlaceOrder}
                       className={styles.placeOrderBtn}

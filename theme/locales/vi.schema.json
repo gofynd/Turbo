@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "Kiểu chữ",
-        "algolia_configuration": "Cấu hình Algolia",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "Chân trang",
         "cart_and_button_configuration": "Cấu hình giỏ hàng và nút",
         "product_card_configuration": "Cấu hình thẻ sản phẩm",
@@ -158,8 +158,8 @@
         "transparent_header": "Tiêu đề minh bạch",
         "transparent_header_info": "Áp dụng tiêu đề trong suốt khi biểu ngữ ứng dụng hoặc trình chiếu hình ảnh trên đầu"
       },
-      "algolia_configuration": {
-        "enable_algolia": "Kích hoạt Algolia"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "Biểu trưng",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "Căn chỉnh nội dung trên máy tính để bàn",
         "banner_horizontal_scroll": "Biểu ngữ có thanh cuộn ngang",
         "banner_with_stack": "Biểu ngữ có ngăn xếp",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "Bố cục (Di động)",
         "content_alignment_mobile": "Căn chỉnh nội dung trên thiết bị di động",
         "text_alignment": "Căn chỉnh văn bản",

@@ -18,7 +18,7 @@ function Home({ numberOfSections, fpi }) {
   const initialSectionsCount = globalConfig?.initial_sections_count || 3;
 
   const [visibleCount, setVisibleCount] = useState(initialSectionsCount);
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo: seoData });
 
   const title = useMemo(() => {
@@ -36,8 +36,9 @@ function Home({ numberOfSections, fpi }) {
     const raw = sanitizeHTMLTag(
       seoData?.description || t("resource.common.home_seo_description")
     );
-    return trimDescription(raw, 160);
-  }, [seoData?.description, t, trimDescription]);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seoData?.description, t, seoDescription]);
 
   useEffect(() => {
     // Skip on server-side

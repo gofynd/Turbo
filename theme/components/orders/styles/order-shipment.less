@@ -1,172 +1,174 @@
 @import "../../../styles/main.less";
 
-.orderItem {
-  color: @Mako;
-  background-color: @Alabaster2;
-  border-radius: 5px;
-  margin: 20px 0px;
-  padding: 10px;
+.orderWrapper {
+  width: 100%;
+  margin-bottom: 16px;
 
-  .orderHeader {
-    cursor: pointer;
-    position: relative;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
 
-    h3 {
-      margin: 10px;
-    }
-    h4 {
-      margin: 10px;
-    }
-    .filter {
-      position: absolute;
-      inset-inline-end: 20px;
-    }
-    .filterArrowUp {
-      margin-inline-start: auto;
-      transform: rotate(180deg);
-    }
-    .filterArrowDown {
-      margin-inline-start: auto;
-    }
-    .bold {
-      font-weight: 700;
-      font-size: 20px;
-      @media @tablet {
-        font-size: 18px;
-      }
-      @media @mobile {
-        font-size: 16px;
-      }
-    }
-    .light {
-      font-weight: 300;
-      font-size: 13px;
-      @media @tablet {
-        font-size: 12px;
-      }
-      @media @mobile {
-        font-size: 12px;
-      }
-    }
+.orderCard {
+  background-color: @OverlayPopupHighlightColor;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media @mobile {
+    padding: 12px 16px;
+  }
+}
+
+.orderCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.orderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.orderId {
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
+  color: @OldColorPaletteTextColorPrimary;
+  margin: 0;
+
+  @media @mobile {
+    font-size: 14px;
+  }
+}
+
+.orderDate {
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.4;
+  color: @UserAlertTextLabel;
+  margin: 0;
+}
+
+
+.productsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.productSection {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
   }
 
-  .shipmentData {
-    animation: fadeIn 0.5s ease;
-    border-top: none;
-    padding: 10px;
-    cursor: pointer;
-    .shipmentLeft {
-      display: table-cell;
-      width: 125px;
-      img {
-        max-width: 110px;
-        max-height: 180px;
-      }
+  @media @mobile {
+    gap: 12px;
+  }
+}
 
-      #total-item {
-        text-align: center;
-        position: relative;
-        float: inline-end;
-        background: @Mako2;
-        color: white;
-        top: -40px;
-        inset-inline-start: -10px;
-        border-radius: 50%;
-        width: 35px;
-        height: 35px;
-        line-height: 13px;
-        font-size: 13px;
-        padding: 10px;
-      }
-    }
-    .bold {
-      font-weight: 700;
-      font-size: 14px;
-    }
-    .light {
-      font-weight: 300;
-      font-size: 16px;
-      @media @tablet {
-        font-size: 14px;
-      }
-      @media @mobile {
-        font-size: 14px;
-      }
-    }
-    .regular {
-      font-weight: 400;
-      font-size: 14px;
-      @media @tablet {
-        font-size: 13px;
-      }
-      @media @mobile {
-        font-size: 13px;
-      }
-    }
-    .shipmentRight {
-      display: table-cell;
-      vertical-align: top;
-      color: @Mako;
-      .shipmentId {
-        margin: 10px 0px;
-        line-height: 20px;
-      }
-      .boldls {
-        font-weight: 700;
-        font-size: 14px;
-        @media @tablet {
-          font-size: 13px;
-        }
-        @media @mobile {
-          font-size: 13px;
-        }
-      }
-      .uktLinks {
-        color: @ButtonLink;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
-      }
-      .shipmentStats {
-        margin: 10px 0px;
-      }
-      .status {
-        text-align: center;
-        color: @White;
-        padding: 10px;
-        display: inline-flex;
-        border-radius: 3px;
-      }
-      .shipmentBrands {
-        margin: 10px 0px;
-      }
-    }
+.productImage {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: @White;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
-  .buttons {
-    display: flex;
-    .ordercheckout {
-      width: calc(100% - 20px) !important;
-      height: 40px;
-      margin: 10px;
-      padding: 15px;
-      border-radius: @ButtonRadius;
-      margin: 10px;
-      font-weight: 700;
-      background-color: @TextHeading;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      text-align: center;
-      color: @ThemeAccentL5;
-      cursor: pointer;
-      .reorderIcon {
-        margin-inline-end: 10px;
-        position: relative;
-        top: -2px;
-      }
-    }
+  @media @mobile {
+    width: 80px;
+    height: 80px;
   }
+}
+
+.productDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.brandName {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+  color: @OldColorPaletteTextColorPrimary;
+  margin: 0;
+  white-space: pre-wrap;
+
+  @media @mobile {
+    font-size: 13px;
+  }
+}
+
+.shipmentId {
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  color: @OldColorPaletteTextColorPrimary;
+  margin: 0;
+  white-space: pre-wrap;
+
+  @media @mobile {
+    font-size: 13px;
+  }
+}
+
+.productMeta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.metaText {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  color: @UserAlertTextLabel;
+  white-space: nowrap;
+}
+
+.metaDivider {
+  color: @UserAlertTextLabel;
+  font-size: 12px;
+  margin: 0 4px;
+}
+
+.statusBadge {
+  background-color: @SuccessBackground;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-self: flex-start;
+}
+
+.statusText {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  color: @SuccessText;
 }

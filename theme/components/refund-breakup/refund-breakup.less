@@ -1,0 +1,75 @@
+@import "../../styles//main.less";
+
+.modalBodyWrapper {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.amountContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  span {
+    font-size: 12px;
+    font-weight: 500;
+    color: @TextHeading;
+  }
+}
+
+.deductionAmount {
+  color: @TextLabel;
+}
+
+.chargesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 12px;
+
+  .amountContent {
+    span {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--Text-Label, #6d6d6e);
+    }
+  }
+}
+
+.refundBreakupFooter {
+  padding: 0 16px 16px 16px;
+
+  hr {
+    margin: 16px 0;
+    height: 1px;
+    background: #d9d9d9;
+  }
+
+  .refundAmountWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    span {
+      font-size: 14px;
+      font-weight: 700;
+      color: @TextHeading;
+    }
+  }
+
+  .closeBtn {
+    width: 100%;
+    padding: 20px 24px;
+    height: 48px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 24px;
+    border-radius: 4px;
+    font-size: 14px !important;
+    font-weight: 600;
+    background: @ButtonPrimary;
+  }
+}

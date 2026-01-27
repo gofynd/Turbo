@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "Tipografía",
-        "algolia_configuration": "Configuración de Algolia",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "Pie de página",
         "cart_and_button_configuration": "Configuración del carrito y del botón",
         "product_card_configuration": "Configuración de la tarjeta de producto",
@@ -158,8 +158,8 @@
         "transparent_header": "Encabezado transparente",
         "transparent_header_info": "Aplicar encabezado transparente cuando se muestre la banner de la aplicación o la diapositiva de imagen en la parte superior"
       },
-      "algolia_configuration": {
-        "enable_algolia": "Habilitar Algolia"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "Logo",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "Alineación del contenido en el escritorio",
         "banner_horizontal_scroll": "Banner con desplazamiento horizontal",
         "banner_with_stack": "Banner con pila",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "Diseño (Móvil)",
         "content_alignment_mobile": "Alineación de contenidos en dispositivos móviles",
         "text_alignment": "Alineación de texto",

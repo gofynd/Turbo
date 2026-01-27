@@ -486,6 +486,8 @@
         "my_address": "私の住所",
         "add_new_address": "新しい住所を追加",
         "add_new_address_caps": "新しい住所を追加",
+        "default_address": "デフォルトアドレス",
+        "other_addresses": "その他のアドレス",
         "no_address_available": "住所が利用できません",
         "address_not_found": "アドレスが見つかりません!",
         "return_to_my_address": "私の住所に戻る",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "PINコードは6桁でなければなりません",
         "invalid_phone_number": "無効な電話番号",
         "enter_pincode": "PINコードを入力",
-        "default_address": "デフォルトアドレス",
         "other_address": "その他の住所",
         "address_type": "住所タイプ",
         "make_this_my_default_address": "これをデフォルトのアドレスにする"

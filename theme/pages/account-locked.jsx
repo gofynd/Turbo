@@ -1,8 +1,34 @@
 import React from "react";
-import AccountLockedPage from "../page-layouts/account-locked/account-locked-page";
+import { SectionRenderer } from "fdk-core/components";
+import { useGlobalStore } from "fdk-core/utils";
 
 function AccountLocked({ fpi }) {
-  return <AccountLockedPage fpi={fpi} />;
+  const page = useGlobalStore(fpi.getters.PAGE) || {};
+  const THEME = useGlobalStore(fpi.getters.THEME);
+
+  const mode = THEME?.config?.list.find(
+    (f) => f.name === THEME?.config?.current
+  );
+  const globalConfig = mode?.global_config?.custom?.props;
+  const { sections = [] } = page || {};
+
+  return (
+    page?.value === "account-locked" && (
+      <SectionRenderer
+        sections={sections}
+        fpi={fpi}
+        globalConfig={globalConfig}
+      />
+    )
+  );
 }
+
+export const sections = JSON.stringify([
+  {
+    attributes: {
+      page: "account-locked",
+    },
+  },
+]);
 
 export default AccountLocked;

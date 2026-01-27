@@ -3,7 +3,7 @@ import CardLogo from "../card-logo/card-logo";
 import Card from "../card/card";
 import styles from "./card-list.less";
 import CategoriesCard from "../categories-card/categories-card";
-import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
+import { convertActionToUrl } from "fdk-core/utils";
 
 function CardList({
   cardList,

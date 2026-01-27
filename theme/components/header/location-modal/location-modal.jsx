@@ -8,6 +8,7 @@ import {
   useGoogleMapConfig,
   useStateRef,
   useAddress,
+  useSnackbar,
 } from "../../../helper/hooks";
 import Modal from "@gofynd/theme-template/components/core/modal/modal";
 import "@gofynd/theme-template/components/core/modal/modal.css";
@@ -78,6 +79,7 @@ function LocationModal({
   );
 
   const { fetchAddresses, updateAddress } = useAddress({ fpi });
+  const { showSnackbar } = useSnackbar();
 
   const isMapCountryError = useMemo(() => {
     return (
@@ -383,8 +385,14 @@ function LocationModal({
       },
     });
     if (errors) {
+      const errorMessage =
+        errors[0]?.message || "Failed to validate address. Please try again.";
+      showSnackbar(errorMessage, "error");
       setIsValidationError(true);
-      setIsMapDisplayed(false);
+      // Only hide the map if map is not enabled (isHeaderMap is false)
+      if (!isHeaderMap) {
+        setIsMapDisplayed(false);
+      }
       return;
     }
     onConfirm(addressToValidate);
@@ -538,12 +546,14 @@ function LocationModal({
             <div className={styles.suggestionsContainer}>
               {!isValidationError && (
                 <AddressList
+                  fpi={fpi}
                   className={styles.listWrapper}
                   searchText={placesInputText}
                   onSelect={handleAddressSelect}
                   onListUpdate={(list) => {
                     setIsAddressListEmpty(list.length === 0);
                   }}
+                  countryCode={i18nDetails?.countryCode || countryDetails?.iso2}
                 />
               )}
               {!isValidationError && (

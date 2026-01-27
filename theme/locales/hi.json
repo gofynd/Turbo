@@ -486,6 +486,8 @@
         "my_address": "मेरे पते",
         "add_new_address": "नया पता जोड़ें",
         "add_new_address_caps": "नया पता जोड़ें",
+        "default_address": "डिफ़ॉल्ट पता",
+        "other_addresses": "अन्य पते",
         "no_address_available": "कोई पता उपलब्ध नहीं है",
         "address_not_found": "पता नहीं पाया गया!",
         "return_to_my_address": "मेरे पते पर लौटें",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "पिनकोड बिल्कुल 6 अंकों की लंबी होनी चाहिए",
         "invalid_phone_number": "अमान्य फोन नंबर",
         "enter_pincode": "पिनकोड दर्ज करें",
-        "default_address": "डिफ़ॉल्ट पता",
         "other_address": "अन्य पता",
         "address_type": "पता मुद्रलेख",
         "make_this_my_default_address": "यह मेरा डिफ़ॉल्ट पता बनाओ"

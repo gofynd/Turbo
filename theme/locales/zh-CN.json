@@ -486,6 +486,8 @@
         "my_address": "我的地址",
         "add_new_address": "添加新地址",
         "add_new_address_caps": "添加新地址",
+        "default_address": "默认地址",
+        "other_addresses": "其他地址",
         "no_address_available": "没有可用的地址",
         "address_not_found": "未找到地址！",
         "return_to_my_address": "返回我的地址",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "邮政编码必须正好为 6 位数字",
         "invalid_phone_number": "无效的电话号码",
         "enter_pincode": "输入邮政编码",
-        "default_address": "默认地址",
         "other_address": "其他地址",
         "address_type": "地址类型",
         "make_this_my_default_address": "将此设为我的默认地址"

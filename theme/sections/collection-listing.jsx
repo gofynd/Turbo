@@ -17,20 +17,28 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const fpi = useFPI();
   const isClient = typeof window !== "undefined";
   const params = isClient ? useParams() : null;
-  const slug =
-    isClient && params?.slug ? params?.slug : props?.collection?.value;
+  const slug = props?.collection?.value // Don't replace with double ?? operator <----
+    ? props?.collection?.value
+    : params?.slug;
   const listingProps = useCollectionListing({ fpi, slug, props });
 
   const { seo } = listingProps;
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
-    useSeoMeta({
-      fpi,
-      seo,
-      fallbackImage: props?.desktop_banner?.value || props?.mobile_banner?.value,
-    });
+  const {
+    brandName,
+    canonicalUrl,
+    pageUrl,
+    description: seoDescription,
+    socialImage,
+  } = useSeoMeta({
+    fpi,
+    seo,
+    fallbackImage: props?.desktop_banner?.value || props?.mobile_banner?.value,
+  });
 
   const title = useMemo(() => {
-    const raw = sanitizeHTMLTag(seo?.title || listingProps?.title || "Collection");
+    const raw = sanitizeHTMLTag(
+      seo?.title || listingProps?.title || "Collection"
+    );
     if (raw && brandName) return `${raw} | ${brandName}`;
     return raw || brandName || "";
   }, [seo?.title, listingProps?.title, brandName]);
@@ -39,8 +47,9 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     const raw = sanitizeHTMLTag(
       seo?.description || listingProps?.description || ""
     );
-    return trimDescription(raw, 160);
-  }, [seo?.description, listingProps?.description, trimDescription]);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seo?.description, listingProps?.description, seoDescription]);
 
   if (listingProps?.isPageLoading && isRunningOnClient()) {
     return (
@@ -406,9 +415,11 @@ Component.serverFetch = async ({ fpi, router, props }) => {
     }
     filterQuery = filterParams.join(":::");
   }
-
+  // Don't replace with double ?? operator below -->
   const payload = {
-    slug: router?.params?.slug ?? props?.collection?.value,
+    slug: props?.collection?.value
+      ? props?.collection?.value
+      : router?.params?.slug,
     search: filterQuery || undefined,
     sortOn: sortQuery || undefined,
     first: pageSize,
@@ -420,7 +431,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
   // Fetch data for SSR
   const getCollectionWithItems = async () => {
     if (isAlgoliaEnabled) {
-      const BASE_URL = `https://${fpiState?.custom?.appHostName}/ext/algolia/application/api/v1.0/collections/${payload?.slug}/items`;
+      const BASE_URL = `https://${fpiState?.custom?.appHostName}/ext/search/application/api/v1.0/collections/${payload?.slug}/items`;
 
       const url = new URL(BASE_URL);
       url.searchParams.append(
@@ -437,10 +448,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
       }
 
       fpi
-        .executeGQL(
-          COLLECTION_DETAILS,
-          { slug: payload?.slug }
-        )
+        .executeGQL(COLLECTION_DETAILS, { slug: payload?.slug })
         .then((res) => {
           fpi.custom.setValue("customCollection", res?.data?.collection);
         });

@@ -25,7 +25,7 @@ const CollectionListing = ({ fpi }) => {
     );
   }, [sections]);
 
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({
       fpi,
       seo: seoData,
@@ -42,13 +42,17 @@ const CollectionListing = ({ fpi }) => {
 
   const description = useMemo(() => {
     const raw = sanitizeHTMLTag(
-      seoData?.description || customValues?.customCollection?.description || t("resource.categories.collection_listing_description") ||""
+      seoData?.description ||
+        customValues?.customCollection?.description ||
+        t("resource.categories.collection_listing_description") ||
+        ""
     );
-    return trimDescription(raw, 160);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
   }, [
     seoData?.description,
     customValues?.customCollection?.description,
-    trimDescription,
+    seoDescription,
   ]);
 
   return (

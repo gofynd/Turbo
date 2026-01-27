@@ -121,6 +121,7 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
     setIsFormSubmitSuccess,
     onOtpSubmit: verifyOtp,
     onResendOtpClick: handleResendOtp,
+    onClearOtpError: () => setOtpError(null),
     handleLoginWithOtp,
     getOtpLoading,
   };

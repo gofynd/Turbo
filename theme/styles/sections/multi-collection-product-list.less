@@ -44,17 +44,12 @@
         padding-inline-end: 48px + @viewAllCtaRight;
       }
     }
-
-    .viewAllCta {
-      position: absolute;
-      inset-inline-end: @viewAllCtaRight;
-      font-size: 14px;
-      color: @ButtonPrimary;
-      @media @mobile {
-        font-size: 12px;
-      }
+    .description {
+      max-width: 590px;
+      margin-top: 16px;
     }
   }
+
   .moveCenter {
     text-align: center;
     justify-content: center;
@@ -162,10 +157,25 @@
     }
   }
 }
-.alignViewAll {
-  line-height: 42px;
-  padding-inline-start: 12px;
+
+.viewAllWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 32px;
+
   @media @mobile {
-    line-height: 36px;
+    margin-top: 24px;
+  }
+
+  .viewAllCta {
+    font-size: 14px;
+    padding: 12px;
+    color: @ButtonPrimary;
+    border: 1px solid @ButtonSecondary !important;
+    border-radius: @ButtonRadius !important;
+    @media @mobile {
+      font-size: 12px;
+    }
   }
 }

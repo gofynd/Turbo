@@ -1,0 +1,238 @@
+@import "../../styles/main.less";
+
+.profileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 24px 24px 24px;
+  background: @PageBackground;
+  border-radius: 4px;
+
+  @media @mobile {
+    padding: 16px;
+    gap: 24px;
+  }
+}
+
+.formHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+
+  @media @mobile {
+    gap: 0;
+  }
+}
+
+.formTitle {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: @TextHeading;
+  margin: 0;
+  flex: 1;
+
+  @media @mobile {
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
+.formDivider {
+  height: 1px;
+  width: 100%;
+  background: @DividerStokes;
+  margin: 0;
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.formRow {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+
+  @media @mobile {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.formField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  // Target any input element directly
+  input {
+    font-weight: 400;
+
+    @media @mobile {
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: -0.24px;
+    }
+  }
+
+  :global(.fy-input-container) {
+    height: 48px;
+    border: 1px solid @OverlayPopupDividerStroke;
+    border-radius: 4px;
+    background: @White;
+    padding: 16px;
+
+    &:focus-within {
+      border-color: @ButtonPrimary;
+    }
+
+    input {
+      font-weight: 400 !important;
+    }
+  }
+
+  :global(.fy-input-label) {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: @UserAlertTextLabel;
+    background: @PageBackground;
+    padding: 0 4px;
+    top: -9px;
+    left: 11px;
+  }
+
+  :global(.fy-input-field),
+  :global(input.fy-input-field),
+  :global(.fy-input-container input) {
+    font-family: "Inter", sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+    color: @OldColorPaletteTextColorPrimary !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    width: 100% !important;
+
+    &::placeholder {
+      color: @UserAlertTextLabel !important;
+      font-weight: 400 !important;
+    }
+  }
+
+  // Style the inputField class passed via inputClassName prop
+  :global(.inputField) {
+    font-weight: 400;
+  }
+}
+
+.genderSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.genderLabel {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: @TextHeading;
+  margin: 0;
+}
+
+.genderOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.radioInput {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  width: 0;
+  height: 0;
+}
+
+.radioLabel {
+  font-family: "Work Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: @TextHeading;
+  user-select: none;
+}
+
+.submitButton {
+  height: 48px;
+  border-radius: 4px;
+  background: @ButtonPrimary;
+  color: @ButtonSecondary;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Error states
+.inputWrapper {
+  :global(.fy-input-container.error) {
+    border-color: @ErrorText;
+  }
+
+  :global(.fy-input-label.error) {
+    color: @ErrorText;
+  }
+}
+
+// Date picker wrapper - remove padding
+.inputWrapper.datePickerWrapper {
+  // Target the calendarWrapper class from FyDatePicker component
+  // The FyDatePicker renders a div with class calendarWrapper as direct child
+  > div:first-child {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}

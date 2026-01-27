@@ -102,8 +102,6 @@ export const useSnackbar = () => {
 };
 
 export const useRichText = (htmlContent) => {
-  const [clientMarkedContent, setClientMarkedContent] = useState("");
-
   const preprocessMarkdown = (markdown) => {
     return markdown
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
@@ -118,15 +116,22 @@ export const useRichText = (htmlContent) => {
       });
   };
 
-  useEffect(() => {
-    if (htmlContent) {
-      const processedContent = preprocessMarkdown(htmlContent);
-      const markedContent = marked(processedContent);
-      const sanitizedHtml = DOMPurify.sanitize(markedContent);
-      setClientMarkedContent(sanitizedHtml);
-    }else {
-      setClientMarkedContent(""); 
+  const renderMarkdown = (content = "") => {
+    if (!content) return "";
+    const processedContent = preprocessMarkdown(content);
+    const markedContent = marked(processedContent);
+    if (!isRunningOnClient()) {
+      return markedContent;
     }
+    return DOMPurify.sanitize(markedContent);
+  };
+
+  const [clientMarkedContent, setClientMarkedContent] = useState(() =>
+    renderMarkdown(htmlContent)
+  );
+
+  useEffect(() => {
+    setClientMarkedContent(renderMarkdown(htmlContent));
   }, [htmlContent]);
 
   return clientMarkedContent;

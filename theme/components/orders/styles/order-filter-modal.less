@@ -1,0 +1,420 @@
+@import "../../../styles/main.less";
+
+.filterModal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: @DialogBackground;
+  overflow: hidden;
+
+  // Mobile fullscreen styles
+  @media @mobile {
+    height: 80vh;
+    background-color: @OverlayPopupHighlightColor;
+    border-radius: 0;
+  }
+
+  // Desktop modal styles
+  @media @desktop {
+    width: 375px;
+    max-width: 500px;
+    height: 700px;
+    max-height: 90vh;
+    overflow: hidden;
+  }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  border-bottom: 1px solid @DividerStokes;
+  background-color: @DialogBackground;
+  position: relative;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.08);
+
+  @media @desktop {
+    padding: 0;
+  }
+
+  @media @mobile {
+    padding: 0;
+    border-bottom: 1px solid @OverlayPopupDividerStroke;
+    box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.modalTitle {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: @TextHeading;
+  margin: 0;
+
+  @media @desktop {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0;
+  }
+
+  @media @mobile {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 0;
+    width: 100%;
+  }
+}
+
+.tabsWrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: 12px;
+}
+
+.headerTab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  // padding: 16px 24px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 20px;
+  color: @TextBody;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+
+  &.activeHeaderTab {
+    color: @ButtonPrimary;
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+  }
+
+  @media @desktop {
+    padding: 16px 24px;
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  @media @mobile {
+    padding: 14px 20px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 16px;
+  color: @TextHeading;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  @media @mobile {
+    padding: 14px 16px;
+  }
+}
+
+.closeIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.modalContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+
+  @media @mobile {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background-color: white;
+  }
+
+  @media @desktop {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.filterSection {
+  @media @desktop {
+    margin-bottom: 0;
+  }
+
+  @media @mobile {
+    margin-bottom: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.filterSectionTitle {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+  color: @TextHeading;
+  margin: 0 0 20px 0;
+
+  @media @desktop {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 20px;
+    margin-bottom: 20px;
+  }
+
+  @media @mobile {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 20px;
+    margin-bottom: 16px;
+  }
+}
+
+.filterOptions {
+  display: flex;
+  flex-direction: column;
+
+  @media @mobile {
+    gap: 12px;
+  }
+}
+
+.filterOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: transparent;
+
+  @media @desktop {
+    gap: 12px;
+    padding: 8px 12px;
+  }
+
+  @media @mobile {
+    gap: 10px;
+    padding: 8px 12px;
+  }
+}
+
+.filterOptionLabel {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: @TextBody;
+  flex: 1;
+
+  @media @desktop {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  @media @mobile {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+.applyButton {
+  padding: 10px 16px;
+  background-color: @ButtonPrimary;
+  color: @ButtonSecondary;
+  border: 1px solid @ButtonPrimary;
+  border-radius: @ButtonRadius;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  flex: 0 0 60%;
+  width: 60%;
+
+  @media @desktop {
+    height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+
+    &:hover {
+      background-color: @ButtonPrimaryL1;
+      border-color: @ButtonPrimaryL1;
+    }
+
+    &:active,
+    &:focus-visible {
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.25);
+      border: 1px solid @ButtonSecondary;
+    }
+  }
+
+  @media @mobile {
+    height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.clearAllButton {
+  background: none;
+  color: @ButtonPrimary;
+  border: none;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex: 0 0 40%;
+  width: 40%;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  @media @desktop {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  @media @mobile {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+.modalFooter {
+  padding: 16px 20px;
+  border-top: 1px solid @DividerStokes;
+  display: flex;
+  align-items: center;
+  background-color: @DialogBackground;
+  gap: 12px;
+  box-shadow: 0px -2px 8px 0px rgba(0, 0, 0, 0.08);
+
+  @media @desktop {
+    padding: 16px;
+  }
+
+  @media @mobile {
+    padding: 16px;
+    border-top: 1px solid @OverlayPopupDividerStroke;
+    box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.customDateRange {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid @DividerStokes;
+
+  @media @mobile {
+    border-top: 1px solid @OverlayPopupDividerStroke;
+  }
+}
+
+.dateInputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dateLabel {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: @TextBody;
+}
+
+.dateInput {
+  padding: 12px 16px;
+  border: 1px solid @DividerStokes;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 20px;
+  color: @TextHeading;
+  background-color: @DialogBackground;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: @ButtonPrimary;
+  }
+
+  &::placeholder {
+    color: @TextBody;
+    opacity: 0.5;
+  }
+
+  @media @mobile {
+    border-color: @OverlayPopupDividerStroke;
+  }
+}
+
+.dateError {
+  color: #d32f2f;
+  font-size: 12px;
+  line-height: 16px;
+  margin-top: -8px;
+}
+
+.clearSection {
+  background: none;
+  border: none;
+  color: @ButtonPrimary;
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+  padding: 8px 0;
+  text-align: left;
+  text-decoration: underline;
+  align-self: flex-start;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}

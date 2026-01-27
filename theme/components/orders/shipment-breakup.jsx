@@ -26,6 +26,7 @@ function ShipmentBreakup({ fpi, breakup, shipmentInfo }) {
       [];
     return totalVal.concat(restVal);
   };
+  console.log('testing shipmetn breakup react starter')
   return (
     <div className={`${styles.billing} ${styles.lightsm}`}>
       <div className={`${styles.title} ${styles.boldsm}`}>

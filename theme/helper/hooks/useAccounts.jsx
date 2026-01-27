@@ -17,6 +17,7 @@ import {
   FORGOT_PASSWORD,
   MOBILE_RESET_PASSWORD,
 } from "../../queries/authQuery";
+import { USER_DATA_QUERY } from "../../queries/libQuery";
 import { useSnackbar } from "./hooks";
 import { isRunningOnClient, getLocalizedRedirectUrl } from "../utils";
 import {
@@ -47,10 +48,14 @@ export const useAccounts = ({ fpi }) => {
       ? new URLSearchParams(location.search)
       : null;
     if (redirect) {
-      queryParams?.set(
-        "redirectUrl",
-        encodeURIComponent(location.pathname + location.search)
-      );
+      // Preserve existing redirectUrl if it exists, otherwise set it to current pathname
+      const existingRedirectUrl = queryParams?.get("redirectUrl");
+      if (!existingRedirectUrl) {
+        queryParams?.set(
+          "redirectUrl",
+          encodeURIComponent(location.pathname + location.search)
+        );
+      }
     }
     navigate?.(
       "/auth/login" +
@@ -63,7 +68,11 @@ export const useAccounts = ({ fpi }) => {
       ? new URLSearchParams(location.search)
       : null;
     if (redirect) {
-      queryParams?.set("redirectUrl", location.pathname);
+      // Preserve existing redirectUrl if it exists, otherwise set it to current pathname
+      const existingRedirectUrl = queryParams?.get("redirectUrl");
+      if (!existingRedirectUrl) {
+        queryParams?.set("redirectUrl", location.pathname);
+      }
     }
     navigate?.(
       "/auth/register" +
@@ -72,9 +81,10 @@ export const useAccounts = ({ fpi }) => {
   };
 
   const openForgotPassword = () => {
-    navigate?.(
-      "/auth/forgot-password" + (location.search ? `?${location.search}` : "")
-    );
+    // location.search already includes the '?' prefix, so use it directly
+    const queryString =
+      isRunningOnClient() && location.search ? location.search : "";
+    navigate?.("/auth/forgot-password" + queryString);
   };
 
   const openHomePage = () => {
@@ -82,10 +92,17 @@ export const useAccounts = ({ fpi }) => {
       ? new URLSearchParams(location.search)
       : null;
     const redirectUrl = queryParams?.get("redirectUrl") || "";
-    const finalUrl = getLocalizedRedirectUrl(
-      decodeURIComponent(redirectUrl),
-      locale
-    );
+    // URLSearchParams already decodes the value, but we try to decode again
+    // in case it was double-encoded. Use try-catch to handle edge cases.
+    let decodedUrl = redirectUrl;
+    try {
+      decodedUrl = decodeURIComponent(redirectUrl);
+    } catch (e) {
+      // If decoding fails, use the original value (already decoded by URLSearchParams)
+      decodedUrl = redirectUrl;
+    }
+    // Use redirectUrl if available, otherwise default to "/" (homepage)
+    const finalUrl = getLocalizedRedirectUrl(decodedUrl || "", locale);
     window.location.href = window.location.origin + finalUrl;
   };
 
@@ -97,6 +114,7 @@ export const useAccounts = ({ fpi }) => {
       firstName,
       lastName,
       gender,
+      dob,
       email,
       phone: { countryCode = "", mobile = "" } = {},
     } = data;
@@ -104,9 +122,12 @@ export const useAccounts = ({ fpi }) => {
     const editProfileRequestSchemaInput = {
       first_name: firstName,
       last_name: lastName,
-      gender,
+      gender: gender === "other" || gender === "others" ? "unisex" : gender,
     };
 
+    if (dob !== null && dob !== undefined && dob !== "") {
+      editProfileRequestSchemaInput.dob = dob;
+    }
     if (countryCode) {
       editProfileRequestSchemaInput.country_code = countryCode.toString();
     }
@@ -129,11 +150,71 @@ export const useAccounts = ({ fpi }) => {
       editProfileRequestSchemaInput,
     };
 
-    return fpi.executeGQL(UPDATE_PROFILE, payload).then((res) => {
+    // Get auth state BEFORE the mutation to preserve it
+    const stateBeforeUpdate = fpi.store?.getState?.() || {};
+    const wasLoggedInBefore = stateBeforeUpdate?.auth?.logged_in === true;
+
+    return fpi.executeGQL(UPDATE_PROFILE, payload).then(async (res) => {
       if (res?.errors) {
         throw res?.errors?.[0];
       }
-      return res?.data?.updateProfile;
+      const updateProfileData = res?.data?.updateProfile;
+
+      // Check auth state immediately after mutation
+      const stateAfterMutation = fpi.store?.getState?.() || {};
+      const loggedInAfterMutation =
+        stateAfterMutation?.auth?.logged_in === true;
+
+      // Update user data in store immediately if available
+      const currentUserData = fpi.getters?.USER_DATA?.(stateAfterMutation);
+      if (updateProfileData?.user && currentUserData) {
+        const updatedUserData = {
+          ...currentUserData,
+          user: updateProfileData.user,
+          first_name: updateProfileData.user.first_name,
+          last_name: updateProfileData.user.last_name,
+          gender: updateProfileData.user.gender,
+        };
+        fpi.custom.setValue("user_Data", updatedUserData);
+      }
+
+      // CRITICAL: If user was logged in before but state is now false/undefined,
+      // we MUST refresh USER_DATA_QUERY to restore the auth state
+      // This ensures the header and other components see the correct loggedIn value
+      if (wasLoggedInBefore && !loggedInAfterMutation) {
+        try {
+          // The mutation cleared the auth state - restore it by refreshing user data
+          const userDataResponse = await fpi.executeGQL(USER_DATA_QUERY);
+          const isLoggedInFromQuery =
+            !!userDataResponse?.data?.user?.logged_in_user;
+
+          if (!isLoggedInFromQuery && process.env.NODE_ENV === "development") {
+            // Only log in development to avoid console noise in production
+            // eslint-disable-next-line no-console
+            console.warn(
+              "Auth state issue: User was logged in before UPDATE_PROFILE, " +
+                "but USER_DATA_QUERY returns false after update."
+            );
+          }
+        } catch (error) {
+          // Silently handle error - user was logged in before, so session should still be valid
+          // The auth state will be restored on next navigation or page refresh
+          if (process.env.NODE_ENV === "development") {
+            // eslint-disable-next-line no-console
+            console.warn(
+              "Failed to restore auth state after profile update:",
+              error
+            );
+          }
+        }
+      } else if (wasLoggedInBefore && loggedInAfterMutation) {
+        // Auth state is still true - refresh user data in background to keep it synced
+        fpi.executeGQL(USER_DATA_QUERY).catch(() => {
+          // Silently fail - auth state is already correct
+        });
+      }
+
+      return updateProfileData;
     });
   };
 
@@ -149,10 +230,16 @@ export const useAccounts = ({ fpi }) => {
             ? new URLSearchParams(location.search)
             : null;
           const redirectUrl = queryParams?.get("redirectUrl") || "";
-          const finalUrl = getLocalizedRedirectUrl(
-            decodeURIComponent(redirectUrl),
-            locale
-          );
+          // URLSearchParams already decodes the value, but we try to decode again
+          // in case it was double-encoded. Use try-catch to handle edge cases.
+          let decodedUrl = redirectUrl;
+          try {
+            decodedUrl = decodeURIComponent(redirectUrl);
+          } catch (e) {
+            // If decoding fails, use the original value (already decoded by URLSearchParams)
+            decodedUrl = redirectUrl;
+          }
+          const finalUrl = getLocalizedRedirectUrl(decodedUrl, locale);
           window.location.href = window.location.origin + finalUrl;
           return res?.data;
         }
@@ -183,10 +270,16 @@ export const useAccounts = ({ fpi }) => {
             ? new URLSearchParams(location.search)
             : null;
           const redirectUrl = queryParams?.get("redirectUrl") || "";
-          const finalUrl = getLocalizedRedirectUrl(
-            decodeURIComponent(redirectUrl),
-            locale
-          );
+          // URLSearchParams already decodes the value, but we try to decode again
+          // in case it was double-encoded. Use try-catch to handle edge cases.
+          let decodedUrl = redirectUrl;
+          try {
+            decodedUrl = decodeURIComponent(redirectUrl);
+          } catch (e) {
+            // If decoding fails, use the original value (already decoded by URLSearchParams)
+            decodedUrl = redirectUrl;
+          }
+          const finalUrl = getLocalizedRedirectUrl(decodedUrl, locale);
           window.location.href = window.location.origin + finalUrl;
         }
         return res?.data?.loginWithEmailAndPassword;
@@ -256,20 +349,27 @@ export const useAccounts = ({ fpi }) => {
       const { user_exists: userExists } = res.data.verifyMobileOTP || {};
       if (!userExists) {
         if (isRedirection) {
-          navigate?.(
-            "/auth/edit-profile" +
-              (location.search ? `?${location.search}` : "")
-          );
+          // Preserve query params including redirectUrl when navigating to edit-profile
+          // location.search already includes the '?' prefix, so use it directly
+          const queryString =
+            isRunningOnClient() && location.search ? location.search : "";
+          navigate?.("/auth/edit-profile" + queryString);
         }
       } else {
         const queryParams = isRunningOnClient()
           ? new URLSearchParams(location.search)
           : null;
         const redirectUrl = queryParams?.get("redirectUrl") || "";
-        const finalUrl = getLocalizedRedirectUrl(
-          decodeURIComponent(redirectUrl),
-          locale
-        );
+        // URLSearchParams already decodes the value, but we try to decode again
+        // in case it was double-encoded. Use try-catch to handle edge cases.
+        let decodedUrl = redirectUrl;
+        try {
+          decodedUrl = decodeURIComponent(redirectUrl);
+        } catch (e) {
+          // If decoding fails, use the original value (already decoded by URLSearchParams)
+          decodedUrl = redirectUrl;
+        }
+        const finalUrl = getLocalizedRedirectUrl(decodedUrl, locale);
         window.location.href = window.location.origin + finalUrl;
       }
       return res.data.verifyMobileOTP;
@@ -372,7 +472,8 @@ export const useAccounts = ({ fpi }) => {
     };
     return fpi.executeGQL(SEND_RESET_PASSWORD_EMAIL, payload).then((res) => {
       if (res?.errors) {
-        showSnackbar(res?.errors?.[0], "error");
+        const errorMessage = res?.errors?.[0]?.message || t("resource.common.error_message");
+        showSnackbar(errorMessage, "error");
         throw res?.errors?.[0];
       }
       if (res?.data?.sendResetPasswordEmail?.status === "success") {
@@ -525,10 +626,16 @@ export const useAccounts = ({ fpi }) => {
             ? new URLSearchParams(location.search)
             : null;
           const redirectUrl = queryParams?.get("redirectUrl") || "";
-          const finalUrl = getLocalizedRedirectUrl(
-            decodeURIComponent(redirectUrl),
-            locale
-          );
+          // URLSearchParams already decodes the value, but we try to decode again
+          // in case it was double-encoded. Use try-catch to handle edge cases.
+          let decodedUrl = redirectUrl;
+          try {
+            decodedUrl = decodeURIComponent(redirectUrl);
+          } catch (e) {
+            // If decoding fails, use the original value (already decoded by URLSearchParams)
+            decodedUrl = redirectUrl;
+          }
+          const finalUrl = getLocalizedRedirectUrl(decodedUrl, locale);
           window.location.href = window.location.origin + finalUrl;
         }
       }
@@ -568,18 +675,22 @@ export const useAccounts = ({ fpi }) => {
             search: location.search,
           });
         }
-      } else {
-        if (isRedirection) {
-          const queryParams = isRunningOnClient()
-            ? new URLSearchParams(location.search)
-            : null;
-          const redirectUrl = queryParams?.get("redirectUrl") || "";
-          const finalUrl = getLocalizedRedirectUrl(
-            decodeURIComponent(redirectUrl),
-            locale
-          );
-          window.location.href = window.location.origin + finalUrl;
+      } else if (isRedirection) {
+        const queryParams = isRunningOnClient()
+          ? new URLSearchParams(location.search)
+          : null;
+        const redirectUrl = queryParams?.get("redirectUrl") || "";
+        // URLSearchParams already decodes the value, but we try to decode again
+        // in case it was double-encoded. Use try-catch to handle edge cases.
+        let decodedUrl = redirectUrl;
+        try {
+          decodedUrl = decodeURIComponent(redirectUrl);
+        } catch (e) {
+          // If decoding fails, use the original value (already decoded by URLSearchParams)
+          decodedUrl = redirectUrl;
         }
+        const finalUrl = getLocalizedRedirectUrl(decodedUrl, locale);
+        window.location.href = window.location.origin + finalUrl;
       }
       return res?.data?.verifyEmailOTP;
     });

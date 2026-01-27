@@ -197,6 +197,19 @@ export const GLOBAL_DATA = `query ApplicationConfiguration {
         code  
       }
     }
+    country_currencies {
+      name
+      iso2
+      iso3
+      uid
+      is_default
+      currencies {
+        name
+        code
+        symbol
+        is_default
+      }
+    }
     integration_tokens {
       id
       application

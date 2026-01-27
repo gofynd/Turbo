@@ -10,7 +10,7 @@ function Collections({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const THEME = useGlobalStore(fpi.getters.THEME);
   const seoData = page?.seo || {};
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo: seoData });
 
   const mode = THEME?.config?.list.find(
@@ -37,8 +37,9 @@ function Collections({ fpi }) {
     const raw = sanitizeHTMLTag(
       seoData?.description || fallbackDescription || ""
     );
-    return trimDescription(raw, 160);
-  }, [seoData?.description, trimDescription, sections]);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seoData?.description, seoDescription, sections]);
 
   return (
     page?.value === "collections" && (

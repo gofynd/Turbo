@@ -250,6 +250,21 @@
           }
         },
         {
+          "page": "shared-cart",
+          "settings": {
+            "props": {}
+          }
+        },
+        {
+          "page": "blog-detail",
+          "settings": {
+            "props": {
+              "show_recent_blog": true,
+              "show_top_blog": true
+            }
+          }
+        },
+        {
           "page": "brands",
           "settings": {
             "props": {
@@ -324,6 +339,60 @@
           }
         },
         {
+          "page": "forgot-password",
+          "settings": {
+            "props": {
+              "image_banner": "",
+              "image_layout": "no_banner"
+            }
+          }
+        },
+        {
+          "page": "set-password",
+          "settings": {
+            "props": {
+              "image_banner": "",
+              "image_layout": "no_banner"
+            }
+          }
+        },
+        {
+          "page": "edit-profile",
+          "settings": {
+            "props": {
+              "image_banner": "",
+              "image_layout": "no_banner"
+            }
+          }
+        },
+        {
+          "page": "account-locked",
+          "settings": {
+            "props": {
+              "image_banner": "",
+              "image_layout": "no_banner"
+            }
+          }
+        },
+        {
+          "page": "verify-email",
+          "settings": {
+            "props": {
+              "image_banner": "",
+              "image_layout": "no_banner"
+            }
+          }
+        },
+        {
+          "page": "verify-email-link",
+          "settings": {
+            "props": {
+              "image_banner": "",
+              "image_layout": "no_banner"
+            }
+          }
+        },
+        {
           "page": "collections",
           "settings": {
             "props": {
@@ -351,6 +420,12 @@
               "description": "Everything you need for that ultimate stylish wardrobe, Fynd has got it!",
               "button_text": "Shop Now"
             }
+          }
+        },
+        {
+          "page": "faq",
+          "settings": {
+            "props": {}
           }
         },
         {
@@ -384,6 +459,30 @@
               "show_header": true,
               "show_footer": true
             }
+          }
+        },
+        {
+          "page": "return-policy",
+          "settings": {
+            "props": {}
+          }
+        },
+        {
+          "page": "shipping-policy",
+          "settings": {
+            "props": {}
+          }
+        },
+        {
+          "page": "tnc",
+          "settings": {
+            "props": {}
+          }
+        },
+        {
+          "page": "privacy-policy",
+          "settings": {
+            "props": {}
           }
         }
       ]
@@ -1132,6 +1231,43 @@
       {
         "sections": [
           {
+            "blocks": [],
+            "label": "Blog Details",
+            "name": "blog-detail",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "show_top_blog": {
+                "type": "checkbox",
+                "value": true
+              },
+              "show_recent_blog": {
+                "type": "checkbox",
+                "value": true
+              }
+            }
+          }
+        ],
+        "value": "blog-detail"
+      },
+      {
+        "sections": [
+          {
             "blocks": [
               {
                 "type": "delivery_header",
@@ -1249,6 +1385,71 @@
           {
             "blocks": [
               {
+                "type": "shared-cart-items",
+                "name": "Shared Cart Items",
+                "props": {}
+              }
+            ],
+            "label": "Shared Cart Items",
+            "name": "shared-cart-items",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "canvas": "left_panel",
+            "preset": {},
+            "props": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "shared-cart-breakup",
+                "name": "Shared Cart Breakup",
+                "props": {}
+              }
+            ],
+            "label": "Shared Cart Breakup",
+            "name": "shared-cart-breakup",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "canvas": "right_panel",
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "shared-cart"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
                 "type": "stepper",
                 "name": "Stepper",
                 "props": {}
@@ -1347,6 +1548,111 @@
                 "type": "order_header",
                 "name": "Order Header",
                 "props": {}
+              }
+            ],
+            "label": "Order Confirmation Message",
+            "name": "order-status",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "canvas": "header",
+            "preset": {},
+            "props": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "shipment_list",
+                "name": "Shipment List",
+                "props": {}
+              }
+            ],
+            "label": "Order Confirmation Items list",
+            "name": "order-status",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "canvas": "left_panel",
+            "preset": {},
+            "props": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "price_breakup",
+                "name": "Price Breakup",
+                "props": {}
+              },
+              {
+                "type": "payment_info",
+                "name": "Payment Information",
+                "props": {}
+              },
+              {
+                "type": "delivery_address",
+                "name": "Delivery Address",
+                "props": {}
+              }
+            ],
+            "label": "Order Confirmation Details",
+            "name": "order-status",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "canvas": "right_panel",
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "order-status"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "type": "order_header",
+                "name": "Order Header",
+                "props": {}
               },
               {
                 "type": "shipment_items",
@@ -1377,8 +1683,14 @@
                 "type": "shipment_breakup",
                 "name": "Shipment Breakup",
                 "props": {}
+              },
+              {
+                "type": "total_refund",
+                "name": "Total Refund",
+                "props": {}
               }
             ],
+            "canvas": "left_side",
             "label": "Order Details",
             "name": "order-details",
             "predicate": {
@@ -1399,9 +1711,142 @@
             },
             "preset": {},
             "props": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "user-info",
+                "name": "User Info",
+                "props": {}
+              },
+              {
+                "type": "account-heading",
+                "name": "Account Heading",
+                "props": {}
+              },
+              {
+                "type": "profile-menu",
+                "name": "Menu Items",
+                "props": {}
+              },
+              {
+                "type": "sign-out",
+                "name": "Sign Out",
+                "props": {}
+              }
+            ],
+            "canvas": "right_side",
+            "label": "Profile Navigation Menu",
+            "name": "profile-navigation-menu",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {
+              "blocks": [
+                {
+                  "type": "user-info",
+                  "props": {}
+                },
+                {
+                  "type": "account-heading",
+                  "props": {}
+                },
+                {
+                  "type": "profile-menu",
+                  "props": {}
+                },
+                {
+                  "type": "sign-out",
+                  "props": {}
+                }
+              ]
+            }
           }
         ],
         "value": "shipment-details"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "type": "user-info",
+                "name": "User Info",
+                "props": {}
+              },
+              {
+                "type": "account-heading",
+                "name": "Account Heading",
+                "props": {}
+              },
+              {
+                "type": "profile-menu",
+                "name": "Menu Items",
+                "props": {}
+              },
+              {
+                "type": "sign-out",
+                "name": "Sign Out",
+                "props": {}
+              }
+            ],
+            "canvas": "right_side",
+            "label": "Profile Navigation Menu",
+            "name": "profile-navigation-menu",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {
+              "blocks": [
+                {
+                  "type": "user-info",
+                  "props": {}
+                },
+                {
+                  "type": "account-heading",
+                  "props": {}
+                },
+                {
+                  "type": "profile-menu",
+                  "props": {}
+                },
+                {
+                  "type": "sign-out",
+                  "props": {}
+                }
+              ]
+            }
+          }
+        ],
+        "value": "shipment-update"
       },
       {
         "sections": [
@@ -1434,11 +1879,257 @@
               "image_banner": {
                 "value": "",
                 "type": "image_picker"
+              },
+              "enable_password_login": {
+                "value": false,
+                "type": "checkbox"
+              },
+              "enable_otp_login": {
+                "value": true,
+                "type": "checkbox"
+              },
+              "enable_social_login": {
+                "value": false,
+                "type": "checkbox"
+              },
+              "enable_google_login": {
+                "value": false,
+                "type": "checkbox"
+              },
+              "enable_facebook_login": {
+                "value": false,
+                "type": "checkbox"
+              },
+              "enable_apple_login": {
+                "value": false,
+                "type": "checkbox"
               }
             }
           }
         ],
         "value": "login"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Forgot Password",
+            "name": "forgot-password",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "image_layout": {
+                "value": "no_banner",
+                "type": "select"
+              },
+              "image_banner": {
+                "value": "",
+                "type": "image_picker"
+              }
+            }
+          }
+        ],
+        "value": "forgot-password"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Set Password",
+            "name": "set-password",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "image_layout": {
+                "value": "no_banner",
+                "type": "select"
+              },
+              "image_banner": {
+                "value": "",
+                "type": "image_picker"
+              }
+            }
+          }
+        ],
+        "value": "set-password"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Edit Profile",
+            "name": "edit-profile",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "image_layout": {
+                "value": "no_banner",
+                "type": "select"
+              },
+              "image_banner": {
+                "value": "",
+                "type": "image_picker"
+              }
+            }
+          }
+        ],
+        "value": "edit-profile"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Account Locked",
+            "name": "account-locked",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "image_layout": {
+                "value": "no_banner",
+                "type": "select"
+              },
+              "image_banner": {
+                "value": "",
+                "type": "image_picker"
+              }
+            }
+          }
+        ],
+        "value": "account-locked"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Verify Email",
+            "name": "verify-email",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "image_layout": {
+                "value": "no_banner",
+                "type": "select"
+              },
+              "image_banner": {
+                "value": "",
+                "type": "image_picker"
+              }
+            }
+          }
+        ],
+        "value": "verify-email"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Verify Email Link",
+            "name": "verify-email-link",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "image_layout": {
+                "value": "no_banner",
+                "type": "select"
+              },
+              "image_banner": {
+                "value": "",
+                "type": "image_picker"
+              }
+            }
+          }
+        ],
+        "value": "verify-email-link"
       },
       {
         "sections": [
@@ -1951,6 +2642,34 @@
         "sections": [
           {
             "blocks": [],
+            "label": "FAQ",
+            "name": "faq",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "faq"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
             "label": "Brands Landing",
             "name": "brands-landing",
             "predicate": {
@@ -2003,6 +2722,744 @@
       {
         "sections": [
           {
+            "blocks": [
+              {
+                "name": "Profile Details Form",
+                "props": [
+                  {
+                    "type": "text",
+                    "id": "title",
+                    "value": "Profile Details"
+                  }
+                ],
+                "type": "profile-details-form"
+              }
+            ],
+            "canvas": "left_side",
+            "label": "Profile Details Form",
+            "name": "profile-details-form",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "user-info",
+                "name": "User Info",
+                "props": {}
+              },
+              {
+                "type": "account-heading",
+                "name": "Account Heading",
+                "props": {}
+              },
+              {
+                "type": "profile-menu",
+                "name": "Menu Items",
+                "props": {}
+              },
+              {
+                "type": "sign-out",
+                "name": "Sign Out",
+                "props": {}
+              }
+            ],
+            "canvas": "right_side",
+            "label": "Profile Navigation Menu",
+            "name": "profile-navigation-menu",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {
+              "blocks": [
+                {
+                  "type": "user-info",
+                  "props": {}
+                },
+                {
+                  "type": "account-heading",
+                  "props": {}
+                },
+                {
+                  "type": "profile-menu",
+                  "props": {}
+                },
+                {
+                  "type": "sign-out",
+                  "props": {}
+                }
+              ]
+            }
+          }
+        ],
+        "value": "profile-details"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "name": "Profile Orders",
+                "props": [
+                  {
+                    "type": "text",
+                    "id": "title",
+                    "value": "My Orders"
+                  },
+                  {
+                    "type": "checkbox",
+                    "id": "show_empty_state",
+                    "value": true
+                  }
+                ],
+                "type": "profile-orders"
+              }
+            ],
+            "canvas": "left_side",
+            "label": "Profile Orders",
+            "name": "profile-orders",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "user-info",
+                "name": "User Info",
+                "props": {}
+              },
+              {
+                "type": "account-heading",
+                "name": "Account Heading",
+                "props": {}
+              },
+              {
+                "type": "profile-menu",
+                "name": "Menu Items",
+                "props": {}
+              },
+              {
+                "type": "sign-out",
+                "name": "Sign Out",
+                "props": {}
+              }
+            ],
+            "canvas": "right_side",
+            "label": "Profile Navigation Menu",
+            "name": "profile-navigation-menu",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {
+              "blocks": [
+                {
+                  "type": "user-info",
+                  "props": {}
+                },
+                {
+                  "type": "account-heading",
+                  "props": {}
+                },
+                {
+                  "type": "profile-menu",
+                  "props": {}
+                },
+                {
+                  "type": "sign-out",
+                  "props": {}
+                }
+              ]
+            }
+          }
+        ],
+        "value": "orders-list"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "name": "Profile Addresses",
+                "props": [
+                  {
+                    "type": "text",
+                    "id": "title",
+                    "value": "My Addresses"
+                  }
+                ],
+                "type": "profile-address"
+              }
+            ],
+            "canvas": "left_side",
+            "label": "Profile Addresses",
+            "name": "profile-address",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "user-info",
+                "name": "User Info",
+                "props": {}
+              },
+              {
+                "type": "account-heading",
+                "name": "Account Heading",
+                "props": {}
+              },
+              {
+                "type": "profile-menu",
+                "name": "Menu Items",
+                "props": {}
+              },
+              {
+                "type": "sign-out",
+                "name": "Sign Out",
+                "props": {}
+              }
+            ],
+            "canvas": "right_side",
+            "label": "Profile Navigation Menu",
+            "name": "profile-navigation-menu",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {
+              "blocks": [
+                {
+                  "type": "user-info",
+                  "props": {}
+                },
+                {
+                  "type": "account-heading",
+                  "props": {}
+                },
+                {
+                  "type": "profile-menu",
+                  "props": {}
+                },
+                {
+                  "type": "sign-out",
+                  "props": {}
+                }
+              ]
+            }
+          }
+        ],
+        "value": "profile-address"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "name": "Profile Phone",
+                "props": [
+                  {
+                    "type": "text",
+                    "id": "title",
+                    "value": "Phone Number"
+                  }
+                ],
+                "type": "profile-phone"
+              }
+            ],
+            "canvas": "left_side",
+            "label": "Profile Phone",
+            "name": "profile-phone",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "user-info",
+                "name": "User Info",
+                "props": {}
+              },
+              {
+                "type": "account-heading",
+                "name": "Account Heading",
+                "props": {}
+              },
+              {
+                "type": "profile-menu",
+                "name": "Menu Items",
+                "props": {}
+              },
+              {
+                "type": "sign-out",
+                "name": "Sign Out",
+                "props": {}
+              }
+            ],
+            "canvas": "right_side",
+            "label": "Profile Navigation Menu",
+            "name": "profile-navigation-menu",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {
+              "blocks": [
+                {
+                  "type": "user-info",
+                  "props": {}
+                },
+                {
+                  "type": "account-heading",
+                  "props": {}
+                },
+                {
+                  "type": "profile-menu",
+                  "props": {}
+                },
+                {
+                  "type": "sign-out",
+                  "props": {}
+                }
+              ]
+            }
+          }
+        ],
+        "value": "profile-phone"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "name": "Profile Email",
+                "props": [
+                  {
+                    "type": "text",
+                    "id": "title",
+                    "value": "Email Address"
+                  }
+                ],
+                "type": "profile-email"
+              }
+            ],
+            "canvas": "left_side",
+            "label": "Profile Email",
+            "name": "profile-email",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "user-info",
+                "name": "User Info",
+                "props": {}
+              },
+              {
+                "type": "account-heading",
+                "name": "Account Heading",
+                "props": {}
+              },
+              {
+                "type": "profile-menu",
+                "name": "Menu Items",
+                "props": {}
+              },
+              {
+                "type": "sign-out",
+                "name": "Sign Out",
+                "props": {}
+              }
+            ],
+            "canvas": "right_side",
+            "label": "Profile Navigation Menu",
+            "name": "profile-navigation-menu",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {
+              "blocks": [
+                {
+                  "type": "user-info",
+                  "props": {}
+                },
+                {
+                  "type": "account-heading",
+                  "props": {}
+                },
+                {
+                  "type": "profile-menu",
+                  "props": {}
+                },
+                {
+                  "type": "sign-out",
+                  "props": {}
+                }
+              ]
+            }
+          }
+        ],
+        "value": "profile-email"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "type": "user-info",
+                "name": "User Info",
+                "props": {}
+              },
+              {
+                "type": "account-heading",
+                "name": "Account Heading",
+                "props": {}
+              },
+              {
+                "type": "profile-menu",
+                "name": "Menu Items",
+                "props": {}
+              },
+              {
+                "type": "sign-out",
+                "name": "Sign Out",
+                "props": {}
+              }
+            ],
+            "canvas": "Profile",
+            "label": "Profile Navigation Menu",
+            "name": "profile-navigation-menu",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {
+              "blocks": [
+                {
+                  "type": "user-info",
+                  "props": {}
+                },
+                {
+                  "type": "account-heading",
+                  "props": {}
+                },
+                {
+                  "type": "profile-menu",
+                  "props": {}
+                },
+                {
+                  "type": "sign-out",
+                  "props": {}
+                }
+              ]
+            }
+          }
+        ],
+        "value": "profile"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "name": "Profile Wishlist",
+                "props": [
+                  {
+                    "type": "text",
+                    "id": "title",
+                    "value": "My Wishlist"
+                  }
+                ],
+                "type": "profile-wishlist"
+              }
+            ],
+            "canvas": "left_side",
+            "label": "Profile Wishlist",
+            "name": "profile-wishlist",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {}
+          },
+          {
+            "blocks": [
+              {
+                "type": "user-info",
+                "name": "User Info",
+                "props": {}
+              },
+              {
+                "type": "account-heading",
+                "name": "Account Heading",
+                "props": {}
+              },
+              {
+                "type": "profile-menu",
+                "name": "Menu Items",
+                "props": {}
+              },
+              {
+                "type": "sign-out",
+                "name": "Sign Out",
+                "props": {}
+              }
+            ],
+            "canvas": "right_side",
+            "label": "Profile Navigation Menu",
+            "name": "profile-navigation-menu",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": false,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "preset": {
+              "blocks": [
+                {
+                  "type": "user-info",
+                  "props": {}
+                },
+                {
+                  "type": "account-heading",
+                  "props": {}
+                },
+                {
+                  "type": "profile-menu",
+                  "props": {}
+                },
+                {
+                  "type": "sign-out",
+                  "props": {}
+                }
+              ]
+            }
+          }
+        ],
+        "value": "wishlist"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [
+              {
+                "name": "Page Not Found",
+                "props": [],
+                "type": "page-not-found"
+              }
+            ],
+            "label": "Page Not Found",
+            "name": "page-not-found",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "props": {},
+            "value": "page-not-found"
+          }
+        ],
+        "value": "not-found-page"
+      },
+      {
+        "sections": [
+          {
             "blocks": [],
             "label": "Store Locator",
             "name": "store-locator",
@@ -2032,6 +3489,118 @@
           }
         ],
         "value": "locate-us"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Privacy Policy",
+            "name": "privacy-policy",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "policy"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Return Policy",
+            "name": "return-policy",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "return-policy"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Shipping Policy",
+            "name": "shipping-policy",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "shipping-policy"
+      },
+      {
+        "sections": [
+          {
+            "blocks": [],
+            "label": "Terms & Conditions",
+            "name": "tnc",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {}
+          }
+        ],
+        "value": "tnc"
       }
     ]
   }

@@ -1,31 +1,21 @@
-import React, { useCallback, useMemo } from "react";
-import BlogPage from "@gofynd/theme-template/components/blog-page/blog-page";
-import "@gofynd/theme-template/components/blog-page/blog-page.css";
-import useBlogDetails from "../../page-layouts/blog/useBlogDetails";
-import { GET_BLOG } from "../../queries/blogQuery";
-import EmptyState from "../../components/empty-state/empty-state";
-import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
-import SocailMedia from "../socail-media/socail-media";
-import { useLocation } from "react-router-dom";
-import { sanitizeHTMLTag, isRunningOnClient } from "../../helper/utils";
+import React from "react";
+import { useGlobalStore, useFPI } from "fdk-core/utils";
 import { useThemeConfig } from "../../helper/hooks";
+import { SectionRenderer } from "fdk-core/components";
+import useBlogDetails from "../../page-layouts/blog/useBlogDetails";
+import { sanitizeHTMLTag } from "../../helper/utils";
+import { useLocation } from "react-router-dom";
+import { isRunningOnClient } from "../../helper/utils";
 import { getHelmet } from "../../providers/global-provider";
 
-function BlogDetails({ fpi }) {
-  const {
-    blogDetails,
-    sliderProps,
-    footerProps,
-    contactInfo,
-    getBlog,
-    isBlogDetailsLoading,
-    isBlogNotFound,
-  } = useBlogDetails({ fpi });
-  const { t } = useGlobalTranslation("translation");
-  const configuration = useGlobalStore(fpi.getters.CONFIGURATION);
+function BlogDetails({}) {
+  const fpi = useFPI();
+  const page = useGlobalStore(fpi.getters.PAGE) || {};
   const { globalConfig } = useThemeConfig({ fpi });
   const location = useLocation();
 
+  const { blogDetails, sliderProps } = useBlogDetails({ fpi });
+  const configuration = useGlobalStore(fpi.getters.CONFIGURATION);
   const brandName = sanitizeHTMLTag(
     globalConfig?.brand_name ||
       globalConfig?.site_name ||
@@ -33,7 +23,6 @@ function BlogDetails({ fpi }) {
       configuration?.app?.name ||
       configuration?.application?.meta?.name
   );
-
   const domainUrl = useMemo(() => {
     const domain =
       configuration?.application?.domains?.find((d) => d.is_primary)?.name ||
@@ -67,13 +56,7 @@ function BlogDetails({ fpi }) {
     [domainUrl]
   );
 
-  const trimDescription = (value = "", limit = 160) => {
-    if (!value) return "";
-    const cleanValue = value.replace(/\s+/g, " ").trim();
-    return cleanValue.slice(0, limit);
-  };
-
-  const pageTitle = useMemo(() => {
+  const title = useMemo(() => {
     const rawTitle = sanitizeHTMLTag(
       blogDetails?.seo?.title || blogDetails?.title
     );
@@ -87,21 +70,27 @@ function BlogDetails({ fpi }) {
       location?.pathname ||
       (blogDetails?.slug ? `/blog/${blogDetails.slug}` : "");
     return absoluteUrl(preferredPath);
-  }, [absoluteUrl, blogDetails?.seo?.canonical_url, blogDetails?.slug, location?.pathname]);
+  }, [
+    absoluteUrl,
+    blogDetails?.seo?.canonical_url,
+    blogDetails?.slug,
+    location?.pathname,
+  ]);
 
-  const pageUrl = canonicalUrl || absoluteUrl(location?.pathname);
+  const url = canonicalUrl || absoluteUrl(location?.pathname);
 
-  const cleanHTML = s => s?.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')?.replace(/<[^>]*>/g, '');
+  const cleanHTML = (s) =>
+    s?.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")?.replace(/<[^>]*>/g, "");
 
   const description = useMemo(() => {
     const value = sanitizeHTMLTag(
-      blogDetails?.seo?.description || blogDetails?.summary || cleanHTML(blogDetails?.content?.[0]?.value) || ""
+      blogDetails?.seo?.description ||
+        blogDetails?.summary ||
+        cleanHTML(blogDetails?.content?.[0]?.value) ||
+        ""
     );
-    console.log("blogDetails",blogDetails)
-    console.log("Blog Description:", value);
-    console.log("logDetails?.seo?.description",blogDetails?.seo?.description)
-    console.log("blogDetails?.summary",blogDetails?.summary)
-    return trimDescription(value);
+
+    return value.replace(/\s+/g, " ").trim();
   }, [blogDetails?.seo?.description, blogDetails?.summary]);
 
   const socialImage = useMemo(() => {
@@ -121,121 +110,33 @@ function BlogDetails({ fpi }) {
   ]);
 
   return (
-    <>
-      {getHelmet({
-        title: pageTitle,
-        description,
-        image: socialImage,
-        canonicalUrl,
-        url: pageUrl,
-        siteName: brandName,
-        ogType: "article",
-      })}
-      {isBlogNotFound ? (
-        <EmptyState title={t("resource.blog.no_blog_found")} />
-      ) : (
-        <BlogPage
-          contactInfo={contactInfo}
-          blogDetails={blogDetails}
-          sliderProps={sliderProps}
-          footerProps={footerProps}
-          getBlog={getBlog}
-          isBlogDetailsLoading={isBlogDetailsLoading}
-          SocailMedia={SocailMedia}
-        ></BlogPage>
-      )}
-    </>
+    page?.value === "blog-detail" && (
+      <>
+        {getHelmet({
+          title,
+          description,
+          image: socialImage,
+          canonicalUrl,
+          url,
+          siteName: brandName,
+          ogType: "article",
+        })}
+        <SectionRenderer
+          sections={sections}
+          fpi={fpi}
+          globalConfig={globalConfig}
+        />
+      </>
+    )
   );
 }
 
-export const settings = JSON.stringify({
-  props: [
-    {
-      type: "image_picker",
-      id: "image",
-      label: "t:resource.common.image",
-      default: "",
+export const sections = JSON.stringify([
+  {
+    attributes: {
+      page: "blog-detail",
     },
-    {
-      type: "checkbox",
-      id: "show_recent_blog",
-      label: "t:resource.sections.blog.show_recently_published",
-      default: true,
-      info: "t:resource.sections.blog.recently_published_info",
-    },
-    {
-      id: "recent_blogs",
-      type: "blog-list",
-      default: "",
-      label: "t:resource.sections.blog.recently_published_blogs",
-      info: "",
-    },
-    {
-      type: "checkbox",
-      id: "show_top_blog",
-      label: "t:resource.sections.blog.show_top_viewed",
-      default: true,
-      info: "t:resource.sections.blog.top_viewed_info",
-    },
-    {
-      id: "top_blogs",
-      type: "blog-list",
-      default: "",
-      label: "t:resource.sections.blog.top_viewed_blogs",
-      info: "",
-    },
-    {
-      id: "title",
-      type: "text",
-      value: "The Unparalleled Shopping Experience",
-      default: "t:resource.default_values.the_unparalleled_shopping_experience",
-      label: "t:resource.common.heading",
-    },
-    {
-      id: "description",
-      type: "text",
-      value:
-        "Everything you need for that ultimate stylish wardrobe, Fynd has got it!",
-      default: "t:resource.default_values.blog_description",
-      label: "t:resource.common.description",
-    },
-    {
-      type: "text",
-      id: "button_text",
-      value: "Shop Now",
-      default: "t:resource.default_values.shop_now",
-      label: "t:resource.sections.blog.button_label",
-    },
-    {
-      type: "url",
-      id: "button_link",
-      default: "",
-      label: "t:resource.common.redirect_link",
-    },
-    {
-      type: "image_picker",
-      id: "fallback_image",
-      label: "t:resource.sections.blog.fallback_image",
-      default: "",
-    },
-  ],
-});
-
-BlogDetails.serverFetch = async ({ router, fpi }) => {
-  const { slug } = router?.params ?? {};
-  const payload = {
-    slug,
-    preview: router?.filterQuery?.__preview === "blog",
-  };
-  const { data, errors } = await fpi.executeGQL(GET_BLOG, payload);
-
-  if (errors) {
-    fpi.custom.setValue(`isBlogNotFound`, true);
-  }
-
-  return fpi.custom.setValue(`blogDetails`, {
-    [slug]: data?.blog,
-  });
-};
+  },
+]);
 
 export default BlogDetails;

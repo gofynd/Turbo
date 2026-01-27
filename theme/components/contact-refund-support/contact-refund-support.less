@@ -1,0 +1,26 @@
+@import "../../styles//main.less";
+
+.refundBox {
+  border-radius: 4px;
+  padding: 24px;
+  margin: 16px 0;
+  background: var(--old-color-palette-background-color-frame-bg, #f8f8f8);
+  @media @mobile {
+    padding: 16px;
+  }
+  .text {
+    color: @TextHeading;
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0;
+
+    .link {
+      color: @ButtonLink;
+      text-decoration: none;
+    }
+
+    a {
+      text-decoration: none;
+    }
+  }
+}

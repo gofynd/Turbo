@@ -13,7 +13,7 @@ function OrderTracking({ fpi }) {
   const { globalConfig } = useThemeConfig({ fpi });
   const { sections = [] } = page || {};
   const { t } = useGlobalTranslation("translation");
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo: {} });
 
   const title = useMemo(() => {
@@ -23,8 +23,10 @@ function OrderTracking({ fpi }) {
 
   const description = useMemo(() => {
     const base = t("resource.order_tracking.seo_description");
-    return trimDescription(sanitizeHTMLTag(base), 160);
-  }, [t, trimDescription]);
+    return (
+      sanitizeHTMLTag(base).replace(/\s+/g, " ").trim() || seoDescription
+    );
+  }, [t, seoDescription]);
   return (
     <>
       {page?.value === "order-tracking" && (

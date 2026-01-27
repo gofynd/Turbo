@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, act } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FDKLink } from "fdk-core/components";
-import { convertActionToUrl } from "@gofynd/fdk-client-javascript/sdk/common/Utility";
+import { convertActionToUrl } from "fdk-core/utils";
 import styles from "./styles/navigation.less";
 import HamburgerIcon from "../../assets/images/hamburger.svg";
 import CloseIcon from "../../assets/images/close.svg";
@@ -159,8 +159,6 @@ function Navigation({
       setShowSidebarNav(true);
     }
   };
-
-  console.log(navigationList, "navigationList");
 
   return (
     <div className={customClass}>

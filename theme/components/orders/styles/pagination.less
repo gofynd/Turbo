@@ -1,0 +1,88 @@
+@import "../../../styles/main.less";
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px 0;
+  margin-top: 24px;
+  border-top: 1px solid @DividerStokes;
+
+  @media @mobile {
+    padding: 16px 0;
+    margin-top: 16px;
+    gap: 12px;
+  }
+}
+
+.pageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid @DividerStokes;
+  border-radius: 4px;
+  background-color: @DialogBackground;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+
+  &:hover:not(.disabled) {
+    background-color: @ButtonPrimary;
+    border-color: @ButtonPrimary;
+    color: @ButtonSecondary;
+
+    .arrowIcon {
+      fill: @ButtonSecondary;
+    }
+  }
+
+  &:active:not(.disabled) {
+    transform: scale(0.95);
+  }
+
+  &.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  @media @mobile {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.arrowIcon {
+  width: 20px;
+  height: 20px;
+  fill: @TextBody;
+  transition: fill 0.2s ease;
+
+  @media @mobile {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.pageInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+.pageText {
+  font-size: 14px;
+  line-height: 20px;
+  color: @TextBody;
+  font-weight: 400;
+
+  @media @mobile {
+    font-size: 12px;
+    line-height: 16px;
+  }
+}
+

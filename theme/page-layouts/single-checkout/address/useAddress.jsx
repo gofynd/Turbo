@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   useGlobalStore,
   useNavigate,
@@ -56,7 +56,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
 
   const {
     isInternational,
-    countries,
+    countryCurrencies,
     countryDetails,
     currentCountry,
     fetchCountrieDetails,
@@ -64,11 +64,21 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   } = useInternational({
     fpi,
   });
-  const { updatedSelectedAddress } = useHyperlocal(fpi);
+  const { updatedSelectedAddress, clearSelectedAddress } = useHyperlocal(fpi);
   const [selectedCountry, setSelectedCountry] = useState(currentCountry);
   const [countrySearchText, setCountrySearchText] = useState("");
 
   useEffect(() => {
+    // Don't open modal if:
+    // 1. Address has been successfully added (address_id exists in URL)
+    // 2. We're on order-status or order-tracking page
+    const isOrderStatusPage = location.pathname.includes('/order-status') || 
+                               location.pathname.includes('/order-tracking');
+    
+    if (address_id || isOrderStatusPage) {
+      return;
+    }
+    
     if (
       (cart_items?.checkout_mode === "other" && !hideAddress) ||
       (allAddresses && !allAddresses.length)
@@ -78,16 +88,55 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   }, [allAddresses]);
 
   useEffect(() => {
+    // Don't open modal if:
+    // 1. Address has been successfully added (address_id exists in URL)
+    // 2. We're on order-status or order-tracking page
+    const isOrderStatusPage = location.pathname.includes('/order-status') || 
+                               location.pathname.includes('/order-tracking');
+    
+    if (address_id || isOrderStatusPage) {
+      return;
+    }
+    
     if (isServiceability && selectedAddress && !selectedAddress.id) {
       showAddNewAddressModal();
     }
   }, [selectedAddress, isServiceability]);
 
+  // Track if we're in the middle of a user-initiated country change
+  const isUserChangingCountry = useRef(false);
+  const timeoutRef = useRef(null);
+
   useEffect(() => {
-    if (currentCountry) {
+    // Only sync selectedCountry with currentCountry if:
+    // 1. Modal is closed (user not actively editing) - always sync when modal closes
+    // 2. OR modal just opened (initial sync) - only if selectedCountry is not set
+    // 3. AND user is not actively changing the country
+    if (currentCountry && !openModal && !isUserChangingCountry.current) {
+      // Modal is closed - sync with header country
+      setSelectedCountry(currentCountry);
+    } else if (
+      currentCountry &&
+      openModal &&
+      !isUserChangingCountry.current &&
+      !selectedCountry
+    ) {
+      // Modal just opened and no country selected yet - initial sync
       setSelectedCountry(currentCountry);
     }
-  }, [currentCountry]);
+    // IMPORTANT: When modal is open AND selectedCountry is already set,
+    // DO NOT sync even if currentCountry changes. This prevents the reset loop
+    // when user changes country in address modal dropdown.
+  }, [currentCountry, openModal, selectedCountry]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const { formSchema, defaultAddressItem } = useAddressFormSchema({
     fpi,
@@ -99,30 +148,79 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
 
   function convertDropDownField(inputField) {
     return {
-      key: inputField.display_name,
-      display: inputField.display_name,
+      key: inputField.name,
+      display: inputField.name,
     };
   }
 
   const handleCountryChange = async (e) => {
-    const selectedCountry = countries.find(
-      (country) => country.display_name === e
+    // Set flag to prevent useEffect from resetting our selection
+    isUserChangingCountry.current = true;
+    
+    const newSelectedCountry = countryCurrencies.find(
+      (country) => country.name === e
     );
-    setSelectedCountry(selectedCountry);
+    
+    if (!newSelectedCountry) {
+      isUserChangingCountry.current = false;
+      return;
+    }
+    
+    setSelectedCountry(newSelectedCountry);
+    
     try {
+      // Fetch country details and update store (this updates form schema)
       const response = await fetchCountrieDetails({
-        countryIsoCode: selectedCountry?.meta?.country_code,
+        countryIsoCode: newSelectedCountry?.iso2,
       });
+      
       if (response?.data?.country) {
         const countryInfo = response.data.country;
-        setI18nDetails({
-          iso: countryInfo.iso2,
-          phoneCode: countryInfo.phone_code,
-          name: countryInfo.display_name,
-          currency: countryInfo.currency.code,
-        });
+        
+        // Get the default currency from the selected country object
+        // This ensures we use the correct currency structure
+        const defaultCurrency =
+          newSelectedCountry?.currencies?.find((c) => c.is_default) ||
+          newSelectedCountry?.currencies?.[0] ||
+          countryInfo.currency;
+        
+        // Update global i18n details to sync header country
+        // This ensures the header shows the selected country
+        setI18nDetails(
+          {
+            iso: countryInfo.iso2,
+            phoneCode: countryInfo.phone_code,
+            name: countryInfo.display_name,
+          },
+          defaultCurrency?.code || countryInfo.currency?.code
+        );
+        
+        // Reset flag after a delay to allow all state updates to complete
+        // This prevents the useEffect from resetting the country back
+        // Clear any existing timeout before setting a new one
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+          isUserChangingCountry.current = false;
+          timeoutRef.current = null;
+        }, 1500);
+      } else {
+        // Reset flag even if fetch fails
+        isUserChangingCountry.current = false;
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      // Reset flag on error
+      isUserChangingCountry.current = false;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    }
   };
 
   const handleCountrySearch = (event) => {
@@ -131,14 +229,14 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
 
   const getFilteredCountries = (selectedCountry) => {
     if (!countrySearchText) {
-      return countries?.map((country) => convertDropDownField(country)) || [];
+      return countryCurrencies?.map((country) => convertDropDownField(country)) || [];
     }
-    return countries?.filter(
+    return countryCurrencies?.filter(
       (country) =>
-        country?.display_name
+        country?.name
           ?.toLowerCase()
           ?.indexOf(countrySearchText?.toLowerCase()) !== -1 &&
-        country?.id !== selectedCountry?.id
+        country?.uid !== selectedCountry?.uid
     );
   };
 
@@ -149,8 +247,9 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   }, [address_id]);
 
   useEffect(() => {
+    // Only set default address if there's no address_id in URL and no selectedAddressId
+    // This prevents overriding user's manual selection
     if (address_id) {
-      // setSelectedAddressId(id);
       return;
     }
     if (getDefaultAddress.length && !selectedAddressId) {
@@ -186,6 +285,13 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     setIssNewAddress(true);
     setAddressItem(false);
     setModalTitle("");
+    // Reset the flag when modal closes
+    isUserChangingCountry.current = false;
+    // Clear any pending timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
   };
 
   const editAddress = (item) => {
@@ -218,6 +324,11 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       if (obj[key] === undefined) {
         delete obj[key]; // Removes undefined values directly from the original object
       }
+    }
+    // Convert country object to string (uid/id/iso2) if it's an object
+    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    if (obj.country && typeof obj.country === "object" && obj.country !== null) {
+      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
     }
     obj.country_phone_code = `+${obj.phone.countryCode}`;
     obj.phone = obj.phone.mobile;
@@ -282,6 +393,11 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         delete obj[key]; // Removes undefined values directly from the original object
       }
     }
+    // Convert country object to string (uid/id/iso2) if it's an object
+    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    if (obj.country && typeof obj.country === "object" && obj.country !== null) {
+      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
+    }
     obj.country_phone_code = `+${obj?.phone?.countryCode}`;
     obj.phone = obj?.phone?.mobile;
 
@@ -337,6 +453,21 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   };
 
   const removeAddress = () => {
+    const deletedAddressId = selectedAddressId;
+
+    // Check if the address being deleted is a default address
+    const addressToDelete = allAddresses?.find(
+      (addr) => addr?.id === deletedAddressId
+    );
+    if (addressToDelete?.is_default_address) {
+      showSnackbar(
+        t("resource.common.address.default_address_cannot_be_deleted") ||
+          "Default address cannot be deleted. Please contact support team",
+        "error"
+      );
+      return;
+    }
+
     fpi
       .executeGQL(
         `
@@ -346,7 +477,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
             is_deleted
         }
     }`,
-        { id: selectedAddressId }
+        { id: deletedAddressId }
       )
       .then((res) => {
         const { is_deleted } = res?.data?.removeAddress ?? {};
@@ -354,6 +485,12 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
 
         if (is_deleted) {
+          // Clear selected address from global store if the deleted address was selected
+          if (selectedAddress?.id === deletedAddressId) {
+            clearSelectedAddress?.();
+          }
+          // Reset selected address ID
+          setSelectedAddressId("");
           showSnackbar(
             t("resource.common.address.address_deletion_success"),
             "success"
@@ -365,6 +502,13 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           );
           resetAddressState();
         }
+      })
+      .catch(() => {
+        // Handle error gracefully
+        showSnackbar(
+          t("resource.common.address.address_deletion_failure"),
+          "error"
+        );
       });
   };
 
@@ -387,29 +531,61 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     navigate(`${location.pathname}?${updatedSearch}`);
   };
 
-  const selectAddress = (id = "", addresses) => {
+  const selectAddress = (id = "", addresses = null) => {
     const addressList = addresses?.length > 0 ? addresses : allAddresses;
-    const targetId = id || selectedAddressId;
+
+    // Ensure we extract ID string from id parameter (handle case where object might be passed)
+    let idString = "";
+    if (id) {
+      idString = typeof id === "string" ? id : id?.id || "";
+    }
+
+    // Ensure selectedAddressId is a string, not an object
+    const currentSelectedId =
+      typeof selectedAddressId === "string"
+        ? selectedAddressId
+        : selectedAddressId?.id || "";
+
+    const targetId = idString || currentSelectedId;
     const findAddress = addressList?.find((item) => item?.id === targetId);
+    const finalAddressId = idString || findAddress?.id || targetId;
+
+    // Final validation: ensure finalAddressId is a string
+    const addressIdString =
+      typeof finalAddressId === "string"
+        ? finalAddressId
+        : finalAddressId?.id || "";
+
+    // Validate address ID before proceeding
+    if (!addressIdString || typeof addressIdString !== "string") {
+      showSnackbar(
+        t("resource.common.address.address_selection_failure"),
+        "error"
+      );
+      return;
+    }
+
     const payload = {
       cartId: cart_id,
       buyNow,
       selectCartAddressRequestInput: {
         cart_id,
-        id: id.length ? id : findAddress?.id,
-        billing_address_id: id.length ? id : findAddress?.id,
+        id: addressIdString,
+        billing_address_id: addressIdString,
       },
     };
 
     fpi.executeGQL(SELECT_ADDRESS, payload).then((res) => {
       if (res?.data?.selectAddress?.is_valid) {
+        // Update selectedAddressId state to keep it in sync (ensure it's a string)
+        setSelectedAddressId(addressIdString);
         setIsShipmentLoading(true);
-        updateQuery("address_id", id.length ? id : selectedAddressId);
+        updateQuery("address_id", addressIdString);
         updatedSelectedAddress(findAddress)
           .then(() => {
             fpi
               .executeGQL(FETCH_SHIPMENTS, {
-                addressId: `${id.length ? id : selectedAddressId}`,
+                addressId: addressIdString,
                 id: `${cart_id}`,
                 buyNow,
               })
@@ -433,7 +609,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         });
       } else {
         setInvalidAddressError({
-          id: id.length ? id : findAddress?.id,
+          id: addressIdString,
           message:
             translateDynamicLabel(res?.data?.selectAddress?.message, t) ||
             res?.errors?.[0]?.message,
@@ -443,10 +619,20 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   };
 
   const onFailedGetCartShipmentDetails = async () => {
+    // Ensure selectedAddressId is a string before using it
+    const addressId =
+      typeof selectedAddressId === "string"
+        ? selectedAddressId
+        : selectedAddressId?.id || "";
+
+    if (!addressId) {
+      return;
+    }
+
     setIsShipmentLoading(true);
     await fpi
       .executeGQL(FETCH_SHIPMENTS, {
-        addressId: `${selectedAddressId}`,
+        addressId,
         id: `${cart_id}`,
         buyNow,
       })
@@ -484,7 +670,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       .executeGQL(LOCALITY, {
         locality: posttype,
         localityValue: `${postcode}`,
-        country: selectedCountry?.meta?.country_code,
+        country: selectedCountry?.meta?.country_code || selectedCountry?.iso2,
       })
       .then((res) => {
         const data = { showError: false, errorMsg: "" };

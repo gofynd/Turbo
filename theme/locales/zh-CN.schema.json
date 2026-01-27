@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "排版",
-        "algolia_configuration": "Algolia 配置",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "页脚",
         "cart_and_button_configuration": "购物车和按钮配置",
         "product_card_configuration": "产品卡配置",
@@ -158,8 +158,8 @@
         "transparent_header_info": "当应用横幅或图像幻灯片在顶部显示透明标头",
         "transparent_header": "透明标头"
       },
-      "algolia_configuration": {
-        "enable_algolia": "启用 Algolia"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "标识",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "桌面内容对齐",
         "banner_horizontal_scroll": "带有水平滚动条的横幅",
         "banner_with_stack": "带堆栈的横幅",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "布局（移动端）",
         "content_alignment_mobile": "移动设备上的内容对齐",
         "text_alignment": "文本对齐",

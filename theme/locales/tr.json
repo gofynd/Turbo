@@ -486,6 +486,8 @@
         "my_address": "ADRESLERİM",
         "add_new_address": "Yeni Adres Ekle",
         "add_new_address_caps": "YENİ ADRES EKLE",
+        "default_address": "Varsayılan Adres",
+        "other_addresses": "Diğer Adresler",
         "no_address_available": "Adres bulunamadı",
         "address_not_found": "Adres bulunamadı!",
         "return_to_my_address": "ADRESİME GERİ DÖN",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "Posta kodu tam olarak 6 haneli olmalıdır",
         "invalid_phone_number": "Geçersiz Telefon Numarası",
         "enter_pincode": "Posta kodunu girin",
-        "default_address": "Varsayılan Adres",
         "other_address": "Diğer Adres",
         "address_type": "Adres Türü",
         "make_this_my_default_address": "Bunu varsayılan adresim yap"

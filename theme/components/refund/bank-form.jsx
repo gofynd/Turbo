@@ -1,4 +1,4 @@
-import React, { useId, useState } from "react";
+import React, { useId, useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import styles from "./styles/bank-form.less";
 import useRefundDetails from "../../page-layouts/orders/useRefundDetails";
@@ -14,14 +14,17 @@ function BankForm({
   addBankAccount,
   setShowBeneficiaryAdditionPage,
   exisitingBankRefundOptions = [],
-  footerClassName = "",
+  customClass = "",
+  customBtnClass = "",
+  focusRef,
+  setIsBankFormValid,
+  isMobile = false,
 }) {
   const { t } = useGlobalTranslation("translation");
   const [inProgress, setInProgress] = useState(false);
   const [isValidIfsc, setIsValidIfsc] = useState(false);
   const [branchName, setBranchName] = useState(null);
   const [bankName, setBankName] = useState(false);
-  const [value, setValue] = useState(null);
   const ifscCodeId = useId();
   const accountNoId = useId();
   const confirmedAccountNoId = useId();
@@ -30,7 +33,9 @@ function BankForm({
     register,
     getValues,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, touchedFields, isValid },
+    setValue,
+    trigger,
   } = useForm({
     defaultValues: {
       ifscCode: "",
@@ -42,13 +47,20 @@ function BankForm({
   });
 
   const { ifscDetails, verifyIfscCode } = useRefundDetails(fpi);
+  const [ifscValidationResult, setIfscValidationResult] = useState(null);
 
   const validateIfscCode = async (value) => {
     if (value.length !== 11) {
       setIsValidIfsc(false);
       setBranchName("");
       setBankName("");
+      setIfscValidationResult(null);
       return t("resource.order.enter_valid_ifsc_code");
+    }
+
+    // Return cached result if value hasn't changed
+    if (ifscValidationResult && ifscValidationResult.value === value) {
+      return ifscValidationResult.result;
     }
 
     try {
@@ -59,18 +71,24 @@ function BankForm({
         setBranchName(ifscDetails.branch_name);
         setBankName(ifscDetails.bank_name);
         setIsValidIfsc(true);
-        return true;
+        const result = true;
+        setIfscValidationResult({ value, result });
+        return result;
       } else {
         setIsValidIfsc(false);
         setBranchName("");
         setBankName("");
-        return data?.message || t("resource.common.invalid_ifsc_code");
+        const result = data?.message || t("resource.common.invalid_ifsc_code");
+        setIfscValidationResult({ value, result });
+        return result;
       }
     } catch (error) {
       setIsValidIfsc(false);
       setBranchName("");
       setBankName("");
-      return t("resource.common.error_validating_ifsc");
+      const result = t("resource.common.error_validating_ifsc");
+      setIfscValidationResult({ value, result });
+      return result;
     }
   };
   const handleFormSubmit = (formdata) => {
@@ -84,6 +102,13 @@ function BankForm({
     if (/\d/.test(value)) {
       return t(
         "resource.refund_order.numbers_not_allowed_in_account_holder_name"
+      );
+    }
+
+    // Add validation for special characters (except spaces and common name characters)
+    if (!/^[a-zA-Z\s.',-]+$/.test(value)) {
+      return t(
+        "resource.refund_order.special_characters_not_allowed_in_account_holder_name"
       );
     }
 
@@ -118,7 +143,6 @@ function BankForm({
 
     // Remove any spaces for validation
     const accountNumber = value.toString().replace(/\s/g, "");
-
     // Check if it contains only digits
     if (!/^\d+$/.test(accountNumber)) {
       return t(
@@ -143,11 +167,58 @@ function BankForm({
     return true;
   };
 
-  const handleAccountNumberInput = (e) => {
-    if (e.target.value.length > 18) {
-      e.target.value = e.target.value.slice(0, 18);
+  const ifscRef = useRef(null);
+
+  useEffect(() => {
+    if (focusRef) {
+      focusRef.current = ifscRef.current;
+    }
+  }, [focusRef]);
+
+  useEffect(() => {
+    setIsBankFormValid?.(isValid);
+  }, [isValid, setIsBankFormValid]);
+
+  // const handleAccountNumberInput = (e) => {
+  //   if (e.target.value.length > 18) {
+  //     e.target.value = e.target.value.slice(0, 18);
+  //   }
+  // };
+
+  const normalizeAccountNumber = (e, fieldName) => {
+    // keep only digits
+    let value = e.target.value.replace(/\D/g, "");
+    // limit to 18 digits
+    value = value.slice(0, 18);
+
+    setValue(fieldName, value, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  };
+
+  const handleAccountNumberKeyDown = (e) => {
+    const allowedControlKeys = [
+      "Backspace",
+      "Delete",
+      "ArrowLeft",
+      "ArrowRight",
+      "Tab",
+      "Home",
+      "End",
+    ];
+
+    // Allow shortcuts like Ctrl/Cmd + A/C/V/X/Z/Y
+    if (e.ctrlKey || e.metaKey) return;
+
+    if (allowedControlKeys.includes(e.key)) return;
+
+    // Block if key is not a digit 0–9
+    if (!/^\d$/.test(e.key)) {
+      e.preventDefault();
     }
   };
+
   const handleAccountHolderKeyPress = (e) => {
     if (
       !/[a-zA-Z\s.',-]/.test(e.key) &&
@@ -159,10 +230,11 @@ function BankForm({
   };
 
   return (
-    <div className={styles.formContainer}>
+    <div className={`${styles.formContainer} ${customClass}`}>
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
         className={styles.addAccountForm}
+        id="bankFormId"
       >
         <div className={styles.formItem}>
           <Input
@@ -171,6 +243,7 @@ function BankForm({
             showAsterik
             required
             id={ifscCodeId}
+            ref={ifscRef}
             maxLength={11}
             type="text"
             {...register("ifscCode", {
@@ -195,8 +268,19 @@ function BankForm({
             required
             id={accountNoId}
             onInput={(e) => handleAccountNumberInput(e)}
-            type="number"
+            type="text"
+            inputMode="numeric"
+            maxLength={18}
+            onKeyDown={handleAccountNumberKeyDown}
             {...register("accountNo", {
+              onChange: (e) => {
+                normalizeAccountNumber(e, "accountNo");
+
+                const confirmValue = getValues("confirmedAccountNo");
+                if (confirmValue) {
+                  trigger("confirmedAccountNo");
+                }
+              },
               validate: (value) =>
                 validateAccountNo(value) ||
                 t("resource.order.enter_valid_account_number"),
@@ -212,10 +296,12 @@ function BankForm({
             showAsterik
             required
             id={confirmedAccountNoId}
-            onPaste={(e) => e.preventDefault()}
-            onInput={(e) => handleAccountNumberInput(e)}
-            type="number"
+            type="text"
+            inputMode="numeric"
+            maxLength={18}
+            onKeyDown={handleAccountNumberKeyDown}
             {...register("confirmedAccountNo", {
+              onChange: (e) => normalizeAccountNumber(e, "confirmedAccountNo"),
               validate: (value) =>
                 value === getValues("accountNo") ||
                 t("resource.refund_order.account_numbers_do_not_match"),
@@ -245,11 +331,19 @@ function BankForm({
           />
         </div>
         {exisitingBankRefundOptions?.length === 0 ? (
-          <div className={styles.footerSectionContinue}>
-            <button className={`${styles.btn}`} type="submit">
-              {t("resource.common.continue")}
-            </button>
-          </div>
+          !isMobile && (
+            <div
+              className={`${styles.footerSectionContinue} ${customBtnClass}`}
+            >
+              <button
+                className={`${styles.btn}`}
+                disabled={!isValid}
+                type="submit"
+              >
+                {t("resource.common.continue")}
+              </button>
+            </div>
+          )
         ) : (
           <div className={styles.footerSection}>
             <button

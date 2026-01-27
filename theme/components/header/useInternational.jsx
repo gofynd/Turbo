@@ -1,42 +1,34 @@
 import { useMemo } from "react";
 import { useGlobalStore } from "fdk-core/utils";
-import { COUNTRY_DETAILS, FETCH_LOCALITIES } from "../../queries/internationlQuery";
+import {
+  COUNTRY_DETAILS,
+  FETCH_LOCALITIES,
+} from "../../queries/internationlQuery";
 import { useThemeFeature } from "../../helper/hooks";
 import { isRunningOnClient } from "../../helper/utils";
 
-
 const useInternational = ({ fpi }) => {
-  const customValues = isRunningOnClient() ? useGlobalStore(fpi?.getters?.CUSTOM_VALUE) : {};
-  const locationDetails = isRunningOnClient() ? useGlobalStore(fpi?.getters?.LOCATION_DETAILS) : {};
-  const i18nDetails = isRunningOnClient() ? useGlobalStore(fpi?.getters?.i18N_DETAILS) : {};
+  // Always call hooks unconditionally - React requires this
+  const customValues = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
+  const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS) || {};
+  const i18nDetails = useGlobalStore(fpi?.getters?.i18N_DETAILS) || {};
 
-  const {
-    countries,
-    currencies,
-    defaultCurrency: defaultCurrencyCode,
-    countryDetails,
-  } = customValues ?? {};
+  const { countryCurrencies, countryDetails } = customValues ?? {};
 
   const { isInternational } = useThemeFeature({ fpi });
 
   const currentCountry = useMemo(() => {
-    return countries?.find(
-      (country) => country.meta.country_code === i18nDetails?.countryCode
+    return countryCurrencies?.find(
+      (country) => country.iso2 === i18nDetails?.countryCode
     );
-  }, [countries, i18nDetails?.countryCode]);
+  }, [countryCurrencies, i18nDetails?.countryCode]);
 
   const currentCurrency = useMemo(() => {
-    if (!i18nDetails?.currency?.code) {
-      return currencies?.find((data) => data?.code === defaultCurrencyCode);
-    }
-    return currencies?.find(
+    if (!currentCountry?.currencies?.length) return null;
+    return currentCountry.currencies?.find(
       (data) => data?.code === i18nDetails?.currency?.code
     );
-  }, [currencies, i18nDetails?.currency?.code, defaultCurrencyCode]);
-
-  const defaultCurrency = useMemo(() => {
-    return currencies?.find((data) => data?.code === defaultCurrencyCode);
-  }, [currencies, defaultCurrencyCode]);
+  }, [currentCountry, i18nDetails?.currency?.code]);
 
   const countryAddressFieldMap = useMemo(() => {
     const addressFields = countryDetails?.fields?.address;
@@ -62,6 +54,7 @@ const useInternational = ({ fpi }) => {
         countryDetails?.fields?.serviceability_fields || [];
       return requiredFields.every((field) => field in locationDetails);
     }
+
     return false;
   }, [locationDetails, countryDetails]);
 
@@ -102,16 +95,10 @@ const useInternational = ({ fpi }) => {
     });
   }
 
-  function setI18nDetails({ iso, phoneCode, name, currency }, currencyCode) {
-    let newCurrency = currencyCode;
-    if (!newCurrency) {
-      const countryCurrency = currencies?.find(
-        (data) => data?.code === currency
-      );
-      newCurrency = countryCurrency?.code ?? defaultCurrencyCode;
-    }
+  function setI18nDetails({ iso, phoneCode, name }, currencyCode) {
+    const newCurrency = currencyCode;
+
     const cookiesData = {
-      ...i18nDetails,
       currency: { code: newCurrency },
       country: {
         iso_code: iso,
@@ -126,7 +113,8 @@ const useInternational = ({ fpi }) => {
   function fetchLocalities(payload) {
     return fpi.executeGQL(FETCH_LOCALITIES, payload).then((res) => {
       if (res?.data?.localities) {
-        return res?.data?.localities.items;
+        const data = res?.data?.localities;
+        return data.items;
       }
     });
   }
@@ -135,9 +123,7 @@ const useInternational = ({ fpi }) => {
     isLoading: !countryDetails,
     isInternational,
     i18nDetails,
-    countries,
-    currencies,
-    defaultCurrency,
+    countryCurrencies,
     countryDetails,
     currentCountry,
     currentCurrency,

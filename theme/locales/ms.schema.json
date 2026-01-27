@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "Tipografi",
-        "algolia_configuration": "Konfigurasi Algolia",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "Pengaki",
         "cart_and_button_configuration": "Konfigurasi Troli & Butang",
         "product_card_configuration": "Konfigurasi Kad Produk",
@@ -158,8 +158,8 @@
         "transparent_header": "Header telus",
         "transparent_header_info": "Sapukan Header Telus Semasa Banner Permohonan atau Tunjukkan Slaid Imej Di Atas"
       },
-      "algolia_configuration": {
-        "enable_algolia": "Dayakan Algolia"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "Logo",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "Penjajaran kandungan dalam desktop",
         "banner_horizontal_scroll": "Sepanduk dengan tatal mendatar",
         "banner_with_stack": "Sepanduk dengan Tindanan",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "Reka letak (Mudah alih)",
         "content_alignment_mobile": "Penjajaran kandungan dalam mudah alih",
         "text_alignment": "Penjajaran Teks",

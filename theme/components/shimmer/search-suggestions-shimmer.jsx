@@ -30,6 +30,11 @@ function SearchSuggestionsShimmer({
   return (
     <div className={styles.searchSuggestionsShimmer}>
       <div className={styles.searchSuggestionsShimmerSection}>
+        <div className={styles.searchSuggestionsShimmerTitle}>Collection</div>
+        {renderPills()}
+      </div>
+
+      <div className={styles.searchSuggestionsShimmerSection}>
         <div className={styles.searchSuggestionsShimmerTitle}>Brand</div>
         {renderPills()}
       </div>

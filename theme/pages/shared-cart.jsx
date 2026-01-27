@@ -7,6 +7,39 @@ function SharedCartPage({ fpi }) {
 
 SharedCartPage.serverFetch = () => {};
 
-export const sections = JSON.stringify([]);
+export const sections = JSON.stringify([
+  {
+    canvas: {
+      value: "left_panel",
+      label: "Left Panel",
+    },
+    attributes: {
+      page: "shared-cart",
+    },
+    blocks: [
+      {
+        type: "shared-cart-items",
+        name: "Shared Cart Items",
+        props: [],
+      },
+    ],
+  },
+  {
+    canvas: {
+      value: "right_panel",
+      label: "Right Panel",
+    },
+    attributes: {
+      page: "shared-cart",
+    },
+    blocks: [
+      {
+        type: "shared-cart-breakup",
+        name: "Shared Cart Breakup",
+        props: [],
+      },
+    ],
+  },
+]);
 
 export default SharedCartPage;

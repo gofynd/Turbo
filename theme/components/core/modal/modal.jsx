@@ -37,7 +37,15 @@ function Modal({
     isOpen && (
       <div
         role="button"
-        className={`${styles.modal} ${modalType === "right-modal" ? styles.rightModal : ""}`}
+        className={`${styles.modal} ${
+          modalType === "right-modal"
+            ? styles.rightModal
+            : modalType === "mobile-fullscreen"
+              ? styles.mobileFullscreen
+              : modalType === "order-filter"
+                ? styles.orderFilterModal
+                : ""
+        }`}
         ref={modalRef}
         tabIndex="0"
         onKeyDown={(e) => e.key === "Escape" && isCancelable && closeDialog()}

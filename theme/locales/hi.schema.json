@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "टाइपोग्राफी",
-        "algolia_configuration": "अल्गोलिया कॉन्फ़िगरेशन",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "फ़ुटबाल",
         "cart_and_button_configuration": "कार्ट और बटन कॉन्फ़िगरेशन",
         "product_card_configuration": "उत्पाद कार्ड कॉन्फ़िगरेशन",
@@ -158,8 +158,8 @@
         "transparent_header": "पारदर्शी शीर्ष लेख",
         "transparent_header_info": "शीर्ष पर एप्लिकेशन बैनर या इमेज स्लाइड शो होने पर पारदर्शी हेडर लागू करें"
       },
-      "algolia_configuration": {
-        "enable_algolia": "एल्गोलिया सक्षम करें"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "प्रतीक चिन्ह",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "डेस्कटॉप में सामग्री का संरेखण",
         "banner_horizontal_scroll": "क्षैतिज स्क्रॉल वाला बैनर",
         "banner_with_stack": "स्टैक के साथ बैनर",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "लेआउट (मोबाइल)",
         "content_alignment_mobile": "मोबाइल में सामग्री का संरेखण",
         "text_alignment": "पाठ संरेखण",

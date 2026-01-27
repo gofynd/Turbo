@@ -1,5 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { useFPI, useGlobalTranslation, useNavigate } from "fdk-core/utils";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import {
+  useFPI,
+  useGlobalTranslation,
+  useNavigate,
+  useGlobalStore,
+} from "fdk-core/utils";
 import { BlockRenderer } from "fdk-core/components";
 import PriceBreakup from "@gofynd/theme-template/components/price-breakup/price-breakup";
 import DeliveryLocation from "@gofynd/theme-template/page-layouts/cart/Components/delivery-location/delivery-location";
@@ -29,12 +34,11 @@ import RadioIcon from "../assets/images/radio";
 import { translateDynamicLabel } from "../helper/utils";
 import { Skeleton } from "../components/core/skeletons";
 import ChipItemSkeleton from "../components/cart/chip-item-skeleton";
-import { useGlobalStore } from "fdk-core/utils";
 
 export function Component({ props = {}, globalConfig = {}, blocks }) {
   const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
-  const { isInternational } = useThemeFeature({ fpi });
+  const { isCrossBorderOrder } = useThemeFeature({ fpi });
   const { getFormattedPromise } = useDeliverPromise({ fpi });
   const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION) || {};
   const { order = {} } = app_features || {};
@@ -56,6 +60,7 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
     isGstInput = true,
     isPlacingForCustomer,
     isRemoveModalOpen = false,
+    isRemoving = false,
     isPromoModalOpen = false,
     customerCheckoutMode,
     checkoutMode,
@@ -108,13 +113,10 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
     if (savedLoyaltyChecked === "true") {
       setIsLoyaltyChecked(true);
       onApplyLoyaltyPoints(true, false) // 👈 false = silent, no toast
-        .then((res) => {
-          if (res?.applyRewardPoints?.success) {
-            setApplyRewardResponse(res);
-          }
+        .then(() => {
+          // Reward points applied successfully
         })
-        .catch((err) => {
-          console.error("Failed to apply reward points on mount:", err);
+        .catch(() => {
           setIsLoyaltyChecked(false);
           localStorage.removeItem(`isLoyaltyChecked_${cartData.id}`);
         });
@@ -137,21 +139,52 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
 
   useEffect(() => {}, [cartData]);
   const handleLoyaltyCheckboxChange = async (event) => {
-    const checked = event.target.checked;
+    const { checked } = event.target;
     setIsLoyaltyChecked(checked);
     if (cartData?.id) {
       localStorage.setItem(`isLoyaltyChecked_${cartData.id}`, checked);
     }
 
     try {
-      const response = await onApplyLoyaltyPoints(checked);
-    } catch (error) {
-      console.error("Failed to apply reward points:", error);
+      await onApplyLoyaltyPoints(checked);
+    } catch {
       setIsLoyaltyChecked(false);
     }
   };
 
-  const cartItemsArray = Object.keys(cartItems || {});
+  /**
+   * Generates cart item keys consistently with the transformation logic
+   * This matches the key generation in useCart.jsx
+   */
+  const generateItemKey = useCallback((item, index) => {
+    const itemIndex = item?.article?.item_index ?? index;
+    const storeUid = item?.article?.store?.uid ?? "";
+    
+    if (item?.key) {
+      return `${item.key}_${storeUid}_${itemIndex}`;
+    }
+    
+    if (item?.product?.uid && item?.article?.size) {
+      const fulfillmentSlug = item?.article?.fulfillment_option?.slug || "standard-delivery";
+      const fallbackKey = `${item.product.uid}_${item.article.size}_${fulfillmentSlug}`;
+      return `${fallbackKey}_${storeUid}_${itemIndex}`;
+    }
+    
+    return `item_${index}_${storeUid}_${itemIndex}`;
+  }, []);
+
+  // Use transformed cartItems if available, otherwise fallback to raw items array
+  const cartItemsArray = useMemo(() => {
+    const keys = Object.keys(cartItems || {});
+    // If transformed items are empty but raw items exist, create keys from raw items
+    if (keys.length === 0 && cartItemsWithActualIndex?.length > 0) {
+      return cartItemsWithActualIndex.map((item, index) =>
+        generateItemKey(item, index)
+      );
+    }
+    return keys;
+  }, [cartItems, cartItemsWithActualIndex, generateItemKey]);
+  
   const sizeModalItemValue = cartItems && sizeModal && cartItems[sizeModal];
 
   const [firstWord, secondWord] = (cartData?.message || "").split(" ");
@@ -182,7 +215,9 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
     return !!blocks?.find((block) => block?.type === "share_cart");
   }, [blocks]);
 
-  if (cartData?.items?.length === 0) {
+  // Only show empty state if cart is loaded and has no items
+  // Don't show empty state while loading to prevent flash of empty state after login
+  if (!isLoading && cartData?.items?.length === 0) {
     return (
       <EmptyState
         Icon={
@@ -216,10 +251,18 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                     <Skeleton height={17} width={60} />
                   ) : (
                     <>
-                      ({cartItemsArray?.length || 0}
-                      {cartItemsArray?.length > 1
-                        ? ` ${t("resource.common.items")}`
-                        : ` ${t("resource.common.item")}`}
+                      (
+                        {(() => {
+                          const itemCount =
+                            cartData?.user_cart_items_count ??
+                            cartItemsArray?.length ??
+                            0;
+                          return `${itemCount} ${
+                            itemCount > 1
+                              ? t("resource.common.items")
+                              : t("resource.common.item")
+                          }`;
+                        })()}
                       )
                     </>
                   )}
@@ -231,10 +274,10 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                 </div>
               )}
             </div>
-            {isLoading ? (
+            {isLoading || (isRemoving && isCartUpdating) ? (
               Array(2)
                 .fill()
-                .map((_) => <ChipItemSkeleton />)
+                .map((_, idx) => <ChipItemSkeleton key={idx} />)
             ) : (
               <>
                 {cartItemsArray?.length > 0 && (
@@ -270,7 +313,19 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                       </div>
                     )}
                     {cartItemsArray?.map((singleItem, itemIndex) => {
-                      const singleItemDetails = cartItems[singleItem];
+                      // Get item from transformed cartItems, or fallback to raw items array
+                      const singleItemDetails =
+                        cartItems?.[singleItem] ||
+                        cartItemsWithActualIndex?.find(
+                          (item, idx) =>
+                            generateItemKey(item, idx) === singleItem
+                        );
+
+                      // Safety check: skip rendering if item details are not found
+                      if (!singleItemDetails) {
+                        return null;
+                      }
+                      
                       // const productImage =
                       //   singleItemDetails?.product?.images?.length > 0 &&
                       //   singleItemDetails?.product?.images[0]?.url?.replace(
@@ -384,8 +439,12 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                           </div>
                         </div>
 
-                        <label className={styles.loyaltyPointsTitle}>
+                        <label
+                          htmlFor="loyalty-points-checkbox"
+                          className={styles.loyaltyPointsTitle}
+                        >
                           <input
+                            id="loyalty-points-checkbox"
                             type="checkbox"
                             checked={isLoyaltyChecked}
                             onChange={handleLoyaltyCheckboxChange}
@@ -448,9 +507,13 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                     <PriceBreakup
                       key={key}
                       breakUpValues={breakUpValues?.display || []}
-                      cartItemCount={cartItemsArray?.length || 0}
+                      cartItemCount={
+                        cartData?.user_cart_items_count ??
+                        cartItemsArray?.length ??
+                        0
+                      }
                       currencySymbol={currencySymbol}
-                      isInternationalTaxLabel={isInternational}
+                      isInternationalTaxLabel={isCrossBorderOrder}
                       isLoading={isLoading}
                     />
                   );
@@ -562,6 +625,7 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
         <RemoveCartItem
           isOpen={isRemoveModalOpen}
           cartItem={removeItemData?.item}
+          isRemoving={isRemoving}
           onRemoveButtonClick={() => onRemoveButtonClick(removeItemData)}
           onWishlistButtonClick={() => onWishlistButtonClick(removeItemData)}
           onCloseDialogClick={onCloseRemoveModalClick}

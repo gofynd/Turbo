@@ -294,6 +294,45 @@ export const GET_SHIPMENT_DETAILS = `query shipment(
         mobile
         name
       }
+        refund_breakup_values {
+        name
+        display
+        value
+        currency_symbol
+        currency_code
+        sub_values {
+            name
+            display
+            value
+            currency_symbol
+            currency_code
+        }
+      }
+      is_refund_config_enabled
+      refund_modes {
+        default_refund_mode
+        identifier
+        amount_paid
+        refund_amount
+        refund_status {
+            id
+            status
+            operational_status
+            transaction_info {
+            rrn, utr, mode
+          }
+        }
+        beneficiary_details {
+            account_holder
+            account_no
+            bank_name
+            branch_name
+            vpa_address
+        },
+        refund_mode
+        display_name
+        payment_identifiers
+      }
     }
   }
 }`;
@@ -725,7 +764,7 @@ export const COMPLETE_MEDIA_UPLOAD = `mutation CompleteUpload($completeUploadReq
   }
 }`;
 
-export const DELIVERY_REQUEST_REATTEMPT=`mutation submitDeliveryReattemptRequest(
+export const DELIVERY_REQUEST_REATTEMPT = `mutation submitDeliveryReattemptRequest(
   $shipmentId: String!
   $deliveryReattemptRequestInput: DeliveryReattemptRequestInput
 ) {
@@ -745,4 +784,4 @@ export const UPDATE_DEFAULT_BENEFICIARY = `mutation updateDefaultBeneficiary(
     is_beneficiary_set
     success
   }
-}`
+}`;

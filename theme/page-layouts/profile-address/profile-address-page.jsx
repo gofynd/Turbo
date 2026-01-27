@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useLayoutEffect } from "react";
+import React, { useState, useEffect, useMemo, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { LOCALITY } from "../../queries/logisticsQuery";
 import useAddress from "../address/useAddress";
@@ -8,9 +8,7 @@ import { useSnackbar, useAddressFormSchema } from "../../helper/hooks";
 import { capitalize, resetScrollPosition } from "../../helper/utils";
 import styles from "./profile-address-page.less";
 import AddressForm from "@gofynd/theme-template/components/address-form/address-form";
-import AddressItem from "@gofynd/theme-template/components/address-item/address-item";
 import "@gofynd/theme-template/components/address-form/address-form.css";
-import "@gofynd/theme-template/components/address-item/address-item.css";
 import useInternational from "../../components/header/useInternational";
 import {
   useNavigate,
@@ -21,6 +19,7 @@ import ProfileEmptyState from "@gofynd/theme-template/pages/profile/components/e
 import "@gofynd/theme-template/pages/profile/components/empty-state/empty-state.css";
 import PlusAddressIcon from "../../assets/images/plus-address.svg";
 import AddAddressIcon from "../../assets/images/add-address.svg";
+import ProfileAddressCard from "../../components/profile-address-card/profile-address-card";
 
 const DefaultAddress = () => {
   const { t } = useGlobalTranslation("translation");
@@ -39,6 +38,7 @@ const ProfileAddressPage = ({ fpi }) => {
     isInternational,
     countries,
     currentCountry,
+    countryCurrencies,
     countryDetails,
     fetchCountrieDetails,
     setI18nDetails,
@@ -64,6 +64,20 @@ const ProfileAddressPage = ({ fpi }) => {
   const [selectedCountry, setSelectedCountry] = useState(currentCountry);
   const queryAddressId = searchParams.get("address_id");
   const userDetails = useGlobalStore(fpi.getters.USER_DATA);
+  
+  // Conditionally exclude phone from user data when international shipping is enabled
+  const userDataForForm = useMemo(() => {
+    if (isInternational && userDetails?.phone_numbers) {
+      const { phone_numbers, ...rest } = userDetails;
+      return rest;
+    }
+    return userDetails;
+  }, [userDetails, isInternational]);
+  
+  // Track if we're in the middle of a user-initiated country change
+  const isUserChangingCountry = useRef(false);
+  const timeoutRef = useRef(null);
+  
   const memoizedSelectedAdd = useMemo(() => {
     if (!queryAddressId) return;
 
@@ -81,10 +95,27 @@ const ProfileAddressPage = ({ fpi }) => {
   }, [allAddresses, queryAddressId]);
 
   useEffect(() => {
-    if (currentCountry) {
+    // Only sync selectedCountry with currentCountry if:
+    // 1. User is not actively changing the country
+    // 2. AND we're not in create/edit mode (form is not open)
+    // This prevents the reset loop when user changes country in address form
+    if (
+      currentCountry &&
+      !isUserChangingCountry.current &&
+      !isCreateMode &&
+      !isEditMode
+    ) {
+      setSelectedCountry(currentCountry);
+    } else if (
+      currentCountry &&
+      !isUserChangingCountry.current &&
+      (isCreateMode || isEditMode) &&
+      !selectedCountry
+    ) {
+      // Only sync on initial form open if selectedCountry is not set
       setSelectedCountry(currentCountry);
     }
-  }, [currentCountry]);
+  }, [currentCountry, isCreateMode, isEditMode, selectedCountry]);
 
   const { formSchema, defaultAddressItem } = useAddressFormSchema({
     fpi,
@@ -95,6 +126,15 @@ const ProfileAddressPage = ({ fpi }) => {
     addressFields: countryDetails?.fields?.address,
     addressItem: memoizedSelectedAdd,
   });
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -129,6 +169,12 @@ const ProfileAddressPage = ({ fpi }) => {
     searchParams.delete("edit");
     searchParams.delete("address_id");
     navigateToLocation();
+    // Clear any pending timeout when resetting
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    isUserChangingCountry.current = false;
   };
   const onCreateClick = () => {
     setIsCreateMode(true);
@@ -163,6 +209,11 @@ const ProfileAddressPage = ({ fpi }) => {
         delete obj[key]; // Removes undefined values directly from the original object
       }
     }
+    // Convert country object to string (uid/id/iso2) if it's an object
+    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    if (obj.country && typeof obj.country === "object" && obj.country !== null) {
+      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
+    }
     obj.country_phone_code = `+${obj.phone.countryCode}`;
     obj.phone = obj.phone.mobile;
     setAddressLoader(true);
@@ -190,6 +241,11 @@ const ProfileAddressPage = ({ fpi }) => {
   };
 
   const updateAddressHandler = (obj) => {
+    // Convert country object to string (uid/id/iso2) if it's an object
+    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    if (obj.country && typeof obj.country === "object" && obj.country !== null) {
+      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
+    }
     obj.country_phone_code = `+${obj.phone.countryCode}`;
     obj.phone = obj.phone.mobile;
     setAddressLoader(true);
@@ -217,6 +273,20 @@ const ProfileAddressPage = ({ fpi }) => {
   };
 
   const removeAddressHandler = (id) => {
+    // Check if the address being deleted is a default address
+    const addressToDelete = allAddresses?.find((addr) => addr?.id === id);
+    if (addressToDelete?.is_default_address) {
+      showSnackbar(
+        t("resource.common.address.default_address_cannot_be_deleted") ||
+          "Default address cannot be deleted. Please contact support team",
+        "error"
+      );
+      window.scrollTo({
+        top: 0,
+      });
+      return;
+    }
+
     setAddressLoader(true);
     removeAddress(id).then(async (res) => {
       if (res?.data?.removeAddress?.is_deleted) {
@@ -338,24 +408,73 @@ const ProfileAddressPage = ({ fpi }) => {
   }
 
   const handleCountryChange = async (e) => {
-    const selectedCountry = countries.find(
-      (country) => country.display_name === e
+    // Set flag to prevent useEffect from resetting our selection
+    isUserChangingCountry.current = true;
+    
+    const newSelectedCountry = countryCurrencies.find(
+      (country) => country.name === e
     );
-    setSelectedCountry(selectedCountry);
+    
+    if (!newSelectedCountry) {
+      isUserChangingCountry.current = false;
+      return;
+    }
+    
+    setSelectedCountry(newSelectedCountry);
+    
     try {
+      // Fetch country details and update store (this updates form schema)
       const response = await fetchCountrieDetails({
-        countryIsoCode: selectedCountry?.meta?.country_code,
+        countryIsoCode: newSelectedCountry?.iso2,
       });
+      
       if (response?.data?.country) {
         const countryInfo = response.data.country;
-        setI18nDetails({
-          iso: countryInfo.iso2,
-          phoneCode: countryInfo.phone_code,
-          name: countryInfo.display_name,
-          currency: countryInfo.currency.code,
-        });
+        
+        // Get the default currency from the selected country object
+        // This ensures we use the correct currency structure
+        const defaultCurrency =
+          newSelectedCountry?.currencies?.find((c) => c.is_default) ||
+          newSelectedCountry?.currencies?.[0] ||
+          countryInfo.currency;
+        
+        // Update global i18n details to sync header country
+        // This ensures the header shows the selected country
+        setI18nDetails(
+          {
+            iso: countryInfo.iso2,
+            phoneCode: countryInfo.phone_code,
+            name: countryInfo.display_name,
+          },
+          defaultCurrency?.code || countryInfo.currency?.code
+        );
+        
+        // Reset flag after a delay to allow all state updates to complete
+        // This prevents the useEffect from resetting the country back
+        // Clear any existing timeout before setting a new one
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+          isUserChangingCountry.current = false;
+          timeoutRef.current = null;
+        }, 1500);
+      } else {
+        // Reset flag even if fetch fails
+        isUserChangingCountry.current = false;
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      // Reset flag on error
+      isUserChangingCountry.current = false;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    }
   };
 
   const handleCountrySearch = (event) => {
@@ -363,22 +482,28 @@ const ProfileAddressPage = ({ fpi }) => {
   };
   function convertDropDownField(inputField) {
     return {
-      key: inputField.display_name,
-      display: inputField.display_name,
+      key: inputField.name,
+      display: inputField.name,
     };
   }
   const getFilteredCountries = (selectedCountry) => {
     if (!countrySearchText) {
-      return countries?.map((country) => convertDropDownField(country)) || [];
+      return countryCurrencies?.map((country) => convertDropDownField(country)) || [];
     }
-    return countries?.filter(
+    return countryCurrencies?.filter(
       (country) =>
-        country?.display_name
+        country?.name
           ?.toLowerCase()
           ?.indexOf(countrySearchText?.toLowerCase()) !== -1 &&
-        country?.id !== selectedCountry?.id
+        country?.uid !== selectedCountry?.uid
     );
   };
+  // Group addresses into default and other
+  const defaultAddress = allAddresses?.find((addr) => addr.is_default_address);
+  const otherAddresses = allAddresses?.filter(
+    (addr) => !addr.is_default_address
+  );
+
   return (
     <div className={styles.main}>
       {!isEditMode && !isCreateMode ? (
@@ -391,7 +516,7 @@ const ProfileAddressPage = ({ fpi }) => {
                   className={`${styles.savedAddress} ${styles["bold-xxs"]}`}
                 >
                   {allAddresses?.length
-                    ? `${allAddresses?.length} ${t("resource.profile.saved")}`
+                    ? `(${allAddresses?.length} ${t("resource.profile.saved")})`
                     : ""}{" "}
                 </span>
               </div>
@@ -408,20 +533,51 @@ const ProfileAddressPage = ({ fpi }) => {
               )}
             </div>
           </div>
+
           {allAddresses.length > 0 && (
-            <div className={styles.addressItemContainer}>
-              {allAddresses.map((item, index) => (
-                <AddressItem
-                  key={index}
-                  onAddressSelect={onEditClick}
-                  addressItem={item}
-                  headerRightSlot={
-                    item?.is_default_address && <DefaultAddress />
-                  }
-                  containerClassName={styles.addressItem}
-                  style={{ border: "none" }}
-                />
-              ))}
+            <div className={styles.addressListWrapper}>
+              {/* Default Address Section */}
+              {defaultAddress && (
+                <div className={styles.addressSection}>
+                  <div className={styles.sectionHeader}>
+                    <span className={styles.sectionTitle}>
+                      {t("resource.common.address.default_address") ||
+                        "Default Address"}
+                    </span>
+                  </div>
+                  <div className={styles.addressCardsContainer}>
+                    <ProfileAddressCard
+                      address={defaultAddress}
+                      isDefault={true}
+                      onEdit={onEditClick}
+                      onDelete={removeAddressHandler}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Other Addresses Section */}
+              {otherAddresses && otherAddresses.length > 0 && (
+                <div className={styles.addressSection}>
+                  <div className={styles.sectionHeader}>
+                    <span className={styles.sectionTitle}>
+                      {t("resource.common.address.other_addresses") ||
+                        "Other Addresses"}
+                    </span>
+                  </div>
+                  <div className={styles.addressCardsContainer}>
+                    {otherAddresses.map((item, index) => (
+                      <ProfileAddressCard
+                        key={item.id || index}
+                        address={item}
+                        isDefault={false}
+                        onEdit={onEditClick}
+                        onDelete={removeAddressHandler}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -457,7 +613,7 @@ const ProfileAddressPage = ({ fpi }) => {
           ) : (
             <div className={styles.addressFormWrapper}>
               <AddressForm
-                key={countryDetails?.meta?.country_code}
+                key={countryDetails?.iso2 || selectedCountry?.iso2}
                 internationalShipping={isInternational}
                 formSchema={formSchema}
                 addressItem={memoizedSelectedAdd ?? defaultAddressItem}
@@ -475,11 +631,10 @@ const ProfileAddressPage = ({ fpi }) => {
                 selectedCountry={
                   memoizedSelectedAdd?.country
                     ? memoizedSelectedAdd?.country
-                    : (selectedCountry?.display_name ??
-                      countryDetails?.display_name)
+                    : selectedCountry || currentCountry
                 }
                 countryDetails={countryDetails}
-                user={userDetails}
+                user={userDataForForm}
               />
             </div>
           )}

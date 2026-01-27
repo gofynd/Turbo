@@ -74,9 +74,7 @@ export default async ({
     getSetPassword: () =>
       import(/* webpackChunkName:"getSetPassword" */ "./pages/set-password"),
     getNotFound: () =>
-      import(
-        /* webpackChunkName:"getNotFound" */ "./components/page-not-found/page-not-found"
-      ),
+      import(/* webpackChunkName:"getNotFound" */ "./pages/not-found-page"),
     getBrands: () =>
       import(/* webpackChunkName:"getBrands" */ "./pages/brands"),
 
@@ -125,9 +123,7 @@ export default async ({
         /* webpackChunkName:"getProfileAddress" */ "./pages/profile-address"
       ),
     getProfile: () =>
-      import(
-        /* webpackChunkName:"getProfile" */ "./page-layouts/profile/profile-tabs"
-      ),
+      import(/* webpackChunkName:"getProfile" */ "./pages/profile"),
     getOrdersList: () =>
       import(/* webpackChunkName:"getOrdersList" */ "./pages/orders-list"),
     getShipmentDetails: () =>
@@ -136,17 +132,13 @@ export default async ({
       ),
     getShipmentUpdate: () =>
       import(
-        /* webpackChunkName:"getShipmentUpdate" */ "./page-layouts/profile/profile-shipment-update-page"
+        /* webpackChunkName:"getShipmentUpdate" */ "./pages/shipment-update"
       ),
     getProfilePhone: () =>
-      import(
-        /* webpackChunkName:"getProfilePhone" */ "./page-layouts/profile/phone"
-      ),
+      import(/* webpackChunkName:"getProfilePhone" */ "./pages/profile-phone"),
     getFaq: () => import(/* webpackChunkName:"getFaq" */ "./pages/faq"),
     getProfileEmail: () =>
-      import(
-        /* webpackChunkName:"getProfileEmail" */ "./page-layouts/profile/email"
-      ),
+      import(/* webpackChunkName:"getProfileEmail" */ "./pages/profile-email"),
     getVerifyEmail: () =>
       import(/* webpackChunkName:"getVerifyEmail" */ "./pages/verify-email"),
     getVerifyEmailLink: () =>
@@ -168,7 +160,7 @@ export default async ({
       ),
     getBlog: () => import(/* webpackChunkName:"getBlog" */ "./pages/blog"),
     getBlogPage: () =>
-      import(/* webpackChunkName:"getBlogPage" */ "./components/blog/BlogPage"),
+      import(/* webpackChunkName:"getBlogPage" */ "./pages/blog-detail"),
     getContactUs: () =>
       import(/* webpackChunkName:"getContactUs" */ "./pages/contact-us"),
     getFormItem: () =>
@@ -197,5 +189,9 @@ export default async ({
       ),
     getPaymentLink: () =>
       import(/* webpackChunkName:"getPaymentLink" */ "./pages/payment-link"),
+    getReturnSummaryStatus: () =>
+      import(
+        /* webpackChunkName:"getReturnSummaryStatus" */ "./pages/return-summary-status"
+      ),
   };
 };

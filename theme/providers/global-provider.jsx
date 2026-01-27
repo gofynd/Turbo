@@ -77,24 +77,36 @@ export function ThemeProvider({ children }) {
       ""
   );
   const canonicalPath = sanitizeHTMLTag(seoData?.canonical_url);
-  const canonicalUrl = canonicalPath
-    ? /^https?:\/\//i.test(canonicalPath)
-      ? canonicalPath
-      : `${baseUrl}${canonicalPath.startsWith("/") ? canonicalPath : `/${canonicalPath}`}`
-    : baseUrl && location?.pathname
-      ? `${baseUrl}${location.pathname}`
-      : "";
+  let canonicalUrl = "";
+  if (canonicalPath) {
+    if (/^https?:\/\//i.test(canonicalPath)) {
+      canonicalUrl = canonicalPath;
+    } else {
+      canonicalUrl = `${baseUrl}${canonicalPath.startsWith("/") ? canonicalPath : `/${canonicalPath}`}`;
+    }
+  } else if (baseUrl && location?.pathname) {
+    canonicalUrl = `${baseUrl}${location.pathname}`;
+  }
   const resolvedImage =
     image && baseUrl && !/^https?:\/\//i.test(image)
       ? `${baseUrl}${image.startsWith("/") ? image : `/${image}`}`
       : image;
 
   const { defaultCurrency } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
-  const sellerDetails = JSON.parse(
-    useGlobalStore(fpi.getters.SELLER_DETAILS) || "{}"
-  );
-  const { i18nDetails, countryDetails, fetchCountrieDetails } =
-    useInternational({ fpi });
+  const sellerDetailsRaw = useGlobalStore(fpi.getters.SELLER_DETAILS);
+  const sellerDetails = useMemo(() => {
+    try {
+      return JSON.parse(sellerDetailsRaw || "{}");
+    } catch {
+      return {};
+    }
+  }, [sellerDetailsRaw]);
+  const {
+    i18nDetails,
+    countryDetails,
+    fetchCountrieDetails,
+    countryCurrencies,
+  } = useInternational({ fpi });
 
   const [searchParams] = useSearchParams();
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
@@ -298,12 +310,49 @@ export function ThemeProvider({ children }) {
       !i18nDetails?.currency?.code ||
       !i18nDetails?.countryCode
     ) {
-      fpi.setI18nDetails({
-        currency: { code: i18nDetails?.currency?.code || defaultCurrency },
-        countryCode: sellerDetails.country_code,
-      });
+      // Try to get country from countryCurrencies (price factory enabled) - HIGHEST PRIORITY
+      const hasCountryCurrencies =
+        countryCurrencies && countryCurrencies.length > 0;
+      const defaultCountry =
+        hasCountryCurrencies &&
+        (countryCurrencies.find((country) => country.is_default) ||
+          countryCurrencies[0]);
+      const defaultCurrency =
+        defaultCountry?.currencies?.find((currency) => currency.is_default) ||
+        defaultCountry?.currencies?.[0];
+
+      // Fallback to sellerDetails.country_code (price factory disabled) - SECOND PRIORITY
+      const fallbackCountryCode = sellerDetails?.country_code;
+      const fallbackCurrency = sellerDetails?.currency?.code;
+
+      // Priority: countryCurrencies (price factory enabled) > sellerDetails (price factory disabled)
+      if (defaultCountry && defaultCurrency?.code) {
+        // Price factory enabled: use countryCurrencies (highest priority)
+        fpi.setI18nDetails({
+          countryCode: defaultCountry.iso2,
+          currency: { code: defaultCurrency.code },
+        });
+      } else if (fallbackCountryCode) {
+        // Price factory disabled: use sellerDetails.country_code (fallback)
+        fpi.setI18nDetails({
+          countryCode: fallbackCountryCode,
+          currency: {
+            code:
+              fallbackCurrency ||
+              i18nDetails?.currency?.code ||
+              defaultCurrency?.code ||
+              defaultCurrency ||
+              "INR",
+          },
+        });
+      }
     }
-  }, []);
+  }, [
+    countryCurrencies,
+    sellerDetails,
+    defaultCurrency,
+    i18nDetails?.currency?.code,
+  ]);
 
   useEffect(() => {
     if (
@@ -364,7 +413,7 @@ export const getHelmet = ({
   ogType = "product",
 }) => {
   const title = sanitizeHTMLTag(overrideTitle || seo?.title);
-  
+
   const description = sanitizeHTMLTag(overrideDescription || seo?.description);
   const image = sanitizeHTMLTag(
     overrideImage || (seo?.image ? seo?.image : seo?.image_url)

@@ -50,12 +50,6 @@ export const useSeoMeta = ({ fpi, seo = {}, fallbackImage = "" }) => {
     [domainUrl]
   );
 
-  const trimDescription = useCallback((value = "", limit = 160) => {
-    if (!value) return "";
-    const cleanValue = value.replace(/\s+/g, " ").trim();
-    return cleanValue.slice(0, limit);
-  }, []);
-
   const canonicalUrl = useMemo(() => {
     const preferredPath = seo?.canonical_url || location?.pathname || "";
     return absoluteUrl(preferredPath);
@@ -64,9 +58,10 @@ export const useSeoMeta = ({ fpi, seo = {}, fallbackImage = "" }) => {
   const pageUrl = canonicalUrl || absoluteUrl(location?.pathname);
 
   const description = useMemo(() => {
-    const value = sanitizeHTMLTag(seo?.description || "");
-    return trimDescription(value);
-  }, [seo?.description, trimDescription]);
+    return sanitizeHTMLTag(seo?.description || "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }, [seo?.description]);
 
   const socialImage = useMemo(() => {
     const rawImage =
@@ -88,7 +83,6 @@ export const useSeoMeta = ({ fpi, seo = {}, fallbackImage = "" }) => {
     brandName,
     domainUrl,
     absoluteUrl,
-    trimDescription,
     canonicalUrl,
     pageUrl,
     description,

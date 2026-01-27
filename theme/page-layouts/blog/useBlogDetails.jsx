@@ -4,39 +4,38 @@ import { useGlobalStore } from "fdk-core/utils";
 import { GET_BLOG } from "../../queries/blogQuery";
 import { useThemeConfig } from "../../helper/hooks";
 
-const useBlogDetails = ({ fpi }) => {
+const useBlogDetails = ({ fpi, props }) => {
   const location = useLocation();
   const { slug = "" } = useParams();
-  const { pageConfig } = useThemeConfig({ fpi, page: "blog" });
 
   const footerProps = useMemo(
     () => ({
-      button_link: pageConfig.button_link,
-      button_text: pageConfig.button_text,
-      description: pageConfig.description,
-      title: pageConfig.title,
+      button_link: props.button_link?.value,
+      button_text: props.button_text?.value,
+      description: props.description?.value,
+      title: props.title?.value,
     }),
-    [pageConfig]
+    [props]
   );
 
   const sliderProps = useMemo(
     () => ({
-      show_filters: pageConfig?.show_filters || "",
-      show_recent_blog: pageConfig?.show_recent_blog || "",
-      show_search: pageConfig?.show_search || "",
-      show_tags: pageConfig?.show_tags || "",
-      show_top_blog: pageConfig?.show_top_blog || "",
-      fallback_image: pageConfig?.fallback_image,
-      button_text: pageConfig?.button_text || "",
-      autoplay: pageConfig?.autoplay || false,
-      slide_interval: pageConfig?.slide_interval || 3,
-      btn_text: pageConfig?.btn_text || "",
-      loadingOption: pageConfig?.loading_options || "",
-      show_blog_slide_show: pageConfig?.show_blog_slide_show || "",
-      recentBlogs: pageConfig.recent_blogs || [],
-      topViewedBlogs: pageConfig.top_blogs || [],
+      show_filters: props?.show_filters?.value || "",
+      show_recent_blog: props?.show_recent_blog?.value || "",
+      show_search: props?.show_search?.value || "",
+      show_tags: props?.show_tags?.value || "",
+      show_top_blog: props?.show_top_blog?.value || "",
+      fallback_image: props?.fallback_image?.value,
+      button_text: props?.button_text?.value || "",
+      autoplay: props?.autoplay?.value || false,
+      slide_interval: props?.slide_interval?.value || 3,
+      btn_text: props?.btn_text?.value || "",
+      loadingOption: props?.loading_options?.value || "",
+      show_blog_slide_show: props?.show_blog_slide_show?.value || "",
+      recentBlogs: props.recent_blogs?.value || [],
+      topViewedBlogs: props.top_blogs?.value || [],
     }),
-    [pageConfig]
+    [props]
   );
 
   const contactInfo = useGlobalStore(fpi.getters.CONTACT_INFO);

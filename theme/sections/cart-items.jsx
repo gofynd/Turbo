@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import {
   useFPI,
   useGlobalTranslation,
@@ -43,7 +43,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
   const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
 
-  const { isInternational } = useThemeFeature({ fpi });
+  const { isCrossBorderOrder } = useThemeFeature({ fpi });
   const { getFormattedPromise } = useDeliverPromise({ fpi });
 
   const {
@@ -64,6 +64,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
     isGstInput = true,
     isPlacingForCustomer,
     isRemoveModalOpen = false,
+    isRemoving = false,
     isPromoModalOpen = false,
     customerCheckoutMode,
     checkoutMode,
@@ -163,7 +164,40 @@ export function Component({ props, globalConfig = {}, blocks }) {
     }
   };
 
-  const cartItemsArray = Object.keys(cartItems || {});
+  /**
+   * Generates cart item keys consistently with the transformation logic
+   * This matches the key generation in useCart.jsx
+   */
+  const generateItemKey = useCallback((item, index) => {
+    const itemIndex = item?.article?.item_index ?? index;
+    const storeUid = item?.article?.store?.uid ?? "";
+
+    if (item?.key) {
+      return `${item.key}_${storeUid}_${itemIndex}`;
+    }
+
+    if (item?.product?.uid && item?.article?.size) {
+      const fulfillmentSlug =
+        item?.article?.fulfillment_option?.slug || "standard-delivery";
+      const fallbackKey = `${item.product.uid}_${item.article.size}_${fulfillmentSlug}`;
+      return `${fallbackKey}_${storeUid}_${itemIndex}`;
+    }
+
+    return `item_${index}_${storeUid}_${itemIndex}`;
+  }, []);
+
+  // Use transformed cartItems if available, otherwise fallback to raw items array
+  const cartItemsArray = useMemo(() => {
+    const keys = Object.keys(cartItems || {});
+    // If transformed items are empty but raw items exist, create keys from raw items
+    if (keys.length === 0 && cartItemsWithActualIndex?.length > 0) {
+      return cartItemsWithActualIndex.map((item, index) =>
+        generateItemKey(item, index)
+      );
+    }
+    return keys;
+  }, [cartItems, cartItemsWithActualIndex, generateItemKey]);
+
   const sizeModalItemValue = cartItems && sizeModal && cartItems[sizeModal];
 
   useEffect(() => {
@@ -228,10 +262,18 @@ export function Component({ props, globalConfig = {}, blocks }) {
                               <Skeleton height={17} width={60} />
                             ) : (
                               <>
-                                ({cartItemsArray?.length || 0}
-                                {cartItemsArray?.length > 1
-                                  ? ` ${t("resource.common.items")}`
-                                  : ` ${t("resource.common.item")}`}
+                                (
+                                {(() => {
+                                  const itemCount =
+                                    cartData?.user_cart_items_count ??
+                                    cartItemsArray?.length ??
+                                    0;
+                                  return `${itemCount} ${
+                                    itemCount > 1
+                                      ? t("resource.common.items")
+                                      : t("resource.common.item")
+                                  }`;
+                                })()}
                                 )
                               </>
                             )}
@@ -243,10 +285,10 @@ export function Component({ props, globalConfig = {}, blocks }) {
                           </div>
                         )}
                       </div>
-                      {isLoading ? (
+                      {isLoading || (isRemoving && isCartUpdating) ? (
                         Array(2)
                           .fill()
-                          .map((_) => <ChipItemSkeleton />)
+                          .map((_, idx) => <ChipItemSkeleton key={idx} />)
                       ) : (
                         <>
                           {cartItemsArray?.length > 0 && (
@@ -291,7 +333,19 @@ export function Component({ props, globalConfig = {}, blocks }) {
                                   </div>
                                 )}
                               {cartItemsArray?.map((singleItem, itemIndex) => {
-                                const singleItemDetails = cartItems[singleItem];
+                                // Get item from transformed cartItems, or fallback to raw items array
+                                const singleItemDetails =
+                                  cartItems?.[singleItem] ||
+                                  cartItemsWithActualIndex?.find(
+                                    (item, idx) =>
+                                      generateItemKey(item, idx) === singleItem
+                                  );
+
+                                // Safety check: skip rendering if item details are not found
+                                if (!singleItemDetails) {
+                                  return null;
+                                }
+
                                 const productImage =
                                   singleItemDetails?.product?.images?.length >
                                     0 &&
@@ -422,7 +476,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
                           Redeem all available points
                         </label>
                       </div>
-                      <div className={styles.loyaltyCard}>
+                      <div className={`${styles.loyaltyCard} ${styles.lastCard}`}>
                         <div className={styles.rewardsContainer}>
                           <RewardBagIcon className={styles.Icon} />
                           <div>
@@ -471,9 +525,13 @@ export function Component({ props, globalConfig = {}, blocks }) {
                     <PriceBreakup
                       key={key}
                       breakUpValues={breakUpValues?.display || []}
-                      cartItemCount={cartItemsArray?.length || 0}
+                      cartItemCount={
+                        cartData?.user_cart_items_count ??
+                        cartItemsArray?.length ??
+                        0
+                      }
                       currencySymbol={currencySymbol}
-                      isInternationalTaxLabel={isInternational}
+                      isInternationalTaxLabel={isCrossBorderOrder}
                       isLoading={isLoading}
                     />
                   );
@@ -590,6 +648,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
         <RemoveCartItem
           isOpen={isRemoveModalOpen}
           cartItem={removeItemData?.item}
+          isRemoving={isRemoving}
           onRemoveButtonClick={() => onRemoveButtonClick(removeItemData)}
           onWishlistButtonClick={() => onWishlistButtonClick(removeItemData)}
           onCloseDialogClick={onCloseRemoveModalClick}

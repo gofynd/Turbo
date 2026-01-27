@@ -71,6 +71,8 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
 
   const fetchProductPrice = useCallback(
     async (size, productSlug) => {
+      // Clear error message at the start to prevent showing stale error while loading
+      setPincodeErrorMessage("");
       try {
         const productPriceWithFO = await fpi.executeGQL(
           FULFILLMENT_OPTIONS,
@@ -111,9 +113,11 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         return selectedProductPrice;
       } catch (error) {
         console.error(error);
+        // Clear error on catch to prevent showing stale error
+        setPincodeErrorMessage("");
       }
     },
-    [slug, currentPincode, selectedSize, productData?.product, fpi]
+    [slug, currentPincode, selectedSize, productData?.product, fpi, t]
   );
 
   const fetchProductData = useCallback(
@@ -350,24 +354,30 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         };
 
         return fpi.executeGQL(ADD_TO_CART, payload).then((outRes) => {
-          if (outRes?.data?.addItemsToCart?.success) {
-            if (!buyNow) fetchCartDetails(fpi);
-            showSnackbar(
-              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
-                t("resource.common.add_to_cart_success"),
-              "success"
-            );
-            if (buyNow) {
-              navigate(
-                `/cart/checkout/?buy_now=true&id=${outRes?.data?.addItemsToCart?.cart?.id}`
+          if (!outRes?.data?.AddItemsToCart?.["magic-checkout"]) {
+            if (outRes?.data?.addItemsToCart?.success) {
+              if (!buyNow) fetchCartDetails(fpi);
+              showSnackbar(
+                translateDynamicLabel(
+                  outRes?.data?.addItemsToCart?.message,
+                  t
+                ) || t("resource.common.add_to_cart_success"),
+                "success"
+              );
+              if (buyNow) {
+                navigate(
+                  `/cart/checkout/?buy_now=true&id=${outRes?.data?.addItemsToCart?.cart?.id}`
+                );
+              }
+            } else {
+              showSnackbar(
+                translateDynamicLabel(
+                  outRes?.data?.addItemsToCart?.message,
+                  t
+                ) || t("resource.common.add_cart_failure"),
+                "error"
               );
             }
-          } else {
-            showSnackbar(
-              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
-                t("resource.common.add_cart_failure"),
-              "error"
-            );
           }
           return outRes;
         });

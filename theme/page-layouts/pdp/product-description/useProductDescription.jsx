@@ -26,6 +26,7 @@ import {
 } from "../../../helper/hooks";
 import { LOCALITY } from "../../../queries/logisticsQuery";
 import { isEmptyOrNull, translateDynamicLabel } from "../../../helper/utils";
+import { WISHLIST_PAGE_SIZE } from "../../../helper/constant";
 import { fetchCartDetails } from "../../cart/useCart";
 import {
   useGlobalStore,
@@ -63,11 +64,12 @@ const useProductDescription = ({
     isValidDeliveryLocation,
     deliveryLocation,
     isServiceabilityPincodeOnly,
+    fetchCountrieDetails,
   } = useInternational({
     fpi,
   });
   const pincodeInput = usePincodeInput();
-
+  console.log(i18nDetails, "i18nDetails");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentSize, setCurrentSize] = useState(null);
   const [followed, setFollowed] = useState(false);
@@ -271,36 +273,51 @@ const useProductDescription = ({
     setFollowed(wishlistIds?.includes(product_details?.uid));
   }, [LoggedIn, wishlistIds, product_details]);
 
-  const fetchProductPrice = (pincode = "") => {
+  const fetchProductPrice = async (pincode = "") => {
     if (!currentSize?.value) return;
     const reqPincode = pincode || locationPincode;
 
+    // Clear error message at the start to prevent showing stale error while loading
+    setPincodeErrorMessage("");
     setIsLoadingPriceBySize(true);
     const payload = {
       slug,
       size: currentSize?.value.toString(),
       pincode: reqPincode.toString() || "",
     };
-    fpi.executeGQL(FULFILLMENT_OPTIONS, payload).then((res) => {
-      setIsLoadingPriceBySize(false);
+    if (i18nDetails?.countryCode) {
+      const payload = {
+        countryIsoCode: i18nDetails?.countryCode,
+      };
+      await fetchCountrieDetails(payload);
+    }
+    fpi
+      .executeGQL(FULFILLMENT_OPTIONS, payload)
+      .then((res) => {
+        setIsLoadingPriceBySize(false);
 
-      const foItems =
-        res?.data?.productsPriceWithFulfillmentOption?.items || [];
+        const foItems =
+          res?.data?.productsPriceWithFulfillmentOption?.items || [];
 
-      const selectedFO =
-        foItems.find((foItem) => foItem?.fulfillment_option?.is_default) ||
-        foItems[0];
+        const selectedFO =
+          foItems.find((foItem) => foItem?.fulfillment_option?.is_default) ||
+          foItems[0];
 
-      if (isEmptyOrNull(selectedFO)) {
-        setPincodeErrorMessage(
-          res?.errors?.[0]?.message ||
-            t("resource.product.product_not_serviceable")
-        );
-      } else {
-        setSelectPincodeError(false);
+        if (isEmptyOrNull(selectedFO)) {
+          setPincodeErrorMessage(
+            res?.errors?.[0]?.message ||
+              t("resource.product.product_not_serviceable")
+          );
+        } else {
+          setSelectPincodeError(false);
+          setPincodeErrorMessage("");
+        }
+      })
+      .catch((error) => {
+        setIsLoadingPriceBySize(false);
+        // Clear error on catch to prevent showing stale error
         setPincodeErrorMessage("");
-      }
-    });
+      });
   };
 
   useEffect(() => {
@@ -333,9 +350,11 @@ const useProductDescription = ({
     };
     fpi.executeGQL(ADD_WISHLIST, values).then((OutRes) => {
       if (OutRes?.data?.followById?.message) {
-        fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, null).then((res) => {
-          showSnackbar(t("resource.common.wishlist_add_success"), "success");
-        });
+        fpi
+          .executeGQL(FOLLOWED_PRODUCTS_IDS, { pageSize: WISHLIST_PAGE_SIZE })
+          .then((res) => {
+            showSnackbar(t("resource.common.wishlist_add_success"), "success");
+          });
       }
     });
   }
@@ -350,9 +369,14 @@ const useProductDescription = ({
     };
     fpi.executeGQL(REMOVE_WISHLIST, values).then((OutRes) => {
       if (OutRes?.data?.unfollowById?.message) {
-        fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, null).then((res) => {
-          showSnackbar(t("resource.common.wishlist_remove_success"), "success");
-        });
+        fpi
+          .executeGQL(FOLLOWED_PRODUCTS_IDS, { pageSize: WISHLIST_PAGE_SIZE })
+          .then((res) => {
+            showSnackbar(
+              t("resource.common.wishlist_remove_success"),
+              "success"
+            );
+          });
       }
     });
   }
@@ -470,27 +494,30 @@ const useProductDescription = ({
         },
       };
       return fpi.executeGQL(ADD_TO_CART, payload).then((outRes) => {
-        if (outRes?.data?.addItemsToCart?.success) {
-          // fpi.executeGQL(CART_ITEMS_COUNT, null).then((res) => {
-          if (!buyNow) {
-            fetchCartDetails(fpi);
-          }
-          showSnackbar(
-            translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
-              t("resource.common.add_to_cart_success"),
-            "success"
-          );
-          if (buyNow) {
-            navigate(
-              `/cart/checkout/?buy_now=true&id=${outRes?.data?.addItemsToCart?.cart?.id}`
+        if (!outRes?.data?.AddItemsToCart?.["magic-checkout"]) {
+          if (outRes?.data?.addItemsToCart?.success) {
+            // fpi.executeGQL(CART_ITEMS_COUNT, null).then((res) => {
+            if (!buyNow) {
+              fetchCartDetails(fpi);
+            }
+            showSnackbar(
+              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
+                t("resource.common.add_to_cart_success"),
+              "success"
             );
+            if (buyNow) {
+              navigate(
+                `/cart/checkout/?buy_now=true&id=${outRes?.data?.addItemsToCart?.cart?.id}`
+              );
+            }
+            // });
+          } else {
+            const errorMessage =
+              translateDynamicLabel(outRes?.errors?.[0]?.message, t) ||
+              translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||
+              t("resource.common.add_cart_failure");
+            showSnackbar(errorMessage, "error");
           }
-          // });
-        } else {
-          const errorMessage =
-            translateDynamicLabel(outRes?.errors?.[0]?.message, t) ||
-            t("resource.common.add_cart_failure");
-          showSnackbar(errorMessage, "error");
         }
         return outRes;
       });

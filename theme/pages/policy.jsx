@@ -1,16 +1,20 @@
 import React, { useMemo } from "react";
 import { useFPI, useGlobalStore } from "fdk-core/utils";
-import { HTMLContent } from "../page-layouts/marketing/HTMLContent";
 import ScrollToTop from "../components/scroll-to-top/scroll-to-top";
 import useSeoMeta from "../helper/hooks/useSeoMeta";
 import { sanitizeHTMLTag } from "../helper/utils";
 import { getHelmet } from "../providers/global-provider";
+import LegalPagesTemplate from "../components/legal-doc-templates/legal-pages-template";
+import { useThemeConfig } from "../helper/hooks";
+import { SectionRenderer } from "fdk-core/components";
 
-function Policy() {
-  const fpi = useFPI();
+function Policy({ fpi }) {
+  const page = useGlobalStore(fpi.getters.PAGE) || {};
+  const { globalConfig } = useThemeConfig({ fpi });
+  const { sections = [] } = page || {};
   const { policy } = useGlobalStore(fpi?.getters?.LEGAL_DATA);
 
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo: {} });
 
   const { heading, description } = useMemo(() => {
@@ -18,14 +22,21 @@ function Policy() {
     const headingMatch = html.match(/<(h1|h2)[^>]*>([\s\S]*?)<\/\1>/i);
     const headingText = sanitizeHTMLTag(headingMatch?.[2] || "");
 
-    const bodyWithoutHeading = headingMatch ? html.replace(headingMatch[0], "") : html;
-    const plainText = bodyWithoutHeading.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const bodyWithoutHeading = headingMatch
+      ? html.replace(headingMatch[0], "")
+      : html;
+    const plainText = bodyWithoutHeading
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
     return {
       heading: headingText,
-      description: trimDescription(sanitizeHTMLTag(plainText), 160),
+      description:
+        sanitizeHTMLTag(plainText).replace(/\s+/g, " ").trim() ||
+        seoDescription,
     };
-  }, [policy, trimDescription]);
+  }, [policy, seoDescription]);
 
   const title = useMemo(() => {
     const baseTitle = heading || "Policy";
@@ -44,14 +55,23 @@ function Policy() {
         siteName: brandName,
         ogType: "website",
       })}
-      <div className="basePageContainer margin0auto policyPageContainer">
-        <HTMLContent content={policy} />
-        <ScrollToTop />
-      </div>
+      {page?.value === "policy" && (
+        <SectionRenderer
+          sections={sections}
+          fpi={fpi}
+          globalConfig={globalConfig}
+        />
+      )}
     </>
   );
 }
 
-export const sections = JSON.stringify([]);
+export const sections = JSON.stringify([
+  {
+    attributes: {
+      page: "policy",
+    },
+  },
+]);
 
 export default Policy;

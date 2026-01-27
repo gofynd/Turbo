@@ -486,6 +486,8 @@
         "my_address": "MEINE ADRESSEN",
         "add_new_address": "Neue Adresse hinzufügen",
         "add_new_address_caps": "NEUE ADRESSE HINZUFÜGEN",
+        "default_address": "Standardadresse",
+        "other_addresses": "Andere Adressen",
         "no_address_available": "Keine Adresse verfügbar",
         "address_not_found": "Adresse nicht gefunden!",
         "return_to_my_address": "ZURÜCK AN MEINE ADRESSE",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "Der PIN-Code muss genau 6 Ziffern lang sein",
         "invalid_phone_number": "Ungültige Telefonnummer",
         "enter_pincode": "PIN-Code eingeben",
-        "default_address": "Standardadresse",
         "other_address": "Andere Adresse",
         "address_type": "Adresstyp",
         "make_this_my_default_address": "Dies als meine Standardadresse festlegen"

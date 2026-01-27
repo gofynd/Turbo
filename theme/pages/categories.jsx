@@ -63,12 +63,6 @@ function Categories({ fpi }) {
     [domainUrl]
   );
 
-  const trimDescription = (value = "", limit = 160) => {
-    if (!value) return "";
-    const cleanValue = value.replace(/\s+/g, " ").trim();
-    return cleanValue.slice(0, limit);
-  };
-
   const categoriesSection = useMemo(() => {
     return (
       sections?.find((section) => section?.name === "categories") ||
@@ -106,7 +100,7 @@ function Categories({ fpi }) {
         sectionDescription ||
         t("resource.categories.categories_description")
     );
-    return trimDescription(value);
+    return value.replace(/\s+/g, " ").trim();
   }, [seoData?.description, sectionDescription, t]);
 
   const socialImage = useMemo(() => {

@@ -6,11 +6,12 @@ import {
   FOLLOWED_PRODUCTS_ID,
 } from "../../queries/wishlistQuery";
 import { useSnackbar } from "./hooks";
+import { WISHLIST_PAGE_SIZE } from "../constant";
 
 export const useWishlist = ({ fpi }) => {
   const { t } = useGlobalTranslation("translation");
   const [isLoading, setIsLoading] = useState(false);
-  const pageSizeRef = useRef(500);
+  const pageSizeRef = useRef(WISHLIST_PAGE_SIZE);
   const followedList = useGlobalStore(fpi.getters.FOLLOWED_LIST);
   const { showSnackbar } = useSnackbar();
 

@@ -1,14 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   useGlobalTranslation,
   useGlobalStore,
   useFPI,
   useNavigate,
 } from "fdk-core/utils";
+import { useLocation } from "react-router-dom";
 import styles from "./styles/order-shipment.less";
-import ReOrderIcon from "../../assets/images/re-order.svg";
-import ArrowDropdownIcon from "../../assets/images/arrow-dropdown-black.svg";
 import { formatLocale } from "../../helper/utils";
+
+//force GIF to /original/ ---
+const isGifUrl = (url = "") => /\.gif(\?|#|$)/i.test(String(url || ""));
+const toOriginalVariant = (url = "") => {
+  if (!url) return url;
+  if (url.includes("/original/")) return url;
+  return url.replace(/\/\d+x\d+\//, "/original/");
+};
 
 function OrderShipment({
   orderInfo,
@@ -19,9 +26,8 @@ function OrderShipment({
   const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
   const locale = language?.locale;
   const { t } = useGlobalTranslation("translation");
-  const [isOpen, setIsOpen] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const convertUTCDateToLocalDate = (date, format) => {
     if (!format) {
@@ -36,13 +42,11 @@ function OrderShipment({
       };
     }
     const utcDate = new Date(date);
-    // Convert the UTC date to the local date using toLocaleString() with specific time zone
     const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const options = {
       ...format,
       timeZone: browserTimezone,
     };
-    // Convert the UTC date and time to the desired format
     const formattedDate = utcDate
       .toLocaleString(formatLocale(locale, countryCode), options)
       .replace(" at ", ", ");
@@ -52,142 +56,115 @@ function OrderShipment({
   const getTime = (time) => {
     return convertUTCDateToLocalDate(time);
   };
-  const clickopen = () => {
-    setIsOpen(!isOpen);
-  };
-  const naivgateToShipment = (item) => {
+
+  const navigateToShipment = (shipment) => {
     let link = "";
     if (isBuyAgainEligible) {
-      link = `/profile/orders/shipment/${item.shipment_id}`;
+      link = `/profile/orders/shipment/${shipment.shipment_id}`;
+      // Track navigation source for highlighting correct menu item
+      // Check if we're coming from "My Returns" page (status=4)
+      try {
+        if (location.search.includes("status=4")) {
+          sessionStorage.setItem("orderDetailsSource", "returns");
+        } else {
+          sessionStorage.setItem("orderDetailsSource", "orders");
+        }
+      } catch (e) {
+        // sessionStorage not available, ignore
+      }
     } else {
-      link = `/order-tracking/${item.order_id}/${item.shipment_id}`;
+      link = `/order-tracking/${orderInfo.order_id}/${shipment.shipment_id}`;
     }
     navigate(link);
   };
-  const getProductsName = (bags) => {
-    let items = bags.map((it) => {
-      return it.item;
-    });
-    items = items.filter(Boolean);
 
-    if (items && items.length) {
-      const productNames = items.map((it) => {
-        return it.name;
-      });
-
-      return [...new Set(productNames)];
+  const getBrandName = (bags) => {
+    if (bags && bags.length > 0 && bags[0]?.item?.brand?.name) {
+      return bags[0].item.brand.name;
     }
-    return [];
+    return "";
   };
-  const getTotalItems = (items) => {
-    return t(`resource.order.${items === 1 ? "single" : "multiple"}`, {
-      count: items,
-    });
-  };
-  const getTotalPieces = (pieces) => {
-    const total = pieces.reduce((pre, curr) => {
-      return pre + curr.quantity;
-    }, 0);
 
-    return t(
-      `resource.order.${total === 1 ? "single_piece" : "multiple_piece"}`,
-      { count: total }
-    );
+  const getTotalItems = (bags) => {
+    return bags?.length || 0;
+  };
+
+  const getTotalQuantity = (bags) => {
+    if (!bags || bags.length === 0) return 0;
+    return bags.reduce((total, bag) => total + (bag.quantity || 0), 0);
   };
 
   return (
-    <div className={`${styles.orderItem}`} key={orderInfo.order_id}>
-      <div className={`${styles.orderHeader}`} onClick={clickopen}>
-        <span className={`${styles.filter} `}>
-          <ArrowDropdownIcon
-            className={`${isOpen ? styles.filterArrowUp : styles.filterArrowdown}`}
-          />
-        </span>
-        <h3 className={`${styles.bold}`}>{orderInfo.order_id}</h3>
-        <h4 className={`${styles.light}`}>
-          {getTime(orderInfo.order_created_time)}
-        </h4>
-      </div>
-      {isOpen && (
-        <div>
-          {orderInfo?.shipments?.map((item, index) => {
+    <div className={styles.orderWrapper}>
+      <div className={styles.orderCard}>
+        {/* Order Header */}
+        <div className={styles.orderCardHeader}>
+          <div className={styles.orderInfo}>
+            <h3 className={styles.orderId}>{orderInfo.order_id}</h3>
+            <p className={styles.orderDate}>
+              {getTime(orderInfo.order_created_ts)}
+            </p>
+          </div>
+        </div>
+
+        {/* Product Details - Always Visible */}
+        <div className={styles.productsContainer}>
+          {orderInfo?.shipments?.map((shipment) => {
+            const productImage = shipment?.bags?.[0]?.item?.image?.[0] || "";
+            // --- FIX: if gif, convert /270x0/..gif => /original/..gif ---
+            const finalProductImage = isGifUrl(productImage)
+              ? toOriginalVariant(productImage)
+              : productImage;
+
+            const brandName = getBrandName(shipment?.bags);
+            const totalItems = getTotalItems(shipment?.bags);
+            const totalQuantity = getTotalQuantity(shipment?.bags);
+            const statusTitle = shipment?.shipment_status?.title || "";
+
             return (
               <div
-                className={`${styles.shipmentData}`}
-                key={`${item.shipment_id}`}
+                key={shipment.shipment_id}
+                className={styles.productSection}
+                onClick={() => navigateToShipment(shipment)}
               >
-                <div onClick={() => naivgateToShipment(item)}>
-                  <div className={`${styles.shipmentLeft}`}>
-                    <img
-                      className={`${isOpen ? styles.filterArrowUp : styles.filterArrowdown}`}
-                      src={item?.bags?.[0]?.item?.image?.[0]}
-                      alt={item?.shipment_images?.[0]}
-                    />
-                    {item?.bags?.length > 1 && (
-                      <div id="total-item">
-                        <>+</> {(item?.bags?.length || 0) - 1 || 0}
-                        {t("resource.facets.more")}
-                      </div>
-                    )}
+                {/* Product Image */}
+                <div className={styles.productImage}>
+                  <img src={finalProductImage} alt={brandName} />
+                </div>
+
+                {/* Product Details */}
+                <div className={styles.productDetails}>
+                  <p className={styles.brandName}>{brandName}</p>
+                  <p className={styles.shipmentId}>
+                    {t("resource.order.shipment_label", {
+                      defaultValue: "Shipment",
+                    })}
+                    : {shipment.shipment_id}
+                  </p>
+
+                  <div className={styles.productMeta}>
+                    <span className={styles.metaText}>
+                      {totalItems}{" "}
+                      {t("resource.common.item_simple_text", {
+                        defaultValue: "Item",
+                      })}
+                    </span>
+                    <span className={styles.metaDivider}>|</span>
+                    <span className={styles.metaText}>
+                      {totalQuantity}{" "}
+                      {t("resource.common.piece", { defaultValue: "Piece" })}
+                    </span>
                   </div>
-                  <div className={`${styles.shipmentRight}`}>
-                    <div className={`${styles.uktLinks}`}>
-                      {item?.bags?.length > 1 ? (
-                        <div>
-                          {getProductsName(item?.bags)?.[0]} +
-                          {item.bags.length - 1}
-                          {t("resource.facets.more")}
-                        </div>
-                      ) : (
-                        <div>{getProductsName(item?.bags)?.[0]}</div>
-                      )}
-                    </div>
-                    <div
-                      className={`${styles.shipmentId} ${styles.boldls} ${styles.uktLinks}`}
-                    >
-                      {t("resource.common.shipment")}: {item?.shipment_id}
-                    </div>
-                    <div className={`${styles.shipmentStats} ${styles.light}`}>
-                      <span>{getTotalItems(item?.bags?.length)}</span>
-                      <span>{` | `}</span>
-                      <span>{getTotalPieces(item?.bags)}</span>
-                    </div>
-                    <div
-                      className={`${styles.status} ${styles.regular}`}
-                      style={{
-                        backgroundColor:
-                          item.shipment_status.hex_code || "green",
-                      }}
-                    >
-                      {item?.shipment_status?.title}
-                    </div>
-                    {isAdmin && (
-                      <div className={`${styles.shipmentBrands}`}>
-                        <span className={`${styles.bold}`}>
-                          {t("resource.common.brand")}
-                        </span>{" "}
-                        :{item?.brand_name}
-                      </div>
-                    )}
+
+                  <div className={styles.statusBadge}>
+                    <span className={styles.statusText}>{statusTitle}</span>
                   </div>
                 </div>
               </div>
             );
           })}
-          {isBuyAgainEligible && (
-            <div className={`${styles.buttons}`}>
-              <button
-                type="button"
-                className={`${styles.ordercheckout}`}
-                onClick={() => onBuyAgainClick(orderInfo)}
-              >
-                <ReOrderIcon className={`${styles.reorderIcon}`} />
-                {t("resource.common.buy_again")}
-              </button>
-            </div>
-          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

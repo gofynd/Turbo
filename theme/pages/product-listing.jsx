@@ -17,7 +17,7 @@ const ProductListing = ({ fpi }) => {
   const department = searchParams.get("department") || "";
   const brand = searchParams.get("brand") || "";
   const category = searchParams.get("category") || "";
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo: seoData });
   console.log("brand", brand);
   const title = useMemo(() => {
@@ -47,8 +47,9 @@ const ProductListing = ({ fpi }) => {
     const raw = sanitizeHTMLTag(
       seoData?.description || t("resource.product.seo_description")
     );
-    return trimDescription(raw, 160);
-  }, [seoData?.description, t, trimDescription]);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seoData?.description, t, seoDescription]);
 
   return (
     page?.value === "product-listing" && (

@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "စာစီစာရိုက်",
-        "algolia_configuration": "Algolia ဖွဲ့စည်းမှု",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "အောက်ခြေမှတ်တိုင်",
         "cart_and_button_configuration": "လှည်းနှင့်ခလုတ် ဖွဲ့စည်းမှု",
         "product_card_configuration": "ထုတ်ကုန်ကတ် ဖွဲ့စည်းမှု",
@@ -158,8 +158,8 @@
         "transparent_header": "ပွင့်လင်းခေါင်းစီး",
         "transparent_header_info": "လျှောက်လွှာအလံသို့မဟုတ်ပုံတွင်ပုံတစ်ပုံဆလိုက်ရှိုးပြပွဲတွင်ပွင့်လင်းမြင်သာသောခေါင်းစီးကိုအသုံးပြုပါ"
       },
-      "algolia_configuration": {
-        "enable_algolia": "Algolia ကိုဖွင့်ပါ။"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "လိုဂို",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "ဒက်စ်တော့ရှိ အကြောင်းအရာကို ချိန်ညှိခြင်း။",
         "banner_horizontal_scroll": "အလျားလိုက် scroll ဖြင့်နဖူးစည်းပါ။",
         "banner_with_stack": "Stack ဖြင့် ဆိုင်းဘုတ်",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "အပြင်အဆင် (မိုဘိုင်း)",
         "content_alignment_mobile": "မိုဘိုင်းရှိ အကြောင်းအရာများကို ချိန်ညှိခြင်း။",
         "text_alignment": "စာသား ချိန်ညှိခြင်း။",

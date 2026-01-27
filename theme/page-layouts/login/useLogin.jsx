@@ -16,7 +16,7 @@ import {
 } from "../../queries/socialLoginQuery";
 import { jwtDecode } from "jwt-decode";
 
-const useLogin = ({ fpi }) => {
+const useLogin = ({ fpi, pageConfig = {} }) => {
   const { locale } = useParams();
   const { t } = useGlobalTranslation("translation");
   const location = useLocation();
@@ -136,10 +136,16 @@ const useLogin = ({ fpi }) => {
         ? new URLSearchParams(location.search)
         : null;
       const redirectUrl = queryParams?.get("redirectUrl") || "";
-      const finalUrl = getLocalizedRedirectUrl(
-        decodeURIComponent(redirectUrl),
-        locale
-      );
+      // URLSearchParams already decodes the value, but we try to decode again
+      // in case it was double-encoded. Use try-catch to handle edge cases.
+      let decodedUrl = redirectUrl;
+      try {
+        decodedUrl = decodeURIComponent(redirectUrl);
+      } catch (e) {
+        // If decoding fails, use the original value (already decoded by URLSearchParams)
+        decodedUrl = redirectUrl;
+      }
+      const finalUrl = getLocalizedRedirectUrl(decodedUrl, locale);
       window.location.href = window.location.origin + finalUrl;
     } else {
       const qs = isRunningOnClient() ? location.search : "";
@@ -171,9 +177,9 @@ const useLogin = ({ fpi }) => {
   // Google credential callback
   const onGoogleCredential = async (response) => {
     try {
-      let userCred = response.credential;
-      let payload = jwtDecode(userCred);
-      let data = getGoogleUserInfo(response, payload);
+      const userCred = response.credential;
+      const payload = jwtDecode(userCred);
+      const data = getGoogleUserInfo(response, payload);
       return fpi.executeGQL(GOOGLE_LOGIN, data).then((res) => {
         handleUserRedirect(res, "loginWithGoogle");
       });
@@ -252,6 +258,23 @@ const useLogin = ({ fpi }) => {
     console.error("Google login failed:", error);
   };
 
+  // Social login configuration based on pageConfig
+  const socialConfig = useMemo(() => {
+    const enableSocialLogin = pageConfig?.enable_social_login || false;
+    const showGoogle = pageConfig?.show_google || false;
+    const showFacebook = pageConfig?.show_facebook || false;
+    const showApple = pageConfig?.show_apple || false;
+
+    const config = {
+      enableSocialLogin,
+      google: enableSocialLogin && showGoogle,
+      facebook: enableSocialLogin && showFacebook,
+      apple: enableSocialLogin && showApple,
+    };
+
+    return config;
+  }, [pageConfig]);
+
   return {
     logo,
     title: platformData?.display,
@@ -263,7 +286,7 @@ const useLogin = ({ fpi }) => {
     appleId,
     appleRedirectURI,
     facebookAppId,
-    social: platformData?.social,
+    social: socialConfig,
     handleGoogleError,
     isRegisterEnabled: platformData?.register,
     registerButtonLabel: t("resource.common.go_to_register"),

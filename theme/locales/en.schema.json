@@ -33,6 +33,7 @@
       "desktop_layout": "Desktop Layout",
       "horizontal": "Horizontal",
       "not_applicable_for_mobile": "It'll not work for mobile layout",
+      "not_applicable_for_desktop": "It'll not work for desktop layout",
       "start": "Start",
       "end": "End",
       "show_add_to_cart": "Show Add to Cart",
@@ -111,7 +112,7 @@
     "settings_schema": {
       "common": {
         "typography": "Typography",
-        "algolia_configuration": "Algolia Configuration",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "Footer",
         "cart_and_button_configuration": "Cart & Button Configuration",
         "product_card_configuration": "Product Card Configuration",
@@ -181,8 +182,8 @@
         "wishlist_icon_text_info": "Enter the text to display beside the wishlist icon",
         "cart_icon_text_info": "Enter the text to display beside the cart icon"
       },
-      "algolia_configuration": {
-        "enable_algolia": "Enable Algolia"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "copilot_configuration": {
         "storefront_copilot_actions": "Enable UI Actions",
@@ -302,6 +303,14 @@
         "loyalty_points": "Loyalty Points",
         "loyalty_points_check": "Enable Loyalty Points"
       },
+      "order_status":{
+        "order_status":"Order Status",
+        "order_header":"Order Header",
+        "shipment_list":"Shipment List",
+        "price_breakup":"Price Breakup",
+        "payment_information":"Payment Information",
+        "delivery_address": "Delivery Address"       
+      },
       "categories_listing": {
         "categories_listing": "Categories Listing",
         "category_name_placement": "Category name placement",
@@ -326,6 +335,7 @@
         "layout_mobile": "Layout(Mobile)",
         "layout_desktop": "Layout(Desktop)",
         "collections_per_row_desktop": "Display collections per row (desktop)",
+        "collections_per_row_mobile": "Display collections per row (mobile)",
         "collection_item": "Collection Item",
         "select_collection": "Select Collection",
         "collection_1": "Collection 1",
@@ -351,6 +361,7 @@
         "desktop_content_alignment": "Alignment of content in desktop",
         "banner_horizontal_scroll": "Banner with horizontal scroll",
         "banner_with_stack": "Banner with Stack",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "Layout (Mobile)",
         "content_alignment_mobile": "Alignment of content in mobile",
         "text_alignment": "Text Alignment",
@@ -466,7 +477,8 @@
         "view_all_requires_heading": "\"View All\" will be visible only if a \"Heading\" is provided",
         "icon_or_navigation_name_mandatory": "Icon or Navigation Name is mandatory",
         "navigation_name": "Navigation Name",
-        "button_link": "Button Link"
+        "button_link": "Button Link",
+        "description_info":"Description of muli collection"
       },
       "order_details": {
         "order_details": "Order Details",
@@ -476,7 +488,8 @@
         "shipment_address": "Shipment Address",
         "payment_details_card": "Payment Details Card",
         "shipment_breakup": "Shipment Breakup",
-        "shipment_medias": "Shipment Medias"
+        "shipment_medias": "Shipment Medias",
+        "total_refund": "Total Refund"
       },
       "product_description": {
         "product_description": "Product Description",

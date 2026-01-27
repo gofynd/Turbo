@@ -9,29 +9,45 @@ import { CART_ITEMS_COUNT } from "../../queries/wishlistQuery";
 import { useNavigate, useGlobalTranslation } from "fdk-core/utils";
 import { isRunningOnClient } from "../../helper/utils";
 
+// Module-level cache to prevent duplicate API calls
+let sharedCartCache = null;
+let cacheToken = null;
+
 const useSharedCart = (fpi) => {
   const { t } = useGlobalTranslation("translation");
   const [cartItemCount, setCartItemCount] = useState(0);
   const params = useParams();
   const token = useRef(params.token);
-  const [sharedCart, setSharedCart] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [sharedCart, setSharedCart] = useState(sharedCartCache);
+  const [isLoading, setIsLoading] = useState(!sharedCartCache || cacheToken !== token?.current);
   const { showSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // If data is already cached for this token, use it
+    if (sharedCartCache && cacheToken === token?.current) {
+      setSharedCart(sharedCartCache);
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
 
     const payload = {
       token: token?.current?.toString(),
     };
 
-    fpi
+    // Execute both queries and wait for both to complete
+    const sharedCartPromise = fpi
       .executeGQL(SHARED_CART_DETAILS, payload)
       .then((res) => {
-        setSharedCart(res?.data?.sharedCartDetails?.cart);
-        const metaData =
-          res?.data?.sharedCartDetails?.cart?.shared_cart_details?.meta;
+        const cartData = res?.data?.sharedCartDetails?.cart;
+        setSharedCart(cartData);
+        // Cache the data
+        sharedCartCache = cartData;
+        cacheToken = token?.current;
+        
+        const metaData = cartData?.shared_cart_details?.meta;
 
         // Parse meta if it's a JSON string, otherwise use as-is
         let parsedMeta = metaData;
@@ -63,15 +79,18 @@ const useSharedCart = (fpi) => {
             }
           }
         }
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
-    fpi
+
+    const cartCountPromise = fpi
       .executeGQL(CART_ITEMS_COUNT, null, { skipStoreUpdate: false })
       .then((res) =>
         setCartItemCount(res?.data?.cart?.user_cart_items_count ?? 0)
       );
+
+    // Wait for both queries to complete before hiding loader
+    Promise.all([sharedCartPromise, cartCountPromise]).finally(() => {
+      setIsLoading(false);
+    });
   }, [fpi]);
 
   const bagItems = useMemo(() => {
@@ -125,6 +144,9 @@ const useSharedCart = (fpi) => {
             "error"
           );
         } else {
+          // Clear the cache when cart is updated
+          sharedCartCache = null;
+          cacheToken = null;
           // Note: shared_cart_staff_data is already stored in CUSTOM_VALUE store
           // and will persist automatically. No need to manually preserve it here.
           showSnackbar(

@@ -1,48 +1,66 @@
 import React, { useMemo } from "react";
-import { useGlobalStore } from "fdk-core/utils";
-import ForgetPasswordPage from "../page-layouts/forgot-password/forget-password-page";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
+import { SectionRenderer } from "fdk-core/components";
 import { getHelmet } from "../providers/global-provider";
 import useSeoMeta from "../helper/hooks/useSeoMeta";
 import { sanitizeHTMLTag } from "../helper/utils";
-import { useGlobalTranslation } from "fdk-core/utils";
 
 function ForgetPassword({ fpi }) {
-  const { t } = useGlobalTranslation("translation");
   const page = useGlobalStore(fpi.getters.PAGE) || {};
-  const seoData = page?.seo || {};
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
-    useSeoMeta({ fpi, seo: seoData });
+  const THEME = useGlobalStore(fpi.getters.THEME);
+
+  const mode = THEME?.config?.list.find(
+    (f) => f.name === THEME?.config?.current
+  );
+  const globalConfig = mode?.global_config?.custom?.props;
+  const { sections = [] } = page || {};
+
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
+    useSeoMeta({ fpi, seo: {} });
+  const { t } = useGlobalTranslation("translation");
 
   const title = useMemo(() => {
-    const raw = sanitizeHTMLTag(seoData?.title || "Forgot Password");
-    if (raw && brandName) return `${raw} | ${brandName}`;
-    return raw || brandName || "";
-  }, [seoData?.title, brandName]);
+    const base = brandName
+      ? `Forgot Password | ${brandName}`
+      : "Forgot Password";
+    return sanitizeHTMLTag(base);
+  }, [brandName]);
 
   const description = useMemo(() => {
-    const raw = sanitizeHTMLTag(
-      seoData?.description ||
-        t("resource.forgot_password.seo_description")
+    const base = t("resource.forgot_password.seo_description");
+    return (
+      sanitizeHTMLTag(base).replace(/\s+/g, " ").trim() || seoDescription
     );
-    return trimDescription(raw, 160);
-  }, [seoData?.description, trimDescription]);
-
+  }, [t, seoDescription]);
   return (
-    <>
-      {getHelmet({
-        title,
-        description,
-        image: socialImage,
-        canonicalUrl,
-        url: pageUrl,
-        siteName: brandName,
-        ogType: "website",
-      })}
-      <ForgetPasswordPage fpi={fpi} />
-    </>
+    page?.value === "forgot-password" && (
+      <>
+        {getHelmet({
+          title,
+          description,
+          image: socialImage,
+          canonicalUrl,
+          url: pageUrl,
+          siteName: brandName,
+          robots: "noindex, nofollow",
+          ogType: "website",
+        })}
+        <SectionRenderer
+          sections={sections}
+          fpi={fpi}
+          globalConfig={globalConfig}
+        />
+      </>
+    )
   );
 }
 
-export const sections = JSON.stringify([]);
+export const sections = JSON.stringify([
+  {
+    attributes: {
+      page: "forgot-password",
+    },
+  },
+]);
 
 export default ForgetPassword;

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import {
   GET_SHIPMENT_DETAILS,
@@ -22,38 +22,55 @@ const useShipmentDetails = (fpi) => {
   const [isLoading, setIsLoading] = useState(true);
   const [attempts, setAttempts] = useState(0);
   const [showPolling, setShowPolling] = useState(false);
-  
-  const fetchShipmentDetails = useCallback(() => {
-    setTimeout(() => {
-      const values = {
-        shipmentId: params.shipmentId || "",
-      };
 
-      fpi
-        .executeGQL(GET_SHIPMENT_DETAILS, values)
-        .then((res) => {
-          if (
-            res?.data?.shipment?.detail &&
-            Object.keys(shipmentDetails).length === 0
-          ) {
-            const data = res?.data?.shipment?.detail;
-            setShipmentDetails(data);
-            setShowPolling(false);
-            setIsLoading(false);
-          } else {
-            setAttempts((prev) => prev + 1);
+  const fetchShipmentDetails = useCallback(() => {
+    const values = {
+      shipmentId: params.shipmentId || "",
+    };
+
+    return fpi
+      .executeGQL(GET_SHIPMENT_DETAILS, values)
+      .then((res) => {
+        if (res?.data?.shipment?.detail) {
+          const data = res?.data?.shipment?.detail;
+          setShipmentDetails(data);
+          setShowPolling(false);
+          setIsLoading(false);
+          setAttempts(0);
+
+          // Check if we're on a cancel page and shipment is already cancelled
+          const isCancelPage = location.pathname.includes("/cancel");
+          if (isCancelPage && !data?.can_cancel && data?.shipment_id) {
+            // Redirect to the shipment details page if already cancelled
+            navigate(`/profile/orders/shipment/${data.shipment_id}`);
           }
-        })
-        .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.log({ error });
-          setAttempts((prev) => prev + 1);
+        } else {
+          setAttempts((prev) => {
+            const newAttempts = prev + 1;
+            if (newAttempts >= 5) {
+              setIsLoading(false);
+              setShowPolling(true);
+            }
+            return newAttempts;
+          });
+        }
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.log({ error });
+        setAttempts((prev) => {
+          const newAttempts = prev + 1;
+          if (newAttempts >= 5) {
+            setIsLoading(false);
+            setShowPolling(true);
+          }
+          return newAttempts;
         });
-    }, 2000);
-  }, [params.shipmentId, shipmentDetails, fpi]);
+      });
+  }, [params.shipmentId, fpi, location.pathname, navigate]);
 
   useEffect(() => {
-    // Reset state when shipmentId changes
+    // Reset state when shipmentId or location.search changes
     if (params.shipmentId) {
       setShipmentDetails({});
       setAttempts(0);
@@ -62,18 +79,30 @@ const useShipmentDetails = (fpi) => {
     }
   }, [params.shipmentId, location.search]);
 
-  console.log("shipmentDetails", shipmentDetails)
-  console.log("showpolling",showPolling)
   useEffect(() => {
-    if (params.shipmentId) {
-      if (attempts < 5 && Object.keys(shipmentDetails).length === 0) {
-        fetchShipmentDetails();
-      } else if (attempts >= 5) {
+    if (params.shipmentId && isLoading) {
+      let timeoutId;
+      if (attempts < 5) {
+        timeoutId = setTimeout(() => {
+          fetchShipmentDetails();
+        }, 2000);
+      } else {
         setShowPolling(true);
         setIsLoading(false);
       }
+      return () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      };
     }
-  }, [params.shipmentId, attempts, fetchShipmentDetails, shipmentDetails]);
+  }, [
+    params.shipmentId,
+    location.search,
+    isLoading,
+    attempts,
+    fetchShipmentDetails,
+  ]);
 
   function getBagReasons(bagObj) {
     setIsLoading(true);
@@ -110,7 +139,12 @@ const useShipmentDetails = (fpi) => {
     }
   }
 
- async function updateShipment(payload, type) {
+  async function updateShipment(
+    payload,
+    type,
+    refundOptions = [],
+    orderId = ""
+  ) {
     setIsLoading(true);
     try {
       // First call UPDATE_DEFAULT_BENEFICIARY if beneficiary_id exists
@@ -130,7 +164,6 @@ const useShipmentDetails = (fpi) => {
           );
 
           if (beneficiaryRes?.data?.updateDefaultBeneficiary?.success) {
-            // eslint-disable-next-line no-console
             console.log("Default beneficiary updated successfully");
           } else {
             const errorMessage =
@@ -160,21 +193,27 @@ const useShipmentDetails = (fpi) => {
             ?.final_state?.shipment_id;
 
         if (type === "return") {
+          if (newShipmentId) {
+            setTimeout(() => {
+              setIsLoading(false);
+              navigate(`/return/order/${orderId}/shipment/${newShipmentId}`);
+            }, 1000);
+          }
           showSnackbar(t("resource.order.return_accepted"), "success");
         }
 
-        if (newShipmentId) {
-          setTimeout(() => {
-            setIsLoading(false);
-            navigate(`/profile/orders/shipment/${newShipmentId}`);
-          }, 500);
-        } else {
-          setIsLoading(false);
+        if (type === "cancel") {
+          if (newShipmentId) {
+            setTimeout(() => {
+              setIsLoading(false);
+              navigate(`/profile/orders/shipment/${newShipmentId}`);
+            }, 1000);
+          }
+          showSnackbar("order cancelled", "success");
         }
       }
     } catch (error) {
       setIsLoading(false);
-      // eslint-disable-next-line no-console
       console.log({ error });
     }
   }
@@ -191,12 +230,13 @@ const useShipmentDetails = (fpi) => {
         setShipmentDetails({ ...data });
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log({ error });
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return {
     isLoading,
     shipmentDetails,
@@ -206,8 +246,8 @@ const useShipmentDetails = (fpi) => {
     getInvoice,
     updateShipment,
     refetchShipmentDetails,
+    refetch: fetchShipmentDetails,
     showPolling,
-    attempts,
   };
 };
 

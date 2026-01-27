@@ -29,6 +29,7 @@ import { LANGUAGES } from "../../queries/languageQuery";
 import I18Dropdown from "./i18n-dropdown";
 import Shimmer from "../shimmer/shimmer";
 import TruckIcon from "../../assets/images/truck.svg";
+
 const LocationModal = React.lazy(
   () => import("./location-modal/location-modal")
 );
@@ -164,9 +165,20 @@ function Header({ fpi }) {
   }, [activeLocale]); // <-- only when the selected locale changes
 
   useEffect(() => {
+    // Prevent race condition: Only call CART_COUNT if cart items array doesn't exist.
+    // If items array exists, CART_DETAILS was already called and will update Redux with full data.
+    const hasCartItemsArray = Array.isArray(CART_ITEMS?.cart_items?.items);
+    const isCartPage = location.pathname === "/cart/bag/" || location.pathname === "/cart/bag";
+    
+    // Only fetch cart count if:
+    // 1. Cart data is empty/null
+    // 2. Items array doesn't exist (CART_DETAILS hasn't been called)
+    // 3. Not on cart page (cart page calls CART_DETAILS which includes count)
+    // 4. Quantity control is not enabled
     if (
       isEmptyOrNull(CART_ITEMS?.cart_items) &&
-      location.pathname !== "/cart/bag/" &&
+      !hasCartItemsArray &&
+      !isCartPage &&
       !show_quantity_control
     ) {
       const payload = {
@@ -175,7 +187,15 @@ function Header({ fpi }) {
         includeBreakup: true,
         buyNow: buyNow === "true",
       };
-      fpi.executeGQL(CART_COUNT, payload);
+
+      // CART_COUNT only returns user_cart_items_count (no items array).
+      // This prevents race condition where CART_COUNT response overwrites
+      // CART_DETAILS response (which contains full cart data including items).
+      // If CART_DETAILS finishes after CART_COUNT, it will overwrite with complete data.
+      fpi.executeGQL(CART_COUNT, payload).catch(() => {
+        // Silently handle errors - cart count is not critical for header display
+        // and errors are already handled by the FPI layer
+      });
     }
 
     const observers = [];
@@ -290,14 +310,18 @@ function Header({ fpi }) {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (isServiceabilityMandatory && !deliveryAddress) {
+      // Don't open address modal on order-status page
+      const isOrderStatusPage = location.pathname.includes('/order-status') || 
+                                 location.pathname.includes('/order-tracking');
+      
+      if (isServiceabilityMandatory && !deliveryAddress && !isOrderStatusPage) {
         openServiceabilityModal();
       }
     }, 1000);
     return () => {
       clearTimeout(timeout);
     };
-  }, [deliveryAddress, isServiceabilityMandatory]);
+  }, [deliveryAddress, isServiceabilityMandatory, location.pathname]);
 
   const query = new URLSearchParams(useLocation().search);
   const checkoutId = query.get("id");
@@ -487,9 +511,8 @@ function Header({ fpi }) {
                             </div>
                           )}
                           <div className={styles.label}>
-                            {!!deliveryAddress
-                              ? deliveryAddress
-                              : t("resource.header.location_label")}
+                            {deliveryAddress ||
+                              t("resource.header.location_label")}
                           </div>
                         </div>
                         <AngleDownIcon className={styles.angleDownIcon} />

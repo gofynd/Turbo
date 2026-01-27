@@ -5,7 +5,8 @@ import { COLLECTION } from "../queries/collectionsQuery";
 import { useGlobalStore, useFPI } from "fdk-core/utils";
 import placeholderImage from "../assets/images/placeholder/collections-listing.png";
 import CollectionCard from "../components/collection-card/collection-card";
-import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import useLocaleDirectionHook from "../helper/hooks/useLocaleDirection";
+import { isRunningOnClient } from "../helper/utils";
 import {
   Carousel,
   CarouselContent,
@@ -22,13 +23,16 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
     layout_mobile,
     layout_desktop,
     per_row,
+    per_row_mobile,
     img_container_bg,
     padding_top,
     padding_bottom,
   } = props;
 
-  const itemsPerRow = Number(per_row?.value ?? 3);
-
+  const itemsPerRowDesktop = Number(per_row?.value ?? 3);
+  const itemsPerRowMobile = Number(per_row_mobile?.value ?? 1);
+  // Keep layout decisions SSR-safe (no matchMedia branching)
+  const itemsPerRow = itemsPerRowDesktop;
   const customValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) ?? {};
 
   const collectionIds = useMemo(() => {
@@ -58,13 +62,13 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
               const listingData = { type };
 
               if (type !== "collection-item") {
-                listingData["data"] = block;
+                listingData.data = block;
               } else {
                 const response = await fpi.executeGQL(COLLECTION, {
                   slug: slug.split(" ").join("-"),
                 });
 
-                listingData["data"] = response?.data || {};
+                listingData.data = response?.data || {};
               }
 
               return listingData;
@@ -106,11 +110,26 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
       return [];
     }
     return [
-      { breakpoint: { min: 1728 }, width: Math.round(3564 / itemsPerRow) },
-      { breakpoint: { min: 1512 }, width: Math.round(3132 / itemsPerRow) },
-      { breakpoint: { min: 1296 }, width: Math.round(2700 / itemsPerRow) },
-      { breakpoint: { min: 1080 }, width: Math.round(2250 / itemsPerRow) },
-      { breakpoint: { min: 900 }, width: Math.round(1890 / itemsPerRow) },
+      {
+        breakpoint: { min: 1728 },
+        width: Math.round(3564 / itemsPerRowDesktop),
+      },
+      {
+        breakpoint: { min: 1512 },
+        width: Math.round(3132 / itemsPerRowDesktop),
+      },
+      {
+        breakpoint: { min: 1296 },
+        width: Math.round(2700 / itemsPerRowDesktop),
+      },
+      {
+        breakpoint: { min: 1080 },
+        width: Math.round(2250 / itemsPerRowDesktop),
+      },
+      {
+        breakpoint: { min: 900 },
+        width: Math.round(1890 / itemsPerRowDesktop),
+      },
       { breakpoint: { min: 720 }, width: Math.round(1530 / 3) },
       { breakpoint: { min: 540 }, width: Math.round(1170 / 3) },
       { breakpoint: { min: 360 }, width: Math.round(810) },
@@ -118,9 +137,10 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
     ];
   };
 
-  const collectionsForStackedView = useMemo(() => {
-    return collections.slice(0, itemsPerRow * 2);
-  }, [collections, itemsPerRow]);
+  const collectionsForStackedView = useMemo(
+    () => collections.slice(0, itemsPerRow * 2),
+    [collections, itemsPerRow]
+  );
 
   const collectionsForScrollView = useMemo(() => {
     return collections.slice(0, itemsPerRow * 4);
@@ -141,7 +161,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
   } ${layout_mobile?.value === "stacked" ? styles.hideOnTablet : ""} ${
     layout_desktop?.value === "grid" ? styles.hideOnDesktop : ""
   }`;
-  const { direction } = useLocaleDirection();
+  const { direction } = useLocaleDirectionHook();
 
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 16}px`,
@@ -149,23 +169,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
     "--bg-color": `${img_container_bg?.value || "#00000000"}`,
   };
 
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 480px)");
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener?.("change", update);
-    return () => mq.removeEventListener?.("change", update);
-  }, []);
-
   const len = collectionsForScrollView.length;
-
-  const toShow = isMobile ? 1 : Math.max(itemsPerRow, 1);
-
-  const desktopSpeedMs = len / Math.max(itemsPerRow, 1) > 2 ? 700 : 400;
-  const speedMs = isMobile ? 400 : desktopSpeedMs;
-  const duration = speedMs <= 400 ? 25 : 40;
 
   const carouselProps = useMemo(() => {
     const opts = {
@@ -174,22 +178,19 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
       loop: len > 1,
       draggable: true,
       containScroll: "trimSnaps",
-      slidesToScroll: 1,
-      duration,
+      slidesToScroll: itemsPerRowMobile,
+      duration: 25,
       breakpoints: {
         "(min-width: 481px)": {
           align: "start",
-          loop: len > itemsPerRow,
-          slidesToScroll: itemsPerRow,
+          loop: len > itemsPerRowDesktop,
+          slidesToScroll: itemsPerRowDesktop,
+          duration: 40,
         },
       },
     };
     return { opts };
-  }, [isMobile, direction, itemsPerRow, duration, len]);
-
-  const slideBasis = isMobile ? `calc(100% - 38px)` : `${100 / toShow}%`;
-
-  const viewportStyle = isMobile && len > 1 ? { paddingInline: "25px" } : {};
+  }, [direction, len, itemsPerRowDesktop, itemsPerRowMobile]);
 
   return (
     <section className={styles.collections__template} style={dynamicStyles}>
@@ -225,14 +226,18 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
       {isHorizontalView && !!collectionsForScrollView.length && (
         <div
           className={`remove-horizontal-scroll ${styles.collectionSlider} ${horizontalViewClassName}`}
+          style={{
+            "--items-per-row-desktop": itemsPerRowDesktop,
+            "--items-per-row-mobile": itemsPerRowMobile,
+          }}
         >
           <Carousel {...carouselProps}>
-            <CarouselContent>
+            <CarouselContent className={styles.carouselContent}>
               {collectionsForScrollView?.map(
                 ({ type, data: card, slug }, index) => (
                   <CarouselItem
                     key={index}
-                    style={{ flex: `0 0 ${slideBasis}` }}
+                    className={styles.carouselItemWrapper}
                   >
                     {type !== "collection-item" ? (
                       <BlockRenderer key={slug} block={card} />
@@ -388,6 +393,17 @@ export const settings = {
       default: "3",
     },
     {
+      type: "range",
+      id: "per_row_mobile",
+      label:
+        "t:resource.sections.collections_listing.collections_per_row_mobile",
+      min: "1",
+      max: "3",
+      step: "1",
+      default: "1",
+      info: "t:resource.common.not_applicable_for_desktop",
+    },
+    {
       type: "color",
       id: "img_container_bg",
       category: "t:resource.common.image_container",
@@ -473,12 +489,12 @@ Component.serverFetch = async ({ fpi, blocks }) => {
       collectionIds.map(async ({ type, slug, block }) => {
         const listingData = { type };
         if (type !== "collection-item") {
-          listingData["data"] = block;
+          listingData.data = block;
         } else {
           const response = await fpi.executeGQL(COLLECTION, {
             slug: slug.split(" ").join("-"),
           });
-          listingData["data"] = response?.data || {};
+          listingData.data = response?.data || {};
         }
         return listingData;
       })
@@ -488,6 +504,7 @@ Component.serverFetch = async ({ fpi, blocks }) => {
 
     return fpi.custom.setValue(`collectionData-${customSectionId}`, responses);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error("SSR Fetch Error:", err);
   }
 };

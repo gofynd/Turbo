@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "Typografie",
-        "algolia_configuration": "Algolia-configuratie",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "Voettekst",
         "cart_and_button_configuration": "Winkelwagen- en knopconfiguratie",
         "product_card_configuration": "Productkaartconfiguratie",
@@ -158,8 +158,8 @@
         "transparent_header": "Transparante header",
         "transparent_header_info": "Pas transparante koptekst toe wanneer de banner van de toepassing of de afbeelding van de afbeelding bovenaan"
       },
-      "algolia_configuration": {
-        "enable_algolia": "Algolia inschakelen"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "Logo",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "Uitlijning van inhoud op het bureaublad",
         "banner_horizontal_scroll": "Banner met horizontale scroll",
         "banner_with_stack": "Banner met stapel",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "Lay-out (mobiel)",
         "content_alignment_mobile": "Uitlijning van inhoud op mobiel",
         "text_alignment": "Tekstuitlijning",

@@ -486,6 +486,8 @@
         "my_address": "MIJN ADRESSEN",
         "add_new_address": "Nieuw adres toevoegen",
         "add_new_address_caps": "NIEUW ADRES TOEVOEGEN",
+        "default_address": "Standaardadres",
+        "other_addresses": "Andere Adressen",
         "no_address_available": "Geen adres beschikbaar",
         "address_not_found": "Adres niet gevonden!",
         "return_to_my_address": "TERUG NAAR MIJN ADRES",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "Pincode moet precies 6 cijfers lang zijn",
         "invalid_phone_number": "Ongeldig telefoonnummer",
         "enter_pincode": "Voer pincode in",
-        "default_address": "Standaardadres",
         "other_address": "Ander adres",
         "address_type": "Adrestype",
         "make_this_my_default_address": "Maak dit mijn standaardadres"

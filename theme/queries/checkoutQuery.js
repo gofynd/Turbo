@@ -1471,6 +1471,7 @@ export const ORDER_BY_ID = `query Order($orderId: String!) {
       value
     }
     order_created_time
+    order_created_ts
     order_id
     shipments {
       awb_no

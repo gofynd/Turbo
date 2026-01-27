@@ -11,25 +11,70 @@ export const SINGLE_FILTER_VALUES = {
   page_no: true,
 };
 
+// export const ALL_PROFILE_MENU = [
+//   {
+//     key: "orders",
+//     icon: "orders",
+//     display: "My Orders",
+//     link: "/profile/orders",
+//     disabled_cart: false,
+//   },
+//   {
+//     key: "phone",
+//     icon: "call",
+//     display: "Phone Number",
+//     link: "/profile/phone",
+//     disabled_cart: true,
+//   },
+//   {
+//     key: "email",
+//     icon: "email",
+//     display: "Email Address",
+//     link: "/profile/email",
+//     staff: false,
+//     disabled_cart: true,
+//   },
+//   {
+//     key: "address",
+//     icon: "address",
+//     display: "My Address",
+//     link: "/profile/address",
+//     disabled_cart: false,
+//   },
+//   {
+//     key: "card",
+//     icon: "card",
+//     display: "My Cards",
+//     link: "/profile/my-cards",
+//     disabled_cart: false,
+//   },
+//   {
+//     key: "reward_points",
+//     icon: "refernearn",
+//     display: "Refer and Earn",
+//     link: "/profile/refer-earn",
+//     disabled_cart: false,
+//   },
+// ];
 export const ALL_PROFILE_MENU = [
   {
     key: "orders",
     icon: "orders",
-    display: "My Orders",
+    display: "resource.common.my_orders",
     link: "/profile/orders",
     disabled_cart: false,
   },
   {
     key: "phone",
     icon: "call",
-    display: "Phone Number",
+    display: "resource.common.phone_number",
     link: "/profile/phone",
     disabled_cart: true,
   },
   {
     key: "email",
     icon: "email",
-    display: "Email Address",
+    display: "resource.common.email_address",
     link: "/profile/email",
     staff: false,
     disabled_cart: true,
@@ -37,22 +82,22 @@ export const ALL_PROFILE_MENU = [
   {
     key: "address",
     icon: "address",
-    display: "My Address",
+    display: "resource.common.my_address",
     link: "/profile/address",
     disabled_cart: false,
   },
   {
-    key: "card",
-    icon: "card",
-    display: "My Cards",
-    link: "/profile/my-cards",
+    key: "returned_orders",
+    icon: "orders",
+    display: "My Returns",
+    link: "/profile/orders?status=4",
     disabled_cart: false,
   },
   {
-    key: "reward_points",
-    icon: "refernearn",
-    display: "Refer and Earn",
-    link: "/profile/refer-earn",
+    key: "wishlist",
+    icon: "wishlist",
+    display: "My Wishlist",
+    link: "/wishlist",
     disabled_cart: false,
   },
 ];
@@ -74,13 +119,23 @@ export const GENDER_OPTIONS = [
 
 export const DATE_FILTERS = [
   {
+    display: "Today",
+    value: 0,
+    is_selected: false,
+  },
+  {
+    display: "Last 7 days",
+    value: 7,
+    is_selected: false,
+  },
+  {
     display: "Last 30 days",
     value: 30,
     is_selected: false,
   },
   {
-    display: "Last 6 months",
-    value: 180,
+    display: "Last 90 days",
+    value: 90,
     is_selected: false,
   },
   {
@@ -89,11 +144,18 @@ export const DATE_FILTERS = [
     is_selected: false,
   },
   {
-    display: "Last 24 months",
-    value: 730,
-    is_selected: true,
+    display: "Custom",
+    value: "custom",
+    is_selected: false,
   },
 ];
+
+export const REFUND_MODE = {
+  bank: "bank",
+  storeCredits: "store credits",
+  upi: "upi",
+  refundToSource: "refund to source",
+};
 
 export const LANGUAGE_ISO_CODE = [
   {
@@ -342,3 +404,7 @@ export const MEDIA_WITH_TEXT_HOTSPOT_PLACEHOLDER_PRODUCT = {
   action: null,
 };
 export const ENABLE_SWR_CACHE = false;
+
+// Wishlist page size for fetching all wishlist IDs
+// Used to ensure global store has complete wishlist data, not just paginated results
+export const WISHLIST_PAGE_SIZE = 100;

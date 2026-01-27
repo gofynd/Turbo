@@ -1,0 +1,44 @@
+@import "../../styles/main.less";
+
+.messageCardWrapper {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  border-radius: 8px;
+  color: @SuccessText;
+  background: var(--User-Alerts-Success-Background, #edfaf4);
+  box-sizing: border-box;
+  border-left: 4px solid var(--User-Alerts-Success-Text, #169256);
+  @media @mobile {
+    border-left: 2px solid var(--User-Alerts-Success-Text, #169256);
+  }
+
+  .messageContent {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    width: 100%;
+    line-height: 140%;
+
+    @media @mobile {
+      padding: 8px 16px;
+    }
+    @media @tablet {
+      padding: 8px 16px;
+    }
+  }
+}
+
+.errorContainer {
+  background: var(--User-Alerts-Error-Background, #fbeaea);
+  border-left: 4px solid var(--User-Alerts-Error-Text, #d93131);
+  margin-bottom: 16px;
+  @media @mobile, @tablet {
+    border-left: 2px solid var(--User-Alerts-Error-Text, #d93131);
+  }
+}
+
+.errorMsg {
+  color: var(--User-Alerts-Error-Text, #d93131);
+}

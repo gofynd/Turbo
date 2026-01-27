@@ -132,8 +132,10 @@ export const FETCH_FOLLOWED_PRODUCTS = `query followedListing(
   }
 }`;
 
-export const FOLLOWED_PRODUCTS_IDS = `query FollowedListing {
-  followedListing(collectionType: "products") {
+export const FOLLOWED_PRODUCTS_IDS = `query FollowedListing(
+  $pageSize: Int
+) {
+  followedListing(collectionType: "products", pageSize: $pageSize) {
     items {
       uid
     }

@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "Типографика",
-        "algolia_configuration": "Конфигурация Алголии",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "Нижний колонтитул",
         "cart_and_button_configuration": "Конфигурация корзины и кнопки",
         "product_card_configuration": "Конфигурация карточки продукта",
@@ -158,8 +158,8 @@
         "transparent_header": "Прозрачный заголовок",
         "transparent_header_info": "Примените прозрачный заголовок, когда баннер применения или слайд изображений."
       },
-      "algolia_configuration": {
-        "enable_algolia": "Включить Алголию"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "Логотип",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "Выравнивание контента на рабочем столе",
         "banner_horizontal_scroll": "Баннер с горизонтальной прокруткой",
         "banner_with_stack": "Баннер со стеком",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "Макет (мобильный)",
         "content_alignment_mobile": "Выравнивание контента в мобильных устройствах",
         "text_alignment": "Выравнивание текста",

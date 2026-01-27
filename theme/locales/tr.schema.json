@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "Tipografi",
-        "algolia_configuration": "Algolia Yapılandırması",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "Altbilgi",
         "cart_and_button_configuration": "Sepet ve Buton Yapılandırması",
         "product_card_configuration": "Ürün Kartı Yapılandırması",
@@ -158,8 +158,8 @@
         "transparent_header": "Şeffaf başlık",
         "transparent_header_info": "Üstte uygulama afişi veya görüntü slayt gösterisi olduğunda şeffaf başlık uygulayın"
       },
-      "algolia_configuration": {
-        "enable_algolia": "Algolia'yı etkinleştir"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "Logo",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "Masaüstündeki içeriklerin hizalanması",
         "banner_horizontal_scroll": "Yatay kaydırmalı afiş",
         "banner_with_stack": "Yığınlı Afiş",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "Düzen (Mobil)",
         "content_alignment_mobile": "Mobilde içerik hizalaması",
         "text_alignment": "Metin Hizalaması",

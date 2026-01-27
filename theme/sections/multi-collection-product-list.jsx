@@ -57,6 +57,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const { isInternational } = useThemeFeature({ fpi });
   const {
     heading,
+    description,
     position,
     viewAll,
     per_row,
@@ -257,17 +258,17 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
               position?.value === "center" ? styles.moveCenter : ""
             } ${viewAll?.value ? styles.isViewAllCta : ""}`}
           >
-            <h2 className="fx-title fontHeader">{heading.value}</h2>
-            {viewAll?.value && (
-              <div className={`${styles.viewAllCta} ${styles.alignViewAll}`}>
-                <FDKLink
-                  className={"fx-button"}
-                  to={navigationsAndCollections?.[activeLink]?.link ?? ""}
+            <div>
+              <h2 className="fx-title fontHeader">{heading.value}</h2>
+              {description?.value?.length > 0 && (
+                <p
+                  className={`fx-description ${styles.description} b2`}
+                  style={{ textAlign: position?.value }}
                 >
-                  <span>{t("resource.facets.view_all")}</span>
-                </FDKLink>
-              </div>
-            )}
+                  {description?.value}
+                </p>
+              )}
+            </div>
           </div>
         )}
 
@@ -287,6 +288,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
             ))}
           </div>
         </div>
+
         <div className={styles.productContainer}>
           {!!navigationsAndCollections?.[activeLink]?.type &&
           navigationsAndCollections?.[activeLink]?.type !==
@@ -353,6 +355,18 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
               )}
             </>
           )}
+          <div className={styles.viewAllWrapper}>
+            {viewAll?.value && (
+              <div className={`${styles.viewAllCta} ${styles.alignViewAll}`}>
+                <FDKLink
+                  className={"fx-button"}
+                  to={navigationsAndCollections?.[activeLink]?.link ?? ""}
+                >
+                  <span>{t("resource.facets.view_all")}</span>
+                </FDKLink>
+              </div>
+            )}
+          </div>
         </div>
       </section>
       {showAddToCart && (
@@ -451,6 +465,13 @@ export const settings = {
       id: "heading",
       default: "",
       label: "t:resource.common.heading",
+    },
+    {
+      type: "textarea",
+      id: "description",
+      default: "",
+      label: "t:resource.common.description",
+      info: "t:resource.sections.multi_collection_product_list.description_info",
     },
     {
       type: "range",

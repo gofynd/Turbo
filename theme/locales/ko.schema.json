@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "타이포그래피",
-        "algolia_configuration": "Algolia 구성",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "보행인",
         "cart_and_button_configuration": "장바구니 및 버튼 구성",
         "product_card_configuration": "제품 카드 구성",
@@ -158,8 +158,8 @@
         "transparent_header": "투명한 헤더",
         "transparent_header_info": "애플리케이션 배너 또는 이미지 슬라이드 쇼가 상단에 투명한 헤더를 적용하십시오."
       },
-      "algolia_configuration": {
-        "enable_algolia": "Algolia 활성화"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "심벌 마크",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "데스크톱의 콘텐츠 정렬",
         "banner_horizontal_scroll": "가로 스크롤이 있는 배너",
         "banner_with_stack": "스택이 있는 배너",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "레이아웃(모바일)",
         "content_alignment_mobile": "모바일에서의 콘텐츠 정렬",
         "text_alignment": "텍스트 정렬",

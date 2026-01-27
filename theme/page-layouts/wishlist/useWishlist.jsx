@@ -10,6 +10,7 @@ import { getProductImgAspectRatio } from "../../helper/utils";
 import placeholder from "../../assets/images/placeholder3x4.png";
 import useAddToCartModal from "../plp/useAddToCartModal";
 import useInternational from "../../components/header/useInternational";
+import { WISHLIST_PAGE_SIZE } from "../../helper/constant";
 
 const useWishlistPage = ({ fpi }) => {
   const { t } = useGlobalTranslation("translation");
@@ -29,12 +30,12 @@ const useWishlistPage = ({ fpi }) => {
 
   const {
     show_add_to_cart = true,
-    card_cta_text = t("resource.common.add_to_cart"),
     mandatory_pincode = false,
     hide_single_size = false,
     preselect_size = false,
   } = pageConfig || {};
-
+  const card_cta_text =
+    pageConfig?.card_cta_text?.value ?? t("resource.common.add_to_cart");
   const addToCartConfigs = {
     mandatory_pincode,
     hide_single_size,
@@ -102,9 +103,20 @@ const useWishlistPage = ({ fpi }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetchProducts().finally(() => {
-      setLoading(false);
-    });
+    fetchProducts()
+      .then(() => {
+        // Refresh global store with all wishlist IDs after wishlist page loads
+        // This ensures collection pages see all wishlisted items, not just paginated results
+        // The FETCH_FOLLOWED_PRODUCTS query with pageSize: 12 can overwrite the global store,
+        // so we refresh it with all IDs to maintain consistency
+        return fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, {
+          pageSize: WISHLIST_PAGE_SIZE,
+        });
+      })
+      .catch(() => {})
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const EmptyStateComponent = () => (
@@ -127,7 +139,7 @@ const useWishlistPage = ({ fpi }) => {
         items: updatedProductList,
       }));
 
-      fpi.executeGQL(FOLLOWED_PRODUCTS_IDS);
+      fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, { pageSize: WISHLIST_PAGE_SIZE });
     });
   };
 

@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "تایپوگرافی",
-        "algolia_configuration": "پیکربندی Algolia",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "پاورقی",
         "cart_and_button_configuration": "پیکربندی سبد خرید و دکمه",
         "product_card_configuration": "پیکربندی کارت محصول",
@@ -158,8 +158,8 @@
         "transparent_header": "هدر شفاف",
         "transparent_header_info": "هنگامی که بنر برنامه یا نمایش اسلاید تصویر در بالا نشان می دهد ، از هدر شفاف استفاده کنید"
       },
-      "algolia_configuration": {
-        "enable_algolia": "Algolia را فعال کنید"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "لوگو",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "تراز کردن محتوا در دسکتاپ",
         "banner_horizontal_scroll": "بنر با اسکرول افقی",
         "banner_with_stack": "بنر با پشته",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "طرح بندی (موبایل)",
         "content_alignment_mobile": "تراز کردن محتوا در موبایل",
         "text_alignment": "ترازبندی متن",

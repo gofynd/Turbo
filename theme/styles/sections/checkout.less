@@ -64,16 +64,25 @@
   @media @tablet {
     border-radius: 0;
   }
+}
 
-  .placeOrderBtn {
-    font-weight: 600;
-    font-size: 12px;
-    padding: 12px 16px;
-    border-radius: 5px;
-    border: 1px solid var(--buttonPrimary);
-    background-color: var(--buttonPrimary);
-    color: var(--buttonSecondary);
-    line-height: 140%;
-    height: auto;
+.placeOrderBtn {
+  font-weight: 600;
+  font-size: 12px;
+  padding: 12px 16px;
+  border-radius: 5px;
+  border: 1px solid var(--buttonPrimary);
+  background-color: var(--buttonPrimary);
+  color: var(--buttonSecondary);
+  line-height: 140%;
+  height: auto;
+
+  span {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+  @media @mobile {
+    display: none;
   }
 }

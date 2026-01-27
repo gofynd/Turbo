@@ -11,7 +11,7 @@ import { useAddressFormSchema, useGoogleMapConfig } from "../../helper/hooks";
 
 const useAddress = (fpi, pageName) => {
   const {
-    countries,
+    countryCurrencies,
     fetchCountrieDetails,
     countryDetails,
     currentCountry,
@@ -31,7 +31,7 @@ const useAddress = (fpi, pageName) => {
 
   useEffect(() => {
     fetchCountrieDetails({
-      countryIsoCode: selectedCountry?.iso2 ?? countries?.[0]?.iso2,
+      countryIsoCode: selectedCountry?.iso2,
     });
   }, [selectedCountry]);
 
@@ -45,14 +45,14 @@ const useAddress = (fpi, pageName) => {
 
   function convertDropDownField(inputField) {
     return {
-      key: inputField.display_name,
-      display: inputField.display_name,
+      key: inputField.name,
+      display: inputField.name,
     };
   }
 
   const setI18nDetails = (e) => {
-    const selectedCountry = countries.find(
-      (country) => country.display_name === e
+    const selectedCountry = countryCurrencies.find(
+      (country) => country.name === e
     );
     setSelectedCountry(selectedCountry);
     fetchCountrieDetails({ countryIsoCode: selectedCountry?.iso2 });
@@ -64,14 +64,14 @@ const useAddress = (fpi, pageName) => {
 
   const getFilteredCountries = (selectedCountry) => {
     if (!countrySearchText) {
-      return countries.map((country) => convertDropDownField(country)) || [];
+      return countryCurrencies.map((country) => convertDropDownField(country)) || [];
     }
-    return countries?.filter(
+    return countryCurrencies?.filter(
       (country) =>
-        country?.display_name
+        country?.name
           ?.toLowerCase()
           ?.indexOf(countrySearchText?.toLowerCase()) !== -1 &&
-        country?.id !== selectedCountry?.id
+        country?.uid !== selectedCountry?.uid
     );
   };
 
@@ -84,6 +84,11 @@ const useAddress = (fpi, pageName) => {
   };
 
   const addAddress = (obj) => {
+    // Convert country object to string (uid/id/iso2) if it's an object
+    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    if (obj.country && typeof obj.country === "object" && obj.country !== null) {
+      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
+    }
     const payload = {
       address2Input: {
         ...obj,
@@ -94,6 +99,10 @@ const useAddress = (fpi, pageName) => {
 
   const updateAddress = (data, addressId) => {
     const add = data;
+    // Convert country object to string (uid) if it's an object
+    if (add.country && typeof add.country === "object" && add.country.uid) {
+      add.country = add.country.uid;
+    }
     delete add?.custom_json;
     delete add?.otherAddressType;
     /* eslint-disable no-underscore-dangle */

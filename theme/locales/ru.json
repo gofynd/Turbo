@@ -486,6 +486,8 @@
         "my_address": "МОИ АДРЕСА",
         "add_new_address": "Добавить новый адрес",
         "add_new_address_caps": "ДОБАВИТЬ НОВЫЙ АДРЕС",
+        "default_address": "Адрес по умолчанию",
+        "other_addresses": "Другие адреса",
         "no_address_available": "Адрес не указан",
         "address_not_found": "Адрес не найден!",
         "return_to_my_address": "ВЕРНУТЬСЯ НА МОЙ АДРЕС",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "PIN-код должен состоять ровно из 6 цифр.",
         "invalid_phone_number": "Неверный номер телефона",
         "enter_pincode": "Введите пин-код",
-        "default_address": "Адрес по умолчанию",
         "other_address": "Другой адрес",
         "address_type": "Тип адреса",
         "make_this_my_default_address": "Сделать это моим адресом по умолчанию"

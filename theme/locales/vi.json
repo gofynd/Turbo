@@ -486,6 +486,8 @@
         "my_address": "ĐỊA CHỈ CỦA TÔI",
         "add_new_address": "Thêm Địa Chỉ Mới",
         "add_new_address_caps": "THÊM ĐỊA CHỈ MỚI",
+        "default_address": "Địa Chỉ Mặc Định",
+        "other_addresses": "Địa Chỉ Khác",
         "no_address_available": "Không có địa chỉ nào có sẵn",
         "address_not_found": "Không tìm thấy địa chỉ!",
         "return_to_my_address": "TRỞ LẠI ĐỊA CHỈ CỦA TÔI",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "Mã PIN phải dài chính xác 6 chữ số",
         "invalid_phone_number": "Số điện thoại không hợp lệ",
         "enter_pincode": "Nhập mã PIN",
-        "default_address": "Địa chỉ mặc định",
         "other_address": "Địa chỉ khác",
         "address_type": "Loại địa chỉ",
         "make_this_my_default_address": "Đặt đây làm địa chỉ mặc định của tôi"

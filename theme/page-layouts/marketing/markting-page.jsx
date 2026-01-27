@@ -23,7 +23,7 @@ function MarketingPage({ fpi, defaultSlug }) {
     published,
     slug: pageSlug,
   } = customPage || {};
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({ fpi, seo });
 
   const title = useMemo(() => {
@@ -34,8 +34,9 @@ function MarketingPage({ fpi, defaultSlug }) {
 
   const description = useMemo(() => {
     const raw = sanitizeHTMLTag(seo?.description || "");
-    return trimDescription(raw, 160);
-  }, [seo?.description, trimDescription]);
+    const normalized = raw.replace(/\s+/g, " ").trim();
+    return normalized || seoDescription;
+  }, [seo?.description, seoDescription]);
 
   useEffect(() => {
     if (!slug || slug === pageSlug) return;

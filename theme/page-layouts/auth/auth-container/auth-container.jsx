@@ -27,7 +27,11 @@ function AuthContainer({
             />
           </div>
         )}
-        <div className={styles.loginContent}>{children}</div>
+        <div
+          className={`${styles.loginContent} ${!isBanner ? styles.fullWidth : ""}`}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

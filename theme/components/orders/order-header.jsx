@@ -1,74 +1,65 @@
-import React, { useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState } from "react";
 import styles from "./styles/order-header.less";
-import Dropdown from "./dropdown";
-import { DATE_FILTERS } from "../../helper/constant";
 import { useGlobalTranslation } from "fdk-core/utils";
+import FilterIcon from "../../assets/images/filter-orders.svg";
+import OrderFilterModal from "./order-filter-modal";
 
-function OrdersHeader({ title, subtitle, filters, flag }) {
+function OrdersHeader({
+  title,
+  subtitle,
+  filters,
+  flag = false,
+  onFilterClick,
+}) {
   const { t } = useGlobalTranslation("translation");
-  const location = useLocation();
-  const getSelectedDateFilter = () => {
-    const selectedFilter = getDateFilterOptions()?.find(
-      (obj) => obj.is_selected
-    );
-    return selectedFilter?.display;
-  };
-  const getSelectedStatus = useMemo(() => {
-    return filters?.statuses.find((obj) => obj.is_selected).display;
-  }, [filters]);
-  const getDateFilterOptions = () => {
-    const queryParams = new URLSearchParams(location.search);
-    const selected_date_filter = queryParams.get("selected_date_filter") || "";
-    if (selected_date_filter) {
-      return DATE_FILTERS.map((dateObj) => {
-        if (dateObj.value === Number(selected_date_filter)) {
-          dateObj.is_selected = true;
-        } else {
-          dateObj.is_selected = false;
-        }
-        return dateObj;
-      });
+  const [showFilterModal, setShowFilterModal] = useState(false);
+
+  const handleFilterClick = () => {
+    if (onFilterClick) {
+      onFilterClick();
+    } else if (!flag) {
+      setShowFilterModal(true);
     }
-    return DATE_FILTERS;
   };
+
+  const handleCloseModal = () => {
+    setShowFilterModal(false);
+  };
+
   return (
-    <div className={`${styles.orderHeader}`}>
-      <div
-        className={`${styles.title} ${styles.boldmd}`}
-        style={{ marginInlineStart: flag ? 0 : "15px" }}
-      >
-        {title}
-        <span className={` ${styles.subTitle}`}>{subtitle}</span>
-      </div>
-      {!flag && <div className={` ${styles.filters}`}></div>}
-      {filters?.statuses && (
-        <div className={`${styles.rightAlign}`}>
-          <div className={`${styles.orderDropdown} ${styles.bold}`}>
-            <span>
-              {t("resource.order.order_date")}:
-            </span>
-            <Dropdown
-              type="time"
-              selectedOption={getSelectedDateFilter()}
-              dropdownData={DATE_FILTERS}
-            ></Dropdown>
+    <>
+      <div className={styles.orderHeaderContainer}>
+        {/* Title and Filter Row */}
+        <div className={styles.titleFilterRow}>
+          <div className={`${styles.title} ${styles.boldmd}`}>
+            {title}
+            {subtitle && <span className={styles.subTitle}>{subtitle}</span>}
           </div>
-          <div
-            className={`${styles.orderHeader} ${styles.orderDropdown}  ${styles.bold}`}
+
+          <button
+            className={styles.filterButton}
+            onClick={handleFilterClick}
+            aria-label="Filter orders"
+            type="button"
+            disabled={flag}
           >
-            <span>
-              {t("resource.order.order_status")}
-            </span>
-            <Dropdown
-              type="status"
-              selectedOption={getSelectedStatus}
-              dropdownData={filters?.statuses}
-            ></Dropdown>
-          </div>
+            <FilterIcon className={styles.filterIcon} />
+          </button>
         </div>
+
+        {/* Divider */}
+        <div className={styles.headerDivider}></div>
+      </div>
+
+      {/* Filter Modal */}
+      {!flag && (
+        <OrderFilterModal
+          isOpen={showFilterModal}
+          onClose={handleCloseModal}
+          filters={filters}
+        />
       )}
-    </div>
+    </>
   );
 }
 

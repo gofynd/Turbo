@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "វាយអក្សរ",
-        "algolia_configuration": "ការកំណត់រចនាសម្ព័ន្ធអាល់ហ្គោលី",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "បាតកថា",
         "cart_and_button_configuration": "ការកំណត់រចនាសម្ព័ន្ធរទេះ និងប៊ូតុង",
         "product_card_configuration": "ការកំណត់រចនាសម្ព័ន្ធកាតផលិតផល",
@@ -158,8 +158,8 @@
         "transparent_header": "បឋមកថាថ្លា",
         "transparent_header_info": "អនុវត្តបឋមកថាដែលមានតម្លាភាពនៅពេលដែលបដាកម្មវិធីឬការបញ្ចាំងស្លាយរូបភាពនៅខាងលើ"
       },
-      "algolia_configuration": {
-        "enable_algolia": "បើកដំណើរការអាល់ហ្គោលី"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "និមិត្តសញ្ញា",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "ការតម្រឹមមាតិកានៅក្នុងផ្ទៃតុ",
         "banner_horizontal_scroll": "បដាជាមួយរមូរផ្ដេក",
         "banner_with_stack": "បដាជាមួយជង់",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "ប្លង់ (ទូរស័ព្ទ)",
         "content_alignment_mobile": "ការតម្រឹមមាតិកានៅក្នុងទូរស័ព្ទ",
         "text_alignment": "ការតម្រឹមអត្ថបទ",

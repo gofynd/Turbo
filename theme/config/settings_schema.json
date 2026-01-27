@@ -201,10 +201,10 @@
     {
       "type": "checkbox",
       "id": "algolia_enabled",
-      "label": "t:resource.settings_schema.algolia_configuration.enable_algolia",
+      "label": "t:resource.settings_schema.search_and_recommendation_extension.enable",
       "default": false,
-      "info": "t:resource.settings_schema.algolia_configuration.enable_algolia",
-      "category": "t:resource.settings_schema.common.algolia_configuration"
+      "info": "t:resource.settings_schema.search_and_recommendation_extension.enable",
+      "category": "t:resource.settings_schema.common.search_and_recommendation_extension"
     },
     {
       "type": "image_picker",

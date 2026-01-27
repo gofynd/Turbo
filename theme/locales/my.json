@@ -486,6 +486,8 @@
         "my_address": "ကျွန်ုပ်၏လိပ်စာများ",
         "add_new_address": "လိပ်စာအသစ်ထည့်ပါ။",
         "add_new_address_caps": "လိပ်စာအသစ်ထည့်ပါ။",
+        "default_address": "မူလလိပ်စာ",
+        "other_addresses": "အခြားလိပ်စာများ",
         "no_address_available": "လိပ်စာမရှိပါ။",
         "address_not_found": "လိပ်စာမတွေ့ပါ။",
         "return_to_my_address": "ကျွန်ုပ်၏လိပ်စာသို့ ပြန်သွားပါ။",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "ပင်ကုတ်သည် ဂဏန်း ၆ လုံးတိတိ ရှည်ရပါမည်။",
         "invalid_phone_number": "ဖုန်းနံပါတ် မမှန်ကန်ပါ။",
         "enter_pincode": "Pincode ထည့်ပါ။",
-        "default_address": "မူရင်းလိပ်စာ",
         "other_address": "အခြားလိပ်စာ",
         "address_type": "လိပ်စာအမျိုးအစား",
         "make_this_my_default_address": "၎င်းကို ကျွန်ုပ်၏ မူရင်းလိပ်စာအဖြစ် သတ်မှတ်ပါ။"

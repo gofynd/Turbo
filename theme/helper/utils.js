@@ -6,6 +6,7 @@ import {
   FLOAT_MAP,
   TEXT_ALIGNMENT_MAP,
 } from "./constant";
+import { useEffect, useState } from "react";
 
 export const debounce = (func, wait) => {
   let timeout;
@@ -69,6 +70,28 @@ export function isRunningOnClient() {
   return false;
 }
 
+export const useMobile = (breakpoint = 768) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (!isRunningOnClient()) return;
+    const handleResize = () => {
+      if (typeof window !== "undefined") {
+        setIsMobile(window?.innerWidth <= breakpoint);
+      }
+    };
+
+    handleResize();
+
+    window?.addEventListener("resize", handleResize);
+    return () => {
+      window?.removeEventListener("resize", handleResize);
+    };
+  }, [breakpoint]);
+
+  return isMobile;
+};
+
 export const copyToClipboard = (str) => {
   const el = document.createElement("textarea");
   el.value = str;
@@ -108,7 +131,48 @@ export function convertDate(dateString, locale = "en-US") {
   return formattedDate;
 }
 
+// Convert ISO date string to DD-MM-YYYY format
+export function convertISOToDDMMYYYY(isoString) {
+  if (!isoString) return "";
+
+  // Extract date part from ISO string (YYYY-MM-DD) to avoid timezone issues
+  // For DOB, we only care about the date, not the time
+  const datePart = isoString.split("T")[0];
+  if (!datePart) return "";
+
+  const parts = datePart.split("-");
+  if (parts.length !== 3) {
+    // Fallback to Date object parsing if format is unexpected
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return "";
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  // Convert from YYYY-MM-DD to DD-MM-YYYY
+  const [year, month, day] = parts;
+  return `${day}-${month}-${year}`;
+}
+
+// Convert DD-MM-YYYY format to ISO string
+export function convertDDMMYYYYToISO(dateString) {
+  if (!dateString) return "";
+  const parts = dateString.split("-").map(Number);
+  if (parts.length !== 3) return "";
+  // Assuming DD-MM-YYYY format
+  // Use Date.UTC to create date in UTC timezone to avoid timezone shift issues
+  const dateObj = new Date(Date.UTC(parts[2], parts[1] - 1, parts[0]));
+  if (isNaN(dateObj.getTime())) return "";
+  return dateObj.toISOString();
+}
+
 export const convertUTCDateToLocalDate = (date, format, locale = "en-US") => {
+  if (!date) {
+    return "Invalid date";
+  }
+
   let frm = format;
   if (!frm) {
     frm = {
@@ -121,18 +185,28 @@ export const convertUTCDateToLocalDate = (date, format, locale = "en-US") => {
       hour12: true,
     };
   }
-  const utcDate = new Date(date);
-  // Convert the UTC date to the local date using toLocaleString() with specific time zone
-  const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const options = {
-    ...frm,
-    timeZone: browserTimezone,
-  };
-  // Convert the UTC date and time to the desired format
-  const formattedDate = utcDate
-    .toLocaleString(locale, options)
-    .replace(" at ", ", ");
-  return formattedDate;
+
+  try {
+    const utcDate = new Date(date);
+
+    if (Number.isNaN(utcDate.getTime())) {
+      return "Invalid date";
+    }
+
+    // Convert the UTC date to the local date using toLocaleString() with specific time zone
+    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    const options = {
+      ...frm,
+      timeZone: browserTimezone,
+    };
+    // Convert the UTC date and time to the desired format
+    const formattedDate = utcDate
+      .toLocaleString(locale, options)
+      .replace(" at ", ", ");
+    return formattedDate;
+  } catch (error) {
+    return "Invalid date";
+  }
 };
 
 export function validateName(name) {
@@ -242,6 +316,21 @@ export function sanitizeHTMLTag(data) {
   return typeof data === "string" ? data.replace(/[<>"]/g, "") : "";
 }
 
+export function sanitizeMetaDescription(data) {
+  if (typeof data !== "string") return "";
+  return data
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/\s+/g, " ")
+    .replace(/"/g, "")
+    .trim();
+}
+
 export const getProductImgAspectRatio = (
   global_config,
   defaultAspectRatio = 0.8
@@ -277,6 +366,44 @@ export const currencyFormat = (value, currencySymbol, locale = "en-IN") => {
 
   return "";
 };
+
+export function roundToDecimals(number, decimalPlaces = 2) {
+  const factor = 10 ** decimalPlaces;
+  return Math.round(number * factor) / factor;
+}
+
+export function priceFormatCurrencySymbol(symbol, price = 0) {
+  const hasAlphabeticCurrency = /^[A-Za-z]+$/.test(symbol);
+  let sanitizedPrice = price;
+  if (typeof price !== "string") {
+    let num = price;
+
+    if (!Number.isNaN(price)) num = roundToDecimals(price);
+    if (num?.toString()[0] === "-") {
+      num = num?.toString()?.substring(1);
+    }
+
+    if (num) {
+      sanitizedPrice =
+        num?.toString()?.split(".")?.[0].length > 3
+          ? `${num
+              ?.toString()
+              ?.substring(0, num?.toString()?.split(".")?.[0]?.length - 3)
+              ?.replace(/\B(?=(\d{2})+(?!\d))/g, ",")},${num
+              ?.toString()
+              ?.substring(num?.toString()?.split?.(".")?.[0]?.length - 3)}`
+          : num?.toString();
+    } else {
+      sanitizedPrice = 0;
+    }
+  }
+
+  return `${price.toString()[0] === "-" ? "-" : ""}${
+    hasAlphabeticCurrency
+      ? `${symbol} ${sanitizedPrice}`
+      : `${symbol}${sanitizedPrice}`
+  }`;
+}
 
 export const getReviewRatingData = (customMeta) => {
   const data = {};
@@ -368,7 +495,35 @@ export function createFieldValidation(field, t) {
       if (required && !value?.mobile?.trim()) {
         return `${display_name} ${t("resource.common.address.is_required")}`;
       }
-      if (!value || !value.isValidNumber) {
+      // If isValidNumber is explicitly false, fail validation
+      if (value && value.isValidNumber === false) {
+        return t("resource.common.address.invalid_phone_number");
+      }
+
+      // If isValidNumber is missing/undefined but we have a mobile number, validate it ourselves
+      if (value && value.mobile && value.isValidNumber === undefined) {
+        const mobileNumber = value.mobile.toString().replace(/[\s\-+]/g, "");
+        // Basic validation: check if it's a valid length (10 digits for most countries)
+        // For India (countryCode 91), validate Indian format
+        if (value.countryCode === "91" || !value.countryCode) {
+          if (mobileNumber.length !== 10) {
+            return t("resource.common.address.invalid_phone_number");
+          }
+          // Indian mobile numbers should start with 6-9
+          if (!/^[6-9]\d{9}$/.test(mobileNumber)) {
+            return t("resource.common.address.invalid_phone_number");
+          }
+        } else {
+          // For other countries, just check minimum length (at least 7 digits)
+          if (mobileNumber.length < 7) {
+            return t("resource.common.address.invalid_phone_number");
+          }
+        }
+        return true;
+      }
+
+      // If no value at all, fail
+      if (!value) {
         return t("resource.common.address.invalid_phone_number");
       }
       return true;
@@ -426,7 +581,23 @@ export const resetScrollPosition = () => {
 };
 
 export const getConfigFromProps = (props) => {
-  const getConfigValue = (key) => ({ [key]: props?.[key]?.value });
+  if (!props || typeof props !== "object") {
+    return {};
+  }
+
+  const getConfigValue = (key) => {
+    const prop = props[key];
+    if (!prop) return { [key]: undefined };
+
+    // Handle different prop structures
+    if (prop.value !== undefined) {
+      return { [key]: prop.value };
+    } else if (prop.type && prop.default !== undefined) {
+      return { [key]: prop.default };
+    } else {
+      return { [key]: prop };
+    }
+  };
 
   return Object.keys(props)?.reduce(
     (acc, curr) => ({ ...getConfigValue(curr), ...acc }),
@@ -449,6 +620,63 @@ export function getLocalizedRedirectUrl(path = "", currentLocale) {
 
   return normalizedPath;
 }
+
+export const validateAccounHolder = (value) => {
+  // If empty, let the 'required' rule handle it
+  if (!value || !value.trim()) {
+    return true; // Changed from returning error message
+  }
+
+  const trimmedValue = value.trim();
+
+  // Check for numbers
+  if (/\d/.test(trimmedValue)) {
+    return "resource.refund_order.numbers_not_allowed_in_account_holder_name";
+  }
+
+  // Check for special characters
+  if (!/^[a-zA-Z\s.',-]+$/.test(trimmedValue)) {
+    return "resource.refund_order.special_characters_not_allowed_in_account_holder_name";
+  }
+
+  // Minimum length check
+  if (trimmedValue.length < 3) {
+    return "resource.refund_order.account_holder_name_should_be_at_least_3_characters";
+  }
+
+  // Maximum length check
+  if (trimmedValue.length > 50) {
+    return "resource.refund_order.account_holder_name_should_not_exceed_50_characters";
+  }
+
+  return true;
+};
+
+export const validateAccountNo = (value) => {
+  // If empty, let the 'required' rule handle it
+  if (!value) {
+    return true; // Changed from returning error message
+  }
+
+  const accountNumber = value.toString().replace(/\s/g, "");
+
+  // Check if it contains only digits
+  if (!/^\d+$/.test(accountNumber)) {
+    return "resource.refund_order.account_number_should_contain_only_numbers";
+  }
+
+  // Check minimum length
+  if (accountNumber.length < 9) {
+    return "resource.refund_order.account_number_should_be_at_least_9_digits";
+  }
+
+  // Check maximum length
+  if (accountNumber.length > 18) {
+    return "resource.refund_order.account_number_should_not_exceed_18_digits";
+  }
+
+  return true;
+};
 
 export function spaNavigate(path) {
   // SSR / very old browsers
@@ -507,7 +735,17 @@ export const getAddressStr = (item, isAddressTypeAvailable) => {
       addressStr += ` ${item.area_code}`;
     }
     if (item.country) {
-      addressStr += `, ${item.country}`;
+      // Handle country as object or string
+      const countryStr =
+        typeof item.country === "object"
+          ? item.country.display_name ||
+            item.country.name ||
+            item.country.uid ||
+            ""
+          : item.country;
+      if (countryStr) {
+        addressStr += `, ${countryStr}`;
+      }
     }
     return addressStr;
   } catch (error) {

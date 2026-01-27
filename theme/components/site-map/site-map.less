@@ -1,9 +1,14 @@
 @import "../../styles/main.less";
 
+.sitemapWrapper {
+  width: 100%;
+  padding:0px 80px;
+}
+
 .sitemapContainer {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 16px 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,28 +24,15 @@
 
   .sitemapSections {
     width: 100%;
-    column-gap: 16px;
-    column-count: 3;
-    height: var(--dynamicHeight , auto);
-    @media @tablet {
-      height: auto;
-      column-count: 2;
-    }
-    @media @mobile {
-      column-count: 1;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    height: auto;
   }
 
   .sitemapSection {
-    display: inline-block;
     width: 100%;
-    margin: 0 0 16px;
     background: @PageBackground;
-    border: 1px solid @DividerStokes;
-    border-radius: 16px;
-    box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.06),
-      0 4px 12px rgba(0, 0, 0, 0.04);
     padding: 16px;
 
     break-inside: avoid;
@@ -53,6 +45,9 @@
       font-weight: 600;
       margin-bottom: 8px;
       transition: color 0.2s ease;
+      border-left: 4px solid @ButtonPrimary;
+      border-radius: 2px;
+      padding-left: 8px;
 
       a {
         color: inherit;
@@ -71,11 +66,27 @@
       }
     }
 
+    .sitemapItems {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 12px;
+
+      @media @tablet {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      @media @mobile {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .sitemapItem {
       position: relative;
       margin: 6px 0;
       padding-left: 12px;
-
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-word;
       /* chevron bullet  here */
       &::before {
         content: "›";
@@ -91,12 +102,16 @@
         display: block;
         color: @ButtonLink;
         text-decoration: none;
-        padding: 6px 8px;
+        padding: 8px 12px;
         border-radius: 10px;
         transition:
           background 0.2s,
           color 0.2s,
           opacity 0.2s;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
 
         &:hover {
           opacity: 0.8;

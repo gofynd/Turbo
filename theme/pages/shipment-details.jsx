@@ -11,9 +11,29 @@ export const settings = JSON.stringify({
 
 export const sections = JSON.stringify([
   {
+    canvas: {
+      value: "left_side",
+      label: "Left Panel",
+    },
     attributes: {
       page: "shipment-details",
     },
+  },
+  {
+    canvas: {
+      value: "right_side",
+      label: "Right Panel",
+    },
+    attributes: {
+      page: "shipment-details",
+    },
+    blocks: [
+      {
+        type: "profile-navigation-menu",
+        name: "Profile Navigation Menu",
+        props: [],
+      },
+    ],
   },
 ]);
 

@@ -99,36 +99,42 @@ const useRefundDetails = (fpi) => {
 
   function addRefundBankAccountUsingOTP(details) {
     try {
-      const values = {
-        addBeneficiaryDetailsOTPRequestInput: details,
+      const variables = {
+        addBeneficiaryInput: details,
       };
-      return fpi.executeGQL(ADD_REFUND_BANK_DETAILS, values).then((res) => {
-      if (res.errors && res.errors.length > 0) {
-        const errorDetails = res.errors[0]?.details || {};
-        const errorMessage = 
-          errorDetails.description || 
-          res.errors[0]?.message || 
-          "An unexpected error occurred";
-        
-        showSnackbar(errorMessage, "error");
-        return { 
-          success: false, 
-          msg: errorMessage 
-        };
-      }
 
-        if (res?.data?.addRefundBankAccountUsingOTP?.success) {
-          const data = { success: true };
-          setBeneficiaryDetails(data);
-          return data;
+      return fpi.executeGQL(ADD_REFUND_BANK_DETAILS, variables).then((res) => {
+        if (res.errors && res.errors.length > 0) {
+          const errorDetails = res.errors[0]?.details || {};
+          const errorMessage =
+            errorDetails.description ||
+            res.errors[0]?.message ||
+            "An unexpected error occurred";
+
+          showSnackbar(errorMessage, "error");
+          return {
+            success: false,
+            msg: errorMessage,
+          };
         }
+
+        const data = res?.data?.addRefundBeneficiaryUsingOTPSession;
+
+        if (data) {
+          setBeneficiaryDetails(data);
+          return {
+            success: true,
+            ...data,
+          };
+        }
+
         return res;
       });
     } catch (error) {
       if (error?.errors && error.errors.length) {
         showSnackbar(error.errors[0].message, "error");
-        return;
       }
+      return;
     }
   }
 

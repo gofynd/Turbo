@@ -314,7 +314,7 @@ const useProductListing = ({ fpi, props }) => {
     setApiLoading(true);
 
     if (isAlgoliaEnabled) {
-      const BASE_URL = `${window.location.origin}/ext/algolia/application/api/v1.0/products`;
+      const BASE_URL = `${window.location.origin}/ext/search/application/api/v1.0/products`;
 
       const url = new URL(BASE_URL);
       url.searchParams.append(
@@ -451,10 +451,11 @@ const useProductListing = ({ fpi, props }) => {
       }
     }
     searchParams?.delete("page_no");
-    navigate?.({
-      pathname: location?.pathname,
-      search: searchParams?.toString(),
-    });
+    navigate?.(
+      location?.pathname +
+        (searchParams?.toString() ? `?${searchParams.toString()}` : ""),
+      { replace: true }
+    );
   };
 
   const handleSortUpdate = (value) => {
@@ -469,7 +470,8 @@ const useProductListing = ({ fpi, props }) => {
     searchParams?.delete("page_no");
     navigate?.(
       location?.pathname +
-        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+        (searchParams?.toString() ? `?${searchParams.toString()}` : ""),
+      { replace: true }
     );
   };
 
@@ -483,7 +485,8 @@ const useProductListing = ({ fpi, props }) => {
     searchParams?.delete("page_no");
     navigate?.(
       location?.pathname +
-        (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+        (searchParams?.toString() ? `?${searchParams.toString()}` : ""),
+      { replace: true }
     );
   }
 

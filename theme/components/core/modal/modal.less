@@ -1,46 +1,76 @@
-@import '../../../styles/main.less';
+@import "../../../styles/main.less";
 
 .modal {
-	position: fixed;
-	inset: 0;
-	z-index: @header;
-	overflow-y: auto;
-	overflow-x: hidden;
-	transition: opacity 0.25s ease;
-	.flex-center();
-	@media @tablet {
-		align-items: flex-end;
-	}
-	&:before {
-		content: '';
-		background-color: @Overlay;
-		opacity: 0.6;
-		inset: 0;
-		position: fixed;
-		z-index: -1;
-	}
+  position: fixed;
+  inset: 0;
+  z-index: @header;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: opacity 0.25s ease;
+  .flex-center();
+  @media @tablet {
+    align-items: flex-end;
+  }
+  &:before {
+    content: "";
+    background-color: @Overlay;
+    opacity: 0.6;
+    inset: 0;
+    position: fixed;
+    z-index: -1;
+  }
 
-	.modalContainer {
-		min-width: 300px;
-		background-color: @DialogBackground;
-		border: 1px solid @White;
-		border-radius: @border-radius;
-		min-height: 100px;
-		max-width: 720px;
-		overflow: auto;
-		@media @tablet {
-			width: 100%;
-			max-width: unset;
-		}
-	}
+  .modalContainer {
+    min-width: 300px;
+    background-color: @DialogBackground;
+    border: 1px solid @White;
+    border-radius: @border-radius;
+    min-height: 100px;
+    max-width: 720px;
+    overflow: auto;
+    @media @tablet {
+      width: 100%;
+      max-width: unset;
+    }
+  }
 }
 .rightModal {
-	justify-content: flex-end;
-	.modalContainer {
-		height: 100%;
-		width: 40%;
-		@media @tablet {
-			width: 100%;
-		}
-	}
+  justify-content: flex-end;
+  .modalContainer {
+    height: 100%;
+    width: 40%;
+    @media @tablet {
+      width: 100%;
+    }
+  }
+}
+
+.mobileFullscreen {
+  align-items: flex-start;
+  &:before {
+    background-color: @PageBackground;
+    opacity: 1;
+  }
+  .modalContainer {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    border: none;
+    background-color: @PageBackground;
+    @media @mobile {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.orderFilterModal {
+  .modalContainer {
+    border-radius: 12px;
+    
+    @media @mobile {
+      border-radius: 0;
+    }
+  }
 }

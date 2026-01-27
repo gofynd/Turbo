@@ -7,9 +7,8 @@ import {
 } from "../../theme/queries/wishlistQuery";
 import {
   getFpiState,
-  createErrorResponse,
-  createSuccessResponse,
 } from "./common-utils.js";
+import { WISHLIST_PAGE_SIZE } from "../../theme/helper/constant";
 
 /**
  * Helper function to add product to wishlist
@@ -30,7 +29,7 @@ export const addToWishList = async (product) => {
     // Refresh followed products list
     await window.fpi.executeGQL(FOLLOWED_PRODUCTS_ID, {
       collectionType: "products",
-      pageSize: 500,
+      pageSize: WISHLIST_PAGE_SIZE,
     });
     return result.data.followById;
   }
@@ -57,7 +56,7 @@ export const removeFromWishList = async (product) => {
     // Refresh followed products list
     await window.fpi.executeGQL(FOLLOWED_PRODUCTS_ID, {
       collectionType: "products",
-      pageSize: 500,
+      pageSize: WISHLIST_PAGE_SIZE,
     });
     return result.data.unfollowById;
   }
@@ -257,9 +256,8 @@ export const getProductBySlug = async (productSlug) => {
     throw new Error("FPI not available");
   }
 
-  const { GET_PRODUCT_DETAILS } = await import(
-    "../../theme/queries/pdpQuery.js"
-  );
+  const { GET_PRODUCT_DETAILS } =
+    await import("../../theme/queries/pdpQuery.js");
   const result = await window.fpi.executeGQL(GET_PRODUCT_DETAILS, {
     slug: productSlug,
   });

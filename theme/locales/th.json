@@ -486,6 +486,8 @@
         "my_address": "ที่อยู่ของฉัน",
         "add_new_address": "เพิ่มที่อยู่ใหม่",
         "add_new_address_caps": "เพิ่มที่อยู่ใหม่",
+        "default_address": "ที่อยู่เริ่มต้น",
+        "other_addresses": "ที่อยู่อื่นๆ",
         "no_address_available": "ไม่มีที่อยู่",
         "address_not_found": "ไม่พบที่อยู่!",
         "return_to_my_address": "กลับไปยังที่อยู่ของฉัน",
@@ -497,7 +499,6 @@
         "pincode_six_digits_required": "รหัส PIN ต้องมีความยาว 6 หลักพอดี",
         "invalid_phone_number": "หมายเลขโทรศัพท์ไม่ถูกต้อง",
         "enter_pincode": "กรอกรหัส PIN",
-        "default_address": "ที่อยู่เริ่มต้น",
         "other_address": "ที่อยู่อื่น ๆ",
         "address_type": "ประเภทที่อยู่",
         "make_this_my_default_address": "ทำให้ที่นี่เป็นที่อยู่เริ่มต้นของฉัน"

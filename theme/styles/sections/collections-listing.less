@@ -90,12 +90,51 @@
     }
   }
 
+  // Apply initial transform for SSR - Embla will override with inline styles
+  .carouselContent {
+    @media @mobile {
+      // The shared Carousel component adds a 1rem gutter on horizontal carousels:
+      // track `margin-left: -1rem` and item `padding-left: 1rem`.
+      // On production builds those classnames are hashed, so we override via our
+      // section class (this element has BOTH the carousel track classes + this class).
+      margin-left: 0;
+
+      // Initial transform for SSR to show peek effect
+      // Embla's inline styles will override this when scrolling
+      transform: translate3d(19px, 0px, 0px);
+    }
+  }
+
+  .carouselItemWrapper {
+    // Desktop: use CSS variable from parent
+    flex: 0 0 calc(100% / var(--items-per-row-desktop, 3));
+    
+    @media @mobile {
+      // Remove the default 1rem left padding (same reason as margin-left above)
+      padding-left: 0;
+
+      // Mobile: card width for peek effect
+      flex: 0 0 calc(100% - 38px) !important;
+      padding-inline: 0;
+    }
+  }
+
   .sliderItem {
     padding-inline: calc(var(--gap) / 2);
   }
+  
   &.singleItem {
     @media @mobile {
       padding-inline: @SectionInlinePaddingMobile;
+      
+      .carouselContent {
+        // No transform for single item
+        transform: translate3d(0px, 0px, 0px);
+      }
+      
+      .carouselItemWrapper {
+        flex: 0 0 100% !important;
+      }
     }
   }
 }

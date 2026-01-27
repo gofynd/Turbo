@@ -5,7 +5,7 @@ import useSeoMeta from "../helper/hooks/useSeoMeta";
 import { SectionRenderer } from "fdk-core/components";
 import { getHelmet } from "../providers/global-provider";
 import styles from "../styles/sections/product-description.less";
-import { sanitizeHTMLTag } from "../helper/utils";
+import { sanitizeHTMLTag, sanitizeMetaDescription } from "../helper/utils";
 
 function ProductDescription({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
@@ -21,7 +21,7 @@ function ProductDescription({ fpi }) {
     PRODUCT?.product_details?.media?.[0]?.secure_url ||
     PRODUCT?.product_details?.media?.[0]?.url ||
     "";
-  const { brandName, canonicalUrl, pageUrl, trimDescription, socialImage } =
+  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
     useSeoMeta({
       fpi,
       seo: { ...seo, image: seo?.image || productImage },
@@ -34,9 +34,14 @@ function ProductDescription({ fpi }) {
   }, [seo?.title, productName, brandName]);
 
   const description = useMemo(() => {
-    const raw = sanitizeHTMLTag(seo?.description || productDescription || title ||brandName ||"");
-    return trimDescription(raw, 160);
-  }, [seo?.description, productDescription, trimDescription]);
+    const rawSeoDesc = sanitizeHTMLTag(seo?.description || "");
+    const rawProductDesc = sanitizeMetaDescription(productDescription || "");
+    const rawTitle = sanitizeHTMLTag(title || "");
+    const rawBrandName = sanitizeHTMLTag(brandName || "");
+    
+    const raw = rawSeoDesc || rawProductDesc || rawTitle || rawBrandName || "";
+    return raw;
+  }, [seo?.description, productDescription, title, brandName]);
 
   return (
     <>

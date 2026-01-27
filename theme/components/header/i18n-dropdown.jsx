@@ -28,12 +28,10 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
   const {
     isInternational,
     i18nDetails,
-    countries,
-    currencies,
-    defaultCurrency,
     countryDetails,
     currentCountry,
     currentCurrency,
+    countryCurrencies,
     fetchCountrieDetails,
     fetchLocalities,
     setI18nDetails,
@@ -52,6 +50,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
 
   const [formSchema, setFormSchema] = useState([]);
   const [formOptions, setFormOptions] = useState({});
+  const [currencyOptions, setCurrencyOptions] = useState([]);
   const { control, handleSubmit, setValue, reset, watch, getValues } = useForm({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -77,7 +76,6 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
       "/categories",
       "/brands",
       "/profile/address",
-      "/contact-us",
     ];
 
     const currentPath = location.pathname;
@@ -217,26 +215,35 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
   };
 
   const handleCountryChange = async (country) => {
-    if (country?.meta?.country_code === countryInfo?.iso2) return;
+    if (country?.currencies?.length) {
+      const options = country.currencies.map((currency) => ({
+        label: `${currency.name} (${currency.code}) ${currency.symbol}`,
+        value: currency.code,
+        code: currency.code,
+        name: currency.name,
+        isDefault: currency.is_default,
+      }));
+      setCurrencyOptions(options);
+      const defaultCurrency =
+        options.find((opt) => opt.isDefault) || options[0];
+      setValue("currency", defaultCurrency);
+    } else {
+      setCurrencyOptions([]);
+      setValue("currency", null);
+    }
 
     try {
-      const response = await fetchCountrieDetails(
-        { countryIsoCode: country?.meta?.country_code },
+      const { data, errors } = await fetchCountrieDetails(
+        { countryIsoCode: country?.iso2 },
         { skipStoreUpdate: true }
       );
-      if (response?.data?.country) {
-        const countryInfo = response.data.country;
-        setCountryInfo(countryInfo);
-        const countryCurrency = currencies?.find(
-          (data) => data?.code === countryInfo?.currency?.code
-        );
-        setValue("currency", countryCurrency ?? defaultCurrency);
+      if (data?.country) {
+        setCountryInfo(data.country);
       }
     } catch (error) {}
   };
 
   const openI18nModal = () => {
-    if (!showI18Dropdown) return;
     fpi.custom.setValue("isI18ModalOpen", true);
     fpi.custom.setValue("showLanguageDropdown", true);
   };
@@ -298,17 +305,12 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
     return result;
   }
 
-  function getDefaultLocaleObject(locales) {
-    if (!Array.isArray(locales)) return {};
-
-    return locales.find((locale) => locale.is_default === true) || {};
-  }
-
-  useEffect(() => {
-    if (currentCountry && Object.keys(currentCountry).length > 0) {
-      setValue("country", currentCountry);
-    }
-  }, [currentCountry, setValue]);
+  // useEffect(() => {
+  //   if (currentCountry && Object.keys(currentCountry).length > 0) {
+  //     setValue("country", currentCountry);
+  //     handleCountryChange(currentCountry);
+  //   }
+  // }, [currentCountry, setValue]);
 
   useEffect(() => {
     if (activeLocale && getValues("language")?.locale !== activeLocale) {
@@ -316,7 +318,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
         "language",
         languageIscCode?.find(
           (localeObj) => localeObj.locale === activeLocale
-        ) || getDefaultLocaleObject(languageIscCode)
+        ) || {}
       );
     }
   }, [activeLocale, languageIscCode, setValue]);
@@ -395,33 +397,29 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
 
   return (
     <div className={`${styles.internationalization}`}>
-      {(languageIscCode.length > 1 || isInternational) && (
+      {(languageIscCode.length > 1 || (isInternational && showI18Dropdown)) && (
         <button
           className={styles.internationalization__selected}
           onClick={openI18nModal}
         >
-          {currentCountry?.display_name &&
-          currentCurrency?.code &&
-          showI18Dropdown ? (
+          <InternationalIcon className={styles.internationalIcon} />
+          {currentCountry?.name && currentCurrency?.code ? (
             <>
-              <InternationalIcon className={styles.internationalIcon} />
               <span
                 className={`${styles.locationLabel} ${styles.locationLabelMobile}`}
               >
                 {t("resource.common.deliver_to")}{" "}
               </span>
               <span
-                className={`${styles.locationLabel}`}
-              >{`${currentCountry.display_name} - ${currentCurrency.code}`}</span>
+                className={`${styles.locationLabel} ${styles.languageDisplayContainer}`}
+              >{`${currentCountry.name ?? " "} - ${currentCurrency.code}`}</span>
             </>
           ) : (
             languageIscCode.length > 1 && (
               <span className={styles.languageDisplayContainer}>
                 {languageIscCode?.find(
                   (localeObj) => localeObj.locale === activeLocale
-                )?.display_name ||
-                  getDefaultLocaleObject(languageIscCode)?.display_name ||
-                  ""}
+                )?.display_name || ""}
               </span>
             )
           )}
@@ -467,7 +465,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
                       type: "list",
                       label: t("resource.localization.select_country"),
                       placeholder: t("resource.localization.select_country"),
-                      options: countries,
+                      options: countryCurrencies,
                       dataKey: "uid",
                       onChange: handleCountryChange,
                       validation: {
@@ -475,12 +473,13 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
                           Object.keys(value || {}).length > 0 ||
                           t("resource.localization.invalid_country"),
                       },
-                      getOptionLabel: (option) => option.display_name || "",
+                      getOptionLabel: (option) => option.name || "",
                     }}
                     control={control}
                   />
                 </div>
               )}
+
               {formSchema.map((field) => (
                 <Fragment key={field.slug}>
                   {field?.input ? (
@@ -514,7 +513,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
                       type: "list",
                       label: t("resource.localization.select_currency"),
                       placeholder: t("resource.localization.select_currency"),
-                      options: currencies,
+                      options: currencyOptions,
                       dataKey: "code",
                       validation: {
                         validate: (value) =>

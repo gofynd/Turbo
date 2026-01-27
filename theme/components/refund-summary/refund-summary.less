@@ -1,0 +1,63 @@
+@import "../../styles//main.less";
+
+.mainRefundBreakupWrapper{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+}
+
+h6 {
+  color: @TextHeading;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 140%;
+}
+.acountBreakOut {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  @media @mobile, @tablet{
+    gap: 8px;
+  }
+  .amountContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    span {
+      color: @TextBody;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 140%;
+    }
+
+    .deductionAmount {
+      color: @SuccessText;
+    }
+  }
+
+  .chargesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 8px;
+  }
+}
+hr {
+  height: 1px;
+  background: @DividerStokes;
+}
+
+.TotalAmountContent{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h6{
+    font-weight: 700 !important;
+    line-height: 140%;
+    font-size: 14px;
+  }
+
+}

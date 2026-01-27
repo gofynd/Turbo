@@ -106,7 +106,7 @@
     "settings_schema": {
       "common": {
         "typography": "タイポグラフィ",
-        "algolia_configuration": "Algoliaの設定",
+        "search_and_recommendation_extension": "Search and Recommendation Extension",
         "footer": "フッター",
         "cart_and_button_configuration": "カートとボタンの設定",
         "product_card_configuration": "製品カードの構成",
@@ -158,8 +158,8 @@
         "transparent_header": "透明なヘッダー",
         "transparent_header_info": "アプリケーションバナーまたは画像スライドショーの上に透明ヘッダーを適用する"
       },
-      "algolia_configuration": {
-        "enable_algolia": "Algoliaを有効にする"
+      "search_and_recommendation_extension": {
+        "enable": "Enable"
       },
       "footer": {
         "logo": "ロゴ",
@@ -305,6 +305,7 @@
         "desktop_content_alignment": "デスクトップでのコンテンツの配置",
         "banner_horizontal_scroll": "横スクロールバナー",
         "banner_with_stack": "スタック付きバナー",
+        "banner_vertical": "Banner Vertical",
         "layout_mobile": "レイアウト（モバイル）",
         "content_alignment_mobile": "モバイルでのコンテンツの配置",
         "text_alignment": "テキストの配置",

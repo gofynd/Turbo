@@ -20,6 +20,32 @@ import {
 } from "fdk-core/utils";
 import { translateDynamicLabel } from "../../helper/utils";
 
+/**
+ * Generates a consistent key for cart items to ensure reliable item identification
+ * @param {Object} item - The cart item object
+ * @param {number} index - The array index as fallback
+ * @returns {string} A unique key for the cart item
+ */
+function generateCartItemKey(item, index = 0) {
+  const itemIndex = item?.article?.item_index ?? index;
+  const storeUid = item?.article?.store?.uid ?? "";
+  
+  // Primary: Use the key from API if available
+  if (item?.key) {
+    return `${item.key}_${storeUid}_${itemIndex}`;
+  }
+  
+  // Fallback: Construct key from product and article data
+  if (item?.product?.uid && item?.article?.size) {
+    const fulfillmentSlug = item?.article?.fulfillment_option?.slug || "standard-delivery";
+    const fallbackKey = `${item.product.uid}_${item.article.size}_${fulfillmentSlug}`;
+    return `${fallbackKey}_${storeUid}_${itemIndex}`;
+  }
+  
+  // Last resort: Use index-based key to ensure item is always included
+  return `item_${index}_${storeUid}_${itemIndex}`;
+}
+
 export function fetchCartDetails(fpi, payload = {}) {
   const defaultPayload = {
     buyNow: false,
@@ -45,6 +71,7 @@ const useCart = (fpi, isActive = true) => {
   const { cartItemCount } = useHeader(fpi);
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
+  const { selectedAddress } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
   const [isLoading, setIsLoading] = useState(true);
   const [isCartUpdating, setIsCartUpdating] = useState(false);
   const [modeLoading, setIsModeLoading] = useState(false);
@@ -64,6 +91,7 @@ const useCart = (fpi, isActive = true) => {
   const { loading: buyNowCartItemsLoading } = buy_now_cart_items || {};
   const { loading: cartItemsCountLoading } = cart_items_count || {};
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [isPromoModalOpen, setIsPromoModalOpen] = useState(false);
   const [customerCheckoutMode, setCustomerCheckoutMode] = useState("");
 
@@ -73,22 +101,40 @@ const useCart = (fpi, isActive = true) => {
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
 
   useEffect(() => {
-    const hideRightCanvas =
-      sections
-        ?.filter((section) => section.canvas === "right_panel")
-        ?.some(({ name }) => name === "cart-items") &&
-      cart_items?.items?.length === 0;
-
-    if (hideRightCanvas && typeof document !== "undefined") {
-      const element = document?.getElementById("cart-landing-right-panel");
-
-      element && (element.style.display = "none");
+    if (typeof document === "undefined") {
+      return;
     }
+
+    const hasRightPanelCartItemsSection = sections
+      ?.filter((section) => section.canvas === "right_panel")
+      ?.some(({ name }) => name === "cart-items");
+
+    if (!hasRightPanelCartItemsSection) {
+      return;
+    }
+
+    const element = document.getElementById("cart-landing-right-panel");
+    if (!element) {
+      return;
+    }
+
+    const shouldHideRightPanel = cart_items?.items?.length === 0;
+
+    // Hide right panel only while cart is truly empty, and re-show it once items are loaded.
+    // This prevents the panel from staying hidden when cart data arrives slightly later
+    // (e.g., in incognito or slower environments).
+    element.style.display = shouldHideRightPanel ? "none" : "";
   }, [sections, cart_items]);
 
   useEffect(() => {
     if (isActive) {
-      setIsLoading(true);
+      // Only show full loading state on initial load (no cart items yet)
+      // For subsequent refetches (e.g., after pincode change), keep showing existing cart
+      // This prevents the "flash of empty cart" issue after login
+      const hasExistingCartData = items && items.length > 0;
+      if (!hasExistingCartData) {
+        setIsLoading(true);
+      }
       fetchCartDetails(fpi, { buyNow }).then(() => setIsLoading(false));
     }
   }, [fpi, i18nDetails?.currency?.code, deliveryLocationStr]);
@@ -113,20 +159,17 @@ const useCart = (fpi, isActive = true) => {
   }, [cartId]);
 
   const cartItemsByItemId = useMemo(() => {
-    if (items?.length > 0) {
-      const cartItemsObj = {};
-
-      items.forEach((singleItem) => {
-        if (singleItem?.key) {
-          cartItemsObj[
-            `${singleItem?.key}_${singleItem?.article?.store?.uid}_${singleItem?.article?.item_index}`
-          ] = singleItem;
-        }
-      });
-
-      return cartItemsObj;
+    if (!items || items.length === 0) {
+      return {};
     }
-    return {};
+
+    const cartItemsObj = {};
+    items.forEach((singleItem, index) => {
+      const finalKey = generateCartItemKey(singleItem, index);
+      cartItemsObj[finalKey] = singleItem;
+    });
+
+    return cartItemsObj;
   }, [items]);
 
   const isOutOfStock = useMemo(() => {
@@ -246,12 +289,17 @@ const useCart = (fpi, isActive = true) => {
       };
   
       return fpi
-        .executeGQL(CART_UPDATE, payload, { skipStoreUpdate: false })       
+        .executeGQL(CART_UPDATE, payload, { skipStoreUpdate: false })
+        .then((res) => {
+          return res;
+        })
         .then(async (res) => {
-          if (res?.data?.updateCart?.success) {
+          const updateResponse = res?.data?.updateCart;
+
+          if (updateResponse?.success) {
             if (!moveToWishList) {
               showSnackbar(
-                translateDynamicLabel(res?.data?.updateCart?.message, t) ||
+                translateDynamicLabel(updateResponse?.message, t) ||
                   t("resource.cart.cart_update_success"),
                 "success"
               );
@@ -265,11 +313,13 @@ const useCart = (fpi, isActive = true) => {
         
           } else if (!isSizeUpdate) {
             showSnackbar(
-              translateDynamicLabel(res?.data?.updateCart?.message, t) ||
+              translateDynamicLabel(updateResponse?.message, t) ||
                 t("resource.cart.cart_update_success"),
               "error"
             );
           }
+
+          return updateResponse;
         })
         
         .catch((error) => {
@@ -286,9 +336,11 @@ const useCart = (fpi, isActive = true) => {
   
   function gotoCheckout() {
     if (cart_items?.id) {
-      navigate(
-        "/cart/checkout" + (cart_items?.id ? `?id=${cart_items.id}` : "")
-      );
+      // Get selected address ID from global store if available
+      // This is updated when address is applied via applyAddressToCart
+      const addressId = selectedAddress?.id || cart_items?.address_id || "";
+      const checkoutUrl = `/cart/checkout?id=${cart_items.id}${addressId ? `&address_id=${addressId}` : ""}`;
+      navigate(checkoutUrl);
     } else {
       navigate("/cart/bag");
     }
@@ -300,6 +352,7 @@ const useCart = (fpi, isActive = true) => {
 
   function closeRemoveModal() {
     setIsRemoveModalOpen(false);
+    setIsRemoving(false);
   }
 
   function handleRemoveItem(data, moveToWishList) {
@@ -307,17 +360,31 @@ const useCart = (fpi, isActive = true) => {
       return;
     }
     const { item, size, index } = data;
-    updateCartItems(
-      null,
-      item,
-      size,
-      0,
-      index,
-      "remove_item",
-      moveToWishList
-    ).then(() => {
+
+    // Set removing state to show "Removing..." text and trigger shimmer immediately
+    setIsRemoving(true);
+
+    // Close modal after brief delay to show "Removing..." text
+    setTimeout(() => {
       closeRemoveModal();
-    });
+
+      // Start API call in background
+      // Note: updateCartItems will set isCartUpdating to true again, but it's already true
+      // This ensures shimmer stays visible throughout the API call
+      updateCartItems(
+        null,
+        item,
+        size,
+        0,
+        index,
+        "remove_item",
+        moveToWishList
+      ).finally(() => {
+        setIsRemoving(false);
+        setIsCartUpdating(true);
+        // isCartUpdating will be reset by updateCartItems in its finally block
+      });
+    }, 150); // 150ms delay to show "Removing..." text
   }
   const handleMoveToWishlist = (data) => {
     if (!data) {
@@ -416,6 +483,7 @@ const useCart = (fpi, isActive = true) => {
     isGstInput,
     isPlacingForCustomer,
     isRemoveModalOpen,
+    isRemoving,
     isPromoModalOpen,
     buybox,
     applyRewardResponse,

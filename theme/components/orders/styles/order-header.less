@@ -1,75 +1,123 @@
 @import "../../../styles/main.less";
 
-.orderHeader {
+.orderHeaderContainer {
   background: @ThemeAccentL5;
-  padding: 20px 0px;
+  // padding: 24px 0;
+
+  @media @mobile {
+    padding: 16px;
+    border-bottom: 1px solid @DividerStokes;
+  }
+}
+
+.titleFilterRow {
   display: flex;
   align-items: center;
-  flex: 0.9;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media @mobile {
+    margin-bottom: 0;
+  }
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.boldmd {
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
+  color: @Mako;
+}
+
+.subTitle {
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: @DustyGray;
+
+  @media @mobile {
+    font-size: 12px;
+  }
+}
+
+.filterButton {
+  width: 36px;
+  height: 36px;
+  border: 1px solid @UserAlertButtonLink;
+  background: @White;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: @PageBackground;
+  }
+
+  &:active {
+    background: @LightGray;
+  }
+
+  .filterIcon {
+    width: 24px;
+    height: 24px;
+    color: @UserAlertButtonLink;
+  }
+}
+
+.headerDivider {
+  width: 100%;
+  height: 1px;
+  background: @OverlayPopupDividerStroke;
+
+  @media @mobile {
+    display: none;
+  }
+}
+
+.filterDropdownContainer {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: @PageBackground;
+  border-radius: 4px;
+
   @media @mobile {
     flex-direction: column;
-    align-items: normal;
-    padding: 20px 0;
-  }
-  .boldmd {
-    font-weight: 600;
-    font-size: 18px;
-
-    @media @tablet {
-      font-size: 16px;
-    }
-    @media @mobile {
-      font-size: 16px;
-    }
-  }
-  .bold {
-    font-weight: 700;
-    font-size: 16px;
-    @media @mobile {
-      font-size: 14px;
-    }
-  }
-  .title {
-    color: @Mako;
-    margin-inline-start: 15px;
-    @media @mobile {
-      margin-bottom: 5px;
-      margin-inline-start: 0;
-    }
-  }
-  .subTitle {
-    margin-inline-start: 15px;
-    color: @DustyGray;
-    font-size: 13px;
-    @media @mobile {
-      font-size: 12px;
-    }
-  }
-  .filters {
-    .flex-center();
-    margin-top: 10px;
+    gap: 12px;
   }
 
-  .rightAlign {
+  .orderDropdown {
     display: flex;
-    margin-inline-start: auto;
-    padding: 0;
+    align-items: center;
+    gap: 12px;
+
     @media @mobile {
-      flex-direction: column;
-      margin: 0 15px;
-      font-size: 14px;
+      justify-content: space-between;
     }
-    .orderDropdown {
-      flex: auto;
-      flex-direction: row;
-      padding: 0;
-      .flex-center();
-      color: @Mako;
-      margin: 0px 20px;
-      @media @mobile {
-        margin: 0;
-        justify-content: space-between;
-      }
+  }
+
+  .bold {
+    font-weight: 600;
+    font-size: 14px;
+    color: @Mako;
+
+    @media @mobile {
+      font-size: 13px;
     }
   }
 }
