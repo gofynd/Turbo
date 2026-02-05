@@ -34,7 +34,8 @@ import {
   currencyFormat,
   formatLocale,
 } from "../helper/utils";
-import { useSnackbar, useViewport } from "../helper/hooks";
+import { useSnackbar, useViewport, useThemeFeature } from "../helper/hooks";
+import { usePdpImageUpdaterFromExtension } from "../helper/pdp-image-updater-extension";
 import {
   GET_PRODUCT_DETAILS,
   PRODUCT_DETAILS_WITH_SIZE,
@@ -167,6 +168,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   }, [blocks]);
 
   const application = useGlobalStore(fpi.getters.APPLICATION);
+  const { isCrossBorderOrder } = useThemeFeature({ fpi });
 
   const {
     isProductDataLoading,
@@ -212,6 +214,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     bundles,
     setBundles,
     fetchBundlesByChild,
+    is_serviceable,
   } = useProductDescription({ fpi, slug, size, props, cachedProductData });
 
   const { onUpdateCartItems, isCartUpdating, cartItems } = useCart(fpi, false);
@@ -256,6 +259,10 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   });
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const isMobile = useViewport(0, 768);
+
+  // Listen to extension events for image updates
+  const { updatedImages } = usePdpImageUpdaterFromExtension(slug);
+
   const {
     media,
     grouped_attributes,
@@ -265,6 +272,14 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     variants,
     sizes,
   } = productDetails;
+
+  // Memoize combined images to prevent unnecessary re-renders and index resets
+  const combinedImages = useMemo(() => {
+    if (updatedImages && Array.isArray(media) && media.length > 0) {
+      return [...updatedImages, ...media];
+    }
+    return updatedImages || media || [];
+  }, [updatedImages, media]);
 
   const { isProductNotFound } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const isMto = productDetails?.custom_order?.is_custom_order || false;
@@ -632,7 +647,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                 <PdpImageGallery
                   isLoading={isProductDataLoading}
                   key={slug}
-                  images={media}
+                  images={combinedImages}
                   iconColor={icon_color?.value || ""}
                   globalConfig={globalConfig}
                   followed={followed}
@@ -1177,7 +1192,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                             setIsLaodingCart(false);
                                           }, 1000);
                                         }}
-                                        disabled={isLoadingCart}
+                                        disabled={isLoadingCart || is_serviceable === false}
                                       >
                                         <CartIcon className={styles.cartIcon} />
                                         {t("resource.common.add_to_cart")}
@@ -1219,7 +1234,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                             setIsLaodingCart(false);
                                           }, 500);
                                         }}
-                                        disabled={isLoadingCart}
+                                        disabled={isLoadingCart || is_serviceable === false}
                                         startIcon={
                                           <BuyNowIcon
                                             className={styles.buyNow__icon}
@@ -1250,7 +1265,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                           setIsLaodingCart(false);
                                         }, 500);
                                       }}
-                                      disabled={isLoadingCart}
+                                      disabled={isLoadingCart || is_serviceable === false}
                                       startIcon={
                                         <BuyNowIcon
                                           className={styles.buyNow__icon}
@@ -1379,6 +1394,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                   isServiceabilityPincodeOnly
                                 }
                                 setPincodeErrorMessage={setPincodeErrorMessage}
+                                isCrossBorderOrder={isCrossBorderOrder}
                                 showLogo={getBlockConfigValue(
                                   block,
                                   "show_logo"
@@ -1656,6 +1672,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
             mandatoryPincode={props?.mandatory_pincode?.value}
             isSizeGuideAvailable={blockProps.size_guide && isSizeGuideAvailable}
             isMto={isMto}
+            is_serviceable={is_serviceable}
             deliveryInfoProps={{
               fpi,
               isLoading: isCountryDetailsLoading,
@@ -1671,6 +1688,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
               setErrorMessage,
               setPincodeErrorMessage,
               showLogo: blockProps.show_logo,
+              isCrossBorderOrder,
             }}
             quantityControllerProps={{
               singleItemDetails,

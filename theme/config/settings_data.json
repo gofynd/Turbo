@@ -291,7 +291,8 @@
               "grid_mob": "2",
               "description": "",
               "banner_link": "",
-              "show_add_to_cart": true
+              "show_add_to_cart": true,
+              "filter_toggle_button": false
             }
           }
         },
@@ -1066,6 +1067,10 @@
                         "text": "Block style"
                       }
                     ]
+                  },
+                  "filter_toggle_button": {
+                    "type": "checkbox",
+                    "value": false
                   }
                 }
               },

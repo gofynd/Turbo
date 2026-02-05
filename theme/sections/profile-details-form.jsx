@@ -23,14 +23,8 @@ export function Component({ props, blocks, preset, globalConfig }) {
   );
 
   return (
-    <div>
-      <div
-        className={
-          styles.breadcrumbWrapper + " " + styles.profileBreadcrumbWrapper
-        }
-      >
-        <Breadcrumb breadcrumb={breadcrumbItems} />
-      </div>
+    <div className={styles.canvasSection}>
+      <Breadcrumb breadcrumb={breadcrumbItems} />
       <ProfileDetailsPage fpi={fpi} />
     </div>
   );

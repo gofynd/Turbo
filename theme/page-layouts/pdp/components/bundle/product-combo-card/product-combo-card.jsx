@@ -19,6 +19,7 @@ export default function ProductComboCard({
   currencySymbol = "",
   ctaLabel = "ADD TO CART",
   onAddToCartClick,
+  isDisabled = false,
 }) {
   const { t } = useGlobalTranslation("translation");
   const discount = getDiscountPercentage({
@@ -88,7 +89,7 @@ export default function ProductComboCard({
           </div>
           <div className={styles.taxLabel}>(inclusive of all taxes)</div>
         </div>
-        <button className={styles.cta} onClick={onAddToCartClick}>
+        <button className={styles.cta} onClick={onAddToCartClick}  disabled={isDisabled}>
           {ctaLabel}
         </button>
       </div>

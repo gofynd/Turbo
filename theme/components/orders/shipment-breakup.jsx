@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
+import { priceFormatCurrencySymbol, formatLocale } from "../../helper/utils";
 import styles from "./styles/shipment-breakup.less";
 
 function ShipmentBreakup({ fpi, breakup, shipmentInfo }) {
@@ -7,17 +8,15 @@ function ShipmentBreakup({ fpi, breakup, shipmentInfo }) {
   const [type, setType] = useState("my-orders");
 
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
-  const priceFormatCurrencySymbol = (symbol, price) => {
-    const hasAlphabeticCurrency = /^[A-Za-z]+$/.test(symbol);
+  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
+  const locale = language?.locale;
 
-    const formattedValue = hasAlphabeticCurrency
-      ? `${symbol} ${price}`
-      : `${symbol}${price}`;
-
-    return formattedValue;
-  };
   const getPriceFormat = (symbol, price) => {
-    return priceFormatCurrencySymbol(symbol, price);
+    return priceFormatCurrencySymbol(
+      symbol,
+      price,
+      formatLocale(locale, countryCode, true)
+    );
   };
   const breakupValues = () => {
     const totalVal = breakup?.filter((item) => item.name === "total") || [];

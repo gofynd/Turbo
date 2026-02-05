@@ -7,7 +7,8 @@ import { BlockRenderer, FDKLink } from "fdk-core/components";
 import styles from "../styles/sections/application-banner.less";
 import Hotspot from "../components/hotspot/product-hotspot";
 import { useViewport } from "../helper/hooks";
-import { useGlobalStore } from "fdk-core/utils";
+import { useWindowWidth } from "../helper/hooks";
+import { getMediaLayout } from "../helper/media-layout";
 
 export function Component({ props, blocks, globalConfig }) {
   const isMobile = useViewport(0, 540);
@@ -18,7 +19,14 @@ export function Component({ props, blocks, globalConfig }) {
     padding_top,
     padding_bottom,
     hover_application_banner,
+    height_mode,
+    desktop_height,
+    mobile_height,
+    desktop_aspect_ratio,
+    mobile_aspect_ratio,
   } = props;
+  const windowWidth = useWindowWidth();
+  const isMobileViewport = windowWidth <= 768;
   const dynamicBoxStyle = (block) => {
     return {
       "--x_position": `${block.props?.x_position?.value || 0}%`,
@@ -69,6 +77,26 @@ export function Component({ props, blocks, globalConfig }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
+  const mediaLayout = getMediaLayout(
+    {
+      height_mode,
+      desktop_height,
+      mobile_height,
+      desktop_aspect_ratio,
+      mobile_aspect_ratio,
+    },
+    isMobileViewport,
+    16 / 9
+  );
+
+  const mediaWrapperClass = [
+    styles.mediaShell,
+    mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
+    mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <section
       className={styles.applicationBannerContainer}
@@ -76,26 +104,40 @@ export function Component({ props, blocks, globalConfig }) {
     >
       {banner_link?.value?.length > 0 ? (
         <FDKLink to={banner_link?.value}>
+          <div className={mediaWrapperClass} style={mediaLayout.style}>
+            <FyImage
+              customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
+              src={desktopImage}
+              sources={getImgSrcSet()}
+              isLazyLoaded={false}
+              defer={false}
+              isFixedAspectRatio={mediaLayout.isAspectRatio}
+              aspectRatio={mediaLayout.aspectRatio}
+              mobileAspectRatio={mediaLayout.mobileAspectRatio}
+              isImageFill={mediaLayout.isAspectRatio || mediaLayout.isFixedHeight}
+              alt={
+                hover_application_banner?.value
+                  ? "Application banner with hotspots"
+                  : "Application banner"
+              }
+            />
+          </div>
+        </FDKLink>
+      ) : (
+        <div className={mediaWrapperClass} style={mediaLayout.style}>
           <FyImage
             customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
             src={desktopImage}
             sources={getImgSrcSet()}
             isLazyLoaded={false}
             defer={false}
-            isFixedAspectRatio={false}
-            alt={hover_application_banner?.value ? "Application banner with hotspots" : "Application banner"}
+            isFixedAspectRatio={mediaLayout.isAspectRatio}
+            aspectRatio={mediaLayout.aspectRatio}
+            mobileAspectRatio={mediaLayout.mobileAspectRatio}
+            isImageFill={mediaLayout.isAspectRatio || mediaLayout.isFixedHeight}
+            alt="Application banner"
           />
-        </FDKLink>
-      ) : (
-        <FyImage
-          customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
-          src={desktopImage}
-          sources={getImgSrcSet()}
-          isLazyLoaded={false}
-          defer={false}
-          isFixedAspectRatio={false}
-          alt="Application banner"
-        />
+        </div>
       )}
 
       {!isMobile &&
@@ -194,6 +236,41 @@ export const settings = {
       id: "banner_link",
       default: "",
       label: "t:resource.common.redirect_link",
+    },
+    {
+      id: "height_mode",
+      type: "select",
+      label: "t:resource.common.height_mode",
+      default: "auto",
+      options: [
+        { value: "auto", text: "t:resource.common.auto" },
+        { value: "fixed_height", text: "t:resource.common.fixed_height" },
+        { value: "aspect_ratio", text: "t:resource.common.aspect_ratio" },
+      ],
+    },
+    {
+      type: "text",
+      id: "desktop_height",
+      label: "t:resource.common.desktop_height",
+      info: "t:resource.common.desktop_height_info",
+    },
+    {
+      type: "text",
+      id: "mobile_height",
+      label: "t:resource.common.mobile_height",
+      info: "t:resource.common.mobile_height_info",
+    },
+    {
+      type: "text",
+      id: "desktop_aspect_ratio",
+      label: "t:resource.common.desktop_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
+    },
+    {
+      type: "text",
+      id: "mobile_aspect_ratio",
+      label: "t:resource.common.mobile_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
     },
     {
       type: "range",

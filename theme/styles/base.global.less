@@ -277,6 +277,28 @@ h5,
     }
   }
 
+  &:disabled {
+    cursor: not-allowed;
+    border-color: @OldColorPalettePrimaryDisabled;
+    background-color: @OldColorPalettePrimaryDisabled;
+    color: @OldColorPaletteButtonColorDisabled;
+
+    &:hover {
+      border-color: @OldColorPalettePrimaryDisabled !important;
+      background-color: @OldColorPalettePrimaryDisabled !important;
+      color: @OldColorPaletteButtonColorDisabled !important;
+    }
+
+    svg > path {
+      fill: @OldColorPaletteButtonColorDisabled !important;
+    }
+
+    .cartIcon,
+    svg {
+      fill: @OldColorPaletteButtonColorDisabled !important;
+    }
+  }
+
   &:active,
   &:focus-visible,
   &:focusvisible {
@@ -302,9 +324,27 @@ h5,
       border-color: @ButtonPrimaryL1;
       background-color: @ButtonPrimaryL1;
     }
-    &:disabled {
-      border-color: @ButtonPrimaryL3;
-      background-color: @ButtonPrimaryL3;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    border-color: @OldColorPalettePrimaryDisabled;
+    background-color: @OldColorPalettePrimaryDisabled;
+    color: @OldColorPaletteButtonColorDisabled;
+
+    &:hover {
+      border-color: @OldColorPalettePrimaryDisabled !important;
+      background-color: @OldColorPalettePrimaryDisabled !important;
+      color: @OldColorPaletteButtonColorDisabled !important;
+    }
+
+    svg > path {
+      fill: @OldColorPaletteButtonColorDisabled !important;
+    }
+
+    .cartIcon,
+    svg {
+      fill: @OldColorPaletteButtonColorDisabled !important;
     }
   }
 

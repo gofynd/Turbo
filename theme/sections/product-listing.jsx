@@ -279,9 +279,9 @@ export const settings = {
     {
       type: "checkbox",
       id: "mandatory_pincode",
-      label: "t:resource.common.mandatory_delivery_check",
-      info: "t:resource.pages.wishlist.mandatory_delivery_check_info",
-      default: false,
+      label: "t:resource.common.show_hide_mandatory_delivery_check",
+      info: "t:resource.pages.wishlist.show_hide_mandatory_delivery_check_info",
+      default: true,
     },
     {
       type: "checkbox",
@@ -313,6 +313,13 @@ export const settings = {
           text: "t:resource.common.block_style",
         },
       ],
+    },
+    {
+      type: "checkbox",
+      id: "filter_toggle_button",
+      label: "t:resource.common.show_filter_toggle_button",
+      info: "t:resource.common.show_filter_toggle_button_info",
+      default: false,
     },
   ],
 };

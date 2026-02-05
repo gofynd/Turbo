@@ -1,17 +1,37 @@
 @import "../../../styles/main.less";
 
+.internationalization {
+  @media @desktop {
+    width: auto;
+  }
+  @media @tablet {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
 .internationalization__selected {
   display: flex;
   align-items: center;
   gap: 4px;
   color: @HeaderNav;
-  min-width: 210px;
-  justify-content: flex-end;
   white-space: nowrap;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+
+  @media @desktop {
+    width: auto;
+    min-width: auto;
+    justify-content: flex-start;
+  }
 
   @media @tablet {
     width: 100%;
-    padding: 8px 4px;
+    padding: 8px 16px;
+    min-width: unset;
+    justify-content: flex-start;
   }
 
   .locationLabel {
@@ -136,6 +156,12 @@
 .internationalIcon {
   min-width: 24px;
   height: 24px;
+  color: @HeaderIcon;
+}
+
+.truckIcon {
+  font-size: 24px;
+  min-width: 24px;
   color: @HeaderIcon;
 }
 

@@ -42,6 +42,7 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
   const { getFormattedPromise } = useDeliverPromise({ fpi });
   const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION) || {};
   const { order = {} } = app_features || {};
+  const CART = useGlobalStore(fpi.getters.CART);
   const {
     isLoading,
     isLoyaltyLoading,
@@ -80,6 +81,10 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
     getFulfillmentOptions = () => {},
     fetchProductPrice = () => {},
   } = useCart(fpi);
+  
+  // Get loading state from store for more reliable check
+  const { cart_items } = CART || {};
+  const cartItemsLoading = cart_items?.loading || false;
 
   const { is_limited_stock, limited_stock_label } = props;
 
@@ -215,9 +220,21 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
     return !!blocks?.find((block) => block?.type === "share_cart");
   }, [blocks]);
 
-  // Only show empty state if cart is loaded and has no items
-  // Don't show empty state while loading to prevent flash of empty state after login
-  if (!isLoading && cartData?.items?.length === 0) {
+  // Only show empty state if cart is fully loaded and has no items
+  // Don't show empty state while loading to prevent flash of empty state in incognito
+  // Check multiple conditions to ensure cart data has been fetched:
+  // 1. isLoading must be false (cart fetch completed from hook)
+  // 2. cartItemsLoading must be false (cart fetch completed from store)
+  // 3. cartData must exist and have been initialized (has id or items property)
+  // 4. items array must be empty (truly empty cart, not initial state)
+  const isCartFullyLoaded =
+    !isLoading &&
+    !cartItemsLoading &&
+    cartData &&
+    (cartData.id !== undefined || cartData.items !== undefined);
+  const isCartTrulyEmpty = cartData?.items?.length === 0;
+
+  if (isCartFullyLoaded && isCartTrulyEmpty) {
     return (
       <EmptyState
         Icon={

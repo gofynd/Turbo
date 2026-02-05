@@ -13,6 +13,24 @@ import { convertISOToDDMMYYYY, convertDDMMYYYYToISO } from "../../helper/utils";
 
 function ProfileDetailsForm({ userData, onSave, isLoading }) {
   const { t } = useGlobalTranslation("translation");
+
+  // Check if email and phone are verified
+  const isEmailVerified = useMemo(() => {
+    const emailsList = userData?.emails || userData?.email_list || [];
+    const primaryEmail = emailsList.find((e) => e.primary) || {};
+    const verified = primaryEmail?.verified || false;
+    // If email exists, treat as verified (can't edit)
+    return verified;
+  }, [userData?.emails, userData?.email_list, userData?.email]);
+
+  const isPhoneVerified = useMemo(() => {
+    const phonesList = userData?.phoneNumbers || userData?.phone_numbers || [];
+    const primaryPhone = phonesList.find((p) => p.primary) || {};
+    const verified = primaryPhone?.verified || false;
+    // If mobile number exists, treat as verified (can't edit)
+    return verified;
+  }, [userData?.phoneNumbers, userData?.phone_numbers, userData?.mobileNumber]);
+
   // Upper bound: must be at least 18 years old
   const maxAllowedDate = useMemo(() => {
     const date = new Date();
@@ -229,18 +247,41 @@ function ProfileDetailsForm({ userData, onSave, isLoading }) {
               control={control}
               rules={{ required: "Mobile number is required" }}
               render={({ field }) => (
-                <div className={styles.inputWrapper}>
+                <div
+                  className={`${styles.inputWrapper} ${isPhoneVerified ? styles.verifiedField : ""}`}
+                >
                   <FyInput
                     {...field}
                     label="Mobile Number"
                     labelVariant="floating"
                     labelClassName={styles.inputLabel}
-                    inputClassName={styles.inputField}
+                    inputClassName={`${styles.inputField} ${isPhoneVerified ? styles.verifiedInput : ""}`}
                     inputVariant="outlined"
                     error={!!errors.mobileNumber}
                     errorMessage={errors.mobileNumber?.message}
                     readOnly={!!userData?.mobileNumber}
+                    disabled={isPhoneVerified}
                   />
+                  {isPhoneVerified && (
+                    <div className={styles.verifiedIcon}>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle cx="10" cy="10" r="10" fill="#4CAF50" />
+                        <path
+                          d="M6 10L8.5 12.5L14 7"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  )}
                 </div>
               )}
             />
@@ -261,18 +302,41 @@ function ProfileDetailsForm({ userData, onSave, isLoading }) {
                   },
                 }}
                 render={({ field }) => (
-                  <div className={styles.inputWrapper}>
+                  <div
+                    className={`${styles.inputWrapper} ${isEmailVerified ? styles.verifiedField : ""}`}
+                  >
                     <FyInput
                       {...field}
                       label="Email Address"
                       labelVariant="floating"
                       labelClassName={styles.inputLabel}
-                      inputClassName={styles.inputField}
+                      inputClassName={`${styles.inputField} ${isEmailVerified ? styles.verifiedInput : ""}`}
                       inputVariant="outlined"
                       error={!!errors.email}
                       errorMessage={errors.email?.message}
                       readOnly={!!userData?.email}
+                      disabled={isEmailVerified}
                     />
+                    {isEmailVerified && (
+                      <div className={styles.verifiedIcon}>
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle cx="10" cy="10" r="10" fill="#4CAF50" />
+                          <path
+                            d="M6 10L8.5 12.5L14 7"
+                            stroke="white"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                    )}
                   </div>
                 )}
               />

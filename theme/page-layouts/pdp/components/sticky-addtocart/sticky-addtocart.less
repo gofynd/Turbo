@@ -119,6 +119,12 @@
   border: 0.8px solid @DividerStokes;
   border-radius: @ButtonRadius;
   line-height: normal;
+   &:disabled {
+    cursor: not-allowed;
+    border-color: @OldColorPalettePrimaryDisabled;
+    background-color: @OldColorPalettePrimaryDisabled;
+    color: @OldColorPaletteButtonColorDisabled;
+  }
 }
 .stickyAddtocart .cartIcon,
 .addToCartModal .cartIcon {

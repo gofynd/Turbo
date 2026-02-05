@@ -10,6 +10,7 @@ import Hotspot from "../components/hotspot/product-hotspot";
 import { DIRECTION_ADAPTIVE_CSS_PROPERTIES } from "../helper/constant";
 import { useWindowWidth } from "../helper/hooks";
 import { useFPI } from "fdk-core/utils";
+import { getMediaLayout } from "../helper/media-layout";
 
 export function Component({ props, globalConfig, blocks }) {
   const {
@@ -27,6 +28,11 @@ export function Component({ props, globalConfig, blocks }) {
     text_placement_mobile,
     padding_top,
     padding_bottom,
+    height_mode,
+    desktop_height,
+    mobile_height,
+    desktop_aspect_ratio,
+    mobile_aspect_ratio,
   } = props;
   const windowWidth = useWindowWidth();
   const isMobile = windowWidth <= 540;
@@ -278,16 +284,40 @@ export function Component({ props, globalConfig, blocks }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
+  const mediaLayout = getMediaLayout(
+    {
+      height_mode,
+      desktop_height,
+      mobile_height,
+      desktop_aspect_ratio,
+      mobile_aspect_ratio,
+    },
+    windowWidth <= 768,
+    16 / 9
+  );
+
+  const heroContainerClassNames = [
+    styles.heroImageContainer,
+    styles.mediaShell,
+    mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
+    mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <section style={dynamicStyles}>
-      <div className={styles.heroImageContainer}>
+      <div className={heroContainerClassNames} style={mediaLayout.style}>
         <FyImage
           src={getDesktopUrl}
           sources={getImgSrcSet()}
           showOverlay={displayOverlay}
           overlayColor={getOverlayColor}
           defer={false}
-          isFixedAspectRatio={false}
+          isFixedAspectRatio={mediaLayout.isAspectRatio}
+          aspectRatio={mediaLayout.aspectRatio}
+          mobileAspectRatio={mediaLayout.mobileAspectRatio}
+          isImageFill={mediaLayout.isAspectRatio || mediaLayout.isFixedHeight}
           alt={heading?.value || "Hero banner"}
         />
         <div className={styles.overlayItems} style={getOverlayPositionStyles()}>
@@ -530,6 +560,41 @@ export const settings = {
       options: {
         aspect_ratio: "9:16",
       },
+    },
+    {
+      id: "height_mode",
+      type: "select",
+      label: "t:resource.common.height_mode",
+      default: "auto",
+      options: [
+        { value: "auto", text: "t:resource.common.auto" },
+        { value: "fixed_height", text: "t:resource.common.fixed_height" },
+        { value: "aspect_ratio", text: "t:resource.common.aspect_ratio" },
+      ],
+    },
+    {
+      type: "text",
+      id: "desktop_height",
+      label: "t:resource.common.desktop_height",
+      info: "t:resource.common.desktop_height_info",
+    },
+    {
+      type: "range",
+      id: "mobile_height",
+      label: "t:resource.common.mobile_height",
+      info: "t:resource.common.mobile_height_info",
+    },
+    {
+      type: "text",
+      id: "desktop_aspect_ratio",
+      label: "t:resource.common.desktop_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
+    },
+    {
+      type: "text",
+      id: "mobile_aspect_ratio",
+      label: "t:resource.common.mobile_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
     },
     {
       id: "text_placement_mobile",

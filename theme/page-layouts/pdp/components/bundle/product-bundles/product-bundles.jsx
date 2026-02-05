@@ -28,6 +28,7 @@ export default function ProductBundles({
 }) {
   const { t } = useGlobalTranslation("translation");
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
+  const { is_serviceable } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
   const { direction } = useLocaleDirection();
   const { showSnackbar } = useSnackbar();
 
@@ -198,6 +199,7 @@ export default function ProductBundles({
                       currencySymbol={currencySymbol}
                       size={size}
                       onAddToCartClick={handleAddToCartClick(slug, size)}
+                      isDisabled={!is_serviceable}
                     />
                   </FDKLink>
                 </CarouselItem>

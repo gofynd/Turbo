@@ -10,9 +10,9 @@ function ProfileTabs({ fpi }) {
 
   useEffect(() => {
     if (pathname === "/profile") {
-      navigate("details");
+      navigate("/profile/details");
     }
-  }, [pathname]);
+  }, [pathname, navigate]);
 
   return <ProfileRoot fpi={fpi}></ProfileRoot>;
 }

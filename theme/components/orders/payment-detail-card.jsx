@@ -1,22 +1,20 @@
 import React from "react";
 import styles from "./styles/payment-detail-card.less";
-import { useGlobalTranslation } from "fdk-core/utils";
-import { translateDynamicLabel } from "../../helper/utils";
+import { useGlobalTranslation, useGlobalStore, useFPI } from "fdk-core/utils";
+import { translateDynamicLabel, priceFormatCurrencySymbol, formatLocale } from "../../helper/utils";
 
 function PaymentDetailCard({ breakup, paymentInfo }) {
   const { t } = useGlobalTranslation("translation");
+  const fpi = useFPI();
+  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
+  const locale = language?.locale;
   const totalVal = breakup?.find((item) => item.name === "total") || 0;
-  const priceFormatCurrencySymbol = (symbol, price) => {
-    const hasAlphabeticCurrency = /^[A-Za-z]+$/.test(symbol);
-
-    const formattedValue = hasAlphabeticCurrency
-      ? `${symbol} ${price}`
-      : `${symbol}${price}`;
-
-    return formattedValue;
-  };
   const getPriceFormat = (symbol, price) => {
-    return priceFormatCurrencySymbol(symbol, price);
+    return priceFormatCurrencySymbol(
+      symbol,
+      price,
+      formatLocale(locale, countryCode, true)
+    );
   };
   return (
     <div className={`${styles.paymentMode}`}>

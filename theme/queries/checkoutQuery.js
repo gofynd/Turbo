@@ -34,7 +34,7 @@ export const CHECKOUT_LANDING = `query Addresses( $buyNow: Boolean, $includeBrea
     }
     pii_masking
   }
-  cart(includeBreakup: $includeBreakup, buyNow: $buyNow, includeAllItems: $includeAllItems, includeCodCharges: $includeCodCharges) {
+  cart(includeBreakup: $includeBreakup, buyNow: $buyNow, includeAllItems: $includeAllItems, includeCodCharges: $includeCodCharges, id: $id) {
     buy_now
     cart_id
     checkout_mode

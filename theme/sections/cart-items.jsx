@@ -476,7 +476,9 @@ export function Component({ props, globalConfig = {}, blocks }) {
                           Redeem all available points
                         </label>
                       </div>
-                      <div className={`${styles.loyaltyCard} ${styles.lastCard}`}>
+                      <div
+                        className={`${styles.loyaltyCard} ${styles.lastCard}`}
+                      >
                         <div className={styles.rewardsContainer}>
                           <RewardBagIcon className={styles.Icon} />
                           <div>
@@ -666,6 +668,7 @@ export const settings = {
       id: "show_sticky_footer",
       default: true,
       label: "Show sticky footer",
+      info: "Enabling this on Cart Left Panel will display Checkout button multiple times on mobile",
     },
   ],
   blocks: [

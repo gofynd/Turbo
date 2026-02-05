@@ -296,6 +296,11 @@ export const useAddressFormSchema = ({
   useEffect(() => {
     if (!addressTemplate || !addressFields) return;
 
+    // Reset dropdown data and disable field state when country/template changes
+    // This ensures we don't use stale data from previous country
+    setDropdownData(null);
+    setDisableField(null);
+
     const schema = renderTemplate(addressTemplate);
     SetFormFields(schema);
 
@@ -304,9 +309,15 @@ export const useAddressFormSchema = ({
       setDropdownData(null);
       setDisableField(null);
     };
-  }, [addressTemplate, addressFields]);
+  }, [addressTemplate, addressFields, countryIso]); // Add countryIso as dependency
 
   const formSchema = useMemo(() => {
+    // If formFields is null/undefined, return empty array for backward compatibility
+    // This ensures formSchema is always an array and doesn't break components expecting an array
+    if (!formFields) return [];
+    
+    // If dropdownData is not yet loaded, return formFields without dropdown options
+    // This allows the form to render immediately with basic fields
     if (!dropdownData) return formFields;
 
     return formFields?.map((group) => ({
@@ -322,7 +333,7 @@ export const useAddressFormSchema = ({
         return updatedField;
       }),
     }));
-  }, [formFields, dropdownData, disableField]);
+  }, [formFields, dropdownData, disableField, countryIso]); // Add countryIso to ensure schema updates when country changes
 
   const defaultAddressItem = useMemo(() => {
     const addressfields = Object.keys(addressFieldsMap);

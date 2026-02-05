@@ -2,8 +2,18 @@
 
 .breadcrumbWrapper {
   margin-bottom: 24px;
+  padding-left: 24px;
+
+  @media @tablet {
+    margin-bottom: 16px;
+    padding-left: 16px;
+    padding-top: 16px;
+  }
+
   @media @mobile {
     margin-bottom: 16px;
+    padding-left: 16px;
+    padding-top: 16px;
   }
 }
 
@@ -64,10 +74,10 @@
     flex-direction: row;
     align-items: center;
     gap: 16px;
-    padding: 20px 0px 8px 0px;
+    padding: 20px 0px 8px 24px;
 
     @media @tablet {
-      padding: 16px 16px 0;
+      padding: 16px 16px 0 16px;
       gap: 8px;
     }
 

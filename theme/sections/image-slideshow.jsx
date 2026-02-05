@@ -12,6 +12,7 @@ import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import { useWindowWidth } from "../helper/hooks";
 import { getDirectionAdaptiveValue } from "../helper/utils";
 import { DIRECTION_ADAPTIVE_CSS_PROPERTIES } from "../helper/constant";
+import { getMediaLayout } from "../helper/media-layout";
 import {
   Carousel,
   CarouselContent,
@@ -70,6 +71,11 @@ export function Component({ props, blocks, globalConfig, preset }) {
     padding_top,
     padding_bottom,
     open_in_new_tab,
+    height_mode,
+    desktop_height,
+    mobile_height,
+    desktop_aspect_ratio,
+    mobile_aspect_ratio,
   } = props;
   const shouldOpenInNewTab =
     open_in_new_tab?.value === true || open_in_new_tab?.value === "true";
@@ -87,6 +93,27 @@ export function Component({ props, blocks, globalConfig, preset }) {
     }
     return [];
   }, [autoplay?.value, slide_interval?.value]);
+
+  const mediaLayout = getMediaLayout(
+    {
+      height_mode,
+      desktop_height,
+      mobile_height,
+      desktop_aspect_ratio,
+      mobile_aspect_ratio,
+    },
+    windowWidth <= 768,
+    16 / 5
+  );
+
+  const slideMediaClass = [
+    styles.imageContainer,
+    styles.mediaShell,
+    mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
+    mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   const getOverlayPositionStyles = (block) => {
     const positions = {};
@@ -269,7 +296,10 @@ export function Component({ props, blocks, globalConfig, preset }) {
           {blocksData?.map((block, index) => (
             <CarouselItem key={index}>
               {block.type === "gallery" ? (
-                <div className={`${styles.blockItem} ${styles.imageContainer}`}>
+                <div
+                  className={`${styles.blockItem} ${slideMediaClass}`}
+                  style={mediaLayout.style}
+                >
                   <FDKLink
                     to={
                       !block?.props?.button_text?.value &&
@@ -311,7 +341,12 @@ export function Component({ props, blocks, globalConfig, preset }) {
                       sources={getImgSrcSet(block, globalConfig, index)}
                       defer={index < 1 ? false : true}
                       alt={`slide-${index}`}
-                      isFixedAspectRatio={false}
+                      isFixedAspectRatio={mediaLayout.isAspectRatio}
+                      aspectRatio={mediaLayout.aspectRatio}
+                      mobileAspectRatio={mediaLayout.mobileAspectRatio}
+                      isImageFill={
+                        mediaLayout.isAspectRatio || mediaLayout.isFixedHeight
+                      }
                     />
                   </FDKLink>
                 </div>
@@ -526,6 +561,41 @@ export const settings = {
       label: "t:resource.common.change_slides_every",
       default: 3,
       info: "t:resource.sections.image_slideshow.autoplay_slide_duration",
+    },
+    {
+      id: "height_mode",
+      type: "select",
+      label: "t:resource.common.height_mode",
+      default: "auto",
+      options: [
+        { value: "auto", text: "t:resource.common.auto" },
+        { value: "fixed_height", text: "t:resource.common.fixed_height" },
+        { value: "aspect_ratio", text: "t:resource.common.aspect_ratio" },
+      ],
+    },
+    {
+      type: "text",
+      id: "desktop_height",
+      label: "t:resource.common.desktop_height",
+      info: "t:resource.common.desktop_height_info",
+    },
+    {
+      type: "text",
+      id: "mobile_height",
+      label: "t:resource.common.mobile_height",
+      info: "t:resource.common.mobile_height_info",
+    },
+    {
+      type: "text",
+      id: "desktop_aspect_ratio",
+      label: "t:resource.common.desktop_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
+    },
+    {
+      type: "text",
+      id: "mobile_aspect_ratio",
+      label: "t:resource.common.mobile_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
     },
     {
       type: "range",

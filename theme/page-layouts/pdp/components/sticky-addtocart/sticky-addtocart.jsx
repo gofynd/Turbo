@@ -28,6 +28,7 @@ const StickyAddToCart = ({
   quantityControllerProps,
   isMto,
   mandatoryPincode,
+  is_serviceable,
 }) => {
   const { t } = useGlobalTranslation("translation");
   const [showSizeModal, setShowSizeModal] = useState(false);
@@ -46,8 +47,11 @@ const StickyAddToCart = ({
   } = quantityControllerProps;
 
   const openSizeModal = (e, modalType) => {
+    // Skip pincode validation when international is enabled and seller country != location country
     const isPincodeValid =
-      !mandatoryPincode || deliveryInfoProps?.isValidDeliveryLocation;
+      deliveryInfoProps?.isCrossBorderOrder ||
+      !mandatoryPincode ||
+      deliveryInfoProps?.isValidDeliveryLocation;
     if (selectedSize && isPincodeValid) {
       cartHandler(e, modalType === "buy-now");
     } else {
@@ -75,6 +79,7 @@ const StickyAddToCart = ({
             type="button"
             className={`btnSecondary ${styles.button}`}
             onClick={(e) => openSizeModal(e, "add-to-cart")}
+            disabled={is_serviceable === false}
           >
             <CartIcon className={styles.cartIcon} />
             {t("resource.common.add_to_cart")}
@@ -93,6 +98,7 @@ const StickyAddToCart = ({
               type="button"
               className={`${styles.button} btnPrimary`}
               onClick={(e) => openSizeModal(e, "buy-now")}
+              disabled={is_serviceable === false}
             >
               <BuyNowIcon className={styles.cartIcon} />
               {t("resource.common.buy_now")}
@@ -239,7 +245,7 @@ const StickyAddToCart = ({
                   type="button"
                   className={`btnSecondary ${styles.button}`}
                   onClick={(e) => cartHandler(e, false)}
-                  disabled={!productMeta.sellable}
+                  disabled={!productMeta.sellable || is_serviceable === false}
                 >
                   <CartIcon className={styles.cartIcon} />
                   {t("resource.common.add_to_cart")}
@@ -253,7 +259,7 @@ const StickyAddToCart = ({
               type="button"
               className={`btnPrimary ${styles.button}`}
               onClick={(e) => cartHandler(e, true)}
-              disabled={!productMeta.sellable}
+              disabled={!productMeta.sellable || is_serviceable === false}
             >
               <BuyNowIcon className={styles.cartIcon} />
               {t("resource.common.buy_now")}

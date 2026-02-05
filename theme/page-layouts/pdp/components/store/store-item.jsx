@@ -14,7 +14,8 @@ function StoreItem({
   const { t } = useGlobalTranslation("translation");
   const fpi = useFPI();
   const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
-  const locale = language?.locale
+  const { is_serviceable } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
+  const locale = language?.locale;
   const isOpen = storeitem.isOpen || false;
   const getStoreLabel = () => {
     const isSellerListing = buybox?.is_seller_buybox_enabled; // Hardcoded for testing purpose
@@ -91,6 +92,7 @@ function StoreItem({
           type="button"
           className={`${styles.button} btnSecondary ${styles.flexCenter} ${styles.addToCart} ${styles.fontBody}`}
           onClick={(event) => selectStoreItem(event, false)}
+          disabled={!is_serviceable}
         >
           {t("resource.common.add_to_cart")}
         </button>
@@ -98,6 +100,7 @@ function StoreItem({
           type="button"
           className={`${styles.button} btnPrimary ${styles.buyNow} ${styles.fontBody}`}
           onClick={(event) => selectStoreItem(event, true)}
+          disabled={!is_serviceable}
         >
           {t("resource.common.buy_now_caps")}
         </button>

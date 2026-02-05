@@ -12,21 +12,80 @@ const useInternational = ({ fpi }) => {
   const customValues = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS) || {};
   const i18nDetails = useGlobalStore(fpi?.getters?.i18N_DETAILS) || {};
+  const globalData = customValues?.globalData;
 
   const { countryCurrencies, countryDetails } = customValues ?? {};
+
+  // Get countryCurrencies from multiple sources as fallback
+  // 1. From customValues (set by globalDataResolver)
+  // 2. From globalData directly (fallback if customValues not set yet)
+  const countryCurrenciesWithFallback = useMemo(() => {
+    if (countryCurrencies && countryCurrencies.length > 0) {
+      return countryCurrencies;
+    }
+    // Fallback to globalData if countryCurrencies not in customValues yet
+    const fromGlobalData =
+      globalData?.applicationConfiguration?.country_currencies;
+    if (fromGlobalData && fromGlobalData.length > 0) {
+      return fromGlobalData;
+    }
+    return countryCurrencies; // Return undefined if neither available
+  }, [countryCurrencies, globalData]);
 
   const { isInternational } = useThemeFeature({ fpi });
 
   const currentCountry = useMemo(() => {
-    return countryCurrencies?.find(
+    // Use countryCurrenciesWithFallback instead of countryCurrencies
+    const availableCountries =
+      countryCurrenciesWithFallback || countryCurrencies;
+
+    // First try to find country matching i18nDetails.countryCode
+    const matchedCountry = availableCountries?.find(
       (country) => country.iso2 === i18nDetails?.countryCode
     );
-  }, [countryCurrencies, i18nDetails?.countryCode]);
+
+    // If found, return it
+    if (matchedCountry) {
+      return matchedCountry;
+    }
+
+    // If not found and international is enabled, return default country or first country
+    // This ensures header shows default country on first load
+    if (isInternational && availableCountries?.length > 0) {
+      return (
+        availableCountries.find((country) => country.is_default) ||
+        availableCountries[0]
+      );
+    }
+
+    return matchedCountry; // Return undefined if no match and not international
+  }, [
+    countryCurrenciesWithFallback,
+    countryCurrencies,
+    i18nDetails?.countryCode,
+    isInternational,
+  ]);
 
   const currentCurrency = useMemo(() => {
-    if (!currentCountry?.currencies?.length) return null;
-    return currentCountry.currencies?.find(
+    if (!currentCountry?.currencies?.length) {
+      return null;
+    }
+
+    // First try to find currency matching i18nDetails.currency.code
+    const matchedCurrency = currentCountry.currencies?.find(
       (data) => data?.code === i18nDetails?.currency?.code
+    );
+
+    // If found, return it
+    if (matchedCurrency) {
+      return matchedCurrency;
+    }
+
+    // If not found, return default currency or first currency
+    // This ensures header shows default currency on first load
+    return (
+      currentCountry.currencies.find((c) => c.is_default) ||
+      currentCountry.currencies[0]
     );
   }, [currentCountry, i18nDetails?.currency?.code]);
 

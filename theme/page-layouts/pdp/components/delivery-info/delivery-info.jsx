@@ -7,6 +7,7 @@ import {
 import {
   useDeliverPromise,
   useGoogleMapConfig,
+  useThemeFeature,
 } from "../../../../helper/hooks";
 import styles from "./delivery-info.less"; // Import the module CSS
 import DeliveryIcon from "../../../../assets/images/delivery.svg";
@@ -32,6 +33,7 @@ function DeliveryInfo({
   fpi,
   showLogo = false,
   availableFOCount,
+  isCrossBorderOrder = false,
 }) {
   const { t } = useGlobalTranslation("translation");
   const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
@@ -42,7 +44,14 @@ function DeliveryInfo({
   const { getFormattedPromise } = useDeliverPromise({ fpi });
   const { isServiceability, deliveryAddress } = useHyperlocal(fpi);
   const { isHeaderMap } = useGoogleMapConfig({ fpi });
+  const { isCrossBorderOrder: isCrossBorderOrderFromHook } = useThemeFeature({
+    fpi,
+  });
   const { displayName, maxLength, validatePincode } = pincodeInput;
+
+  // Use prop value if provided, otherwise use from hook
+  const shouldHideDeliveryPromise =
+    isCrossBorderOrder || isCrossBorderOrderFromHook;
 
   useEffect(() => {
     if (isValidDeliveryLocation) {
@@ -141,6 +150,10 @@ function DeliveryInfo({
   ]);
 
   const getDeliveryField = () => {
+    // Hide delivery location when international is enabled and seller country != location country
+    if (isCrossBorderOrder) {
+      return null;
+    }
     if (isServiceability || !isServiceabilityPincodeOnly) {
       return (
         <DeliveryLocation
@@ -173,7 +186,8 @@ function DeliveryInfo({
         {getDeliveryField()}
         {!pincodeErrorMessage &&
           !selectPincodeError &&
-          availableFOCount === 1 && (
+          availableFOCount === 1 &&
+          !shouldHideDeliveryPromise && (
             <div
               className={`${styles.deliveryDate} ${styles.dateInfoContainer}`}
             >

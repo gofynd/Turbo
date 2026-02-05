@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import useSortModal from "./useSortModal";
 import useFilterModal from "./useFilterModal";
@@ -34,17 +34,14 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     fpi,
   });
 
-  // Refresh wishlist IDs when collection page loads if store appears incomplete
-  // This ensures we have all wishlisted items after navigating from wishlist page
+  // Refresh wishlist IDs when collection loads if store appears incomplete (e.g. after Wishlist → Collection).
   useEffect(() => {
-    if (followedCount > 0 && followedIdList?.length < followedCount) {
-      // Store appears incomplete (has fewer items than total count)
-      // Refresh to get all wishlist IDs
+    if (followedCount > 0 && (followedIdList?.length ?? 0) < followedCount) {
       fpi
         .executeGQL(FOLLOWED_PRODUCTS_IDS, { pageSize: WISHLIST_PAGE_SIZE })
         .catch(() => {});
     }
-  }, [slug, followedCount, followedIdList?.length]);
+  }, [fpi, slug, followedCount, followedIdList?.length]);
   const { isInternational, i18nDetails, defaultCurrency } = useInternational({
     fpi,
   });

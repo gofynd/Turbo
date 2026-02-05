@@ -40,6 +40,25 @@
   &__input {
     position: relative;
     flex-grow: 1;
+
+    .clearAllBtn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      color: @HeaderIcon;
+      font-size: 14px;
+      @media @tablet {
+        font-size: 12px;
+      }
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px; /* 142.857% */
+      letter-spacing: -0.28px;
+    }
     &--text {
       background: @ThemeAccentL4;
       width: 100%;

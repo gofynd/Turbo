@@ -6,6 +6,8 @@ import PlayIcon from "../assets/images/play.svg";
 import PauseIcon from "../assets/images/pause.svg";
 import { useVideoPlayer } from "../page-layouts/hero-video/useVideoPlayer";
 import { useViewport } from "../helper/hooks";
+import { useWindowWidth } from "../helper/hooks";
+import { getMediaLayout } from "../helper/media-layout";
 
 export function Component({ props, globalConfig }) {
   const isMobileView = useViewport(0, 500);
@@ -22,8 +24,15 @@ export function Component({ props, globalConfig }) {
     coverUrl,
     padding_top,
     padding_bottom,
+    height_mode,
+    desktop_height,
+    mobile_height,
+    desktop_aspect_ratio,
+    mobile_aspect_ratio,
   } = props;
   const { t } = useGlobalTranslation("translation");
+  const windowWidth = useWindowWidth();
+  const isMobileViewport = windowWidth <= 768;
 
   const VideoUrlValue =
     typeof window !== "undefined" && isMobileView && mobileVideoUrl?.value
@@ -64,6 +73,27 @@ export function Component({ props, globalConfig }) {
     paddingTop: `${padding_top?.value ?? 0}px`,
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
+
+  const mediaLayout = getMediaLayout(
+    {
+      height_mode,
+      desktop_height,
+      mobile_height,
+      desktop_aspect_ratio,
+      mobile_aspect_ratio,
+    },
+    isMobileViewport,
+    16 / 9
+  );
+
+  const videoWrapperClass = [
+    styles.video_container,
+    styles.mediaShell,
+    mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
+    mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   const mobilePlaceHolder = Boolean(
     mobileVideoFile?.value ||
@@ -115,10 +145,9 @@ export function Component({ props, globalConfig }) {
         )}
         {shouldShowImage && (
           <img
-            className={`${styles.imagePlaceholder} ${!desktopPlaceHolder ? styles.showDesktopPlaceholder : ""} ${!mobilePlaceHolder ? styles.showImagePlaceholder : ""} `}
+            className={`${styles.imagePlaceholder} ${styles.mediaFill} ${!desktopPlaceHolder ? styles.showDesktopPlaceholder : ""} ${!mobilePlaceHolder ? styles.showImagePlaceholder : ""} `}
             src={coverUrl?.value || placeholderImage}
             alt={t("resource.common.placeholder")}
-            style={{ width: "100%" }}
             srcSet={getImgSrcSet()}
           />
         )}
@@ -128,12 +157,15 @@ export function Component({ props, globalConfig }) {
   return (
     <section style={dynamicStyles}>
       {title?.value && (
-        <h2 className={`fx-title ${styles.video_heading} fontHeader`}>
-          {title?.value}
-        </h2>
-      )}
+      <h2 className={`fx-title ${styles.video_heading} fontHeader`}>
+        {title?.value}
+      </h2>
+    )}
 
-      <div className={`${styles.video_container} ${styles.show_on_desktop}`}>
+      <div
+        className={`${videoWrapperClass} ${styles.show_on_desktop}`}
+        style={mediaLayout.style}
+      >
         {videoFile?.value ? (
           <video
             ref={videoRef}
@@ -156,12 +188,13 @@ export function Component({ props, globalConfig }) {
             preload="auto"
             src={getVideoSource}
             allowFullScreen
+            className={`${styles.mediaFill} ${styles.videoElement}`}
           ></video>
         ) : (
           isYoutube() &&
           isValidUrl &&
           !isMobile && (
-            <div className={styles.youtube_wrapper}>
+            <div className={`${styles.youtube_wrapper} ${styles.mediaFill}`}>
               <div
                 className={styles.yt_video}
                 ref={ytVideoRef}
@@ -175,7 +208,10 @@ export function Component({ props, globalConfig }) {
         )}
         <VideoControls />
       </div>
-      <div className={`${styles.video_container} ${styles.show_on_mobile}`}>
+      <div
+        className={`${videoWrapperClass} ${styles.show_on_mobile}`}
+        style={mediaLayout.style}
+      >
         {mobileVideoFile?.value || videoFile?.value ? (
           <video
             ref={mobileVideoRef}
@@ -198,12 +234,13 @@ export function Component({ props, globalConfig }) {
             preload="auto"
             src={getMobileVideoSource || getVideoSource}
             allowFullScreen
+            className={`${styles.mediaFill} ${styles.videoElement}`}
           ></video>
         ) : (
           isYoutube() &&
           VideoUrlValue &&
           isMobile && (
-            <div className={styles.youtube_wrapper}>
+            <div className={`${styles.youtube_wrapper} ${styles.mediaFill}`}>
               <div
                 className={styles.yt_video}
                 ref={ytVideoRef}
@@ -292,6 +329,41 @@ export const settings = {
       options: {
         aspect_ratio: "16:9",
       },
+    },
+    {
+      id: "height_mode",
+      type: "select",
+      label: "t:resource.common.height_mode",
+      default: "auto",
+      options: [
+        { value: "auto", text: "t:resource.common.auto" },
+        { value: "fixed_height", text: "t:resource.common.fixed_height" },
+        { value: "aspect_ratio", text: "t:resource.common.aspect_ratio" },
+      ],
+    },
+    {
+      type: "text",
+      id: "desktop_height",
+      label: "t:resource.common.desktop_height",
+      info: "t:resource.common.desktop_height_info",
+    },
+    {
+      type: "text",
+      id: "mobile_height",
+      label: "t:resource.common.mobile_height",
+      info: "t:resource.common.mobile_height_info",
+    },
+    {
+      type: "text",
+      id: "desktop_aspect_ratio",
+      label: "t:resource.common.desktop_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
+    },
+    {
+      type: "text",
+      id: "mobile_aspect_ratio",
+      label: "t:resource.common.mobile_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
     },
     {
       type: "range",

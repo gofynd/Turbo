@@ -3,7 +3,7 @@ import { useFPI, useGlobalTranslation } from "fdk-core/utils";
 import { useLocation } from "react-router-dom";
 import Breadcrumb from "../components/breadcrumb/breadcrumb";
 import ProfileAddressPage from "../page-layouts/profile-address/profile-address-page";
-import "../page-layouts/profile-address/profile-address-page.less";
+import styles from "../page-layouts/profile-address/profile-address-page.less";
 
 export function Component({ props, blocks, preset, globalConfig }) {
   const fpi = useFPI();
@@ -42,7 +42,9 @@ export function Component({ props, blocks, preset, globalConfig }) {
 
   return (
     <>
-      <Breadcrumb breadcrumb={breadcrumbItems} />
+      <div className={styles.addressBreadcrumbWrapper}>
+        <Breadcrumb breadcrumb={breadcrumbItems} />
+      </div>
       <ProfileAddressPage fpi={fpi} />
     </>
   );

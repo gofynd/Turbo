@@ -496,6 +496,88 @@
     }
 }
 
+// Accordion Content Styles (Ported from Firestone)
+.accordionContentList {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 0;
+  li::marker {
+      color: var(--textLabel);
+      font-size: 14px;
+  }
+}
+
+.accordionContentInner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.accordionContentKey {
+  color: var(--textLabel);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+.accordionContentValue {
+  color: var(--textHeading);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 140%;
+}
+
+.accordionContentImages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.accordionContentImageItem {
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  
+  .itemCount {
+    color: var(--textLabel);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 140%;
+    padding-left: 2px;
+  }
+  
+  .imagePreview {
+    display: none;
+    position: absolute;
+    left: 0px;
+    top: -100px;
+    z-index: 20;
+  }
+  
+  .largePreviewImg {
+    width: 73px;
+    height: 92px;
+    border-radius: 4px;
+    background: lightgray 50% / cover no-repeat;
+    box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.16);
+    pointer-events: none;
+  }
+  
+  &:hover .imagePreview {
+    display: block;
+  }
+}
+
+.accordionContentImg {
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border: 1px solid var(--textLabel);
+}
+
 @keyframes rotation {
     0% {
         transform: rotate(0deg);

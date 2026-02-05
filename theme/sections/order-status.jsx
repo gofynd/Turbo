@@ -17,6 +17,7 @@ import {
   translateDynamicLabel,
   getAddressStr,
   priceFormatCurrencySymbol,
+  currencyFormat,
   getGroupedShipmentBags,
 } from "../helper/utils";
 import styles from "../styles/order-status.less";
@@ -84,6 +85,7 @@ function ShipmentList({
   orderData,
   isLoggedIn,
   locale,
+  countryCode,
   getGroupedShipmentBags,
   globalConfig,
   t,
@@ -106,6 +108,8 @@ function ShipmentList({
           orderLink={getOrderLink()}
           getGroupedShipmentBags={getGroupedShipmentBags}
           globalConfig={globalConfig}
+          locale={locale}
+          countryCode={countryCode}
           t={t}
         />
       ))}
@@ -120,6 +124,8 @@ function ShipmentItem({
   orderLink,
   getGroupedShipmentBags,
   globalConfig,
+  locale,
+  countryCode,
   t,
 }) {
   const { bags: getBags, bundleGroups } = React.useMemo(
@@ -170,6 +176,8 @@ function ShipmentItem({
               orderLink={orderLink}
               bundleGroups={bundleGroups}
               globalConfig={globalConfig}
+              locale={locale}
+              countryCode={countryCode}
               t={t}
             />
           </div>
@@ -179,7 +187,15 @@ function ShipmentItem({
   );
 }
 
-function ProductItem({ product, orderLink, bundleGroups, globalConfig, t }) {
+function ProductItem({
+  product,
+  orderLink,
+  bundleGroups,
+  globalConfig,
+  locale,
+  countryCode,
+  t,
+}) {
   const bundleGroupId = product?.bundle_details?.bundle_group_id;
   const aspectRatio = getProductImgAspectRatio(globalConfig);
   const isBundleItem =
@@ -190,9 +206,145 @@ function ProductItem({ product, orderLink, bundleGroups, globalConfig, t }) {
     // eslint-disable-next-line dot-notation
     product?.meta?.["_custom_json"]?.["_display"] || [];
 
+  // Transform customization options into accordion format (matching Firestone ChipItem logic)
+  const transformedCustomizationContent = React.useMemo(() => {
+    if (!customizationOptions || customizationOptions.length === 0) return [];
+    
+    return customizationOptions.map((option) => {
+      const items = [];
+      
+      // Handle productCanvas type (nested value object)
+      if (option.type === "productCanvas" && option.value) {
+        const canvasData = option.value;
+        
+        if (canvasData.text) {
+          items.push({ 
+            key: option.key || "Text", 
+            value: canvasData.text 
+          });
+        }
+        
+        if (canvasData.price || option.price) {
+          items.push({ 
+            key: "Price", 
+            value: `${canvasData.price || option.price}` 
+          });
+        }
+        
+        if (canvasData.previewImage) {
+          items.push({ 
+            key: "Preview", 
+            value: canvasData.previewImage, 
+            type: "image",
+            alt: option.key || "Customization preview",
+            dimensions: canvasData.textBounds ? {
+              width: canvasData.textBounds.width,
+              height: canvasData.textBounds.height
+            } : undefined
+          });
+        }
+      } 
+      // Handle simple string type
+      else if (option.type === "string" && option.value) {
+        items.push({ 
+          key: option.alt || option.key, 
+          value: option.value 
+        });
+      }
+      // Handle other types with direct text/price/previewImage properties
+      else {
+        if (option.text) {
+          items.push({ key: "Text", value: option.text });
+        }
+        
+        if (option.price) {
+          items.push({ key: "Price", value: option.price });
+        }
+        
+        if (option.previewImage) {
+          items.push({ 
+            key: "Preview", 
+            value: option.previewImage, 
+            type: "image",
+            alt: "Customization preview" 
+          });
+        }
+      }
+      return items;
+    }).flat();
+  }, [customizationOptions]);
+
+  const renderCustomizationContent = () => {
+    if (!transformedCustomizationContent || transformedCustomizationContent.length === 0) return null;
+
+    return (
+      <ul className={styles.accordionContentList}>
+        {transformedCustomizationContent.map((content, i) => {
+          if (content.type === "image") {
+            const imgSrc = content.value;
+            return (
+              <li key={i} className={styles.accordionContentInner} style={{ marginBottom: "4px" }}>
+                 <span className={styles.accordionContentKey}>
+                    {content.key && <span>{content.key}: </span>}
+                 </span>
+                 <div className={styles.accordionContentImageItem}>
+                    <img
+                      src={imgSrc}
+                      alt={content.alt || content.key}
+                      className={styles.accordionContentImg}
+                    />
+                    <div className={styles.imagePreview}>
+                      <img
+                        src={imgSrc}
+                        alt={content.alt || content.key}
+                        className={styles.largePreviewImg}
+                      />
+                    </div>
+                 </div>
+              </li>
+            );
+          } else {
+            return (
+              <li key={i} className={styles.accordionContentInner} style={{ marginBottom: "4px" }}>
+                {content.key && (
+                  <span className={styles.accordionContentKey}>
+                    {content.key}:{" "}
+                  </span>
+                )}
+                <span className={styles.accordionContentValue}>
+                  {content.value}
+                </span>
+              </li>
+            );
+          }
+        })}
+      </ul>
+    );
+  };
+
   const [items, setItems] = React.useState([
-    { title: "Customization", content: customizationOptions, open: false },
+    {
+      title: "Customization",
+      content: renderCustomizationContent(),
+      open: false,
+    },
   ]);
+
+  // Update items state when transformed content changes
+  React.useEffect(() => {
+      setItems(prev => {
+          const newContent = renderCustomizationContent();
+          // Only update if content changed to avoid infinite loop (simple check)
+          if(prev[0].content !== newContent) {
+              return [{
+                  ...prev[0],
+                  content: newContent
+              }];
+          }
+          return prev;
+      })
+  }, [transformedCustomizationContent]);
+
 
   const handleItemClick = (index) => {
     setItems((prevItems) => {
@@ -260,7 +412,23 @@ function ProductItem({ product, orderLink, bundleGroups, globalConfig, t }) {
   const getGiftItem = React.useMemo(() => {
     const bagItem = { ...product };
     if (bagItem.applied_promos) {
-      bagItem.promotions_applied = bagItem.applied_promos;
+      // Sanitize applied_promos to ensure item_images_url has valid values
+      bagItem.promotions_applied = bagItem.applied_promos.map((promo) => ({
+        ...promo,
+        applied_free_articles: promo?.applied_free_articles?.map((article) => ({
+          ...article,
+          free_gift_item_details: article?.free_gift_item_details
+            ? {
+                ...article.free_gift_item_details,
+                // Ensure item_images_url is an array with valid strings
+                item_images_url:
+                  article.free_gift_item_details.item_images_url?.filter(
+                    (url) => url && typeof url === "string"
+                  ) || [],
+              }
+            : article?.free_gift_item_details,
+        })),
+      }));
       delete bagItem.applied_promos;
     }
     return bagItem;
@@ -295,12 +463,20 @@ function ProductItem({ product, orderLink, bundleGroups, globalConfig, t }) {
             <div className={styles.paymentInfo}>
               {effectivePrice > 0 && (
                 <div className={styles.effectivePrice}>
-                  {`${product?.prices?.currency_symbol}${numberWithCommas(effectivePrice)}`}
+                  {currencyFormat(
+                    effectivePrice,
+                    product?.prices?.currency_symbol,
+                    formatLocale(locale, countryCode, true)
+                  )}
                 </div>
               )}
               {markedPrice > 0 && effectivePrice !== markedPrice && (
                 <div className={styles.markedPrice}>
-                  {`${product?.prices?.currency_symbol}${numberWithCommas(markedPrice)}`}
+                  {currencyFormat(
+                    markedPrice,
+                    product?.prices?.currency_symbol,
+                    formatLocale(locale, countryCode, true)
+                  )}
                 </div>
               )}
             </div>
@@ -365,7 +541,7 @@ function OrderPriceBreakup({ orderData, t }) {
 }
 
 // Payment Info Component
-function PaymentInfo({ orderData, isLoggedIn, t }) {
+function PaymentInfo({ orderData, isLoggedIn, locale, countryCode, t }) {
   if (!isLoggedIn) {
     return null;
   }
@@ -421,8 +597,10 @@ function PaymentInfo({ orderData, isLoggedIn, t }) {
               className={styles["mode-name"]}
               style={{ marginLeft: 12, marginTop: 6 }}
             >
-              {translateDynamicLabel(paymentInfo?.display_name, t) ||
-                t("resource.order.cod")}
+              {translateDynamicLabel(
+                paymentInfo?.display_name || paymentInfo?.mode || "",
+                t
+              ) || t("resource.order.cod")}
             </span>
           </span>
           <span className={styles["mode-amount"]}>
@@ -430,7 +608,8 @@ function PaymentInfo({ orderData, isLoggedIn, t }) {
               ? priceFormatCurrencySymbol(
                   paymentInfo?.currency_symbol ||
                     orderData?.breakup_values?.[0]?.currency_symbol,
-                  paymentInfo?.amount
+                  paymentInfo?.amount,
+                  formatLocale(locale, countryCode, true)
                 )
               : null}
           </span>
@@ -468,8 +647,11 @@ function DeliveryAddress({ orderData, isLoggedIn, t }) {
           <div className={styles.name}>{getAddressData?.name}</div>
           <div className={styles.label}>
             {translateDynamicLabel(
-              getAddressData?.address_type?.charAt(0)?.toUpperCase() +
-                getAddressData?.address_type.slice(1),
+              getAddressData?.address_type &&
+                typeof getAddressData.address_type === "string"
+                ? getAddressData.address_type.charAt(0).toUpperCase() +
+                    getAddressData.address_type.slice(1)
+                : getAddressData?.address_type || "",
               t
             )}
           </div>
@@ -531,6 +713,7 @@ export function Component({
                 orderData={orderData}
                 isLoggedIn={isLoggedIn}
                 locale={locale}
+                countryCode={countryCode}
                 getGroupedShipmentBags={getGroupedShipmentBags}
                 globalConfig={globalConfig}
                 t={t}
@@ -557,6 +740,8 @@ export function Component({
                     <PaymentInfo
                       orderData={orderData}
                       isLoggedIn={isLoggedIn}
+                      locale={locale}
+                      countryCode={countryCode}
                       t={t}
                     />
                     <DeliveryAddress
@@ -576,6 +761,8 @@ export function Component({
                 <PaymentInfo
                   orderData={orderData}
                   isLoggedIn={isLoggedIn}
+                  locale={locale}
+                  countryCode={countryCode}
                   t={t}
                 />
               </div>

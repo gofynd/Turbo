@@ -38,29 +38,49 @@ export function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-export const numberWithCommas = (number = 0) => {
-  let num = number;
-  if (number?.toString()[0] === "-") {
-    num = number?.toString()?.substring(1);
-  }
+/**
+ * Format number with locale-aware comma separation
+ * Uses native Intl.NumberFormat for optimal performance
+ * @param {number|string} number - The number to format
+ * @param {string} locale - Locale string (e.g., 'en-IN' for India, 'en-AE' for UAE)
+ * @returns {string} Formatted number string
+ */
+export const numberWithCommas = (number = 0, locale = "en-IN") => {
+  if (number == null || number === "") return "0";
 
-  if (num) {
-    let no =
-      num?.toString()?.split(".")?.[0]?.length > 3
-        ? `${num
-            ?.toString()
-            ?.substring(0, num?.toString()?.split(".")[0].length - 3)
-            ?.replace(/\B(?=(\d{2})+(?!\d))/g, ",")},${num
-            ?.toString()
-            ?.substring(num?.toString()?.split(".")?.[0]?.length - 3)}`
-        : num?.toString();
+  // Convert to number if it's a string
+  const num = typeof number === "string" ? parseFloat(number) : number;
 
-    if (number?.toString()[0] === "-") {
-      no = `-${no}`;
-    }
-    return no;
+  if (Number.isNaN(num)) return "0";
+
+  // Determine if we should use Indian numbering system
+  // Indian numbering: 1,25,000 (grouping: 3,2,2...)
+  // International numbering: 125,000 (grouping: 3,3,3...)
+  const isIndianLocale = locale === "en-IN" || locale?.startsWith("en-IN");
+
+  try {
+    // Use Intl.NumberFormat for locale-aware formatting
+    // For Indian locale, use 'latn' numbering system to get Indian-style grouping
+    // For other locales, use default numbering system
+    const numberingSystem = isIndianLocale ? "latn" : undefined;
+    const localeString = numberingSystem
+      ? `${locale}-u-nu-${numberingSystem}`
+      : locale;
+
+    const formatter = new Intl.NumberFormat(localeString, {
+      maximumFractionDigits: 20, // Preserve decimal places
+      useGrouping: true,
+    });
+
+    return formatter.format(num);
+  } catch (error) {
+    // Fallback to basic formatting if locale is invalid
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Invalid locale "${locale}", falling back to default formatting`
+    );
+    return num.toLocaleString("en-US");
   }
-  return 0;
 };
 export function isRunningOnClient() {
   if (typeof window !== "undefined") {
@@ -347,24 +367,80 @@ export const getProductImgAspectRatio = (
   return defaultAspectRatio;
 };
 
-export const currencyFormat = (value, currencySymbol, locale = "en-IN") => {
-  const formattingLocale = `${locale}-u-nu-latn`;
+/**
+ * Format currency value with locale-aware number formatting
+ * Uses native Intl.NumberFormat for optimal performance
+ * @param {number|string} value - The numeric value to format
+ * @param {string} currencySymbol - Currency symbol (e.g., '₹', 'AED', 'USD')
+ * @param {string} locale - Locale string (e.g., 'en-IN' for India, 'en-AE' for UAE)
+ * @returns {string} Formatted currency string
+ */
+export const currencyFormat = (
+  value,
+  currencySymbol,
+  locale = "en-IN",
+  currencyCode = null
+) => {
+  if (value == null || value === "") return "";
 
-  if (value != null) {
-    const formattedValue = value.toLocaleString(formattingLocale);
+  // Convert to number if it's a string
+  const num = typeof value === "string" ? parseFloat(value) : value;
 
+  if (Number.isNaN(num)) return "";
+
+  // If currency code is provided, use it to determine locale
+  let finalLocale = locale;
+  if (currencyCode) {
+    finalLocale = getLocaleFromCurrency(currencyCode);
+  }
+
+  // Determine if we should use Indian numbering system
+  const isIndianLocale = finalLocale === "en-IN" || finalLocale?.startsWith("en-IN");
+
+  try {
+    // Use Intl.NumberFormat for locale-aware formatting
+    const numberingSystem = isIndianLocale ? "latn" : undefined;
+    const localeString = numberingSystem
+      ? `${finalLocale}-u-nu-${numberingSystem}`
+      : finalLocale;
+
+    const formatter = new Intl.NumberFormat(localeString, {
+      maximumFractionDigits: 20,
+      useGrouping: true,
+    });
+
+    const formattedValue = formatter.format(num);
+
+    // Handle currency symbol placement
+    let finalResult;
+    if (currencySymbol) {
+      // For alphabetic currency codes (like AED, USD), add space
+      if (/^[A-Z]+$/.test(currencySymbol)) {
+        finalResult = `${currencySymbol} ${formattedValue}`;
+      } else {
+        // For symbol currencies (like ₹), no space
+        finalResult = `${currencySymbol}${formattedValue}`;
+      }
+    } else {
+      finalResult = formattedValue;
+    }
+
+    return finalResult;
+  } catch {
+    // Fallback to basic formatting if locale is invalid
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Invalid locale "${finalLocale}", falling back to default formatting`
+    );
+    const formattedValue = num.toLocaleString("en-US");
     if (currencySymbol && /^[A-Z]+$/.test(currencySymbol)) {
       return `${currencySymbol} ${formattedValue}`;
     }
-
     if (currencySymbol) {
       return `${currencySymbol}${formattedValue}`;
     }
-
     return formattedValue;
   }
-
-  return "";
 };
 
 export function roundToDecimals(number, decimalPlaces = 2) {
@@ -372,37 +448,80 @@ export function roundToDecimals(number, decimalPlaces = 2) {
   return Math.round(number * factor) / factor;
 }
 
-export function priceFormatCurrencySymbol(symbol, price = 0) {
-  const hasAlphabeticCurrency = /^[A-Za-z]+$/.test(symbol);
-  let sanitizedPrice = price;
-  if (typeof price !== "string") {
-    let num = price;
+/**
+ * Format price with currency symbol using locale-aware number formatting
+ * Uses native Intl.NumberFormat for optimal performance
+ * @param {string} symbol - Currency symbol (e.g., '₹', 'AED', 'USD')
+ * @param {number|string} price - The price value to format
+ * @param {string} locale - Locale string (e.g., 'en-IN' for India, 'en-AE' for UAE)
+ * @returns {string} Formatted price string with currency symbol
+ */
+export function priceFormatCurrencySymbol(
+  symbol,
+  price = 0,
+  locale = "en-IN",
+  currencyCode = null
+) {
+  if (price == null || price === "") return "";
 
-    if (!Number.isNaN(price)) num = roundToDecimals(price);
-    if (num?.toString()[0] === "-") {
-      num = num?.toString()?.substring(1);
-    }
+  // Convert to number if it's a string
+  let num = typeof price === "string" ? parseFloat(price) : price;
 
-    if (num) {
-      sanitizedPrice =
-        num?.toString()?.split(".")?.[0].length > 3
-          ? `${num
-              ?.toString()
-              ?.substring(0, num?.toString()?.split(".")?.[0]?.length - 3)
-              ?.replace(/\B(?=(\d{2})+(?!\d))/g, ",")},${num
-              ?.toString()
-              ?.substring(num?.toString()?.split?.(".")?.[0]?.length - 3)}`
-          : num?.toString();
-    } else {
-      sanitizedPrice = 0;
-    }
+  if (Number.isNaN(num)) return "";
+
+  // Round to 2 decimal places
+  num = roundToDecimals(num, 2);
+
+  // If currency code is provided, use it to determine locale
+  let finalLocale = locale;
+  if (currencyCode) {
+    finalLocale = getLocaleFromCurrency(currencyCode);
   }
 
-  return `${price.toString()[0] === "-" ? "-" : ""}${
-    hasAlphabeticCurrency
-      ? `${symbol} ${sanitizedPrice}`
-      : `${symbol}${sanitizedPrice}`
-  }`;
+  // Determine if we should use Indian numbering system
+  const isIndianLocale = finalLocale === "en-IN" || finalLocale?.startsWith("en-IN");
+
+  try {
+    // Use Intl.NumberFormat for locale-aware formatting
+    const numberingSystem = isIndianLocale ? "latn" : undefined;
+    const localeString = numberingSystem
+      ? `${finalLocale}-u-nu-${numberingSystem}`
+      : finalLocale;
+
+    const formatter = new Intl.NumberFormat(localeString, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+      useGrouping: true,
+    });
+
+    const formattedPrice = formatter.format(num);
+    const hasAlphabeticCurrency = /^[A-Za-z]+$/.test(symbol);
+
+    // Handle currency symbol placement
+    let finalResult;
+    if (hasAlphabeticCurrency) {
+      finalResult = `${symbol} ${formattedPrice}`;
+    } else {
+      finalResult = `${symbol}${formattedPrice}`;
+    }
+
+    return finalResult;
+  } catch {
+    // Fallback to basic formatting if locale is invalid
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Invalid locale "${finalLocale}", falling back to default formatting`
+    );
+    const formattedPrice = num.toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+    const hasAlphabeticCurrency = /^[A-Za-z]+$/.test(symbol);
+    if (hasAlphabeticCurrency) {
+      return `${symbol} ${formattedPrice}`;
+    }
+    return `${symbol}${formattedPrice}`;
+  }
 }
 
 export const getReviewRatingData = (customMeta) => {
@@ -461,6 +580,30 @@ const isValidLocale = (tag) => {
   } catch {
     return false;
   }
+};
+
+/**
+ * Map currency code to appropriate locale for number formatting
+ * @param {string} currencyCode - Currency code (e.g., 'USD', 'AED', 'INR')
+ * @returns {string} Locale string appropriate for the currency
+ */
+export const getLocaleFromCurrency = (currencyCode) => {
+  if (!currencyCode) return "en-US";
+
+  // Normalize currency code to uppercase for case-insensitive matching
+  const normalizedCode = currencyCode.toUpperCase();
+
+  const currencyLocaleMap = {
+    USD: "en-US", // United States
+    AED: "en-AE", // United Arab Emirates
+    SAR: "ar-SA", // Saudi Arabia
+    GBP: "en-GB", // United Kingdom
+    EUR: "en-US", // Europe (using en-US as standard international format)
+    INR: "en-IN", // India
+    // Add more currency mappings as needed
+  };
+
+  return currencyLocaleMap[normalizedCode] || "en-US"; // Default to en-US for unknown currencies
 };
 
 export const formatLocale = (locale, countryCode, isCurrencyLocale = false) => {
@@ -697,21 +840,39 @@ export function spaNavigate(path) {
 }
 
 export function translateDynamicLabel(input, t) {
+  // Early return for null, undefined, or non-string types
   if (input == null || typeof input !== "string") {
-    return input ?? "";
+    return "";
   }
 
-  const safeInput = input
-    .toLowerCase()
-    .replace(/\//g, "_") // replace slashes with underscores
-    .replace(/[^a-z0-9_\s]/g, "") // remove special characters except underscores and spaces
-    .trim()
-    .replace(/\s+/g, "_"); // replace spaces with underscores
+  // Handle empty string
+  const trimmedInput = input.trim();
+  if (trimmedInput === "") {
+    return "";
+  }
 
-  const translationKey = `resource.dynamic_label.${safeInput}`;
-  const translated = t(translationKey);
+  try {
+    const safeInput = trimmedInput
+      .toLowerCase()
+      .replace(/\//g, "_") // replace slashes with underscores
+      .replace(/[^a-z0-9_\s]/g, "") // remove special characters except underscores and spaces
+      .trim()
+      .replace(/\s+/g, "_"); // replace spaces with underscores
 
-  return translated.split(".").pop() === safeInput ? input : translated;
+    if (!safeInput) {
+      return trimmedInput;
+    }
+
+    const translationKey = `resource.dynamic_label.${safeInput}`;
+    const translated = t(translationKey);
+
+    return translated.split(".").pop() === safeInput
+      ? trimmedInput
+      : translated;
+  } catch (error) {
+    console.warn("Error in translateDynamicLabel:", error);
+    return typeof input === "string" ? input : "";
+  }
 }
 export const getAddressStr = (item, isAddressTypeAvailable) => {
   if (!item || typeof item !== "object") {

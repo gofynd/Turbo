@@ -126,6 +126,11 @@ export function useVideoPlayer({
 
   // YouTube script management
   const onYouTubeIframeAPIReady = () => {
+    // ---- MINIMAL CHANGE: guard to ensure Player constructor exists ----
+    if (!isRunningOnClient() || !window?.YT || !window?.YT?.Player) {
+      return;
+    }
+
     const ytVideo = ytVideoRef.current;
     window.players = { ...(window.players || {}) };
     const { players } = window;
@@ -169,28 +174,35 @@ export function useVideoPlayer({
         }
       };
 
-      players[videoID].inst = new YT.Player(`yt-video-${videoID}`, {
-        videoId: videoID,
-        width: "100%",
-        height: "100%",
-        playerVars: {
-          autoplay: qautoplay,
-          controls: qcontrols,
-          modestbranding: 1,
-          mute: qmute,
-          loop: qloop,
-          fs: 0,
-          WebKitPlaysInline: "true",
-          playsinline: 1,
-          cc_load_policty: 0,
-          iv_load_policy: 3,
-          origin: document.location.origin,
-        },
-        events: {
-          onReady: players[videoID].onReady,
-          onStateChange: players[videoID].onStateChange,
-        },
-      });
+      // ---- MINIMAL CHANGE: use window.YT.Player and try/catch ----
+      try {
+        if (window.YT && window.YT.Player) {
+          players[videoID].inst = new window.YT.Player(`yt-video-${videoID}`, {
+            videoId: videoID,
+            width: "100%",
+            height: "100%",
+            playerVars: {
+              autoplay: qautoplay,
+              controls: qcontrols,
+              modestbranding: 1,
+              mute: qmute,
+              loop: qloop,
+              fs: 0,
+              WebKitPlaysInline: "true",
+              playsinline: 1,
+              cc_load_policty: 0,
+              iv_load_policy: 3,
+              origin: document.location.origin,
+            },
+            events: {
+              onReady: players[videoID].onReady,
+              onStateChange: players[videoID].onStateChange,
+            },
+          });
+        }
+      } catch (err) {
+        // swallow - avoid uncaught exception
+      }
     }
   };
 
@@ -243,11 +255,8 @@ export function useVideoPlayer({
       }
     });
 
-    if (typeof window.YT !== "undefined") {
-      try {
-        window.YT = undefined;
-      } catch {}
-    }
+    // ---- MINIMAL CHANGE: DO NOT set window.YT = undefined ----
+    // Removing YT global breaks other consumers on the same page.
   };
 
   const playYT = () => {

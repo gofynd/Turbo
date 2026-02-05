@@ -30,7 +30,7 @@ const useWishlistPage = ({ fpi }) => {
 
   const {
     show_add_to_cart = true,
-    mandatory_pincode = false,
+    mandatory_pincode = true,
     hide_single_size = false,
     preselect_size = false,
   } = pageConfig || {};
@@ -105,12 +105,16 @@ const useWishlistPage = ({ fpi }) => {
     setLoading(true);
     fetchProducts()
       .then(() => {
-        // Refresh global store with all wishlist IDs after wishlist page loads
-        // This ensures collection pages see all wishlisted items, not just paginated results
-        // The FETCH_FOLLOWED_PRODUCTS query with pageSize: 12 can overwrite the global store,
-        // so we refresh it with all IDs to maintain consistency
-        return fpi.executeGQL(FOLLOWED_PRODUCTS_IDS, {
-          pageSize: WISHLIST_PAGE_SIZE,
+        // Defer to next macrotask so full-list refresh runs after FETCH_FOLLOWED_PRODUCTS (pageSize: 12) store update.
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            fpi
+              .executeGQL(FOLLOWED_PRODUCTS_IDS, {
+                pageSize: WISHLIST_PAGE_SIZE,
+              })
+              .then(resolve)
+              .catch(resolve);
+          }, 0);
         });
       })
       .catch(() => {})

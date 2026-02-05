@@ -1,4 +1,12 @@
 @import "../../styles/main.less";
+
+.addressBreadcrumbWrapper {
+  @media @tablet {
+    padding-left: 16px;
+    padding-top: 16px;
+  }
+}
+
 .loader {
   position: relative;
   width: 100%;
@@ -138,7 +146,7 @@
     border-bottom: 1px solid @DividerStokes;
 
     @media @tablet {
-      padding: 16px;
+      padding: 0 16px 16px 16px;
     }
     @media @mobile {
       border-bottom: none;

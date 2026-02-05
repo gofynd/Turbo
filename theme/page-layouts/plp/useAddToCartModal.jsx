@@ -61,8 +61,9 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
   const { getFormattedPromise } = useDeliverPromise({ fpi });
-  const { isServiceability } = useThemeFeature({ fpi });
+  const { isServiceability, isCrossBorderOrder } = useThemeFeature({ fpi });
   const { onUpdateCartItems, isCartUpdating, cartItems } = useCart(fpi, false);
+  const { is_serviceable } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
 
   const isMto = useMemo(
     () => productData?.product?.custom_order?.is_custom_order || false,
@@ -106,8 +107,10 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
             productPriceWithFO?.errors?.[0]?.message ||
               t("resource.product.product_not_serviceable")
           );
+          fpi.custom.setValue("is_serviceable", false);
         } else {
           setPincodeErrorMessage("");
+          fpi.custom.setValue("is_serviceable", true);
         }
 
         return selectedProductPrice;
@@ -159,7 +162,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         console.error(error);
       }
     },
-    [fetchProductPrice, fpi]
+    [fetchProductPrice, fpi, pageConfig]
   );
 
   const handleAddToCart = useCallback(
@@ -176,10 +179,12 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
       }
       setIsLoading(true);
       setSlug(productSlug);
+      // Skip mandatory pincode check when international is enabled and seller country != location country
       if (
         isServiceability &&
         pageConfig?.mandatory_pincode &&
-        !selectedAddress
+        !selectedAddress &&
+        !isCrossBorderOrder
       ) {
         fpi.custom.setValue("isServiceabilityModalOpen", true);
         isOpenPending.current = true;
@@ -191,7 +196,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         setIsOpen(true);
       }
     },
-    [fetchProductData, selectedAddress]
+    [fetchProductData, selectedAddress, pageConfig]
   );
 
   const onSizeSelection = useCallback(
@@ -291,27 +296,30 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         event.stopPropagation();
       }
 
-      if (
-        pageConfig?.mandatory_pincode &&
-        (currentPincode?.length !== 6 || pincodeErrorMessage.length)
-      ) {
-        setPincodeErrorMessage(t("resource.product.enter_valid_location"));
-        return;
-      }
-      if (
-        !pageConfig?.mandatory_pincode &&
-        ((currentPincode?.length > 0 && currentPincode?.length < 6) ||
-          pincodeErrorMessage.length)
-      ) {
-        setPincodeErrorMessage(t("resource.product.enter_valid_location"));
-        return;
-      }
-      if (
-        !pageConfig?.mandatory_pincode &&
-        (!currentPincode?.length || currentPincode?.length === 6) &&
-        !pincodeErrorMessage.length
-      ) {
-        setPincodeErrorMessage("");
+      // Skip mandatory pincode check when international is enabled and seller country != location country
+      if (!isCrossBorderOrder) {
+        if (
+          pageConfig?.mandatory_pincode &&
+          (currentPincode?.length !== 6 || pincodeErrorMessage.length)
+        ) {
+          setPincodeErrorMessage(t("resource.product.enter_valid_location"));
+          return;
+        }
+        if (
+          !pageConfig?.mandatory_pincode &&
+          ((currentPincode?.length > 0 && currentPincode?.length < 6) ||
+            pincodeErrorMessage.length)
+        ) {
+          setPincodeErrorMessage(t("resource.product.enter_valid_location"));
+          return;
+        }
+        if (
+          !pageConfig?.mandatory_pincode &&
+          (!currentPincode?.length || currentPincode?.length === 6) &&
+          !pincodeErrorMessage.length
+        ) {
+          setPincodeErrorMessage("");
+        }
       }
 
       if (!size) {
@@ -571,6 +579,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         setPincodeErrorMessage,
         availableFOCount: fulfillment_option?.count || 1,
         checkPincode,
+        isCrossBorderOrder,
       }),
       [
         currentPincode,
@@ -578,6 +587,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
         pincodeErrorMessage,
         fulfillmentOptions,
         checkPincode,
+        isCrossBorderOrder,
       ]
     ),
     selectedItemDetails,
@@ -599,6 +609,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
     setCurrentFO,
     availableFOCount: fulfillment_option?.count || 1,
     getDeliveryPromise: getFormattedPromise,
+    is_serviceable,
   };
 };
 

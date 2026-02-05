@@ -1,6 +1,15 @@
 import React, { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
+// Simple hash function to generate unique identifiers for script content
+const generateScriptHash = (content) => {
+  let hash = 0;
+  for (let i = 0; i < content.length; i++) {
+    hash = (hash * 31 + content.charCodeAt(i)) % 2147483647;
+  }
+  return `raw-html-script-${Math.abs(hash).toString(16)}`;
+};
+
 export function Component({ props }) {
   const { code, padding_top, padding_bottom } = props;
   const sectionRef = useRef(null);
@@ -43,10 +52,15 @@ export function Component({ props }) {
   useEffect(() => {
     const cleanupElements = [];
 
-    // Inject inline scripts
+    // Inject inline scripts (with deduplication to prevent redeclaration errors)
     extractedInlineScripts.forEach((scriptContent) => {
+      const scriptId = generateScriptHash(scriptContent);
+      // Skip if this script has already been injected
+      if (document.querySelector(`script[data-raw-html-id="${scriptId}"]`)) return;
+      
       const script = document.createElement("script");
       script.type = "text/javascript";
+      script.setAttribute("data-raw-html-id", scriptId);
       script.textContent = scriptContent;
       sectionRef.current?.appendChild(script);
       cleanupElements.push(script);

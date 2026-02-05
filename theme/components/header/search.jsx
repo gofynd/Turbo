@@ -59,25 +59,42 @@ function Search({
     if (!showSearch) {
       setTimeout(() => {
         if (isRunningOnClient()) {
+          const existingValue = inputRef.current?.value || searchText || "";
           inputRef.current?.focus();
-          inputRef.current?.setSelectionRange?.(
-            searchText.length,
-            searchText.length
-          );
+          const len = existingValue.length;
+          inputRef.current?.setSelectionRange?.(len, len);
+          if (existingValue.length > 2) getEnterSearchData(existingValue);
         }
       }, 100);
     }
   };
 
-  const closeSearch = () => {
+  const collapseSearch = () => {
     setShowSearch(false);
-    setSearchText("");
     setIsSearchFocused(false);
-    setHasInputValue(false);
+    setShowSearchSuggestions(false);
     setSearchData([]);
     setCollectionsData([]);
     setQuerySuggestions([]);
-    if (inputRef?.current) inputRef.current.value = "";
+    setTotalCount(0);
+  };
+  const clearAll = () => {
+    setSearchText("");
+    setIsSearchFocused(false);
+    setHasInputValue(false);
+    setShowSearchSuggestions(false);
+    setSearchData([]);
+    setCollectionsData([]);
+    setQuerySuggestions([]);
+    setTotalCount(0);
+    if (inputRef.current) {
+      inputRef.current.value = "";
+      inputRef.current.focus();
+    }
+  };
+  const closeSearch = () => {
+    collapseSearch();
+    clearAll();
   };
 
   const handleOutsideClick = () => {
@@ -187,10 +204,7 @@ function Search({
   };
   const redirectToProduct = (link = "/") => {
     if (link) navigate(link);
-    closeSearch();
-    setSearchText("");
-    setHasInputValue(false);
-    if (inputRef?.current) inputRef.current.value = "";
+    collapseSearch();
   };
 
   const getProductSearchSuggestions = (results) => results?.slice(0, 4);
@@ -294,6 +308,18 @@ function Search({
                   className={styles["search__input--search-icon"]}
                   onClick={() => getEnterSearchData(searchText)}
                 />
+              )}
+              {(hasInputValue || inputRef.current?.value) && (
+                <button
+                  type="button"
+                  className={`${styles.clearAllBtn} fontHeader`}
+                  aria-label="Clear search"
+                  title="Clear"
+                  onMouseDown={(e) => e.preventDefault()} // prevents blur
+                  onClick={clearAll}
+                >
+                  Clear All
+                </button>
               )}
               {/* eslint-disable jsx-a11y/label-has-associated-control */}
               <label

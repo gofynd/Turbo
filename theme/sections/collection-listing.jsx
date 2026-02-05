@@ -326,7 +326,8 @@ export const settings = {
     {
       type: "checkbox",
       id: "mandatory_pincode",
-      label: "t:resource.common.mandatory_delivery_check",
+      label: "t:resource.common.show_hide_mandatory_delivery_check",
+      info: "t:resource.pages.wishlist.show_hide_mandatory_delivery_check_info",
       default: true,
     },
     {

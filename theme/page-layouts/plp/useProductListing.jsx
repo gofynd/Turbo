@@ -8,6 +8,8 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import useSortModal from "./useSortModal";
 import useFilterModal from "./useFilterModal";
 import { PLP_PRODUCTS } from "../../queries/plpQuery";
+import { FOLLOWED_PRODUCTS_IDS } from "../../queries/wishlistQuery";
+import { WISHLIST_PAGE_SIZE } from "../../helper/constant";
 import {
   getProductImgAspectRatio,
   isRunningOnClient,
@@ -80,6 +82,7 @@ const useProductListing = ({ fpi, props }) => {
     size_selection_style = "dropdown",
     tax_label = "",
     show_size_guide = false,
+    filter_toggle_button = false,
   } = Object.entries(props).reduce((acc, [key, { value }]) => {
     acc[key] = value;
     return acc;
@@ -599,8 +602,25 @@ const useProductListing = ({ fpi, props }) => {
     resetFilters,
     handleFilterUpdate,
   });
-  const { toggleWishlist, followedIdList } = useWishlist({ fpi });
+  const { toggleWishlist, followedIdList, followedCount } = useWishlist({
+    fpi,
+  });
   const { isLoggedIn, openLogin } = useAccounts({ fpi });
+
+  // Refresh wishlist IDs when PLP loads if store appears incomplete (e.g. after Wishlist → PLP).
+  useEffect(() => {
+    if (followedCount > 0 && (followedIdList?.length ?? 0) < followedCount) {
+      fpi
+        .executeGQL(FOLLOWED_PRODUCTS_IDS, { pageSize: WISHLIST_PAGE_SIZE })
+        .catch(() => {});
+    }
+  }, [
+    fpi,
+    location.pathname,
+    location.search,
+    followedCount,
+    followedIdList?.length,
+  ]);
 
   const handleWishlistToggle = (data) => {
     if (!isLoggedIn) {
@@ -661,6 +681,7 @@ const useProductListing = ({ fpi, props }) => {
     isProductOpenInNewTab: in_new_tab,
     isBrand: !hide_brand,
     isSaleBadge: globalConfig?.show_sale_badge,
+    isCustomBadge: globalConfig?.show_custom_badge,
     isPrice: globalConfig?.show_price,
     globalConfig,
     imgSrcSet,
@@ -703,6 +724,7 @@ const useProductListing = ({ fpi, props }) => {
     // New function to handle product navigation
     onProductNavigation: handleProductNavigation,
     showColorVariants: globalConfig?.show_color_variants,
+    filterToggle: filter_toggle_button,
   };
 };
 

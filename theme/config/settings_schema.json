@@ -381,6 +381,14 @@
     },
     {
       "type": "checkbox",
+      "id": "show_custom_badge",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
+      "default": true,
+      "label": "t:resource.settings_schema.product_card_configuration.display_custom_badge",
+      "info": "t:resource.settings_schema.product_card_configuration.hide_custom_badge"
+    },
+    {
+      "type": "checkbox",
       "id": "show_sale_badge",
       "category": "t:resource.settings_schema.common.product_card_configuration",
       "default": true,
@@ -631,7 +639,7 @@
     {
       "type": "header",
       "category": "t:resource.settings_schema.common.copilot_configuration",
-      "value": "Copilot Configuration"
+      "value": "Kaily Configuration"
     },
     {
       "type": "range",

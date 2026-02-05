@@ -98,6 +98,11 @@ function Footer({ fpi }) {
   const logoMaxHeightDesktop =
     globalConfig?.footer_logo_max_height_desktop || 36;
   const { collapsible_footer_menu = false } = globalConfig || {};
+  const footerLogoStyle = {
+    "--footer-logo-height": `${
+      (isMobile ? logoMaxHeightMobile : logoMaxHeightDesktop) || 0
+    }px`,
+  };
 
   const getArtWork = () => {
     if (globalConfig?.footer_image) {
@@ -172,17 +177,14 @@ function Footer({ fpi }) {
                   >
                     {getLogo?.length > 0 && (
                       <div className={`fx-footer-logo ${styles.logo}`}>
-                        <img
-                          src={getLogo}
-                          loading="lazy"
-                          alt={t("resource.footer.footer_logo_alt_text")}
-                          fetchpriority="low"
-                          style={{
-                            maxHeight: isMobile
-                              ? `${logoMaxHeightMobile}px`
-                              : `${logoMaxHeightDesktop}px`,
-                          }}
-                        />
+                        <div className={styles.logoShell} style={footerLogoStyle}>
+                          <img
+                            src={getLogo}
+                            loading="lazy"
+                            alt={t("resource.footer.footer_logo_alt_text")}
+                            fetchpriority="low"
+                          />
+                        </div>
                       </div>
                     )}
                     {globalConfig?.footer_description && (

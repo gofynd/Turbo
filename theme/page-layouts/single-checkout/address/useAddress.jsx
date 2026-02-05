@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import {
   useGlobalStore,
   useNavigate,
@@ -67,6 +67,8 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   const { updatedSelectedAddress, clearSelectedAddress } = useHyperlocal(fpi);
   const [selectedCountry, setSelectedCountry] = useState(currentCountry);
   const [countrySearchText, setCountrySearchText] = useState("");
+  // Track country details for the address being edited
+  const [editingAddressCountryDetails, setEditingAddressCountryDetails] = useState(null);
 
   useEffect(() => {
     // Don't open modal if:
@@ -138,12 +140,90 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     };
   }, []);
 
+  // Fetch country details for the selected address when it's loaded
+  // This ensures the form schema is ready when user edits the address for the first time
+  useEffect(() => {
+    // Only run if we have a selected address ID and addresses are loaded
+    // Don't run if modal is open (user is actively editing)
+    if (!selectedAddressId || !allAddresses?.length || openModal) {
+      return;
+    }
+
+    // Find the selected address
+    const selectedAddress = allAddresses.find(
+      (addr) => addr?.id === selectedAddressId
+    );
+
+    if (!selectedAddress) {
+      return;
+    }
+
+    // Extract country ISO code from the selected address
+    let addressCountryIso = selectedAddress?.country_iso_code;
+    if (!addressCountryIso && selectedAddress?.country) {
+      addressCountryIso =
+        typeof selectedAddress.country === "object"
+          ? selectedAddress.country.iso2 || selectedAddress.country.uid
+          : selectedAddress.country;
+    }
+
+    // If address country is different from header country, fetch its details
+    // This pre-loads the country details so editing works correctly on first attempt
+    let isMounted = true;
+    
+    if (
+      addressCountryIso &&
+      addressCountryIso !== countryDetails?.iso2 &&
+      addressCountryIso !== editingAddressCountryDetails?.iso2
+    ) {
+      fetchCountrieDetails(
+        {
+          countryIsoCode: addressCountryIso,
+        },
+        { skipStoreUpdate: true }
+      )
+        .then((response) => {
+          // Only update state if component is still mounted and modal is still closed
+          if (isMounted && !openModal && response?.data?.country) {
+            setEditingAddressCountryDetails(response.data.country);
+          }
+        })
+        .catch(() => {
+          // Silently fail - will fetch again when editing
+        });
+    } else if (
+      addressCountryIso &&
+      addressCountryIso === countryDetails?.iso2
+    ) {
+      // Address country matches header country - ensure we're using header country details
+      setEditingAddressCountryDetails(null);
+    }
+    
+    // Cleanup function to prevent state updates after unmount or when modal opens
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    selectedAddressId,
+    allAddresses,
+    countryDetails?.iso2,
+    editingAddressCountryDetails?.iso2,
+    openModal,
+    fetchCountrieDetails,
+  ]);
+
+  // Determine which country details to use: address country when editing, header country otherwise
+  const countryDetailsForSchema = useMemo(() => {
+    return editingAddressCountryDetails || countryDetails;
+  }, [editingAddressCountryDetails, countryDetails]);
+
   const { formSchema, defaultAddressItem } = useAddressFormSchema({
     fpi,
-    countryCode: countryDetails?.phone_code,
-    countryIso: countryDetails?.iso2,
-    addressTemplate: countryDetails?.fields?.address_template?.checkout_form,
-    addressFields: countryDetails?.fields?.address,
+    countryCode: countryDetailsForSchema?.phone_code,
+    countryIso: countryDetailsForSchema?.iso2,
+    addressTemplate: countryDetailsForSchema?.fields?.address_template?.checkout_form,
+    addressFields: countryDetailsForSchema?.fields?.address,
+    addressItem: isNewAddress ? null : addressItem, // Pass addressItem when editing
   });
 
   function convertDropDownField(inputField) {
@@ -292,15 +372,69 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
+    // Reset country details when closing edit mode
+    setEditingAddressCountryDetails(null);
   };
 
-  const editAddress = (item) => {
+  const editAddress = async (item) => {
     setModalTitle(t("resource.common.address.edit_address"));
-    setI18nDetails({
-      iso: item.country_iso_code,
-      phoneCode: item.country_code,
-      name: item.country,
-    });
+    
+    // DO NOT call setI18nDetails here - it would change the header country
+    // The header country should remain as the user's preference
+    // We only use the address's country for the form schema, not for the header
+
+    // Extract country ISO code from address - handle both object and string formats
+    let addressCountryIso = item?.country_iso_code;
+    if (!addressCountryIso && item?.country) {
+      // If country is an object, extract iso2; if it's a string, use it directly
+      addressCountryIso =
+        typeof item.country === "object"
+          ? item.country.iso2 || item.country.uid
+          : item.country;
+    }
+
+    // Check if we already have the correct country details loaded
+    // Only reset and fetch if we're editing a different country or don't have country details yet
+    const needsCountryFetch =
+      addressCountryIso &&
+      addressCountryIso !== countryDetails?.iso2 &&
+      addressCountryIso !== editingAddressCountryDetails?.iso2;
+
+    if (needsCountryFetch) {
+      // Address country is different from header country and we don't have it loaded - fetch its details
+      try {
+        const response = await fetchCountrieDetails(
+          {
+            countryIsoCode: addressCountryIso,
+          },
+          { skipStoreUpdate: true }
+        ); // Don't update global store, only use for form schema
+
+        if (response?.data?.country) {
+          setEditingAddressCountryDetails(response.data.country);
+        } else {
+          // If fetch fails, fall back to header country details
+          setEditingAddressCountryDetails(null);
+        }
+      } catch (error) {
+        // If fetch fails, fall back to header country details
+        setEditingAddressCountryDetails(null);
+      }
+    } else if (
+      addressCountryIso &&
+      addressCountryIso === countryDetails?.iso2
+    ) {
+      // Address country matches header country - explicitly set to null to use header country details
+      setEditingAddressCountryDetails(null);
+    } else if (!addressCountryIso) {
+      // No country ISO found - use header country details
+      setEditingAddressCountryDetails(null);
+    }
+    // If addressCountryIso matches editingAddressCountryDetails?.iso2, keep the existing value
+
+    // Set address item and open modal
+    // If country details were already pre-loaded, formSchema will be correct immediately
+    // If we just fetched them, they'll update and formSchema will regenerate
     setAddressItem({
       ...item,
       phone: {
@@ -361,7 +495,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           );
           resetAddressState();
           fpi
-            .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow })
+            .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id })
             .then((data) => {
               selectAddress(
                 res?.data?.addAddress?.id,
@@ -370,7 +504,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
             });
           setAddressLoader(false);
         } else {
-          fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
+          fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id });
           showSnackbar(
             res?.errors?.[0]?.message ??
               t("resource.common.address.new_address_creation_failure"),
@@ -429,7 +563,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       .then((res) => {
         if (res?.data?.updateAddress?.success) {
           fpi
-            .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow })
+            .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id })
             .then((data) => {
               selectAddress(
                 res?.data?.updateAddress?.id,
@@ -442,7 +576,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           );
           resetAddressState();
         } else {
-          fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
+          fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id });
           showSnackbar(
             res?.errors?.[0]?.message ||
               t("resource.common.address.address_update_failure"),
@@ -482,7 +616,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       .then((res) => {
         const { is_deleted } = res?.data?.removeAddress ?? {};
 
-        fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow });
+        fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id });
 
         if (is_deleted) {
           // Clear selected address from global store if the deleted address was selected
@@ -739,7 +873,9 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     handleCountrySearch,
     getFilteredCountries,
     selectedCountry: selectedCountry || countryDetails,
-    countryDetails,
+    countryDetails: countryDetailsForSchema, // Use address country details when editing
+    // Return country ISO for form key to force re-render when country changes
+    formKey: countryDetailsForSchema?.iso2 || countryDetails?.iso2 || "default",
     onFailedGetCartShipmentDetails,
     isShipmentLoading,
     isCartValid,

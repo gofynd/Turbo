@@ -366,7 +366,7 @@ const useCart = (fpi, isActive = true) => {
 
     // Close modal after brief delay to show "Removing..." text
     setTimeout(() => {
-      closeRemoveModal();
+      setIsRemoveModalOpen(false);
 
       // Start API call in background
       // Note: updateCartItems will set isCartUpdating to true again, but it's already true
@@ -381,8 +381,7 @@ const useCart = (fpi, isActive = true) => {
         moveToWishList
       ).finally(() => {
         setIsRemoving(false);
-        setIsCartUpdating(true);
-        // isCartUpdating will be reset by updateCartItems in its finally block
+        setIsCartUpdating(false);
       });
     }, 150); // 150ms delay to show "Removing..." text
   }
@@ -392,9 +391,16 @@ const useCart = (fpi, isActive = true) => {
     }
 
     if (isLoggedIn) {
-      addToWishList(data.item.product).then(() => {
-        handleRemoveItem(data, true);
-      });
+      setIsRemoving(true);
+      setIsCartUpdating(true);
+      addToWishList(data.item.product)
+        .then(() => {
+          handleRemoveItem(data, true);
+        })
+        .catch(() => {
+          setIsRemoving(false);
+          setIsCartUpdating(false);
+        });
     } else {
       closeRemoveModal();
       openLogin();

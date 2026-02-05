@@ -10,8 +10,13 @@ function Brands({ fpi }) {
   const THEME = useGlobalStore(fpi.getters.THEME);
   const { t } = useGlobalTranslation("translation");
   const seoData = page?.seo || {};
-  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
-    useSeoMeta({ fpi, seo: seoData });
+  const {
+    brandName,
+    canonicalUrl,
+    pageUrl,
+    description: seoDescription,
+    socialImage,
+  } = useSeoMeta({ fpi, seo: seoData });
 
   const mode = THEME?.config?.list.find(
     (f) => f.name === THEME?.config?.current
@@ -21,11 +26,9 @@ function Brands({ fpi }) {
   const title = useMemo(() => {
     const fallbackTitle =
       sections?.find((section) => section?.props?.title?.value)?.props?.title
-        ?.value || t("resource.sections.brand_landing.brands");
+        ?.value || t("resource.common.breadcrumb.brands");
     const raw = sanitizeHTMLTag(
-      seoData?.title ||
-        fallbackTitle ||
-        t("resource.sections.brand_landing.brands")
+      seoData?.title || fallbackTitle || t("resource.common.breadcrumb.brands")
     );
     if (raw && brandName) return `${raw} | ${brandName}`;
     return raw || brandName || "";

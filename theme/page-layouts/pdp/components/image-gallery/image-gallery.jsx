@@ -104,8 +104,67 @@ function PdpImageGallery({
     }
   }, [enableLightBox, onLightboxStateChange]);
 
+  // Track previous images to detect product changes vs image updates
+  const prevImagesRef = useRef(null);
+  const prevIndexRef = useRef(0);
+
   useEffect(() => {
-    setCurrentImageIndex(0);
+    const prevImages = prevImagesRef.current;
+    const prevIndex = prevIndexRef.current;
+
+    // Initial load or images array became empty
+    if (!prevImages || images.length === 0) {
+      setCurrentImageIndex(0);
+      prevImagesRef.current = images;
+      prevIndexRef.current = 0;
+      return;
+    }
+
+    // Check if first image URL changed (indicates new product or prepended images)
+    const currentFirstUrl = images?.[0]?.url || "";
+    const prevFirstUrl = prevImages?.[0]?.url || "";
+
+    if (currentFirstUrl !== prevFirstUrl) {
+      // First image changed - could be new product or prepended images
+      const currentImageUrl = prevImages?.[prevIndex]?.url;
+
+      if (currentImageUrl) {
+        // Try to find the same image in the new array
+        const newIndex = images.findIndex(
+          (img) => img?.url === currentImageUrl
+        );
+        if (newIndex >= 0) {
+          // Found the same image - images were prepended
+          // Show the first new image (index 0) when extension adds images
+          setCurrentImageIndex(0);
+          prevIndexRef.current = 0;
+        } else {
+          // Image not found - reset to 0 (new product or image removed)
+          setCurrentImageIndex(0);
+          prevIndexRef.current = 0;
+        }
+      } else {
+        // No previous image - reset to 0
+        setCurrentImageIndex(0);
+        prevIndexRef.current = 0;
+      }
+    } else {
+      // Same first image - images array reference changed but content is same
+      // Preserve current index, only adjust if out of bounds
+      setCurrentImageIndex((currentIndex) => {
+        if (currentIndex >= images.length) {
+          const newIndex = Math.max(0, images.length - 1);
+          prevIndexRef.current = newIndex;
+          return newIndex;
+        }
+        // Preserve current index - no change needed
+        prevIndexRef.current = currentIndex;
+        return currentIndex;
+      });
+    }
+
+    // Update refs
+    prevImagesRef.current = images;
   }, [images]);
 
   // Auto-scroll active thumbnail into view for vertical-with-thumbnail mode

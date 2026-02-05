@@ -22,10 +22,13 @@ import useCart from "../page-layouts/cart/useCart";
 import useCartCoupon from "../page-layouts/cart/useCartCoupon";
 import useCartComment from "../page-layouts/cart/useCartComment";
 import Loader from "../components/loader/loader";
+import { priceFormatCurrencySymbol, formatLocale } from "../helper/utils";
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
   const { t } = useGlobalTranslation("translation");
+  const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
+  const locale = language?.locale;
   const bagData = useGlobalStore(fpi?.getters?.CART_ITEMS) || {};
   const { shipments } = useGlobalStore(fpi.getters.SHIPMENTS) || {};
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
@@ -63,8 +66,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const [cancelQrPayment, setCancelQrPayment] = useState(null);
   const [checkoutAmount, setCheckoutAmount] = useState(0);
   const [mopPayload, setMopPayload] = useState("");
-  // Use cart ID from cartData if available, otherwise fall back to URL param
-  const cart_id = cartData?.id || bagData?.id || searchParams.get("id");
+  const urlCartId = searchParams.get("id");
+  // For buy_now flows, prioritize URL cart ID (extension APIs may create new carts)
+  const cart_id =
+    buy_now === "true" && urlCartId
+      ? urlCartId
+      : cartData?.id || bagData?.id || urlCartId;
   const { isLoading, setIsLoading, isPaymentLoading = false } = payment;
   const { app_features } = useGlobalStore(fpi.getters.CONFIGURATION) || {};
   const { order = {} } = app_features || {};
@@ -212,25 +219,28 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   };
 
   useEffect(() => {
-    // Only update URL if we have a valid cart ID and it's different from current
+    // Update URL cart ID only for non-buy_now flows
     const currentCartId = searchParams.get("id");
+    const isBuyNowFlow = buy_now === "true";
+
     if (
       cartData?.id &&
       cartData.id !== currentCartId &&
-      cartData.id !== "None"
+      cartData.id !== "None" &&
+      !isBuyNowFlow
     ) {
       const newParams = new URLSearchParams(searchParams);
       newParams.set("id", cartData?.id);
       setSearchParams(newParams, { replace: true });
     }
-  }, [cartData?.id, searchParams, setSearchParams]);
+  }, [cartData?.id, searchParams, setSearchParams, buy_now]);
 
   async function showPaymentOptions(amount) {
     try {
       setIsLoading(true);
       // setShowShipment(false);
       // showPaymentHandler(true);
-      const finalAmount = checkoutAmount ? checkoutAmount : amount;
+      const finalAmount = checkoutAmount || amount;
       // Use cartData?.id as fallback when cart_id from URL is null
       const resolvedCartId = cart_id || cartData?.id;
       if (!resolvedCartId) {
@@ -268,10 +278,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   useEffect(() => {
     setIsApiLoading(true);
+    const urlCartId = searchParams.get("id");
     const payload = {
       buyNow: buy_now === "true",
       includeAllItems: true,
       includeBreakup: true,
+      id: urlCartId || undefined,
     };
     const fetchCheckoutData = async () => {
       try {
@@ -572,7 +584,8 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   availableFOCount={fulfillment_option?.count || 1}
                   totalValue={priceFormatCurrencySymbol(
                     payment?.getCurrencySymbol,
-                    payment?.getTotalValue()
+                    payment?.getTotalValue(),
+                    formatLocale(locale, countryCode, true)
                   )}
                   onPriceDetailsClick={onPriceDetailsClick}
                   isCartValid={isCartValid}

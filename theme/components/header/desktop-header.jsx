@@ -68,6 +68,7 @@ function HeaderDesktop({
       : isDoubleRowHeader
         ? 121
         : 85;
+  const desktopLogoHeight = globalConfig?.desktop_logo_max_height || 65;
 
   return (
     <div
@@ -118,14 +119,16 @@ function HeaderDesktop({
         </div>
         <div className={`${styles.middle} ${styles.flexCenter}`}>
           <FDKLink to="/">
-            <img
-              className={styles.logo}
-              style={{
-                maxHeight: `${globalConfig?.desktop_logo_max_height || 65}px`,
-              }}
-              src={getShopLogo()}
-              alt={t("resource.header.shop_logo_alt_text")}
-            />
+            <div
+              className={styles.logoShell}
+              style={{ "--logo-height": `${desktopLogoHeight}px` }}
+            >
+              <img
+                className={styles.logo}
+                src={getShopLogo()}
+                alt={t("resource.header.shop_logo_alt_text")}
+              />
+            </div>
           </FDKLink>
           {isServiceability &&
             globalConfig?.always_on_search &&

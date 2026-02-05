@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo, act } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef, act } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FDKLink } from "fdk-core/components";
-import { convertActionToUrl } from "fdk-core/utils";
+import { convertActionToUrl, useGlobalTranslation } from "fdk-core/utils";
 import styles from "./styles/navigation.less";
 import HamburgerIcon from "../../assets/images/hamburger.svg";
 import CloseIcon from "../../assets/images/close.svg";
@@ -10,8 +10,7 @@ import UserIcon from "../../assets/images/user.svg";
 import WishlistIcon from "../../assets/images/single-row-wishlist.svg";
 import { getLocaleDirection, isRunningOnClient } from "../../helper/utils";
 import MegaMenu from "./mega-menu";
-import { useGlobalTranslation } from "fdk-core/utils";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import I18Dropdown from "./i18n-dropdown";
 import MegaMenuLarge from "./mega-menu-large";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
@@ -32,6 +31,7 @@ function Navigation({
   staticHeight,
 }) {
   const { locale } = useParams();
+  const location = useLocation();
   const { t } = useGlobalTranslation("translation");
   const [showSidebar, setShowSidebar] = useState(false);
   const [showSidebarNav, setShowSidebarNav] = useState(true);
@@ -40,6 +40,7 @@ function Navigation({
   const [activeItem, setActiveItem] = useState(null);
   const [hoveredL2Index, setHoveredL2Index] = useState(null);
   const [isClient, setIsClient] = useState(false);
+  const prevPathnameRef = useRef(location.pathname);
 
   const handleMouseEnter = (index) => {
     setActiveItem(index);
@@ -65,18 +66,18 @@ function Navigation({
     return styles.fwSemibold;
   }, [globalConfig?.nav_weight]);
 
-  const closeSidebarNav = () => {
+  const closeSidebarNav = useCallback(() => {
     setShowSidebar(false);
     setShowSidebarNav(true);
     setSidebarl2Nav({ state: false });
     setSidebarl3Nav({ state: false });
-  };
+  }, []);
 
   useEffect(() => {
     if (reset) {
       closeSidebarNav();
     }
-  }, [reset]);
+  }, [reset, closeSidebarNav]);
 
   useEffect(() => {
     if (isRunningOnClient()) {
@@ -91,6 +92,16 @@ function Navigation({
       };
     }
   }, [showSidebar]);
+
+  // Close sidebar when route changes (e.g., browser back button)
+  useEffect(() => {
+    // Only close if pathname actually changed (not on initial mount)
+    if (prevPathnameRef.current !== location.pathname) {
+      closeSidebarNav();
+    }
+    // Update the ref to current pathname
+    prevPathnameRef.current = location.pathname;
+  }, [location.pathname, closeSidebarNav]);
 
   const isHorizontalNav = navigationList?.length > 0 && !isSidebarNav;
   const isMegaMenu =
@@ -235,7 +246,7 @@ function Navigation({
                         <ul className={styles.l2NavigationList}>
                           {l1nav.sub_navigation.map((l2nav, l2Index) => (
                             <li
-                              key={l2nav.display}
+                              key={`${l2nav.display}_${l2Index}_${index}`}
                               className={`${styles.l2NavigationList__item} b1 ${styles.fontBody}`}
                               onMouseEnter={() => setHoveredL2Index(l2Index)}
                               onMouseLeave={() => setHoveredL2Index(null)}
@@ -282,9 +293,9 @@ function Navigation({
                                         }
                                         transition={{ duration: 0.3 }}
                                       >
-                                        {l2nav.sub_navigation.map((l3nav) => (
+                                        {l2nav.sub_navigation.map((l3nav, l3Index) => (
                                           <li
-                                            key={`${l3nav.display}`}
+                                            key={`${l3nav.display}_${l3Index}_${l2Index}_${index}`}
                                             className={`${styles.l3NavigationList__item} b1 ${styles.fontBody}`}
                                           >
                                             <FDKLink
@@ -455,7 +466,7 @@ function Navigation({
                 </li>
                 {sidebarl2Nav.navigation.map((nav, index) => (
                   <li
-                    key={index}
+                    key={`l2_${nav.display}_${index}`}
                     className={`${styles["sidebar__navigation--item"]} ${
                       styles.flexAlignCenter
                     } ${styles.justifyBetween} ${styles.fontBody} h5`}
@@ -545,7 +556,7 @@ function Navigation({
                 </li>
                 {sidebarl3Nav.navigation.map((nav, index) => (
                   <li
-                    key={index}
+                    key={`l3_${nav.display}_${index}`}
                     className={`${styles["sidebar__navigation--item"]} ${
                       styles.flexAlignCenter
                     } ${styles.justifyBetween} ${styles.fontBody} h5`}

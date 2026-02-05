@@ -372,6 +372,7 @@ export const GLOBAL_DATA = `query ApplicationConfiguration {
       fulfillment_option {
         count
       }
+      international
       common {
         listing_price {
           sort

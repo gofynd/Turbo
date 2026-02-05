@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useNavigate } from "fdk-core/utils";
 import { isLoggedIn } from "../helper/auth-guard";
 import { useThemeConfig } from "../helper/hooks";
 import ProfileRoot from "../components/profile/profile-root";
-import { useNavigate } from "fdk-core/utils";
 import "@gofynd/theme-template/components/profile-navigation/profile-navigation.css";
 
 function Profile({ fpi }) {
@@ -20,7 +19,7 @@ function Profile({ fpi }) {
 
   useEffect(() => {
     if (pathname === "/profile") {
-      navigate("details");
+      navigate("/profile/details");
     }
   }, [pathname, navigate]);
 

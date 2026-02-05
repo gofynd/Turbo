@@ -158,9 +158,9 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
 
   const horizontalViewClassName = `${
     collectionsForScrollView?.length === 1 ? styles.singleItem : ""
-  } ${layout_mobile?.value === "stacked" ? styles.hideOnTablet : ""} ${
-    layout_desktop?.value === "grid" ? styles.hideOnDesktop : ""
-  }`;
+  } ${itemsPerRowMobile === 1 ? styles.singleItemPerRowMobile : ""} ${
+    layout_mobile?.value === "stacked" ? styles.hideOnTablet : ""
+  } ${layout_desktop?.value === "grid" ? styles.hideOnDesktop : ""}`;
   const { direction } = useLocaleDirectionHook();
 
   const dynamicStyles = {

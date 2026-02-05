@@ -98,40 +98,54 @@
       // On production builds those classnames are hashed, so we override via our
       // section class (this element has BOTH the carousel track classes + this class).
       margin-left: 0;
-
-      // Initial transform for SSR to show peek effect
-      // Embla's inline styles will override this when scrolling
-      transform: translate3d(19px, 0px, 0px);
+      // Default to no transform - only apply when singleItemPerRowMobile is true
+      transform: translate3d(0px, 0px, 0px);
     }
   }
 
   .carouselItemWrapper {
     // Desktop: use CSS variable from parent
     flex: 0 0 calc(100% / var(--items-per-row-desktop, 3));
-    
+
     @media @mobile {
       // Remove the default 1rem left padding (same reason as margin-left above)
       padding-left: 0;
-
-      // Mobile: card width for peek effect
-      flex: 0 0 calc(100% - 38px) !important;
+      // Mobile: use CSS variable for items per row
+      flex: 0 0 calc(100% / var(--items-per-row-mobile, 1));
       padding-inline: 0;
+    }
+  }
+
+  // When showing 1 item per row on mobile, apply peek effect (show part of next card)
+  &.singleItemPerRowMobile {
+    .carouselContent {
+      @media @mobile {
+        // Apply transform for peek effect when singleItemPerRowMobile is true
+        // This will be overridden by Embla on client-side, but prevents SSR/CSR mismatch
+        transform: translate3d(19px, 0px, 0px);
+      }
+    }
+
+    .carouselItemWrapper {
+      @media @mobile {
+        flex: 0 0 calc(100% - 38px);
+      }
     }
   }
 
   .sliderItem {
     padding-inline: calc(var(--gap) / 2);
   }
-  
+
   &.singleItem {
     @media @mobile {
       padding-inline: @SectionInlinePaddingMobile;
-      
+
       .carouselContent {
         // No transform for single item
         transform: translate3d(0px, 0px, 0px);
       }
-      
+
       .carouselItemWrapper {
         flex: 0 0 100% !important;
       }

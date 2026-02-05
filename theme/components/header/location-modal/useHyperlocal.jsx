@@ -136,6 +136,7 @@ const useHyperlocal = (fpi) => {
           deliveryTat: data?.deliveryPromise?.promise,
           isServicibilityError: false,
         });
+         fpi.custom.setValue("is_serviceable", true);
         return data;
       })
       .catch((error) => {
@@ -143,6 +144,7 @@ const useHyperlocal = (fpi) => {
           ...serviceabilityInfo,
           isServicibilityError: true,
         });
+        fpi.custom.setValue("is_serviceable", false);
       });
   };
 

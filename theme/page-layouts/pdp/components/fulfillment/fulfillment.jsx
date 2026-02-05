@@ -21,7 +21,7 @@ function Fulfillment(props) {
     setFulfillmentOptions,
     availableFOCount,
   } = props;
-  const { isServiceability } = useThemeFeature({ fpi });
+  const { isServiceability, isCrossBorderOrder } = useThemeFeature({ fpi });
   const { getFormattedPromise } = useDeliverPromise({ fpi });
 
   const [showFOStoreModal, setShowFOStoreModal] = useState(false);
@@ -88,11 +88,12 @@ function Fulfillment(props) {
                 )}
 
                 <div className={styles.foDetails}>
-                  {!!getDeliveryDate(foItem?.delivery_promise) && (
-                    <p className={styles.promiseLabel}>
-                      {getDeliveryDate(foItem?.delivery_promise)}
-                    </p>
-                  )}
+                  {!!getDeliveryDate(foItem?.delivery_promise) &&
+                    !isCrossBorderOrder && (
+                      <p className={styles.promiseLabel}>
+                        {getDeliveryDate(foItem?.delivery_promise)}
+                      </p>
+                    )}
                   <p className={styles.foLabel}>
                     {foItem?.fulfillment_option?.name}
                   </p>

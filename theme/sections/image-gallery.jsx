@@ -14,6 +14,8 @@ import {
   CarouselNext,
 } from "../components/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { getMediaLayout } from "../helper/media-layout";
+import { useWindowWidth } from "../helper/hooks";
 
 export function Component({ props, blocks = [], globalConfig = {}, preset }) {
   const {
@@ -29,7 +31,14 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     padding_top: { value: paddingTop = 16 } = {},
     padding_bottom: { value: paddingBottom = 16 } = {},
     in_new_tab = { value: false },
+    height_mode,
+    desktop_height,
+    mobile_height,
+    desktop_aspect_ratio,
+    mobile_aspect_ratio,
   } = props;
+  const windowWidth = useWindowWidth();
+  const isMobileViewport = windowWidth <= 768;
 
   const itemCount = Number(item_count?.value ?? 5);
   const itemCountMobile = Number(item_count_mobile?.value ?? 2);
@@ -64,6 +73,37 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     "--bd-radius": `${(cardRadius || 0) / 2}%`,
   };
 
+  const mediaLayout = useMemo(
+    () =>
+      getMediaLayout(
+        {
+          height_mode,
+          desktop_height,
+          mobile_height,
+          desktop_aspect_ratio,
+          mobile_aspect_ratio,
+        },
+        isMobileViewport,
+        1
+      ),
+    [
+      height_mode?.value,
+      desktop_height?.value,
+      mobile_height?.value,
+      desktop_aspect_ratio?.value,
+      mobile_aspect_ratio?.value,
+      isMobileViewport,
+    ]
+  );
+
+  const mediaWrapperClass = [
+    styles.mediaShell,
+    mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
+    mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <section style={dynamicStyles}>
       <div className={`fx-title-block ${styles.titleBlock}`}>
@@ -91,6 +131,8 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
           autoplay={autoplay}
           autoplaySpeed={playSlides * 1000}
           in_new_tab={in_new_tab}
+          mediaLayout={mediaLayout}
+          mediaWrapperClass={mediaWrapperClass}
         />
       )}
       {isStackView && (
@@ -106,6 +148,8 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
           desktopLayout={desktopLayout}
           mobileLayout={mobileLayout}
           in_new_tab={in_new_tab}
+          mediaLayout={mediaLayout}
+          mediaWrapperClass={mediaWrapperClass}
         />
       )}
     </section>
@@ -120,6 +164,8 @@ const StackLayout = ({
   colCountMobile,
   sources,
   in_new_tab,
+  mediaLayout,
+  mediaWrapperClass,
 }) => {
   const dynamicStyles = {
     "--item-count": `${colCount}`,
@@ -134,14 +180,19 @@ const StackLayout = ({
             to={block?.link?.value || ""}
             target={in_new_tab?.value ? "_blank" : "_self"}
           >
-            <FyImage
-              customClass={styles.imageGallery}
-              src={block?.image?.value || placeholderImage}
-              sources={sources}
-              globalConfig={globalConfig}
-              isFixedAspectRatio={false}
-              alt={block?.image?.alt || "Gallery image"}
-            />
+            <div className={mediaWrapperClass} style={mediaLayout.style}>
+              <FyImage
+                customClass={styles.imageGallery}
+                src={block?.image?.value || placeholderImage}
+                sources={sources}
+                globalConfig={globalConfig}
+                isFixedAspectRatio={mediaLayout.isAspectRatio}
+                aspectRatio={mediaLayout.aspectRatio}
+                mobileAspectRatio={mediaLayout.mobileAspectRatio}
+                isImageFill={mediaLayout.isAspectRatio || mediaLayout.isFixedHeight}
+                alt={block?.image?.alt || "Gallery image"}
+              />
+            </div>
           </FDKLink>
         </div>
       ))}
@@ -159,6 +210,8 @@ const HorizontalLayout = ({
   autoplay,
   autoplaySpeed,
   in_new_tab,
+  mediaLayout,
+  mediaWrapperClass,
 }) => {
   const { direction } = useLocaleDirection();
   const len = items?.length;
@@ -198,35 +251,42 @@ const HorizontalLayout = ({
           {items.map((block, index) => (
             <CarouselItem
               key={index}
-              className={styles.carouselItem}
-              style={{
-                "--count-desktop": colCount,
-                "--count-mobile": colCountMobile,
-              }}
-            >
-              {block.type === "gallery" ? (
-                <div key={index} className={styles.sliderItem}>
-                  <FDKLink
-                    to={block?.props?.link?.value || ""}
-                    target={in_new_tab?.value ? "_blank" : "_self"}
-                  >
-                    <FyImage
-                      customClass={styles.imageGallery}
-                      src={block?.props?.image?.value || placeholderImage}
-                      sources={sources}
-                      globalConfig={globalConfig}
-                      isFixedAspectRatio={false}
-                      alt={
-                        block?.props?.image?.alt ||
-                        block?.props?.title?.value ||
-                        "Gallery image"
-                      }
-                    />
-                  </FDKLink>
-                </div>
-              ) : (
-                <BlockRenderer key={index} block={block} />
-              )}
+                className={styles.carouselItem}
+                style={{
+                  "--count-desktop": colCount,
+                  "--count-mobile": colCountMobile,
+                }}
+              >
+                {block.type === "gallery" ? (
+                  <div key={index} className={styles.sliderItem}>
+                    <FDKLink
+                      to={block?.props?.link?.value || ""}
+                      target={in_new_tab?.value ? "_blank" : "_self"}
+                    >
+                      <div className={mediaWrapperClass} style={mediaLayout.style}>
+                        <FyImage
+                          customClass={styles.imageGallery}
+                          src={block?.props?.image?.value || placeholderImage}
+                          sources={sources}
+                          globalConfig={globalConfig}
+                          isFixedAspectRatio={mediaLayout.isAspectRatio}
+                          aspectRatio={mediaLayout.aspectRatio}
+                          mobileAspectRatio={mediaLayout.mobileAspectRatio}
+                          isImageFill={
+                            mediaLayout.isAspectRatio || mediaLayout.isFixedHeight
+                          }
+                          alt={
+                            block?.props?.image?.alt ||
+                            block?.props?.title?.value ||
+                            "Gallery image"
+                          }
+                        />
+                      </div>
+                    </FDKLink>
+                  </div>
+                ) : (
+                  <BlockRenderer key={index} block={block} />
+                )}
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -338,6 +398,41 @@ export const settings = {
       unit: "sec",
       label: "t:resource.common.change_slides_every",
       default: 3,
+    },
+    {
+      id: "height_mode",
+      type: "select",
+      label: "t:resource.common.height_mode",
+      default: "auto",
+      options: [
+        { value: "auto", text: "t:resource.common.auto" },
+        { value: "fixed_height", text: "t:resource.common.fixed_height" },
+        { value: "aspect_ratio", text: "t:resource.common.aspect_ratio" },
+      ],
+    },
+    {
+      type: "text",
+      id: "desktop_height",
+      label: "t:resource.common.desktop_height",
+      info: "t:resource.common.desktop_height_info",
+    },
+    {
+      type: "text",
+      id: "mobile_height",
+      label: "t:resource.common.mobile_height",
+      info: "t:resource.common.mobile_height_info",
+    },
+    {
+      type: "text",
+      id: "desktop_aspect_ratio",
+      label: "t:resource.common.desktop_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
+    },
+    {
+      type: "text",
+      id: "mobile_aspect_ratio",
+      label: "t:resource.common.mobile_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
     },
     {
       type: "range",

@@ -44,6 +44,7 @@ const useProductDescription = ({
   const { t } = useGlobalTranslation("translation");
   const { mandatory_pincode } = props;
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
+  const customValues = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
   const PRODUCT = useGlobalStore(fpi.getters.PRODUCT);
   const LoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
   const { isPdpSsrFetched, isI18ModalOpen, ssrProductInfo } = useGlobalStore(
@@ -57,7 +58,8 @@ const useProductDescription = ({
   const { bundles: ssrBundles, bundleProducts: ssrBundleProducts } =
     ssrProductInfo || {};
 
-  const { isServiceability } = useThemeFeature({ fpi });
+  const { isServiceability, isCrossBorderOrder, isInternational } =
+    useThemeFeature({ fpi });
   const {
     isLoading: isCountryDetailsLoading,
     i18nDetails,
@@ -65,11 +67,13 @@ const useProductDescription = ({
     deliveryLocation,
     isServiceabilityPincodeOnly,
     fetchCountrieDetails,
+    countryDetails,
+    countryCurrencies,
   } = useInternational({
     fpi,
   });
   const pincodeInput = usePincodeInput();
-  console.log(i18nDetails, "i18nDetails");
+   const { is_serviceable } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentSize, setCurrentSize] = useState(null);
   const [followed, setFollowed] = useState(false);
@@ -137,6 +141,7 @@ const useProductDescription = ({
         setBundles(data.bundlesByChild.items);
       }
     } catch (error) {
+      // Error handled silently
     } finally {
       setIsBundlesLoading(false);
     }
@@ -308,9 +313,11 @@ const useProductDescription = ({
             res?.errors?.[0]?.message ||
               t("resource.product.product_not_serviceable")
           );
+          fpi.custom.setValue("is_serviceable", false);
         } else {
           setSelectPincodeError(false);
           setPincodeErrorMessage("");
+          fpi.custom.setValue("is_serviceable", true);
         }
       })
       .catch((error) => {
@@ -382,21 +389,119 @@ const useProductDescription = ({
   }
 
   const checkPincode = (postCode) => {
+    // Get country code for locality query (optional - only if available)
+    const countryCode = i18nDetails?.countryCode || countryDetails?.iso2;
+
+    // Check if price factory is enabled (countryCurrencies exists and has items)
+    const isPriceFactoryEnabled =
+      countryCurrencies && countryCurrencies.length > 0;
+
+    // Check root-level international flag separately (don't use isInternational from useThemeFeature)
+    // This is a separate flag specifically for location update logic
+    // app_features is already accessed at the top of the component
+    const isInternationalRootFlag = app_features?.international ?? false;
+
+    // Only update location details when price factory is enabled AND root-level international is false
+    // This ensures we don't break existing functionality
+    const shouldUpdateLocationDetails =
+      isPriceFactoryEnabled && !isInternationalRootFlag;
+
+    // Build LOCALITY query payload - country is optional to preserve original behavior
+    const localityPayload = {
+      locality: `pincode`,
+      localityValue: `${postCode}`,
+    };
+
+    // Only add country parameter if available (optional for backward compatibility)
+    if (countryCode) {
+      localityPayload.country = countryCode;
+    }
+
     fpi
-      .executeGQL(LOCALITY, {
-        locality: `pincode`,
-        localityValue: `${postCode}`,
-      })
+      .executeGQL(LOCALITY, localityPayload)
       .then(({ data, errors }) => {
         if (errors) {
           setPincodeErrorMessage(
             errors?.[0]?.message ||
               t("resource.common.address.pincode_verification_failure")
           );
+          return;
         }
-        if (data?.locality && postCode === locationPincode) {
-          fetchProductPrice(postCode);
+
+        if (data?.locality) {
+          // Extract country name from locality response
+          let countryName = "";
+          if (data.locality.localities && data.locality.localities.length > 0) {
+            data.locality.localities.forEach((locality) => {
+              if (locality.type === "country") {
+                countryName = locality.display_name;
+              }
+            });
+          }
+
+          // Use countryCode from i18nDetails or countryDetails (already ISO2 format like "IN")
+          const countryIsoCode = countryCode; // Already in ISO2 format (e.g., "IN", "US")
+
+          // Only update location details if price factory is enabled AND international is false
+          if (shouldUpdateLocationDetails) {
+            // Build address payload with only pincode and country (matching location modal behavior)
+            // This ensures getAddressStr will display only pincode and country in the header
+            const addressPayload = {
+              area_code: postCode,
+              pincode: postCode,
+              country_iso_code: countryIsoCode,
+              country: countryName || countryDetails?.display_name || "",
+            };
+
+            // Set selectedAddress - FPI SDK should sync this to LOCATION_DETAILS
+            // Also persist to localStorage like useHyperlocal does
+            try {
+              fpi.custom.setValue("selectedAddress", addressPayload);
+            } catch (error) {
+              // Silently handle errors - non-critical for functionality
+            }
+
+            // Persist to localStorage for consistency with location modal behavior
+            try {
+              if (typeof window !== "undefined" && window.localStorage) {
+                window.localStorage.setItem(
+                  "selectedAddress",
+                  JSON.stringify(addressPayload)
+                );
+              }
+            } catch (error) {
+              // Silently handle localStorage errors
+            }
+
+            // Try to update location details if FPI SDK supports it
+            try {
+              if (typeof fpi.setLocationDetails === "function") {
+                fpi.setLocationDetails({
+                  pincode: postCode,
+                  country_iso_code: countryIsoCode,
+                  country: countryName || countryDetails?.display_name || "",
+                });
+              }
+            } catch (error) {
+              // Silently handle errors - fallback to selectedAddress only
+            }
+          }
+
+          // Clear any previous error messages
+          setSelectPincodeError(false);
+          setPincodeErrorMessage("");
+
+          // Only fetch product price if pincode matches locationPincode (preserving original behavior)
+          if (postCode === locationPincode) {
+            fetchProductPrice(postCode);
+          }
         }
+      })
+      .catch((error) => {
+        // Handle query errors
+        setPincodeErrorMessage(
+          t("resource.common.address.pincode_verification_failure")
+        );
       });
   };
 
@@ -455,7 +560,12 @@ const useProductDescription = ({
     if (isLoadingPriceBySize) {
       return;
     }
-    if (mandatory_pincode?.value && !isValidDeliveryLocation) {
+    // Skip mandatory pincode check when international is enabled and seller country != location country
+    if (
+      mandatory_pincode?.value &&
+      !isValidDeliveryLocation &&
+      !isCrossBorderOrder
+    ) {
       if (isServiceabilityPincodeOnly) {
         setSelectPincodeError(true);
         setPincodeErrorMessage("");
@@ -579,6 +689,7 @@ const useProductDescription = ({
     bundles,
     setBundles,
     fetchBundlesByChild,
+    is_serviceable,
   };
 };
 

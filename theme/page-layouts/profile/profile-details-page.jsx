@@ -53,8 +53,20 @@ function ProfileDetailsPage({ fpi }) {
         ? formatPhoneNumber(primaryPhone.phone, primaryPhone.country_code)
         : "",
       dob: dob ?? userInfo?.dob ?? "",
+      emails: emails ?? userInfo?.emails ?? [],
+      phoneNumbers: phone_numbers ?? userInfo?.phone_numbers ?? [],
     }),
-    [first_name, last_name, gender, userInfo, primaryEmail, primaryPhone, dob]
+    [
+      first_name,
+      last_name,
+      gender,
+      userInfo,
+      primaryEmail,
+      primaryPhone,
+      dob,
+      emails,
+      phone_numbers,
+    ]
   );
 
   const { updateProfile } = useAccounts({ fpi });

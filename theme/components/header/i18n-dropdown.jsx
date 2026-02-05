@@ -19,8 +19,14 @@ import { createLocalitiesPayload } from "../../helper/utils";
 import InternationalIcon from "../../assets/images/international.svg";
 import ArrowDownIcon from "../../assets/images/arrow-down.svg";
 import CrossIcon from "../../assets/images/cross-black.svg";
+import TruckIcon from "../../assets/images/truck.svg";
+import useHyperlocal from "./location-modal/useHyperlocal";
+
 const Modal = React.lazy(
   () => import("@gofynd/theme-template/components/core/modal/modal")
+);
+const LocationModal = React.lazy(
+  () => import("./location-modal/location-modal")
 );
 function I18Dropdown({ fpi, languageIscCode = [] }) {
   const { locale } = useParams();
@@ -47,6 +53,96 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
   const { isI18ModalOpen = false, showLanguageDropdown = false } =
     useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
+  const CONFIGURATION = useGlobalStore(fpi?.getters?.CONFIGURATION);
+  const globalData = useGlobalStore(fpi?.getters?.CUSTOM_VALUE)?.globalData;
+  const sellerDetailsRaw = useGlobalStore(fpi?.getters?.SELLER_DETAILS);
+
+  // Parse sellerDetails if it's a string
+  const sellerDetails = useMemo(() => {
+    if (!sellerDetailsRaw) return {};
+    try {
+      return typeof sellerDetailsRaw === "string"
+        ? JSON.parse(sellerDetailsRaw || "{}")
+        : sellerDetailsRaw;
+    } catch {
+      return {};
+    }
+  }, [sellerDetailsRaw]);
+
+  // Check if seller country matches selected country
+  // When international is enabled, show serviceability fields only if seller country matches
+  const shouldShowServiceabilityFields = useMemo(() => {
+    if (!isInternational) {
+      // When international is disabled, always show serviceability fields
+      return true;
+    }
+
+    // When international is enabled, check if seller country matches selected country
+    const sellerCountryCode = sellerDetails?.country_code;
+    const selectedCountryCode = countryInfo?.iso2 || i18nDetails?.countryCode;
+
+    // Show serviceability fields if seller country matches selected country
+    // This means user is selecting their own country, so serviceability check is needed
+    if (
+      sellerCountryCode &&
+      selectedCountryCode &&
+      String(sellerCountryCode).toUpperCase() ===
+        String(selectedCountryCode).toUpperCase()
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [
+    isInternational,
+    sellerDetails?.country_code,
+    countryInfo?.iso2,
+    i18nDetails?.countryCode,
+  ]);
+
+  // Get countryCurrencies from multiple sources as fallback
+  // 1. From customValues (set by globalDataResolver)
+  // 2. From globalData directly (fallback if customValues not set yet)
+  const countryCurrenciesWithFallback = useMemo(() => {
+    if (countryCurrencies && countryCurrencies.length > 0) {
+      return countryCurrencies;
+    }
+    // Fallback to globalData if countryCurrencies not in customValues yet
+    const fromGlobalData =
+      globalData?.applicationConfiguration?.country_currencies;
+    if (fromGlobalData && fromGlobalData.length > 0) {
+      return fromGlobalData;
+    }
+    return countryCurrencies; // Return undefined if neither available
+  }, [countryCurrencies, globalData]);
+
+  // Check features.international flag (not international_shipping.enabled)
+  // This is the flag that should be false for our use case
+  const isInternationalFeature = useMemo(() => {
+    return CONFIGURATION?.app_features?.international ?? false;
+  }, [CONFIGURATION]);
+
+  // Check if price factory is enabled (countryCurrencies exists and has length > 0)
+  const isPriceFactoryEnabled = useMemo(() => {
+    return !!(
+      countryCurrenciesWithFallback && countryCurrenciesWithFallback.length > 0
+    );
+  }, [countryCurrenciesWithFallback]);
+
+  // Determine if we should show LocationModal instead of i18n modal
+  // When price factory is enabled AND features.international is false, show LocationModal
+  const shouldShowLocationModal = useMemo(() => {
+    return !!(isPriceFactoryEnabled && !isInternationalFeature);
+  }, [isPriceFactoryEnabled, isInternationalFeature]);
+
+  // Use hyperlocal hook for location modal functionality
+  const {
+    isServiceabilityModalOpen,
+    openServiceabilityModal,
+    closeServiceabilityModal,
+    handleLocationUpdate,
+    deliveryAddress,
+  } = useHyperlocal(fpi);
 
   const [formSchema, setFormSchema] = useState([]);
   const [formOptions, setFormOptions] = useState({});
@@ -127,7 +223,9 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
           [slug]: localities,
         }));
       }
-    } catch (error) {}
+    } catch (error) {
+      // Error handled silently
+    }
   };
 
   const checkLocality = (localityValue, localityType, selectedValues) => {
@@ -170,6 +268,16 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
       },
       currency?.code ?? i18nDetails?.currency?.code
     );
+
+    // When international is enabled, skip serviceability check only if seller country doesn't match
+    // If seller country matches, perform serviceability check as usual
+    if (isInternational && !shouldShowServiceabilityFields) {
+      fpi.custom.setValue("isI18ModalOpen", false);
+      fpi.custom.setValue("showLanguageDropdown", false);
+      return;
+    }
+
+    // For non-international, check serviceability
     const field = countryInfo?.fields?.serviceability_fields.at(-1);
     const addressField = addressFieldsMap?.[field];
     if (addressField) {
@@ -240,10 +348,17 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
       if (data?.country) {
         setCountryInfo(data.country);
       }
-    } catch (error) {}
+    } catch (error) {
+      // Error handled silently
+    }
   };
 
   const openI18nModal = () => {
+    // If price factory is enabled and international is false, open LocationModal instead
+    if (shouldShowLocationModal) {
+      openServiceabilityModal();
+      return;
+    }
     fpi.custom.setValue("isI18ModalOpen", true);
     fpi.custom.setValue("showLanguageDropdown", true);
   };
@@ -264,7 +379,7 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
 
   function createValidation(validation, required, error_text, type, field) {
     const result = {};
-    let errorText =
+    const errorText =
       field?.display_name?.toLowerCase() === "postcode" ||
       field?.display_name?.toLowerCase() === "postal code"
         ? `${t("resource.common.invalid")} ${field?.display_name}`
@@ -330,7 +445,9 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
   }, [currentCurrency, setValue]);
 
   useEffect(() => {
-    if (countryInfo) {
+    // Set serviceability fields based on shouldShowServiceabilityFields
+    // When international is enabled, only show if seller country matches
+    if (countryInfo && shouldShowServiceabilityFields) {
       const serviceabilityFields =
         countryInfo?.fields?.serviceability_fields || [];
       const dynamicFormSchema = serviceabilityFields.map((field) => {
@@ -360,11 +477,15 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
           setValue(field, "");
         });
       };
+    } else {
+      // Clear form schema when serviceability fields should not be shown
+      setFormSchema([]);
     }
-  }, [countryInfo]);
+  }, [countryInfo, shouldShowServiceabilityFields]);
 
   useEffect(() => {
-    if (isI18ModalOpen) {
+    // Populate serviceability fields only if they should be shown
+    if (isI18ModalOpen && shouldShowServiceabilityFields) {
       formSchema.forEach((field) => {
         const { slug, input, prev } = field;
         const fieldValue =
@@ -393,40 +514,67 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
         }
       });
     }
-  }, [formSchema, isI18ModalOpen]);
+  }, [formSchema, isI18ModalOpen, shouldShowServiceabilityFields]);
+
+  // Ensure shouldShowLocationModal is always a boolean
+  const finalShouldShowLocationModal = shouldShowLocationModal ?? false;
 
   return (
     <div className={`${styles.internationalization}`}>
-      {(languageIscCode.length > 1 || (isInternational && showI18Dropdown)) && (
+      {(languageIscCode.length > 1 ||
+        (isInternational && showI18Dropdown) ||
+        finalShouldShowLocationModal) && (
         <button
           className={styles.internationalization__selected}
           onClick={openI18nModal}
         >
-          <InternationalIcon className={styles.internationalIcon} />
-          {currentCountry?.name && currentCurrency?.code ? (
+          {finalShouldShowLocationModal ? (
             <>
-              <span
-                className={`${styles.locationLabel} ${styles.locationLabelMobile}`}
-              >
-                {t("resource.common.deliver_to")}{" "}
+              <TruckIcon className={styles.truckIcon} />
+              <span className={styles.locationLabel}>
+                {deliveryAddress || t("resource.header.location_label")}
               </span>
-              <span
-                className={`${styles.locationLabel} ${styles.languageDisplayContainer}`}
-              >{`${currentCountry.name ?? " "} - ${currentCurrency.code}`}</span>
+              <ArrowDownIcon className={styles.angleDownIcon} />
             </>
           ) : (
-            languageIscCode.length > 1 && (
-              <span className={styles.languageDisplayContainer}>
-                {languageIscCode?.find(
-                  (localeObj) => localeObj.locale === activeLocale
-                )?.display_name || ""}
-              </span>
-            )
-          )}
-          {showI18Dropdown && (
-            <ArrowDownIcon className={styles.angleDownIcon} />
+            <>
+              <InternationalIcon className={styles.internationalIcon} />
+              {currentCountry?.name && currentCurrency?.code ? (
+                <>
+                  <span
+                    className={`${styles.locationLabel} ${styles.locationLabelMobile}`}
+                  >
+                    {t("resource.common.deliver_to")}{" "}
+                  </span>
+                  <span
+                    className={`${styles.locationLabel} ${styles.languageDisplayContainer}`}
+                  >{`${currentCountry.name ?? " "} - ${currentCurrency.code}`}</span>
+                </>
+              ) : (
+                languageIscCode.length > 1 && (
+                  <span className={styles.languageDisplayContainer}>
+                    {languageIscCode?.find(
+                      (localeObj) => localeObj.locale === activeLocale
+                    )?.display_name || ""}
+                  </span>
+                )
+              )}
+              {showI18Dropdown && (
+                <ArrowDownIcon className={styles.angleDownIcon} />
+              )}
+            </>
           )}
         </button>
+      )}
+      {finalShouldShowLocationModal && isServiceabilityModalOpen && (
+        <Suspense fallback={<div />}>
+          <LocationModal
+            fpi={fpi}
+            isOpen={isServiceabilityModalOpen}
+            onClose={closeServiceabilityModal}
+            onConfirm={handleLocationUpdate}
+          />
+        </Suspense>
       )}
       {isI18ModalOpen && (
         <Suspense fallback={<div />}>
@@ -465,7 +613,10 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
                       type: "list",
                       label: t("resource.localization.select_country"),
                       placeholder: t("resource.localization.select_country"),
-                      options: countryCurrencies,
+                      options:
+                        countryCurrenciesWithFallback ||
+                        countryCurrencies ||
+                        [],
                       dataKey: "uid",
                       onChange: handleCountryChange,
                       validation: {

@@ -9,6 +9,7 @@ import {
 } from "../../queries/cartQuery";
 import { fetchCartDetails } from "./useCart";
 import { set } from "react-hook-form";
+import { useSnackbar } from "../../helper/hooks";
 
 const useCartCoupon = ({
   fpi,
@@ -23,6 +24,7 @@ const useCartCoupon = ({
 }) => {
   const { t } = useGlobalTranslation("translation");
   const coupons = useGlobalStore(fpi.getters.COUPONS);
+  const { showSnackbar } = useSnackbar();
 
   const [isCouponListModalOpen, setIsCouponListModalOpen] = useState(false);
   const [isCouponSuccessModalOpen, setIsCouponSuccessModalOpen] =
@@ -169,6 +171,7 @@ const useCartCoupon = ({
       })
       .then((data) => {
         couponPaymentOptions(data);
+        showSnackbar(t("resource.cart.coupon_removed_successfully"), "success");
       })
       .catch((err) => {
         setIsLoading(false);
