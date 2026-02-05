@@ -94,24 +94,38 @@ export function Component({ props, blocks, globalConfig, preset }) {
     return [];
   }, [autoplay?.value, slide_interval?.value]);
 
-  const mediaLayout = getMediaLayout(
-    {
-      height_mode,
-      desktop_height,
-      mobile_height,
-      desktop_aspect_ratio,
-      mobile_aspect_ratio,
-    },
-    windowWidth <= 768,
-    16 / 5
-  );
+  // Only use mediaLayout when height_mode is explicitly configured
+  const hasHeightConfig =
+    height_mode?.value &&
+    height_mode.value !== "auto" &&
+    (height_mode.value === "aspect_ratio" ||
+      height_mode.value === "fixed_height");
+
+  const mediaLayout = hasHeightConfig
+    ? getMediaLayout(
+        {
+          height_mode,
+          desktop_height,
+          mobile_height,
+          desktop_aspect_ratio,
+          mobile_aspect_ratio,
+        },
+        windowWidth <= 768,
+        16 / 5
+      )
+    : null;
 
   const slideMediaClass = [
     styles.imageContainer,
-    styles.mediaShell,
-    mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
-    mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+    mediaLayout
+      ? [
+          styles.mediaShell,
+          mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
+          mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+        ]
+      : [],
   ]
+    .flat()
     .filter(Boolean)
     .join(" ");
 
@@ -298,7 +312,7 @@ export function Component({ props, blocks, globalConfig, preset }) {
               {block.type === "gallery" ? (
                 <div
                   className={`${styles.blockItem} ${slideMediaClass}`}
-                  style={mediaLayout.style}
+                  style={mediaLayout?.style}
                 >
                   <FDKLink
                     to={
@@ -339,14 +353,21 @@ export function Component({ props, blocks, globalConfig, preset }) {
                     <FyImage
                       src={getDesktopImage(block, index)}
                       sources={getImgSrcSet(block, globalConfig, index)}
-                      defer={index < 1 ? false : true}
+                      defer={index >= 1}
                       alt={`slide-${index}`}
-                      isFixedAspectRatio={mediaLayout.isAspectRatio}
-                      aspectRatio={mediaLayout.aspectRatio}
-                      mobileAspectRatio={mediaLayout.mobileAspectRatio}
-                      isImageFill={
-                        mediaLayout.isAspectRatio || mediaLayout.isFixedHeight
-                      }
+                      {...(mediaLayout
+                        ? {
+                            isFixedAspectRatio: mediaLayout.isAspectRatio,
+                            aspectRatio: mediaLayout.aspectRatio ?? 16 / 5,
+                            mobileAspectRatio:
+                              mediaLayout.mobileAspectRatio ?? 16 / 5,
+                            isImageFill:
+                              mediaLayout.isAspectRatio ||
+                              mediaLayout.isFixedHeight,
+                          }
+                        : {
+                            isFixedAspectRatio: false,
+                          })}
                     />
                   </FDKLink>
                 </div>

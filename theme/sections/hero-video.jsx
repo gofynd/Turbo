@@ -74,24 +74,38 @@ export function Component({ props, globalConfig }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
-  const mediaLayout = getMediaLayout(
-    {
-      height_mode,
-      desktop_height,
-      mobile_height,
-      desktop_aspect_ratio,
-      mobile_aspect_ratio,
-    },
-    isMobileViewport,
-    16 / 9
-  );
+  // Only use mediaLayout when height_mode is explicitly configured
+  const hasHeightConfig =
+    height_mode?.value &&
+    height_mode.value !== "auto" &&
+    (height_mode.value === "aspect_ratio" ||
+      height_mode.value === "fixed_height");
+
+  const mediaLayout = hasHeightConfig
+    ? getMediaLayout(
+        {
+          height_mode,
+          desktop_height,
+          mobile_height,
+          desktop_aspect_ratio,
+          mobile_aspect_ratio,
+        },
+        isMobileViewport,
+        16 / 9
+      )
+    : null;
 
   const videoWrapperClass = [
     styles.video_container,
-    styles.mediaShell,
-    mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
-    mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+    mediaLayout
+      ? [
+          styles.mediaShell,
+          mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
+          mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+        ]
+      : [],
   ]
+    .flat()
     .filter(Boolean)
     .join(" ");
 
@@ -164,7 +178,7 @@ export function Component({ props, globalConfig }) {
 
       <div
         className={`${videoWrapperClass} ${styles.show_on_desktop}`}
-        style={mediaLayout.style}
+        style={mediaLayout?.style}
       >
         {videoFile?.value ? (
           <video
@@ -210,7 +224,7 @@ export function Component({ props, globalConfig }) {
       </div>
       <div
         className={`${videoWrapperClass} ${styles.show_on_mobile}`}
-        style={mediaLayout.style}
+        style={mediaLayout?.style}
       >
         {mobileVideoFile?.value || videoFile?.value ? (
           <video

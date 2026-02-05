@@ -63,10 +63,11 @@ const FyImage = ({
     };
   }, [isLazyLoaded]);
 
+  const bgColor = globalConfig?.img_container_bg || backgroundColor;
   const dynamicStyles = {
     "--aspect-ratio-desktop": `${aspectRatio}`,
     "--aspect-ratio-mobile": `${mobileAspectRatio}`,
-    "--bg-color": `${globalConfig?.img_container_bg || backgroundColor}`,
+    ...(bgColor && typeof bgColor === "string" && bgColor.trim() ? { "--bg-color": `${bgColor}` } : {}),
   };
 
   const overlayStyles = {

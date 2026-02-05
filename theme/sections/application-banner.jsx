@@ -77,23 +77,37 @@ export function Component({ props, blocks, globalConfig }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
-  const mediaLayout = getMediaLayout(
-    {
-      height_mode,
-      desktop_height,
-      mobile_height,
-      desktop_aspect_ratio,
-      mobile_aspect_ratio,
-    },
-    isMobileViewport,
-    16 / 9
-  );
+  // Only use mediaLayout when height_mode is explicitly configured
+  const hasHeightConfig =
+    height_mode?.value &&
+    height_mode.value !== "auto" &&
+    (height_mode.value === "aspect_ratio" ||
+      height_mode.value === "fixed_height");
+
+  const mediaLayout = hasHeightConfig
+    ? getMediaLayout(
+        {
+          height_mode,
+          desktop_height,
+          mobile_height,
+          desktop_aspect_ratio,
+          mobile_aspect_ratio,
+        },
+        isMobileViewport,
+        16 / 9
+      )
+    : null;
 
   const mediaWrapperClass = [
-    styles.mediaShell,
-    mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
-    mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+    mediaLayout
+      ? [
+          styles.mediaShell,
+          mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
+          mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+        ]
+      : [],
   ]
+    .flat()
     .filter(Boolean)
     .join(" ");
 
@@ -104,17 +118,24 @@ export function Component({ props, blocks, globalConfig }) {
     >
       {banner_link?.value?.length > 0 ? (
         <FDKLink to={banner_link?.value}>
-          <div className={mediaWrapperClass} style={mediaLayout.style}>
+          <div className={mediaWrapperClass} style={mediaLayout?.style}>
             <FyImage
               customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
               src={desktopImage}
               sources={getImgSrcSet()}
               isLazyLoaded={false}
               defer={false}
-              isFixedAspectRatio={mediaLayout.isAspectRatio}
-              aspectRatio={mediaLayout.aspectRatio}
-              mobileAspectRatio={mediaLayout.mobileAspectRatio}
-              isImageFill={mediaLayout.isAspectRatio || mediaLayout.isFixedHeight}
+              {...(mediaLayout
+                ? {
+                    isFixedAspectRatio: mediaLayout.isAspectRatio,
+                    aspectRatio: mediaLayout.aspectRatio ?? 16 / 9,
+                    mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 16 / 9,
+                    isImageFill:
+                      mediaLayout.isAspectRatio || mediaLayout.isFixedHeight,
+                  }
+                : {
+                    isFixedAspectRatio: false,
+                  })}
               alt={
                 hover_application_banner?.value
                   ? "Application banner with hotspots"
@@ -124,17 +145,24 @@ export function Component({ props, blocks, globalConfig }) {
           </div>
         </FDKLink>
       ) : (
-        <div className={mediaWrapperClass} style={mediaLayout.style}>
+        <div className={mediaWrapperClass} style={mediaLayout?.style}>
           <FyImage
             customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
             src={desktopImage}
             sources={getImgSrcSet()}
             isLazyLoaded={false}
             defer={false}
-            isFixedAspectRatio={mediaLayout.isAspectRatio}
-            aspectRatio={mediaLayout.aspectRatio}
-            mobileAspectRatio={mediaLayout.mobileAspectRatio}
-            isImageFill={mediaLayout.isAspectRatio || mediaLayout.isFixedHeight}
+            {...(mediaLayout
+              ? {
+                  isFixedAspectRatio: mediaLayout.isAspectRatio,
+                  aspectRatio: mediaLayout.aspectRatio ?? 16 / 9,
+                  mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 16 / 9,
+                  isImageFill:
+                    mediaLayout.isAspectRatio || mediaLayout.isFixedHeight,
+                }
+              : {
+                  isFixedAspectRatio: false,
+                })}
             alt="Application banner"
           />
         </div>

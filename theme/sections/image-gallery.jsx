@@ -73,20 +73,30 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     "--bd-radius": `${(cardRadius || 0) / 2}%`,
   };
 
+  // Only use mediaLayout when height_mode is explicitly configured
+  const hasHeightConfig =
+    height_mode?.value &&
+    height_mode.value !== "auto" &&
+    (height_mode.value === "aspect_ratio" ||
+      height_mode.value === "fixed_height");
+
   const mediaLayout = useMemo(
     () =>
-      getMediaLayout(
-        {
-          height_mode,
-          desktop_height,
-          mobile_height,
-          desktop_aspect_ratio,
-          mobile_aspect_ratio,
-        },
-        isMobileViewport,
-        1
-      ),
+      hasHeightConfig
+        ? getMediaLayout(
+            {
+              height_mode,
+              desktop_height,
+              mobile_height,
+              desktop_aspect_ratio,
+              mobile_aspect_ratio,
+            },
+            isMobileViewport,
+            1
+          )
+        : null,
     [
+      hasHeightConfig,
       height_mode?.value,
       desktop_height?.value,
       mobile_height?.value,
@@ -97,10 +107,15 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
   );
 
   const mediaWrapperClass = [
-    styles.mediaShell,
-    mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
-    mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+    mediaLayout
+      ? [
+          styles.mediaShell,
+          mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
+          mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
+        ]
+      : [],
   ]
+    .flat()
     .filter(Boolean)
     .join(" ");
 
@@ -180,16 +195,23 @@ const StackLayout = ({
             to={block?.link?.value || ""}
             target={in_new_tab?.value ? "_blank" : "_self"}
           >
-            <div className={mediaWrapperClass} style={mediaLayout.style}>
+            <div className={mediaWrapperClass} style={mediaLayout?.style}>
               <FyImage
                 customClass={styles.imageGallery}
                 src={block?.image?.value || placeholderImage}
                 sources={sources}
                 globalConfig={globalConfig}
-                isFixedAspectRatio={mediaLayout.isAspectRatio}
-                aspectRatio={mediaLayout.aspectRatio}
-                mobileAspectRatio={mediaLayout.mobileAspectRatio}
-                isImageFill={mediaLayout.isAspectRatio || mediaLayout.isFixedHeight}
+                {...(mediaLayout
+                  ? {
+                      isFixedAspectRatio: mediaLayout.isAspectRatio,
+                      aspectRatio: mediaLayout.aspectRatio ?? 1,
+                      mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 1,
+                      isImageFill:
+                        mediaLayout.isAspectRatio || mediaLayout.isFixedHeight,
+                    }
+                  : {
+                      isFixedAspectRatio: false,
+                    })}
                 alt={block?.image?.alt || "Gallery image"}
               />
             </div>
@@ -263,18 +285,25 @@ const HorizontalLayout = ({
                       to={block?.props?.link?.value || ""}
                       target={in_new_tab?.value ? "_blank" : "_self"}
                     >
-                      <div className={mediaWrapperClass} style={mediaLayout.style}>
+                      <div className={mediaWrapperClass} style={mediaLayout?.style}>
                         <FyImage
                           customClass={styles.imageGallery}
                           src={block?.props?.image?.value || placeholderImage}
                           sources={sources}
                           globalConfig={globalConfig}
-                          isFixedAspectRatio={mediaLayout.isAspectRatio}
-                          aspectRatio={mediaLayout.aspectRatio}
-                          mobileAspectRatio={mediaLayout.mobileAspectRatio}
-                          isImageFill={
-                            mediaLayout.isAspectRatio || mediaLayout.isFixedHeight
-                          }
+                          {...(mediaLayout
+                            ? {
+                                isFixedAspectRatio: mediaLayout.isAspectRatio,
+                                aspectRatio: mediaLayout.aspectRatio ?? 1,
+                                mobileAspectRatio:
+                                  mediaLayout.mobileAspectRatio ?? 1,
+                                isImageFill:
+                                  mediaLayout.isAspectRatio ||
+                                  mediaLayout.isFixedHeight,
+                              }
+                            : {
+                                isFixedAspectRatio: false,
+                              })}
                           alt={
                             block?.props?.image?.alt ||
                             block?.props?.title?.value ||
