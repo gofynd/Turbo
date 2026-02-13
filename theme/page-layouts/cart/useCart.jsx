@@ -92,6 +92,7 @@ const useCart = (fpi, isActive = true) => {
   const { loading: cartItemsCountLoading } = cart_items_count || {};
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isMovingToWishlist, setIsMovingToWishlist] = useState(false);
   const [isPromoModalOpen, setIsPromoModalOpen] = useState(false);
   const [customerCheckoutMode, setCustomerCheckoutMode] = useState("");
 
@@ -353,6 +354,7 @@ const useCart = (fpi, isActive = true) => {
   function closeRemoveModal() {
     setIsRemoveModalOpen(false);
     setIsRemoving(false);
+    setIsMovingToWishlist(false);
   }
 
   function handleRemoveItem(data, moveToWishList) {
@@ -362,7 +364,9 @@ const useCart = (fpi, isActive = true) => {
     const { item, size, index } = data;
 
     // Set removing state to show "Removing..." text and trigger shimmer immediately
-    setIsRemoving(true);
+    if (!moveToWishList) {
+      setIsRemoving(true);
+    }
 
     // Close modal after brief delay to show "Removing..." text
     setTimeout(() => {
@@ -391,15 +395,21 @@ const useCart = (fpi, isActive = true) => {
     }
 
     if (isLoggedIn) {
-      setIsRemoving(true);
+      setIsMovingToWishlist(true);
       setIsCartUpdating(true);
       addToWishList(data.item.product)
         .then(() => {
           handleRemoveItem(data, true);
         })
         .catch(() => {
-          setIsRemoving(false);
           setIsCartUpdating(false);
+          setIsMovingToWishlist(false);
+        })
+        .finally(() => {
+          // Reset the moving to wishlist state after the entire operation
+          setTimeout(() => {
+            setIsMovingToWishlist(false);
+          }, 200);
         });
     } else {
       closeRemoveModal();
@@ -490,6 +500,7 @@ const useCart = (fpi, isActive = true) => {
     isPlacingForCustomer,
     isRemoveModalOpen,
     isRemoving,
+    isMovingToWishlist,
     isPromoModalOpen,
     buybox,
     applyRewardResponse,

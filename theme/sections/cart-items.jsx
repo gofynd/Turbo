@@ -65,6 +65,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
     isPlacingForCustomer,
     isRemoveModalOpen = false,
     isRemoving = false,
+    isMovingToWishlist = false,
     isPromoModalOpen = false,
     customerCheckoutMode,
     checkoutMode,
@@ -285,7 +286,8 @@ export function Component({ props, globalConfig = {}, blocks }) {
                           </div>
                         )}
                       </div>
-                      {isLoading || (isRemoving && isCartUpdating) ? (
+                      {isLoading ||
+                      ((isRemoving || isMovingToWishlist) && isCartUpdating) ? (
                         Array(2)
                           .fill()
                           .map((_, idx) => <ChipItemSkeleton key={idx} />)
@@ -524,18 +526,20 @@ export function Component({ props, globalConfig = {}, blocks }) {
 
                 case "price_breakup":
                   return (
-                    <PriceBreakup
-                      key={key}
-                      breakUpValues={breakUpValues?.display || []}
-                      cartItemCount={
-                        cartData?.user_cart_items_count ??
-                        cartItemsArray?.length ??
-                        0
-                      }
-                      currencySymbol={currencySymbol}
-                      isInternationalTaxLabel={isCrossBorderOrder}
-                      isLoading={isLoading}
-                    />
+                    <div className={styles.priceBreakupCartWrapper}>
+                      <PriceBreakup
+                        key={key}
+                        breakUpValues={breakUpValues?.display || []}
+                        cartItemCount={
+                          cartData?.user_cart_items_count ??
+                          cartItemsArray?.length ??
+                          0
+                        }
+                        currencySymbol={currencySymbol}
+                        isInternationalTaxLabel={isCrossBorderOrder}
+                        isLoading={isLoading}
+                      />
+                    </div>
                   );
                 case "order_for_customer":
                   return (
@@ -651,6 +655,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
           isOpen={isRemoveModalOpen}
           cartItem={removeItemData?.item}
           isRemoving={isRemoving}
+          isMovingToWishlist={isMovingToWishlist}
           onRemoveButtonClick={() => onRemoveButtonClick(removeItemData)}
           onWishlistButtonClick={() => onWishlistButtonClick(removeItemData)}
           onCloseDialogClick={onCloseRemoveModalClick}

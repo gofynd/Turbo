@@ -66,16 +66,17 @@ export const getMediaLayout = (
     desktopAspect;
 
   const resolvedAspect = isMobile ? mobileAspect : desktopAspect;
-  const resolvedHeight =
-    mode === MEDIA_HEIGHT_MODES.FIXED
-      ? isMobile
-        ? Number.isFinite(mobileHeight)
-          ? mobileHeight
-          : desktopHeight
-        : Number.isFinite(desktopHeight)
-          ? desktopHeight
-          : mobileHeight
-      : undefined;
+  
+  // Calculate heights with fallbacks
+  const finalDesktopHeight = Number.isFinite(desktopHeight)
+    ? desktopHeight
+    : mobileHeight;
+    
+  const finalMobileHeight = Number.isFinite(mobileHeight)
+    ? mobileHeight
+    : desktopHeight;
+
+  const hasValidHeight = Number.isFinite(finalDesktopHeight);
 
   const desktopPadding = desktopAspect
     ? `${(1 / desktopAspect) * 100}%`
@@ -87,12 +88,15 @@ export const getMediaLayout = (
   return {
     mode,
     isAspectRatio: mode === MEDIA_HEIGHT_MODES.ASPECT_RATIO && !!resolvedAspect,
-    isFixedHeight: mode === MEDIA_HEIGHT_MODES.FIXED && !!resolvedHeight,
+    isFixedHeight: mode === MEDIA_HEIGHT_MODES.FIXED && hasValidHeight,
     aspectRatio: desktopAspect,
     mobileAspectRatio: mobileAspect,
     style: {
-      ...(mode === MEDIA_HEIGHT_MODES.FIXED && resolvedHeight
-        ? { "--media-height": `${resolvedHeight}px` }
+      ...(mode === MEDIA_HEIGHT_MODES.FIXED && hasValidHeight
+        ? { 
+            "--media-desktop-height": `${finalDesktopHeight}px`,
+            "--media-mobile-height": `${finalMobileHeight}px`
+          }
         : {}),
       ...(mode === MEDIA_HEIGHT_MODES.ASPECT_RATIO && resolvedAspect
         ? {

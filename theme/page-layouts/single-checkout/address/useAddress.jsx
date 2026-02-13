@@ -439,7 +439,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       ...item,
       phone: {
         mobile: item?.phone,
-        countryCode: item?.country_code?.replace("+", ""),
+        countryCode: item?.country_code?.replace(/\+/g, ""),
         isValidNumber: true,
       },
     });
@@ -464,7 +464,11 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     if (obj.country && typeof obj.country === "object" && obj.country !== null) {
       obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
     }
-    obj.country_phone_code = `+${obj.phone.countryCode}`;
+    // Remove any existing country_phone_code to prevent accumulation of plus signs
+    delete obj.country_phone_code;
+    // Clean countryCode by removing all plus signs, then add a single plus
+    const cleanCountryCode = obj.phone.countryCode?.replace(/\+/g, "") || "";
+    obj.country_phone_code = cleanCountryCode ? `+${cleanCountryCode}` : "";
     obj.phone = obj.phone.mobile;
     setAddressLoader(true);
     const payload = {
@@ -532,8 +536,19 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     if (obj.country && typeof obj.country === "object" && obj.country !== null) {
       obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
     }
-    obj.country_phone_code = `+${obj?.phone?.countryCode}`;
+    // Remove any existing country_phone_code to prevent accumulation of plus signs
+    delete obj.country_phone_code;
+    // Clean countryCode by removing all plus signs, then add a single plus
+    const cleanCountryCode = obj?.phone?.countryCode?.replace(/\+/g, "") || "";
+    obj.country_phone_code = cleanCountryCode ? `+${cleanCountryCode}` : "";
     obj.phone = obj?.phone?.mobile;
+    // Also clean country_code if it exists to prevent issues
+    if (obj.country_code) {
+      obj.country_code = obj.country_code.replace(/\+/g, "");
+      if (obj.country_code) {
+        obj.country_code = `+${obj.country_code}`;
+      }
+    }
 
     const add = obj;
     delete add?.custom_json;

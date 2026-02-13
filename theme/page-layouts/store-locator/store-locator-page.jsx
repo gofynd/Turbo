@@ -15,7 +15,8 @@ function StoreLocatorWithMap({
 }) {
   const { isLoaded: isMapLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: mapApiKey,
-    id: "google-map-script",
+    id: "google-maps-script",
+    libraries: ["places"],
   });
 
   // Show shimmer while map is loading

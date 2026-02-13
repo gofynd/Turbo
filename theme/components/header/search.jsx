@@ -9,7 +9,7 @@ import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import SearchIcon from "../../assets/images/single-row-search.svg";
 import CloseIcon from "../../assets/images/close.svg";
-import InputSearchIcon from "../../assets/images/search.svg";
+import InputSearchIcon from "../../assets/images/search-black.svg";
 import styles from "./styles/search.less";
 import { AUTOCOMPLETE } from "../../queries/headerQuery";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -71,7 +71,7 @@ function Search({
 
   const collapseSearch = () => {
     setShowSearch(false);
-    setIsSearchFocused(false);
+    // setIsSearchFocused(false);
     setShowSearchSuggestions(false);
     setSearchData([]);
     setCollectionsData([]);
@@ -80,7 +80,6 @@ function Search({
   };
   const clearAll = () => {
     setSearchText("");
-    setIsSearchFocused(false);
     setHasInputValue(false);
     setShowSearchSuggestions(false);
     setSearchData([]);
@@ -213,7 +212,7 @@ function Search({
     if (inputRef.current?.value) {
       return;
     }
-    setIsSearchFocused(false);
+    // setIsSearchFocused(false);
     setHasInputValue(false);
   };
 
@@ -289,9 +288,7 @@ function Search({
                 id="searchInput"
                 autoComplete="off"
                 defaultValue={searchText}
-                placeholder={
-                  isDoubleRowHeader ? t("resource.facets.search") : ""
-                }
+                placeholder={t("resource.facets.search")}
                 onChange={handleInputChange}
                 onKeyUp={(e) =>
                   e.key === "Enter" &&
@@ -299,16 +296,16 @@ function Search({
                   redirectToProduct(`/products/?q=${e.target?.value}`)
                 }
                 onFocus={() => setIsSearchFocused(true)}
-                onBlur={checkInput}
+                // onBlur={checkInput}
                 aria-labelledby="search-input-label"
                 aria-label="search-input-label"
               />
-              {!isSearchFocused && (
+              {/* {!(hasInputValue || inputRef.current?.value) && (
                 <InputSearchIcon
                   className={styles["search__input--search-icon"]}
                   onClick={() => getEnterSearchData(searchText)}
                 />
-              )}
+              )} */}
               {(hasInputValue || inputRef.current?.value) && (
                 <button
                   type="button"
@@ -322,7 +319,7 @@ function Search({
                 </button>
               )}
               {/* eslint-disable jsx-a11y/label-has-associated-control */}
-              <label
+              {/* <label
                 htmlFor="searchInput"
                 id="search-input-label"
                 className={`${styles["search__input--label"]} b1 ${
@@ -331,7 +328,7 @@ function Search({
                 style={{ display: !isDoubleRowHeader ? "block" : "none" }}
               >
                 {t("resource.facets.search")}
-              </label>
+              </label> */}
             </div>
             {showCloseButton && (
               <CloseIcon

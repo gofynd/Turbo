@@ -646,6 +646,7 @@ export function Component({ props, globalConfig }) {
               >
                 {imagesForBannerVerticalView().map((product, index) => (
                   <ProductCardItem
+                    className={styles.gridItem}
                     key={`${product.uid}_${index}`}
                     product={product}
                     imgSrcSet={imgSrcSet}
@@ -763,6 +764,7 @@ export function Component({ props, globalConfig }) {
             >
               {imagesForStackedView().map((product, index) => (
                 <ProductCardItem
+                  className={styles.gridItem}
                   key={`${product.uid}_${index}`}
                   product={product}
                   imgSrcSet={imgSrcSet}
@@ -917,6 +919,7 @@ export function Component({ props, globalConfig }) {
                 {FEATURED_COLLECTION_PLACEHOLDER_PRODUCTS.slice(0, 6).map(
                   (product, index) => (
                     <ProductCardItem
+                      className={styles.gridItem}
                       key={`${product.uid}_${index}`}
                       product={product}
                       imgSrcSet={imgSrcSet}
@@ -1051,6 +1054,7 @@ export function Component({ props, globalConfig }) {
                 <AddToCart
                   {...restAddToModalProps}
                   globalConfig={globalConfig}
+                  isServiceable={is_serviceable}
                 />
               </Modal>
             </Suspense>

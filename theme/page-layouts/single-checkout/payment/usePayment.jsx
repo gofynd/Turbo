@@ -1593,16 +1593,35 @@ const usePayment = (fpi) => {
     return tempOpt;
   };
 
-  const fetchCreditNoteBalance = async (aggregator = "creditnote") => {
+  const fetchCreditNoteBalance = async (
+    aggregator = "creditnote",
+    transactionAmount = null
+  ) => {
     try {
+      // Get transaction_amount from parameter, bagData, or default to 0
+      let transaction_amount = transactionAmount;
+
+      if (transaction_amount === null || transaction_amount === undefined) {
+        transaction_amount =
+          bagData?.breakup_values?.display?.[
+            bagData?.breakup_values?.display?.length - 1
+          ]?.value;
+      }
+
+      // Ensure transaction_amount is a valid number (default to 0 if still undefined)
+      if (
+        transaction_amount === null ||
+        transaction_amount === undefined ||
+        Number.isNaN(transaction_amount)
+      ) {
+        transaction_amount = 0;
+      }
+
       const payload = {
         customerAndCreditSummary: {
           user_id,
           cart_id,
-          transaction_amount:
-            bagData?.breakup_values?.display[
-              bagData?.breakup_values?.display?.length - 1
-            ]?.value,
+          transaction_amount,
           aggregator,
         },
       };

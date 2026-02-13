@@ -27,8 +27,6 @@ import LocationPinIcon from "../../../assets/images/location-pin.svg";
 import MarkerIcon from "../../../assets/images/marker.svg";
 import LocationIcon from "../../../assets/images/location.svg";
 
-const libraries = ["places"];
-
 function LocationModal({
   fpi,
   isOpen = false,
@@ -38,7 +36,8 @@ function LocationModal({
   const { isHeaderMap, mapApiKey } = useGoogleMapConfig({ fpi });
   const { isLoaded: isMapLoaded } = useJsApiLoader({
     googleMapsApiKey: mapApiKey,
-    libraries,
+    id: "google-maps-script",
+    libraries: ["places"],
   });
   const { address = [] } = useGlobalStore(fpi.getters.ADDRESS);
   const i18nDetails = useGlobalStore(fpi.getters.i18N_DETAILS);

@@ -1473,6 +1473,11 @@
                 "type": "payment_method",
                 "name": "Payment Method",
                 "props": {}
+              },
+                            {
+                "type": "trust_badges",
+                "name": "Trust Badges",
+                "props": {}
               }
             ],
             "label": "Checkout",

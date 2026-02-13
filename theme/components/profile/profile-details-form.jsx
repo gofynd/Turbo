@@ -381,12 +381,12 @@ function ProfileDetailsForm({ userData, onSave, isLoading }) {
                       <label className={styles.radioOption}>
                         <input
                           type="radio"
-                          value="other"
-                          checked={field.value === "other"}
-                          onChange={() => field.onChange("other")}
+                          value="unisex"
+                          checked={field.value === "unisex"}
+                          onChange={() => field.onChange("unisex")}
                           className={styles.radioInput}
                         />
-                        <RadioIcon checked={field.value === "other"} />
+                        <RadioIcon checked={field.value === "unisex"} />
                         <span className={styles.radioLabel}>Other</span>
                       </label>
                     </>

@@ -14,7 +14,8 @@ function Home({ numberOfSections, fpi }) {
   const { isEdit = false } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
   const { globalConfig, pageConfig } = useThemeConfig({ fpi, page: "home" });
   const seoData = page?.seo || {};
-  const { sections = [], error, isLoading } = page || {};
+  const { sections: rawSections = [], error, isLoading } = page || {};
+  const sections = Array.isArray(rawSections) ? rawSections : [];
   const initialSectionsCount = globalConfig?.initial_sections_count || 3;
 
   const [visibleCount, setVisibleCount] = useState(initialSectionsCount);
@@ -30,7 +31,7 @@ function Home({ numberOfSections, fpi }) {
 
   const renderSections = useMemo(
     () => (isEdit ? sections : sections?.slice(0, visibleCount)),
-    [sections, visibleCount]
+    [sections, visibleCount, isEdit]
   );
   const description = useMemo(() => {
     const raw = sanitizeHTMLTag(
@@ -45,7 +46,7 @@ function Home({ numberOfSections, fpi }) {
     if (typeof window === "undefined") return;
 
     const showAllSections = () => {
-      setVisibleCount(sections.length);
+      setVisibleCount(sections?.length ?? 0);
       window?.removeEventListener("scroll", handleScroll);
       // Mark that home sections have been loaded in this session
       try {

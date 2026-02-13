@@ -600,7 +600,7 @@ export const settings = {
       info: "t:resource.common.desktop_height_info",
     },
     {
-      type: "range",
+      type: "text",
       id: "mobile_height",
       label: "t:resource.common.mobile_height",
       info: "t:resource.common.mobile_height_info",

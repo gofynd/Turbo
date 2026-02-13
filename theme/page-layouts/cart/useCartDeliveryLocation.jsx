@@ -59,7 +59,11 @@ function sanitizeAddressPayload(formValues = {}) {
     payload?.phone?.mobile &&
     payload?.phone?.countryCode
   ) {
-    payload.country_phone_code = `+${payload.phone.countryCode}`;
+    // Remove any existing country_phone_code to prevent accumulation of plus signs
+    delete payload.country_phone_code;
+    // Clean countryCode by removing all plus signs, then add a single plus
+    const cleanCountryCode = payload.phone.countryCode?.replace(/\+/g, "") || "";
+    payload.country_phone_code = cleanCountryCode ? `+${cleanCountryCode}` : "";
     payload.phone = payload.phone.mobile;
   }
 

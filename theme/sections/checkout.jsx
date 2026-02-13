@@ -22,7 +22,8 @@ import useCart from "../page-layouts/cart/useCart";
 import useCartCoupon from "../page-layouts/cart/useCartCoupon";
 import useCartComment from "../page-layouts/cart/useCartComment";
 import Loader from "../components/loader/loader";
-import { priceFormatCurrencySymbol, formatLocale } from "../helper/utils";
+import TrustBadges from "../components/trust-badges-block/trust-badges";
+import { currencyFormat, formatLocale } from "../helper/utils";
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
@@ -36,6 +37,15 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     fpi.getters.APP_FEATURES
   );
   const breakupValues = bagData?.breakup_values?.display || [];
+  
+  // Calculate total price from breakupValues
+  const totalPrice = useMemo(() => {
+    if (!breakupValues || breakupValues.length === 0) return 0;
+    // Use "total" key which represents the final payable amount after all discounts
+    const total = breakupValues.find((val) => val.key === "total");
+    return total?.value ?? 0;
+  }, [breakupValues]);
+  
   const [showShipment, setShowShipment] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
@@ -309,7 +319,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   }, [fpi, buy_now]);
 
   useEffect(() => {
-    if (user_id && checkoutAmount === 0) fetchCreditNoteBalance();
+    if (user_id && checkoutAmount === 0) {
+      fetchCreditNoteBalance("creditnote", checkoutAmount);
+    }
   }, [user_id, checkoutAmount]);
 
   function showPaymentHandler(flag) {
@@ -433,10 +445,13 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   }, [address_id, showShipment, address]);
 
   const addressId = useMemo(() => {
-    return address?.getDefaultAddress?.find(
+    if (!address?.getDefaultAddress || !Array.isArray(address.getDefaultAddress)) {
+      return undefined;
+    }
+    return address.getDefaultAddress.find(
       ({ is_default_address }) => is_default_address
     )?.id;
-  }, [address.getDefaultAddress]);
+  }, [address?.getDefaultAddress]);
 
   const redirectPaymentOptions = () => {
     setIsLoading(true);
@@ -582,9 +597,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   buybox={buybox}
                   payment={payment}
                   availableFOCount={fulfillment_option?.count || 1}
-                  totalValue={priceFormatCurrencySymbol(
-                    payment?.getCurrencySymbol,
-                    payment?.getTotalValue(),
+                  totalValue={currencyFormat(
+                    totalPrice,
+                    payment?.getCurrencySymbol || bagData?.currency?.symbol || "₹",
                     formatLocale(locale, countryCode, true)
                   )}
                   onPriceDetailsClick={onPriceDetailsClick}
@@ -669,6 +684,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   )}
               </>
             );
+          case "trust_badges":
+            return (
+              <>
+                <TrustBadges />
+              </>
+            );
 
           default:
             return <div key={key}>Invalid block</div>;
@@ -725,6 +746,11 @@ export const settings = {
     {
       type: "place_order",
       name: "Place Order Button",
+      props: [],
+    },
+    {
+      type: "trust_badges",
+      name: "Trust Badges",
       props: [],
     },
   ],
