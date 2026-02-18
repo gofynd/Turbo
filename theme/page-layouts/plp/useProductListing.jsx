@@ -82,7 +82,6 @@ const useProductListing = ({ fpi, props }) => {
     size_selection_style = "dropdown",
     tax_label = "",
     show_size_guide = false,
-    filter_toggle_button = false,
   } = Object.entries(props).reduce((acc, [key, { value }]) => {
     acc[key] = value;
     return acc;
@@ -159,7 +158,25 @@ const useProductListing = ({ fpi, props }) => {
       mobile: Number(grid_mob),
     },
   } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) ?? {};
-  const [isResetFilterDisable, setIsResetFilterDisable] = useState(true);
+
+  // Initialize state based on URL params to prevent flash on page refresh
+  const getInitialResetFilterDisable = () => {
+    if (typeof window === "undefined") return true; // SSR: default to hidden
+    try {
+      const searchParams = new URLSearchParams(location?.search);
+      const resetableFilterKeys =
+        Array.from(searchParams.keys())?.filter?.(
+          (i) => !["q", "sort_on", "page_no"].includes(i)
+        ) ?? [];
+      return !resetableFilterKeys?.length;
+    } catch {
+      return true; // Default to hidden on error
+    }
+  };
+
+  const [isResetFilterDisable, setIsResetFilterDisable] = useState(
+    getInitialResetFilterDisable
+  );
 
   const hasRestoredScroll = useRef(false);
   const isRestoringFromPDP = useRef(hasSavedState);
@@ -250,6 +267,20 @@ const useProductListing = ({ fpi, props }) => {
     fpi.custom.setValue("isPlpSsrFetched", false);
   }, []);
 
+  // Always check URL params to determine if reset button should be disabled
+  // This runs independently of isPlpSsrFetched to ensure correct state on page refresh
+  useEffect(() => {
+    if (!isClient) return;
+
+    const searchParams = new URLSearchParams(location?.search);
+
+    const resetableFilterKeys =
+      Array.from(searchParams.keys())?.filter?.(
+        (i) => !["q", "sort_on", "page_no"].includes(i)
+      ) ?? [];
+    setIsResetFilterDisable(!resetableFilterKeys?.length);
+  }, [location?.search, isClient]);
+
   useEffect(() => {
     // Skip API call if we're restoring from saved state
     if (isRestoringFromPDP.current) {
@@ -273,12 +304,6 @@ const useProductListing = ({ fpi, props }) => {
       if (loading_options === "pagination") payload.pageNo = pageNo || 1;
 
       fetchProducts(payload);
-
-      const resetableFilterKeys =
-        Array.from(searchParams?.keys?.() ?? [])?.filter?.(
-          (i) => !["q", "sort_on", "page_no"].includes(i)
-        ) ?? [];
-      setIsResetFilterDisable(!resetableFilterKeys?.length);
     }
   }, [location?.search, pincode, locationDetails, pageSize]);
 
@@ -724,7 +749,7 @@ const useProductListing = ({ fpi, props }) => {
     // New function to handle product navigation
     onProductNavigation: handleProductNavigation,
     showColorVariants: globalConfig?.show_color_variants,
-    filterToggle: filter_toggle_button,
+    filterToggle: globalConfig?.filter_toggle_button
   };
 };
 

@@ -103,6 +103,28 @@ export const THEME_DATA = `query Theme($themeId: String!, $pageValue: String!, $
         description
         canonical_url
         title
+        breadcrumbs {
+          url
+          action {
+            type
+            page {
+              type
+              url
+              query
+            }
+          }
+        }
+        sitemap {
+          priority
+          frequency
+        }
+        meta_tags {
+          title
+          items {
+            key
+            value
+          }
+        }
       }
       text
       theme

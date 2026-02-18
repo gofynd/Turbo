@@ -510,6 +510,14 @@
       "info": "Sets a maximum width of 1440px for better layout on wide screens"
     },
     {
+      "type": "checkbox",
+      "id": "filter_toggle_button",
+      "default": false,
+      "category": "t:resource.settings_schema.common.other_page_configuration",
+      "label": "t:resource.common.show_filter_toggle_button",
+      "info": "t:resource.common.show_filter_toggle_button_info"
+    },
+    {
       "type": "header",
       "category": "t:resource.settings_schema.common.performance_and_caching",
       "value": "Performance & Caching"

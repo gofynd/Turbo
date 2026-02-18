@@ -229,6 +229,7 @@ function ProfileDetailsForm({ userData, onSave, isLoading }) {
                     error={!!errors.dob}
                     errorMessage={errors.dob?.message}
                     inputLabel="Date of Birth"
+                    modalTitle={t("resource.profile.select_dob_date")}
                     className={styles.datePicker}
                     isLabelFloating
                     enableMonthYearSelection

@@ -239,13 +239,13 @@
 
 // Verified field styles
 .inputWrapper.verifiedField {
-  background: #f5f5f5;
-  background-color: #f5f5f5;
+  background: @PageBackground;
+  //background-color: #f5f5f5;
   border-radius: 4px;
 
   :global(.fy-input-container) {
-    background: #f5f5f5;
-    background-color: #f5f5f5;
+    background: @PageBackground;
+    //background-color: #f5f5f5;
     border-color: #e0e0e0;
     cursor: not-allowed;
   }
@@ -253,24 +253,24 @@
   :global(.fy-input-field),
   :global(input.fy-input-field),
   :global(.fy-input-container input) {
-    color: #666;
+    color: @TextBody;
     cursor: not-allowed;
-    background: #f5f5f5;
-    background-color: #f5f5f5;
+    background: @PageBackground;
+    //background-color: #f5f5f5;
     -webkit-text-fill-color: #666;
   }
 
   :global(.fy-input-label) {
-    color: #666;
-    background: #f5f5f5;
+    color: @TextBody;
+    background: @PageBackground;
   }
 
   input[disabled],
   input[readonly] {
-    background-color: #f5f5f5;
-    background: #f5f5f5;
-    color: #666;
-    -webkit-text-fill-color: #666;
+   // background-color: #f5f5f5;
+    background: @PageBackground;
+    color: @TextBody;
+    -webkit-text-fill-color: @TextBody;
     cursor: not-allowed;
     opacity: 1;
     pointer-events: none;
@@ -279,10 +279,10 @@
   // Additional specificity for disabled inputs
   input:disabled,
   input:read-only {
-    background-color: #f5f5f5;
-    background: #f5f5f5;
-    color: #666;
-    -webkit-text-fill-color: #666;
+    //background-color: #f5f5f5;
+    background: @PageBackground;
+    color: @TextBody;
+    -webkit-text-fill-color: @TextBody;
   }
 }
 

@@ -118,7 +118,24 @@ const useCollectionListing = ({ fpi, slug, props }) => {
 
   const isAlgoliaEnabled = globalConfig?.algolia_enabled || false;
 
-  const [isResetFilterDisable, setIsResetFilterDisable] = useState(false);
+  // Initialize state based on URL params to prevent flash on page refresh
+  const getInitialResetFilterDisable = () => {
+    if (typeof window === "undefined") return true; // SSR: default to hidden
+    try {
+      const searchParams = new URLSearchParams(location?.search);
+      const resetableFilterKeys =
+        Array.from(searchParams.keys())?.filter?.(
+          (i) => !["q", "sort_on", "page_no"].includes(i)
+        ) ?? [];
+      return !resetableFilterKeys?.length;
+    } catch {
+      return true; // Default to hidden on error
+    }
+  };
+
+  const [isResetFilterDisable, setIsResetFilterDisable] = useState(
+    getInitialResetFilterDisable
+  );
 
   const addToCartModalProps = useAddToCartModal({
     fpi,
@@ -151,6 +168,20 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     }
   }, [isAlgoliaEnabled]);
 
+  // Always check URL params to determine if reset button should be disabled
+  // This runs independently of isCollectionsSsrFetched to ensure correct state on page refresh
+  useEffect(() => {
+    if (!isClient) return;
+
+    const searchParams = new URLSearchParams(location?.search);
+
+    const resetableFilterKeys =
+      Array.from(searchParams.keys())?.filter?.(
+        (i) => !["q", "sort_on", "page_no"].includes(i)
+      ) ?? [];
+    setIsResetFilterDisable(!resetableFilterKeys?.length);
+  }, [location?.search, isClient]);
+
   useEffect(() => {
     if (!isCollectionsSsrFetched) {
       const searchParams = isClient
@@ -169,12 +200,6 @@ const useCollectionListing = ({ fpi, slug, props }) => {
 
       if (loading_options === "pagination") payload.pageNo = pageNo || 1;
       fetchProducts(payload);
-
-      const resetableFilterKeys =
-        Array.from(searchParams?.keys?.() ?? [])?.filter?.(
-          (i) => !["q", "sort_on", "page_no"].includes(i)
-        ) ?? [];
-      setIsResetFilterDisable(!resetableFilterKeys?.length);
     }
   }, [location?.search, locationDetails, slug]);
 
@@ -563,6 +588,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     onFilterUpdate: handleFilterUpdate,
     onFilterModalBtnClick: openFilterModal,
     onSortModalBtnClick: openSortModal,
+    filterToggle: globalConfig?.filter_toggle_button,
     onWishlistClick: handleWishlistToggle,
     onViewMoreClick: handleLoadMoreProducts,
     onLoadMoreProducts: handleLoadMoreProducts,

@@ -203,7 +203,23 @@ function Search({
   };
   const redirectToProduct = (link = "/") => {
     if (link) navigate(link);
-    collapseSearch();
+    // When alwaysOnSearch is enabled, clear all search data and hide suggestions
+    // but keep the search input visible
+    if (alwaysOnSearch) {
+      setShowSearchSuggestions(false);
+      setSearchData([]);
+      setCollectionsData([]);
+      setQuerySuggestions([]);
+      setTotalCount(0);
+      setSearchText("");
+      setHasInputValue(false);
+      // Clear input value safely
+      if (isRunningOnClient() && inputRef.current) {
+        inputRef.current.value = "";
+      }
+    } else {
+      collapseSearch();
+    }
   };
 
   const getProductSearchSuggestions = (results) => results?.slice(0, 4);
@@ -266,6 +282,7 @@ function Search({
       </button>
       <OutsideClickHandler onOutsideClick={handleOutsideClick}>
         <motion.div
+          data-role="search-overlay"
           className={`${styles.search} ${customSearchClass}`}
           initial={{ scaleY: 0, opacity: 0 }}
           animate={{

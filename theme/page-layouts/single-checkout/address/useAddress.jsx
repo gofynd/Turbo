@@ -29,7 +29,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const cart_id = searchParams.get("id");
   const address_id = searchParams.get("address_id");
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
@@ -74,36 +74,124 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     // Don't open modal if:
     // 1. Address has been successfully added (address_id exists in URL)
     // 2. We're on order-status or order-tracking page
-    const isOrderStatusPage = location.pathname.includes('/order-status') || 
-                               location.pathname.includes('/order-tracking');
-    
+    // 3. Addresses are still loading
+    const isOrderStatusPage =
+      location.pathname.includes("/order-status") ||
+      location.pathname.includes("/order-tracking");
+
     if (address_id || isOrderStatusPage) {
       return;
     }
-    
-    if (
-      (cart_items?.checkout_mode === "other" && !hideAddress) ||
-      (allAddresses && !allAddresses.length)
-    ) {
+
+    // Don't open modal if addresses are still loading
+    if (isAddressLoading) {
+      return;
+    }
+
+    // For guest users or logged-in users with no addresses:
+    // allAddresses will be empty array [] or undefined
+    // allAddresses && !allAddresses.length will be true for empty array
+    // (!allAddresses || !allAddresses.length) handles both undefined and empty array cases
+    // This ensures the "Add New Address" modal opens for users with no addresses
+    const shouldOpenForGuest =
+      !allAddresses || !allAddresses.length; // No addresses = empty array or undefined
+    const shouldOpenForOtherMode =
+      cart_items?.checkout_mode === "other" && !hideAddress;
+
+    if (shouldOpenForGuest || shouldOpenForOtherMode) {
       showAddNewAddressModal();
     }
-  }, [allAddresses]);
+  }, [allAddresses, address_id, isAddressLoading]);
 
   useEffect(() => {
-    // Don't open modal if:
-    // 1. Address has been successfully added (address_id exists in URL)
-    // 2. We're on order-status or order-tracking page
-    const isOrderStatusPage = location.pathname.includes('/order-status') || 
-                               location.pathname.includes('/order-tracking');
-    
-    if (address_id || isOrderStatusPage) {
+    // CRITICAL CHECKS FIRST - Don't open modal if:
+    // 1. Address_id exists in URL (user navigated with an address selected)
+    // 2. selectedAddressId is set in state (address is already selected)
+    // 3. We're on order-status or order-tracking page
+    // 4. Address exists in allAddresses matching address_id or selectedAddressId
+    // These checks must happen FIRST before any other logic
+    const isOrderStatusPage =
+      location.pathname.includes("/order-status") ||
+      location.pathname.includes("/order-tracking");
+
+    // PRIMARY CHECK: If address_id exists in URL, NEVER open modal
+    // Also close modal if it's already open (shouldn't happen, but safety check)
+    // This handles the case when user navigates to checkout with an address
+    if (address_id) {
+      if (openModal) {
+        setOpenModal(false);
+      }
       return;
     }
-    
+
+    // SECONDARY CHECK: If selectedAddressId is set, don't open modal
+    // Also close modal if it's already open
+    // This prevents opening when address is selected but URL hasn't updated yet
+    if (selectedAddressId) {
+      if (openModal) {
+        setOpenModal(false);
+      }
+      return;
+    }
+
+    // Don't open modal on order-status pages
+    if (isOrderStatusPage) {
+      return;
+    }
+
+    // Don't open modal if addresses are still loading
+    if (isAddressLoading) {
+      return;
+    }
+
+    // TERTIARY CHECK: Verify if address_id or selectedAddressId exists in allAddresses
+    // This is an additional safety check to prevent opening modal when address is selected
+    const targetAddressId = address_id || selectedAddressId;
+    if (targetAddressId && allAddresses && allAddresses.length > 0) {
+      const addressExists = allAddresses.some(
+        (addr) => addr?.id === targetAddressId
+      );
+      if (addressExists) {
+        if (openModal) {
+          setOpenModal(false);
+        }
+        return;
+      }
+    }
+
+    // Don't open modal if we have addresses and one is already selected
+    // This handles the case where user logged in with existing addresses
+    // and a pincode-only selectedAddress from guest session
+    const hasAddresses = allAddresses && allAddresses.length > 0;
+    const hasSelectedAddress = selectedAddressId || address_id;
+
+    // If we have addresses and an address is selected (even if selectedAddress is pincode-only),
+    // don't open the modal - the address selection is already handled
+    if (hasAddresses && hasSelectedAddress) {
+      if (openModal) {
+        setOpenModal(false);
+      }
+      return;
+    }
+
+    // Only open modal if:
+    // 1. Serviceability is enabled
+    // 2. selectedAddress is pincode-only (no id)
+    // 3. No addresses available OR no address is selected
+    // 4. No address_id in URL and no selectedAddressId in state
     if (isServiceability && selectedAddress && !selectedAddress.id) {
       showAddNewAddressModal();
     }
-  }, [selectedAddress, isServiceability]);
+  }, [
+    selectedAddress,
+    isServiceability,
+    address_id,
+    isAddressLoading,
+    allAddresses,
+    selectedAddressId,
+    openModal,
+    setOpenModal,
+  ]);
 
   // Track if we're in the middle of a user-initiated country change
   const isUserChangingCountry = useRef(false);
@@ -631,20 +719,95 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       .then((res) => {
         const { is_deleted } = res?.data?.removeAddress ?? {};
 
-        fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id });
-
         if (is_deleted) {
           // Clear selected address from global store if the deleted address was selected
           if (selectedAddress?.id === deletedAddressId) {
             clearSelectedAddress?.();
           }
-          // Reset selected address ID
-          setSelectedAddressId("");
+          
+          // Fetch updated addresses and select the next appropriate address
+          fpi
+            .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id })
+            .then((data) => {
+              const updatedAddresses = data?.data?.addresses?.address || [];
+              
+              // Find default address first, if no default then find first address
+              const defaultAddress = updatedAddresses.find(
+                (addr) => addr?.is_default_address
+              );
+              const addressToSelect = defaultAddress || updatedAddresses[0];
+              
+              if (addressToSelect?.id && typeof addressToSelect.id === "string") {
+                // Select the next appropriate address without navigating to order summary
+                const addressIdString = addressToSelect.id;
+                const payload = {
+                  cartId: cart_id,
+                  buyNow,
+                  selectCartAddressRequestInput: {
+                    cart_id,
+                    id: addressIdString,
+                    billing_address_id: addressIdString,
+                  },
+                };
+                
+                fpi
+                  .executeGQL(SELECT_ADDRESS, payload)
+                  .then((res) => {
+                    if (res?.data?.selectAddress?.is_valid) {
+                      // Update selectedAddressId state
+                      setSelectedAddressId(addressIdString);
+                      // Update query parameter without navigation
+                      try {
+                        const newParams = new URLSearchParams(searchParams);
+                        newParams.set("address_id", addressIdString);
+                        setSearchParams(newParams, { replace: true });
+                      } catch (error) {
+                        // Silently handle URL update errors
+                        // Error is non-critical, user can continue
+                      }
+                      // Update selected address in global store
+                      updatedSelectedAddress(addressToSelect).catch(() => {
+                        // Silently handle global store update errors
+                        // Error is non-critical, address is still selected
+                      });
+                    }
+                  })
+                  .catch(() => {
+                    // Silently handle address selection errors
+                    // User can manually select address if needed
+                  });
+              } else {
+                // No addresses remaining, clear selection and remove address_id from URL
+                setSelectedAddressId("");
+                try {
+                  const newParams = new URLSearchParams(searchParams);
+                  newParams.delete("address_id");
+                  setSearchParams(newParams, { replace: true });
+                } catch (error) {
+                  // Silently handle URL update errors
+                  // Error is non-critical, selection is still cleared
+                }
+              }
+            })
+            .catch(() => {
+              // If fetching addresses fails, just clear selection
+              setSelectedAddressId("");
+              try {
+                const newParams = new URLSearchParams(searchParams);
+                newParams.delete("address_id");
+                setSearchParams(newParams, { replace: true });
+              } catch (urlError) {
+                // Silently handle URL update errors
+                // Error is non-critical, selection is still cleared
+              }
+            });
+          
           showSnackbar(
             t("resource.common.address.address_deletion_success"),
             "success"
           );
         } else {
+          fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id });
           showSnackbar(
             t("resource.common.address.address_deletion_failure"),
             "error"
@@ -680,8 +843,8 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     navigate(`${location.pathname}?${updatedSearch}`);
   };
 
-  const selectAddress = (id = "", addresses = null) => {
-    const addressList = addresses?.length > 0 ? addresses : allAddresses;
+  const selectAddress = (id = "", addresses = null, shouldOpenShipment = true) => {
+    const addressList = addresses?.length > 0 ? addresses : allAddresses || [];
 
     // Ensure we extract ID string from id parameter (handle case where object might be passed)
     let idString = "";
@@ -749,13 +912,18 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
               });
           })
           .catch(() => {});
-        setShowShipment(true);
+        // Only open shipment accordion if shouldOpenShipment is true
+        if (shouldOpenShipment) {
+          setShowShipment(true);
+        }
         setAddressLoader(false);
         setInvalidAddressError(null);
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
+        if (shouldOpenShipment) {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }
       } else {
         setInvalidAddressError({
           id: addressIdString,

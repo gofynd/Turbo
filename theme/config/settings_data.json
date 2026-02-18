@@ -183,6 +183,7 @@
             "footer_image_desktop": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/desktop-footer-image.jpg",
             "footer_image_mobile": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/mobile-footer-image.jpg",
             "storefront_copilot_actions": false,
+            "filter_toggle_button": false,
             "enable_swr_caching": false
           }
         }
@@ -291,8 +292,7 @@
               "grid_mob": "2",
               "description": "",
               "banner_link": "",
-              "show_add_to_cart": true,
-              "filter_toggle_button": false
+              "show_add_to_cart": true
             }
           }
         },
@@ -1067,10 +1067,6 @@
                         "text": "Block style"
                       }
                     ]
-                  },
-                  "filter_toggle_button": {
-                    "type": "checkbox",
-                    "value": false
                   }
                 }
               },

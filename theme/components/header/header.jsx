@@ -168,8 +168,8 @@ function Header({ fpi }) {
     // Prevent race condition: Only call CART_COUNT if cart items array doesn't exist.
     // If items array exists, CART_DETAILS was already called and will update Redux with full data.
     const hasCartItemsArray = Array.isArray(CART_ITEMS?.cart_items?.items);
-    const isCartPage = location.pathname === "/cart/bag/" || location.pathname === "/cart/bag";
-    
+    const isCartPage =
+      location.pathname === "/cart/bag/" || location.pathname === "/cart/bag";
     // Only fetch cart count if:
     // 1. Cart data is empty/null
     // 2. Items array doesn't exist (CART_DETAILS hasn't been called)
@@ -302,29 +302,94 @@ function Header({ fpi }) {
     deliveryPromise,
     isLoading,
     isServiceabilityModalOpen,
+    selectedAddress,
     deliveryAddress,
     openServiceabilityModal,
     closeServiceabilityModal,
     handleLocationUpdate,
   } = useHyperlocal(fpi, "header");
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      // Don't open address modal on order-status page
-      const isOrderStatusPage = location.pathname.includes('/order-status') || 
-                                 location.pathname.includes('/order-tracking');
-      
-      if (isServiceabilityMandatory && !deliveryAddress && !isOrderStatusPage) {
-        openServiceabilityModal();
-      }
-    }, 1000);
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [deliveryAddress, isServiceabilityMandatory, location.pathname]);
-
   const query = new URLSearchParams(useLocation().search);
   const checkoutId = query.get("id");
+
+  // CRITICAL: Close modal immediately when navigating to checkout page
+  // This ensures modal is closed even if it was open from another page
+  useEffect(() => {
+    const isCheckoutPage = location.pathname.includes("/cart/checkout");
+    if (isCheckoutPage && isServiceabilityModalOpen) {
+      closeServiceabilityModal();
+    }
+  }, [location.pathname, isServiceabilityModalOpen, closeServiceabilityModal]);
+
+  useEffect(() => {
+    // Wait for address loading to complete before checking
+    if (isLoading) {
+      return;
+    }
+
+    // Don't open address modal on:
+    // 1. Order-status/order-tracking pages
+    // 2. Checkout page (checkout page has its own address selection flow) - ALWAYS skip
+    // 3. Cart page (cart page has its own address selection UI)
+    const isOrderStatusPage =
+      location.pathname.includes("/order-status") ||
+      location.pathname.includes("/order-tracking");
+    const isCheckoutPage = location.pathname.includes("/cart/checkout");
+    const isCartPage =
+      location.pathname === "/cart/bag" || location.pathname === "/cart/bag/";
+
+    // CRITICAL: NEVER open modal on checkout page - checkout has its own address flow
+    if (isCheckoutPage) {
+      // Also close modal if it's already open (shouldn't happen, but safety check)
+      if (isServiceabilityModalOpen) {
+        closeServiceabilityModal();
+      }
+      return;
+    }
+
+    // Don't open modal on order-status or cart pages
+    if (isOrderStatusPage || isCartPage) {
+      return;
+    }
+
+    // Check if user has selected any address/pincode
+    // selectedAddress can be:
+    // 1. null/undefined - no selection
+    // 2. Object with id - full address selected
+    // 3. Object without id but with area_code/pincode - pincode-only selected (valid selection)
+    const hasAnySelection =
+      selectedAddress &&
+      (selectedAddress.id ||
+        selectedAddress.area_code ||
+        selectedAddress.pincode);
+
+    // Only open modal if:
+    // 1. Serviceability is mandatory
+    // 2. No address/pincode is selected (selectedAddress is null/undefined or has no area_code/pincode/id)
+    // 3. Not on order-status page
+    // 4. Not on checkout page (checkout has its own address selection)
+    // 5. Not on cart page (cart has its own address selection UI)
+    // 6. Modal is not already open
+    if (
+      isServiceabilityMandatory &&
+      !hasAnySelection &&
+      !isOrderStatusPage &&
+      !isCheckoutPage &&
+      !isCartPage &&
+      !isServiceabilityModalOpen
+    ) {
+      openServiceabilityModal();
+    }
+  }, [
+    isLoading,
+    selectedAddress,
+    isServiceabilityMandatory,
+    location.pathname,
+    isServiceabilityModalOpen,
+    openServiceabilityModal,
+    closeServiceabilityModal,
+    searchParams,
+  ]);
   const defaultHeaderName =
     hideNavList && checkoutId ? "Select Address" : "My Cart";
   const cartBackNavigationList = ["Select Address", "Order Summary", "Payment"];
@@ -341,6 +406,11 @@ function Header({ fpi }) {
           ref={headerRef}
         >
           <header
+            data-transparent-header={
+              transparent_header && isValidSection && !scrolled
+                ? "true"
+                : "false"
+            }
             className={`${styles.header} ${header_border ? styles.seperator : ""} ${
               transparent_header && isValidSection
                 ? styles.transparentBackground

@@ -21,6 +21,7 @@ import {
   usePincodeInput,
   useGoogleMapConfig,
   useThemeFeature,
+  useLocalStorage,
 } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
 import useHyperlocal from "../../components/header/location-modal/useHyperlocal";
@@ -59,11 +60,7 @@ function sanitizeAddressPayload(formValues = {}) {
     payload?.phone?.mobile &&
     payload?.phone?.countryCode
   ) {
-    // Remove any existing country_phone_code to prevent accumulation of plus signs
-    delete payload.country_phone_code;
-    // Clean countryCode by removing all plus signs, then add a single plus
-    const cleanCountryCode = payload.phone.countryCode?.replace(/\+/g, "") || "";
-    payload.country_phone_code = cleanCountryCode ? `+${cleanCountryCode}` : "";
+    payload.country_phone_code = `+${payload.phone.countryCode}`;
     payload.phone = payload.phone.mobile;
   }
 
@@ -83,6 +80,8 @@ const useCartDeliveryLocation = ({ fpi }) => {
   const { cart_items } = CART || {};
   const [selectedAddressId, setSelectedAddressId] = useState("");
   const [isPincodeModalOpen, setIsPincodeModalOpen] = useState(false);
+  // Get restored address from localStorage as fallback
+  const [restoredAddress] = useLocalStorage("selectedAddress", null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
   const [error, setError] = useState(null);
@@ -1226,11 +1225,18 @@ const useCartDeliveryLocation = ({ fpi }) => {
   }, [selectedAddress]);
 
   const deliveryLocation = useMemo(() => {
-    if (selectedAddress) {
-      return getAddressStr(selectedAddress);
+    // Use restored address from localStorage if selectedAddress from store is null
+    const addressToUse = selectedAddress || restoredAddress;
+    if (addressToUse) {
+      return getAddressStr(addressToUse);
     }
     return deliveryLocationInfo.join(", ");
-  }, [isServiceability, selectedAddress, deliveryLocationInfo]);
+  }, [
+    isServiceability,
+    selectedAddress,
+    restoredAddress,
+    deliveryLocationInfo,
+  ]);
 
   const btnLabel =
     !isServiceabilityPincodeOnly || (isServiceability && isHeaderMap)

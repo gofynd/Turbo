@@ -1128,6 +1128,7 @@
       "profile": "Profile",
       "profile_icon_default_text": "Profile",
       "select_reattempt_date": "Select Reattempt Date",
+      "select_dob_date": "Select Date of Birth",
       "request_reattempt": "Request Reattempt",
       "please_select_reattempt_date": "Please select a reattempt date",
       "date_cant_be_blank": "Date cannot be blank",

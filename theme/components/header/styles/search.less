@@ -12,12 +12,6 @@
   &.backgroundNone {
     background-color: unset !important;
   }
-  // Make search background transparent when header is transparent
-  // Check if parent header has transparentBackground class
-  :global(.header.transparentBackground) &,
-  [class*="transparentBackground"] & {
-    background-color: transparent !important;
-  }
   z-index: 1;
   @media @tablet {
     display: flex;
@@ -405,4 +399,11 @@
 
 .querySuggestionsSection {
   margin-bottom: 16px;
+}
+
+/* PRODUCTION-SAFE TRANSPARENT HEADER SUPPORT */
+/* Works even when CSS modules minify classnames */
+/* Uses stable data attributes that never get renamed */
+:global(header[data-transparent-header="true"]) [data-role="search-overlay"] {
+  background-color: transparent !important;
 }

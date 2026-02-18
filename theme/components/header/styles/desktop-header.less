@@ -249,13 +249,11 @@
   }
 }
 
-// Make search background transparent when header is transparent and always on search is enabled
-:global(.header.transparentBackground) {
-  .alwaysOnSearch {
-    .customSearchClass {
-      background-color: transparent !important;
-    }
-  }
+/* PRODUCTION-SAFE TRANSPARENT HEADER SUPPORT FOR ALWAYS-ON SEARCH */
+/* Works even when CSS modules minify classnames */
+/* Uses stable data attributes that never get renamed */
+:global(header[data-transparent-header="true"]) [data-role="always-on-search"] [data-role="search-overlay"] {
+  background-color: transparent !important;
 }
 
 .hyperlocalActionBtn {

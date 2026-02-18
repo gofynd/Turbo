@@ -314,13 +314,6 @@ export const settings = {
         },
       ],
     },
-    {
-      type: "checkbox",
-      id: "filter_toggle_button",
-      label: "t:resource.common.show_filter_toggle_button",
-      info: "t:resource.common.show_filter_toggle_button_info",
-      default: false,
-    },
   ],
 };
 

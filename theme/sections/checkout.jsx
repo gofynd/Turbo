@@ -14,7 +14,7 @@ import FyButton from "@gofynd/theme-template/components/core/fy-button/fy-button
 import "@gofynd/theme-template/pages/checkout/checkout.css";
 
 import styles from "../styles/sections/checkout.less";
-import { CHECKOUT_LANDING, PAYMENT_OPTIONS } from "../queries/checkoutQuery";
+import { CHECKOUT_LANDING, PAYMENT_OPTIONS, FETCH_SHIPMENTS } from "../queries/checkoutQuery";
 import { useGoogleMapConfig, useDeliverPromise } from "../helper/hooks";
 import useAddress from "../page-layouts/single-checkout/address/useAddress";
 import usePayment from "../page-layouts/single-checkout/payment/usePayment";
@@ -66,6 +66,8 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const address_id = searchParams.get("address_id");
   const error = searchParams.get("error");
   const transactionFailed = searchParams.get("failed");
+  const payment_mode = searchParams.get("payment_mode");
+  const aggregator_name = searchParams.get("aggregator_name");
 
   const cartComment = useCartComment({ fpi, cartData: bagData });
   const { ...payment } = usePayment(fpi);
@@ -304,7 +306,25 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
             ? breakupValues[breakupValues.length - 1]?.value
             : 0;
         setCheckoutAmount(amount);
-        if ((error || transactionFailed) && amount) {
+        // When payment fails and URL has payment_mode/aggregator_name, 
+        // open payment section and close order summary
+        // If URL has payment_mode/aggregator_name, it indicates a payment attempt was made
+        // If we're back on checkout (not order status), it likely means payment failed
+        const hasPaymentParams = payment_mode || aggregator_name;
+        const hasError = error || transactionFailed;
+        
+        if (hasPaymentParams && amount) {
+          // Open payment section and close order summary to show payment method/error
+          // If URL has payment_mode/aggregator_name, it indicates a payment attempt was made
+          // If we're back on checkout (not order status), it likely means payment failed
+          showPaymentHandler(true);
+          showShipmentHandler(false);
+          // Fetch payment options to show payment methods and any errors
+          showPaymentOptions(amount);
+        } else if (hasError && amount) {
+          // If there's an error but no payment params, still open payment section
+          showPaymentHandler(true);
+          showShipmentHandler(false);
           showPaymentOptions(amount);
         }
       } catch (err) {
@@ -342,6 +362,16 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       setCurrentStepIdx(0);
     }
   }, [showShipment, showPayment]);
+
+  // Ensure payment section stays open when payment params are present (payment failure scenario)
+  // This prevents other useEffects from opening shipment and causing visual jerk
+  useEffect(() => {
+    const hasPaymentParams = payment_mode || aggregator_name;
+    if (hasPaymentParams && showPayment && showShipment) {
+      // If payment section should be open but shipment is also open, close shipment
+      showShipmentHandler(false);
+    }
+  }, [showPayment, showShipment, payment_mode, aggregator_name]);
 
   useEffect(() => {}, [user_id]);
 
@@ -431,27 +461,82 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   useEffect(() => {
     if (!address_id || hasAddressFromQuery.current) return;
-    if (showShipment) {
+    const hasPaymentParams = payment_mode || aggregator_name;
+    
+    if (hasPaymentParams) {
+      // When payment params are present, fetch shipments without opening shipment section
+      // This ensures shipments are loaded for order summary while keeping payment section open
       hasAddressFromQuery.current = true;
+      const fetchShipmentsForPaymentFailure = async () => {
+        try {
+          await fpi.executeGQL(FETCH_SHIPMENTS, {
+            addressId: address_id,
+            id: cart_id,
+            buyNow: buy_now === "true",
+          });
+        } catch (error) {
+          console.error("Error fetching shipments:", error);
+        }
+      };
+      fetchShipmentsForPaymentFailure();
       return;
     }
+    
+    if (showShipment) {
+      // Check if shipments have actually loaded before marking as processed
+      // If shipments haven't loaded yet, we should still try to fetch them
+      const hasShipments = shipments && Array.isArray(shipments) && shipments.length > 0;
+      if (hasShipments) {
+        hasAddressFromQuery.current = true;
+        return;
+      }
+      // Don't return - continue to call selectAddress to fetch shipments
+    }
+
+    if (!address?.selectAddress) {
+      return;
+    }
+
     hasAddressFromQuery.current = true;
     try {
-      address?.selectAddress?.(address_id);
+      // When payment params are present, don't open shipment accordion
+      address.selectAddress(address_id, null, !hasPaymentParams);
     } catch (error) {
       console.error("Error selecting address:", error);
       hasAddressFromQuery.current = false;
     }
-  }, [address_id, showShipment, address]);
+    // Removed 'shipments' from dependencies to prevent infinite loop
+    // When selectAddress is called, it fetches shipments, which would trigger this effect again
+  }, [address_id, showShipment, address, payment_mode, aggregator_name, cart_id, buy_now, fpi]);
 
   const addressId = useMemo(() => {
-    if (!address?.getDefaultAddress || !Array.isArray(address.getDefaultAddress)) {
+    if (!address) {
       return undefined;
     }
-    return address.getDefaultAddress.find(
-      ({ is_default_address }) => is_default_address
-    )?.id;
-  }, [address?.getDefaultAddress]);
+    
+    // First, try to get default address (matches useAddress hook logic)
+    // getDefaultAddress already filters for is_default_address: true
+    if (address.getDefaultAddress && Array.isArray(address.getDefaultAddress) && address.getDefaultAddress.length > 0) {
+      const defaultAddressId = address.getDefaultAddress[0]?.id;
+      if (defaultAddressId) {
+        return defaultAddressId;
+      }
+    }
+    
+    // If no default address, fall back to first address from other addresses
+    // This handles guest users or cases where no default address is set
+    if (address.getOtherAddress && Array.isArray(address.getOtherAddress) && address.getOtherAddress.length > 0) {
+      return address.getOtherAddress[0]?.id;
+    }
+    
+    // If no other addresses, try allAddresses as last resort
+    // This ensures we always try to select an address if available
+    if (address.allAddresses && Array.isArray(address.allAddresses) && address.allAddresses.length > 0) {
+      return address.allAddresses[0]?.id;
+    }
+    
+    return undefined;
+  }, [address?.getDefaultAddress, address?.getOtherAddress, address?.allAddresses]);
 
   const redirectPaymentOptions = () => {
     setIsLoading(true);
@@ -469,8 +554,44 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       // Use replace: true to avoid creating history entries
       // This prevents browser back from navigating through URL parameter changes
       setSearchParams(newParams, { replace: true });
+      
+      // Reset the flag so that selectAddress can be called when address_id is set
+      // This ensures shipments are fetched when address is auto-selected
+      hasAddressFromQuery.current = false;
     }
   }, [addressId, searchParams, setSearchParams]);
+
+  // Ensure shipments are fetched when address_id exists but shipments haven't loaded
+  // This is a fallback to ensure shipments load even if the initial address selection didn't trigger
+  useEffect(() => {
+    // Skip if already processing or if first effect already handled it
+    if (hasAddressFromQuery.current) return;
+    
+    const currentAddressId = searchParams.get("address_id");
+    const hasShipments = shipments && Array.isArray(shipments) && shipments.length > 0;
+    const hasPaymentParams = payment_mode || aggregator_name;
+
+    // If we have an address_id but no shipments and address.selectAddress is available
+    // and we're not already loading, trigger shipment fetch
+    if (
+      currentAddressId &&
+      !hasShipments &&
+      !isShipmentLoading &&
+      address?.selectAddress
+    ) {
+      // Now try to fetch shipments
+      // When payment params are present, don't open shipment accordion
+      hasAddressFromQuery.current = true;
+      try {
+        address.selectAddress(currentAddressId, null, !hasPaymentParams);
+      } catch (error) {
+        console.error("Error calling selectAddress to fetch shipments:", error);
+        hasAddressFromQuery.current = false;
+      }
+    }
+    // Removed 'shipments' from dependencies to prevent infinite loop
+    // Only check shipments inside the effect, don't depend on it
+  }, [address_id, isShipmentLoading, address, searchParams, payment_mode, aggregator_name]);
 
   const handlePlaceOrder = async () => {
     setIsLoading(true);

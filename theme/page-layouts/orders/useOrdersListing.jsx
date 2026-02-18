@@ -51,15 +51,15 @@ const useOrdersListing = (fpi) => {
             setOrderShipments(res?.data?.order || {});
             setLinkOrderDetails({
               data: res?.data?.order || null,
-              error: res?.errors?.length ? res?.errors[0]?.message : null,
+              error: res?.errors?.length ? res?.errors?.[0]?.message : null,
               amount:
                 res?.data?.order?.breakup_values?.[
                   res?.data?.order?.breakup_values?.length - 1
                 ],
               orderId: params?.orderId,
             });
-            if (res?.errors[0]?.message) {
-              showSnackbar(res?.errors[0]?.message, "error");
+            if (res?.errors?.[0]?.message) {
+              showSnackbar(res?.errors?.[0]?.message, "error");
             }
           })
           .finally(() => {

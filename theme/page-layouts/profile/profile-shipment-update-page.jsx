@@ -760,10 +760,9 @@ function ProfileShipmentUpdatePage({ fpi }) {
         });
         return response;
       } else {
-        console.log(response.errors[0].message, "eerrrrrrrr");
         const errMsg =
           data?.message ||
-          response?.errors[0]?.message ||
+          response?.errors?.[0]?.message ||
           t("resource.checkout.failed_to_add_upi_id");
         setAddUpiErrorMsg(errMsg);
         setTimeout(() => {

@@ -104,7 +104,10 @@ function HeaderDesktop({
           {isDoubleRowHeader &&
             globalConfig?.always_on_search &&
             !hideNavList && (
-              <div className={styles.alwaysOnSearch}>
+              <div
+                className={styles.alwaysOnSearch}
+                data-role="always-on-search"
+              >
                 <Search
                   customSearchClass={styles.customSearchClass}
                   customSearchWrapperClass={styles.customSearchWrapperClass}

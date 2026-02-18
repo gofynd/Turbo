@@ -124,7 +124,7 @@ function Refund({ fpi }) {
       })
       .catch((error) => {
         if (error?.errors && error?.errors?.length) {
-          showSnackbar(error?.errors[0].message, "error");
+          showSnackbar(error?.errors?.[0]?.message, "error");
         }
       })
       .finally(() => {

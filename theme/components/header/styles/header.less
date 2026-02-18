@@ -90,6 +90,9 @@
     background-color: unset !important;
     transition: background 0.3s;
     border-bottom: unset !important;
+    
+    // Note: Search background transparency is now handled via data attributes
+    // See search.less and desktop-header.less for production-safe selectors
   }
   &.scrolled {
     background-color: @HeaderBackground !important;
