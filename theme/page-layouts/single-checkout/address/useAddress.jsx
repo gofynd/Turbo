@@ -11,7 +11,11 @@ import {
   SELECT_ADDRESS,
 } from "../../../queries/checkoutQuery";
 import { LOCALITY } from "../../../queries/logisticsQuery";
-import { capitalize, translateDynamicLabel } from "../../../helper/utils";
+import {
+  capitalize,
+  translateDynamicLabel,
+  isValidErrorMessage,
+} from "../../../helper/utils";
 import useInternational from "../../../components/header/useInternational";
 import useHyperlocal from "../../../components/header/location-modal/useHyperlocal";
 import {
@@ -114,11 +118,16 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       location.pathname.includes("/order-status") ||
       location.pathname.includes("/order-tracking");
 
+    // IMPORTANT: Don't close modal if user is actively editing an address
+    // Check if we're in edit mode (addressItem is set and isNewAddress is false)
+    const isEditingAddress = addressItem && !isNewAddress;
+
     // PRIMARY CHECK: If address_id exists in URL, NEVER open modal
     // Also close modal if it's already open (shouldn't happen, but safety check)
     // This handles the case when user navigates to checkout with an address
+    // BUT don't close if user is actively editing
     if (address_id) {
-      if (openModal) {
+      if (openModal && !isEditingAddress) {
         setOpenModal(false);
       }
       return;
@@ -127,8 +136,9 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     // SECONDARY CHECK: If selectedAddressId is set, don't open modal
     // Also close modal if it's already open
     // This prevents opening when address is selected but URL hasn't updated yet
+    // BUT don't close if user is actively editing
     if (selectedAddressId) {
-      if (openModal) {
+      if (openModal && !isEditingAddress) {
         setOpenModal(false);
       }
       return;
@@ -152,7 +162,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         (addr) => addr?.id === targetAddressId
       );
       if (addressExists) {
-        if (openModal) {
+        if (openModal && !isEditingAddress) {
           setOpenModal(false);
         }
         return;
@@ -167,8 +177,9 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
 
     // If we have addresses and an address is selected (even if selectedAddress is pincode-only),
     // don't open the modal - the address selection is already handled
+    // BUT don't close if user is actively editing
     if (hasAddresses && hasSelectedAddress) {
-      if (openModal) {
+      if (openModal && !isEditingAddress) {
         setOpenModal(false);
       }
       return;
@@ -191,6 +202,8 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     selectedAddressId,
     openModal,
     setOpenModal,
+    addressItem,
+    isNewAddress,
   ]);
 
   // Track if we're in the middle of a user-initiated country change
@@ -925,13 +938,27 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           });
         }
       } else {
-        setInvalidAddressError({
-          id: addressIdString,
-          message:
-            translateDynamicLabel(res?.data?.selectAddress?.message, t) ||
-            res?.errors?.[0]?.message,
-        });
+        const errorMessage =
+          translateDynamicLabel(res?.data?.selectAddress?.message, t) ||
+          res?.errors?.[0]?.message;
+
+        // Only set error if we have a valid, meaningful error message (not a generic JS error)
+        // Use utility function to validate error message
+        if (isValidErrorMessage(errorMessage)) {
+          setInvalidAddressError({
+            id: addressIdString,
+            message: errorMessage,
+          });
+        } else {
+          // Clear any existing error if we get a generic JS error or invalid message
+          setInvalidAddressError(null);
+        }
       }
+    }).catch(() => {
+      // Don't set invalidAddressError for network/query errors
+      // Only set it for validation errors from the API
+      // Network errors should be handled by showing a snackbar or other UI feedback
+      setInvalidAddressError(null);
     });
   };
 

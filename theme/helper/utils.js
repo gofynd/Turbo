@@ -874,6 +874,83 @@ export function translateDynamicLabel(input, t) {
     return typeof input === "string" ? input : "";
   }
 }
+
+/**
+ * Checks if an error message is a generic JavaScript error that shouldn't be shown to users.
+ * These are typically internal errors that should be handled gracefully.
+ * Only meaningful API/validation errors should be displayed to users.
+ *
+ * @param {string|null|undefined} errorMessage - The error message to check
+ * @returns {boolean} - True if the error is a generic JS error, false otherwise
+ */
+export function isGenericJSError(errorMessage) {
+  // Early return for null, undefined, or non-string types
+  if (!errorMessage || typeof errorMessage !== "string") {
+    return false;
+  }
+
+  const errorLower = errorMessage.toLowerCase();
+
+  // Check for common generic JavaScript error patterns
+  const genericErrorPatterns = [
+    "cannot read properties",
+    "reading 'find'",
+    "reading 'map'",
+    "reading 'length'",
+    "reading 'slice'",
+    "reading 'filter'",
+    "reading 'reduce'",
+    "reading 'forEach'",
+    "reading 'push'",
+    "reading 'pop'",
+    "is not a function",
+    "is not defined",
+    "cannot read",
+    "typeerror",
+    "referenceerror",
+    "syntaxerror",
+    "rangeerror",
+    "undefined is not",
+    "null is not",
+  ];
+
+  // Check if error message contains any generic error patterns
+  const hasGenericPattern = genericErrorPatterns.some((pattern) =>
+    errorLower.includes(pattern)
+  );
+
+  // Also check for the specific pattern: "undefined" + "reading"
+  const hasUndefinedReadingPattern =
+    errorLower.includes("undefined") && errorLower.includes("reading");
+
+  return hasGenericPattern || hasUndefinedReadingPattern;
+}
+
+/**
+ * Validates if an error message is valid and should be displayed to users.
+ * Filters out generic JavaScript errors and empty/invalid messages.
+ *
+ * @param {string|null|undefined} errorMessage - The error message to validate
+ * @returns {boolean} - True if the error message is valid and should be displayed, false otherwise
+ */
+export function isValidErrorMessage(errorMessage) {
+  // Must be a non-empty string
+  if (!errorMessage || typeof errorMessage !== "string") {
+    return false;
+  }
+
+  // Must not be empty after trimming
+  if (errorMessage.trim() === "") {
+    return false;
+  }
+
+  // Must not be a generic JavaScript error
+  if (isGenericJSError(errorMessage)) {
+    return false;
+  }
+
+  return true;
+}
 export const getAddressStr = (item, isAddressTypeAvailable) => {
   if (!item || typeof item !== "object") {
     return "";
