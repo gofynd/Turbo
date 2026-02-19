@@ -253,7 +253,9 @@ export function Component({ props, globalConfig }) {
   useEffect(() => {
     setIsClient(true);
     try {
-      if (!customValues?.featuredCollectionSsrFteched) {
+      if (
+        !customValues?.[`featuredCollectionSsrFteched-${collection?.value}`]
+      ) {
         if (collection?.value) {
           const payload = {
             slug: collection?.value,
@@ -271,7 +273,12 @@ export function Component({ props, globalConfig }) {
       }
     } catch (error) {
     } finally {
-      fpi.custom.setValue("featuredCollectionSsrFteched", false);
+      if (collection?.value) {
+        fpi.custom.setValue(
+          `featuredCollectionSsrFteched-${collection?.value}`,
+          false
+        );
+      }
     }
   }, [collection, locationDetails?.pincode, i18nDetails?.currency?.code]);
 
@@ -1507,7 +1514,10 @@ Component.serverFetch = async ({ fpi, props, id }) => {
       pageNo: 1,
     };
     await fpi.executeGQL(FEATURED_COLLECTION, payload).then((res) => {
-      fpi.custom.setValue("featuredCollectionSsrFteched", true);
+      fpi.custom.setValue(
+        `featuredCollectionSsrFteched-${props.collection.value}`,
+        true
+      );
       return fpi.custom.setValue(
         `featuredCollectionData-${props.collection.value}`,
         res
