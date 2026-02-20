@@ -42,6 +42,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   const [openModal, setOpenModal] = useState(false);
   const [isNewAddress, setIssNewAddress] = useState(true);
   const [addressItem, setAddressItem] = useState(false);
+
   const [modalTitle, setModalTitle] = useState("");
   const [addressLoader, setAddressLoader] = useState(false);
   const [hideAddress, setHideAddress] = useState(false);
@@ -118,17 +119,40 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       location.pathname.includes("/order-status") ||
       location.pathname.includes("/order-tracking");
 
-    // IMPORTANT: Don't close modal if user is actively editing an address
+    // IMPORTANT: Don't close modal if user is actively editing or adding an address
+    // OR if we're currently saving an address (prevent race condition)
+    // OR if user explicitly closed the modal (prevent auto-reopening)
     // Check if we're in edit mode (addressItem is set and isNewAddress is false)
+    // OR if user explicitly clicked "Add New Address" button (isUserClickingAddNewAddress ref)
+    // OR if we're adding a new address (isNewAddress is true and modal is open)
     const isEditingAddress = addressItem && !isNewAddress;
+    const isAddingNewAddress = isNewAddress && openModal;
+    const isUserExplicitlyAdding = isUserClickingAddNewAddress.current;
+    const isUserInteractingWithModal = isEditingAddress || isAddingNewAddress || isUserExplicitlyAdding || isSavingAddress.current || isUserClosingModal.current;
 
     // PRIMARY CHECK: If address_id exists in URL, NEVER open modal
     // Also close modal if it's already open (shouldn't happen, but safety check)
     // This handles the case when user navigates to checkout with an address
-    // BUT don't close if user is actively editing
+    // BUT don't close if:
+    // - User is actively editing an existing address (addressItem set and isNewAddress false)
+    // - User explicitly clicked "Add New Address" button (isUserClickingAddNewAddress ref is true)
+    // - We're saving an address
     if (address_id) {
-      if (openModal && !isEditingAddress) {
+      // If we're saving an address, the modal should already be closed
+      // But if it's still open for some reason, close it forcefully
+      if (isSavingAddress.current && openModal) {
         setOpenModal(false);
+        setIssNewAddress(false); // Break the isAddingNewAddress calculation
+        return;
+      }
+      // Check if user is actively interacting with modal (editing or explicitly adding)
+      const isEditingExistingAddress = addressItem && !isNewAddress;
+      const isUserExplicitlyAdding = isUserClickingAddNewAddress.current; // User clicked "Add New Address" button
+      const isUserInteracting = isEditingExistingAddress || isUserExplicitlyAdding;
+      
+      if (openModal && !isUserInteracting) {
+        setOpenModal(false);
+        setIssNewAddress(false); // Reset to prevent isAddingNewAddress from being true
       }
       return;
     }
@@ -136,10 +160,18 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     // SECONDARY CHECK: If selectedAddressId is set, don't open modal
     // Also close modal if it's already open
     // This prevents opening when address is selected but URL hasn't updated yet
-    // BUT don't close if user is actively editing
+    // BUT don't close if:
+    // - User is actively editing an existing address (addressItem set and isNewAddress false)
+    // - User explicitly clicked "Add New Address" button (isUserClickingAddNewAddress ref is true)
     if (selectedAddressId) {
-      if (openModal && !isEditingAddress) {
+      // Check if user is actively interacting with modal (editing or explicitly adding)
+      const isEditingExistingAddress = addressItem && !isNewAddress;
+      const isUserExplicitlyAdding = isUserClickingAddNewAddress.current; // User clicked "Add New Address" button
+      const isUserInteracting = isEditingExistingAddress || isUserExplicitlyAdding;
+      
+      if (openModal && !isUserInteracting) {
         setOpenModal(false);
+        setIssNewAddress(false); // Reset to prevent isAddingNewAddress from being true
       }
       return;
     }
@@ -162,7 +194,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         (addr) => addr?.id === targetAddressId
       );
       if (addressExists) {
-        if (openModal && !isEditingAddress) {
+        if (openModal && !isUserInteractingWithModal) {
           setOpenModal(false);
         }
         return;
@@ -173,13 +205,14 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     // This handles the case where user logged in with existing addresses
     // and a pincode-only selectedAddress from guest session
     const hasAddresses = allAddresses && allAddresses.length > 0;
-    const hasSelectedAddress = selectedAddressId || address_id;
+    // Check if address is selected via URL param, state, or selectedAddress object
+    const hasSelectedAddress = selectedAddressId || address_id || selectedAddress?.id;
 
     // If we have addresses and an address is selected (even if selectedAddress is pincode-only),
     // don't open the modal - the address selection is already handled
-    // BUT don't close if user is actively editing
+    // BUT don't close if user is actively editing or adding a new address
     if (hasAddresses && hasSelectedAddress) {
-      if (openModal && !isEditingAddress) {
+      if (openModal && !isUserInteractingWithModal) {
         setOpenModal(false);
       }
       return;
@@ -188,9 +221,31 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     // Only open modal if:
     // 1. Serviceability is enabled
     // 2. selectedAddress is pincode-only (no id)
-    // 3. No addresses available OR no address is selected
-    // 4. No address_id in URL and no selectedAddressId in state
-    if (isServiceability && selectedAddress && !selectedAddress.id) {
+    // 3. No address_id in URL and no selectedAddressId in state (CRITICAL: Don't open if address is already selected)
+    // 4. selectedAddress.id doesn't match address_id or selectedAddressId
+    // 5. User didn't explicitly click "Add New Address" (this is automatic opening, not user-initiated)
+    const hasAddressSelected = address_id || selectedAddressId || selectedAddress?.id;
+    const selectedAddressHasId = selectedAddress?.id;
+    const addressMatchesSelected = 
+      (address_id && selectedAddressHasId === address_id) ||
+      (selectedAddressId && selectedAddressHasId === selectedAddressId);
+    
+    // CRITICAL: Don't open modal if:
+    // - address_id exists in URL (address already selected)
+    // - selectedAddressId exists in state (address already selected)
+    // - selectedAddress.id exists (address already selected)
+    // - selectedAddress.id matches address_id or selectedAddressId (address already selected)
+    // - User explicitly clicked "Add New Address" (this check is for automatic opening only)
+    // - User explicitly closed the modal (prevent auto-reopening)
+    if (
+      isServiceability && 
+      selectedAddress && 
+      !selectedAddress.id && 
+      !hasAddressSelected && 
+      !addressMatchesSelected &&
+      !isUserClickingAddNewAddress.current &&
+      !isUserClosingModal.current
+    ) {
       showAddNewAddressModal();
     }
   }, [
@@ -209,6 +264,12 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   // Track if we're in the middle of a user-initiated country change
   const isUserChangingCountry = useRef(false);
   const timeoutRef = useRef(null);
+  // Track if we're currently saving an address to prevent useEffect from interfering
+  const isSavingAddress = useRef(false);
+  // Track if user explicitly clicked "Add New Address" button (user-initiated action)
+  const isUserClickingAddNewAddress = useRef(false);
+  // Track if user explicitly closed the modal (clicked X button) to prevent auto-reopening
+  const isUserClosingModal = useRef(false);
 
   useEffect(() => {
     // Only sync selectedCountry with currentCountry if:
@@ -477,6 +538,19 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     setEditingAddressCountryDetails(null);
   };
 
+  // Handle modal close - track user-initiated close to prevent auto-reopening
+  const handleModalClose = () => {
+    isUserClosingModal.current = true;
+    setOpenModal(false);
+    setIssNewAddress(true);
+    setAddressItem(false);
+    setModalTitle("");
+    // Reset the flag after a delay to allow useEffect to process it
+    setTimeout(() => {
+      isUserClosingModal.current = false;
+    }, 500);
+  };
+
   const editAddress = async (item) => {
     setModalTitle(t("resource.common.address.edit_address"));
     
@@ -591,6 +665,9 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       .then((res) => {
         setAddressLoader(false);
         if (res?.data?.addAddress?.success) {
+          // Set flag to prevent useEffect from interfering while we're saving
+          isSavingAddress.current = true;
+          
           if (cart_items?.checkout_mode === "other") {
             setHideAddress(true);
           }
@@ -598,15 +675,49 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
             t("resource.common.address.address_addition_success"),
             "success"
           );
-          resetAddressState();
-          fpi
-            .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id })
-            .then((data) => {
-              selectAddress(
-                res?.data?.addAddress?.id,
-                data?.data?.addresses?.address
-              );
-            });
+          
+          // CRITICAL: Close modal and reset state BEFORE selectAddress is called
+          // Set isNewAddress to false FIRST to break the isAddingNewAddress calculation
+          // This ensures isAddingNewAddress = false when useEffect runs, preventing modal from staying open
+          setIssNewAddress(false);
+          setOpenModal(false);
+          setAddressItem(false);
+          setModalTitle("");
+          setEditingAddressCountryDetails(null);
+          // Reset the flag when modal closes
+          isUserChangingCountry.current = false;
+          // Clear any pending timeout
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+          }
+          
+          // Call selectAddress after a brief delay to ensure state updates are processed
+          // Keep isSavingAddress true until well after address_id is set in URL
+          setTimeout(() => {
+            fpi
+              .executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id })
+              .then((data) => {
+                selectAddress(
+                  res?.data?.addAddress?.id,
+                  data?.data?.addresses?.address
+                );
+                // Keep isSavingAddress true for longer to ensure:
+                // 1. selectAddress has updated the URL with address_id
+                // 2. The useEffect has run multiple times and seen isSavingAddress = true
+                // 3. All state updates have propagated
+                setTimeout(() => {
+                  isSavingAddress.current = false;
+                  // Reset isNewAddress back to true for future use
+                  setIssNewAddress(true);
+                }, 1000);
+              })
+              .catch(() => {
+                isSavingAddress.current = false;
+                setIssNewAddress(true);
+              });
+          }, 100);
+          
           setAddressLoader(false);
         } else {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id });
@@ -1003,10 +1114,16 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
   }
 
   function showAddNewAddressModal() {
+    // Mark that this is a user-initiated action (button click)
+    isUserClickingAddNewAddress.current = true;
     setIssNewAddress(true);
     setAddressItem(false);
     setModalTitle(t("resource.common.address.add_new_address"));
     setOpenModal(true);
+    // Reset the flag after a short delay to allow useEffect to process it
+    setTimeout(() => {
+      isUserClickingAddNewAddress.current = false;
+    }, 100);
   }
 
   function getLocality(posttype, postcode) {
@@ -1068,6 +1185,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     setAddressItem,
     setIssNewAddress,
     resetAddressState,
+    handleModalClose,
     editAddress,
     addAddress,
     removeAddress,
