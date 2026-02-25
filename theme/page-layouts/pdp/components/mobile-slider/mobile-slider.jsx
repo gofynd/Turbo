@@ -152,7 +152,12 @@ function MobileSlider({
   }
 
   return (
-    <div className={styles.mobilePdpCarouselBox} style={{ maxWidth: "100vw" }}>
+    <div
+      className={styles.mobilePdpCarouselBox}
+      style={{ maxWidth: "100vw" }}
+      data-carousel="root"
+      data-carousel-mode="mobile"
+    >
       {/* <Slider
         {...settings}
         beforeChange={(cur, next) => {
@@ -161,11 +166,15 @@ function MobileSlider({
         }}
       ></Slider> */}
 
-      <Carousel opts={options}>
-        <CarouselContent>
+      <Carousel opts={options} data-carousel="carousel">
+        <CarouselContent data-carousel="track">
           {images?.map((media, i) => (
-            <CarouselItem style={{ flex: "0 0 100%" }}>
-              <div className={styles.mediaWrapper} key={i}>
+            <CarouselItem
+              style={{ flex: "0 0 100%" }}
+              data-carousel="item"
+              data-carousel-index={i}
+            >
+              <div className={styles.mediaWrapper} key={i} data-carousel="item-wrapper">
                 {/* Sale Tag for mobile - Configuration-based */}
                 {isDataLoad ? (
                   <Skeleton width={"44px"} className={styles.skeletonSaleTag} />

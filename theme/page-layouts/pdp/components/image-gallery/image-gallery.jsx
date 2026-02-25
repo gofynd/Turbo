@@ -296,17 +296,27 @@ function PdpImageGallery({
   };
   // Render Carousel Mode
   const renderCarouselMode = () => (
-    <div className={`${styles.imageGallery} ${styles.desktop}`}>
-      <div className={styles.flexAlignCenter}>
+    <div
+      className={`${styles.imageGallery} ${styles.desktop}`}
+      data-carousel="root"
+      data-carousel-mode="carousel"
+    >
+      <div className={styles.flexAlignCenter} data-carousel="wrapper">
         <div
           className={`${styles.carouselArrow} ${
             styles["carouselArrow--left"]
           } ${currentImageIndex <= 0 ? styles.disableArrow : ""}`}
           onClick={prevSlide}
+          data-carousel="nav-prev"
+          data-carousel-arrow="prev"
         >
           <CarouselNavArrowIcon />
         </div>
-        <div className={styles.imageBox}>
+        <div
+          className={styles.imageBox}
+          data-carousel="main"
+          data-carousel-current-index={currentImageIndex}
+        >
           {isLoading ? (
             <Skeleton
               width={"100%"}
@@ -347,6 +357,8 @@ function PdpImageGallery({
             currentImageIndex >= images.length - 1 ? styles.disableArrow : ""
           }`}
           onClick={nextSlide}
+          data-carousel="nav-next"
+          data-carousel-arrow="next"
         >
           <CarouselNavArrowIcon />
         </div>
@@ -357,17 +369,20 @@ function PdpImageGallery({
           className={`${styles.thumbSlider} ${
             displayThumbnail ? "" : styles.hidden
           }}`}
+          data-carousel="thumbnails"
         >
           <div
             className={`${styles.thumbWrapper} ${
               images && images.length < 5 ? styles.removeWidth : ""
             }`}
+            data-carousel="thumbnails-wrapper"
           >
             <button
               type="button"
               className={`${styles.prevBtn} ${styles.btnNavGallery}`}
               onClick={prevSlide}
               aria-label={t("resource.facets.prev")}
+              data-carousel="thumb-nav-prev"
             >
               <ArrowLeftIcon
                 className={`${
@@ -380,6 +395,7 @@ function PdpImageGallery({
               className={`${styles.thumbnailList} ${
                 styles.scrollbarHidden
               } ${images && images?.length < 5 ? styles.fitContent : ""}`}
+              data-carousel="thumbnail-list"
             >
               {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */}
               {images.map((item, index) =>
@@ -396,6 +412,9 @@ function PdpImageGallery({
                       item.type === "video" ? styles.flexAlign : ""
                     } ${currentImageIndex === index ? styles.active : ""}`}
                     style={{ "--icon-color": iconColor }}
+                    data-carousel="thumbnail-item"
+                    data-carousel-index={index}
+                    data-carousel-active={currentImageIndex === index}
                   >
                     {item.type === "image" && (
                       <FyImage
@@ -437,6 +456,7 @@ function PdpImageGallery({
               className={`${styles.nextBtn} ${styles.btnNavGallery}`}
               onClick={nextSlide}
               aria-label={t("resource.facets.next")}
+              data-carousel="thumb-nav-next"
             >
               <ArrowRightIcon
                 className={`${
@@ -454,10 +474,22 @@ function PdpImageGallery({
 
   // Render Vertical Mode
   const renderVerticalMode = () => (
-    <div className={`${styles.imageGallery} ${styles.desktop}`}>
-      <div className={styles.verticalImageContainer}>
+    <div
+      className={`${styles.imageGallery} ${styles.desktop}`}
+      data-carousel="root"
+      data-carousel-mode="vertical"
+    >
+      <div
+        className={styles.verticalImageContainer}
+        data-carousel="track"
+      >
         {images.map((item, index) => (
-          <div key={index} className={styles.verticalImageItem}>
+          <div
+            key={index}
+            className={styles.verticalImageItem}
+            data-carousel="item"
+            data-carousel-index={index}
+          >
             <PicZoom
               customClass={styles.imageItem}
               source={item.url}
@@ -504,21 +536,34 @@ function PdpImageGallery({
   const renderVerticalWithThumbnailMode = () => (
     <div
       className={`${styles.imageGallery} ${styles.desktop} ${styles.verticalWithThumbnailLayout}`}
+      data-carousel="root"
+      data-carousel-mode="vertical-with-thumbnail"
     >
       <div
         className={styles.verticalWithThumbnailContainer}
         ref={verticalContainerRef}
         onWheel={handleVerticalContainerWheel}
+        data-carousel="wrapper"
       >
         {/* Thumbnail Sidebar */}
-        <div className={styles.thumbnailSidebar} ref={thumbnailSidebarRef}>
-          <div className={styles.thumbnailListVertical}>
+        <div
+          className={styles.thumbnailSidebar}
+          ref={thumbnailSidebarRef}
+          data-carousel="thumbnails"
+        >
+          <div
+            className={styles.thumbnailListVertical}
+            data-carousel="thumbnail-list"
+          >
             {images.map((item, index) => (
               <div
                 key={index}
                 className={`${styles.thumbnailItem} ${
                   currentImageIndex === index ? styles.activeThumbnail : ""
                 }`}
+                data-carousel="thumbnail-item"
+                data-carousel-index={index}
+                data-carousel-active={currentImageIndex === index}
                 onClick={() => {
                   setCurrentImageIndex(index);
                   // Smooth scroll to corresponding main image
@@ -573,8 +618,11 @@ function PdpImageGallery({
         </div>
 
         {/* Main Images Vertical Line */}
-        <div className={styles.mainImagesArea}>
-          <div className={styles.mainImagesVertical}>
+        <div className={styles.mainImagesArea} data-carousel="main">
+          <div
+            className={styles.mainImagesVertical}
+            data-carousel="track"
+          >
             {images.map((item, index) => (
               <div
                 key={index}
@@ -583,6 +631,8 @@ function PdpImageGallery({
                   mainImagesRefs.current[index] = el;
                 }}
                 data-image-index={index}
+                data-carousel="item"
+                data-carousel-index={index}
               >
                 <PicZoom
                   customClass={styles.imageItem}
@@ -633,10 +683,10 @@ function PdpImageGallery({
   };
 
   return (
-    <div className={styles.galleryBox}>
+    <div className={styles.galleryBox} data-carousel-gallery="root">
       {renderByMode()}
 
-      <div className={styles.mobile}>
+      <div className={styles.mobile} data-carousel="mobile-wrapper">
         <MobileSlider
           images={images}
           onImageClick={() => openGallery()}
