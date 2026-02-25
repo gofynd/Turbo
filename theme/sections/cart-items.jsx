@@ -414,6 +414,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
                       availableCouponList={availableCouponList}
                       {...restCouponProps}
                       currencySymbol={currencySymbol}
+                      currencyCode={cartData?.currency?.code}
                     />
                     // )
                   );
