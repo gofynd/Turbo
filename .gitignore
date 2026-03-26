@@ -3,3 +3,4 @@ azure-pipelines.yml
 node_modules
 .env
 .env.*
+github_app_jwt.txt
