@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import clsx from "clsx";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/media-with-text.less";
 import { getProductImgAspectRatio } from "../helper/utils";
+import { getMediaLayout } from "../helper/media-layout";
 import Hotspot from "../components/hotspot/product-hotspot";
 import { FEATURE_PRODUCT_DETAILS } from "../queries/featureProductQuery";
 import { useViewport } from "../helper/hooks";
@@ -26,6 +28,11 @@ export function Component({ props, globalConfig, blocks, fpi }) {
     text_alignment_mobile,
     padding_top,
     padding_bottom,
+    height_mode,
+    desktop_height,
+    mobile_height,
+    desktop_aspect_ratio,
+    mobile_aspect_ratio,
   } = props;
   const descriptionRef = useRef(null);
   const getMobileImage = image_mobile?.value || placeholderMobile;
@@ -34,8 +41,8 @@ export function Component({ props, globalConfig, blocks, fpi }) {
   const getImgSrcSet = () => {
     if (globalConfig?.img_hd) {
       return [
-        { breakpoint: { min: 481 } },
-        { breakpoint: { max: 480 }, url: getMobileImage },
+        { breakpoint: { min: 720 } },
+        { breakpoint: { max: 719 }, url: getMobileImage },
       ];
     }
     return [
@@ -47,7 +54,7 @@ export function Component({ props, globalConfig, blocks, fpi }) {
       { breakpoint: { min: 720 }, width: 1530 },
       { breakpoint: { max: 180 }, width: 450, url: getMobileImage },
       { breakpoint: { max: 360 }, width: 810, url: getMobileImage },
-      { breakpoint: { max: 540 }, width: 1170, url: getMobileImage },
+      { breakpoint: { max: 719 }, width: 1170, url: getMobileImage },
     ];
   };
 
@@ -217,19 +224,62 @@ export function Component({ props, globalConfig, blocks, fpi }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
+  const hasHeightConfig =
+    height_mode?.value &&
+    height_mode.value !== "auto" &&
+    (height_mode.value === "aspect_ratio" ||
+      height_mode.value === "fixed_height");
+
+  const mediaLayout = hasHeightConfig
+    ? getMediaLayout(
+        {
+          height_mode,
+          desktop_height,
+          mobile_height,
+          desktop_aspect_ratio,
+          mobile_aspect_ratio,
+        },
+        isMobile,
+        314 / 229
+      )
+    : null;
+
+  const mediaWrapperClass = clsx(
+    mediaLayout && styles.mediaShell,
+    mediaLayout?.isAspectRatio && styles.mediaShellAspect,
+    mediaLayout?.isFixedHeight && styles.mediaShellFixedHeight
+  );
+
   return (
     <section
       className={`${styles.media_text} ${align_text_desktop?.value && styles["media_text--invert"]}`}
       style={dynamicStyles}
     >
       <div className={styles["media_text__image-wrapper"]}>
-        <FyImage
-          customClass={styles.imageWrapper}
-          src={getDesktopImage}
-          sources={getImgSrcSet()}
-          isFixedAspectRatio={false}
-          alt={title?.value || "Media banner"}
-        />
+        {mediaLayout ? (
+          <div className={mediaWrapperClass} style={mediaLayout.style}>
+            <FyImage
+              customClass={styles.imageWrapper}
+              src={getDesktopImage}
+              sources={getImgSrcSet()}
+              isFixedAspectRatio={mediaLayout.isAspectRatio}
+              aspectRatio={mediaLayout.aspectRatio ?? 314 / 229}
+              mobileAspectRatio={mediaLayout.mobileAspectRatio ?? 320 / 467}
+              isImageFill={
+                mediaLayout.isAspectRatio || mediaLayout.isFixedHeight
+              }
+              alt={title?.value || "Media banner"}
+            />
+          </div>
+        ) : (
+          <FyImage
+            customClass={styles.imageWrapper}
+            src={getDesktopImage}
+            sources={getImgSrcSet()}
+            isFixedAspectRatio={false}
+            alt={title?.value || "Media banner"}
+          />
+        )}
         {!isMobile &&
           getHotspots()?.desktop?.map((hotspot, index) => {
             if (hotspot.type !== "hotspot_desktop") {
@@ -439,6 +489,41 @@ export const settings = {
       default: false,
       label: "t:resource.sections.media_with_text.invert_section",
       info: "t:resource.sections.media_with_text.reverse_section_desktop",
+    },
+    {
+      id: "height_mode",
+      type: "select",
+      label: "t:resource.common.height_mode",
+      default: "auto",
+      options: [
+        { value: "auto", text: "t:resource.common.auto" },
+        { value: "fixed_height", text: "t:resource.common.fixed_height" },
+        { value: "aspect_ratio", text: "t:resource.common.aspect_ratio" },
+      ],
+    },
+    {
+      type: "text",
+      id: "desktop_height",
+      label: "t:resource.common.desktop_height",
+      info: "t:resource.common.desktop_height_info",
+    },
+    {
+      type: "text",
+      id: "mobile_height",
+      label: "t:resource.common.mobile_height",
+      info: "t:resource.common.mobile_height_info",
+    },
+    {
+      type: "text",
+      id: "desktop_aspect_ratio",
+      label: "t:resource.common.desktop_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
+    },
+    {
+      type: "text",
+      id: "mobile_aspect_ratio",
+      label: "t:resource.common.mobile_aspect_ratio",
+      info: "t:resource.common.aspect_ratio_help_text",
     },
     {
       type: "range",

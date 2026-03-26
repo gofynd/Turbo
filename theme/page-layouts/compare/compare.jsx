@@ -9,9 +9,7 @@ import useAddToCartModal from "../plp/useAddToCartModal";
 import { useThemeConfig } from "../../helper/hooks";
 const AddToCart = React.lazy(
   () =>
-    import(
-      "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart"
-    )
+    import("@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart")
 );
 const Modal = React.lazy(
   () => import("@gofynd/theme-template/components/core/modal/modal")
@@ -19,7 +17,7 @@ const Modal = React.lazy(
 
 function CompareProducts({ fpi }) {
   const compareProps = useCompare(fpi);
-  const { globalConfig } = useThemeConfig({ fpi });
+  const { globalConfig, listingPrice } = useThemeConfig({ fpi });
   const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
@@ -57,7 +55,12 @@ function CompareProducts({ fpi }) {
     <div
       className={`${styles.compare} basePageContainer margin0auto ${styles.fontBody}`}
     >
-      <Compare {...compareProps} handleAddToCart={handleAddToCart} />
+      <Compare
+        {...compareProps}
+        handleAddToCart={handleAddToCart}
+        globalConfig={globalConfig}
+        listingPrice={listingPrice}
+      />
       <ScrollToTop />
       {isAddToCartOpen && (
         <Suspense fallback={<div />}>

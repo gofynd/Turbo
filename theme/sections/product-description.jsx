@@ -33,6 +33,7 @@ import {
   isRunningOnClient,
   currencyFormat,
   formatLocale,
+  pickSelectableSize,
 } from "../helper/utils";
 import { useSnackbar, useViewport, useThemeFeature } from "../helper/hooks";
 import { usePdpImageUpdaterFromExtension } from "../helper/pdp-image-updater-extension";
@@ -67,6 +68,11 @@ const MoreOffers = lazy(
 
 export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const fpi = useFPI();
+
+  useEffect(() => {
+    fpi.custom.setValue("pdpSectionMounted", true);
+    return () => fpi.custom.setValue("pdpSectionMounted", false);
+  }, []);
   // const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
   // const locale = language?.locale;
 
@@ -275,8 +281,37 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   // Memoize combined images to prevent unnecessary re-renders and index resets
   const combinedImages = useMemo(() => {
+    console.log("[PDP combinedImages] media:", media?.map((m, i) => ({ i, url: m?.url?.slice(-40), type: m?.type })));
+    console.log("[PDP combinedImages] updatedImages:", updatedImages?.map((m, i) => ({ i, url: m?.url?.slice(-40), type: m?.type, index: m?.index })));
+
     if (updatedImages && Array.isArray(media) && media.length > 0) {
-      return [...updatedImages, ...media];
+      // New indexed format: any image has an explicit index → replace at that position
+      const hasIndexedImages = updatedImages.some(
+        (img) => img.index !== undefined && img.index !== null
+      );
+      if (hasIndexedImages) {
+        const result = [...media];
+        const indexed = [...updatedImages].filter(
+          (img) => img.index !== undefined && img.index !== null
+        );
+        const nonIndexed = updatedImages.filter(
+          (img) => img.index === undefined || img.index === null
+        );
+        // Sort descending so later replacements don't shift earlier indices
+        indexed.sort((a, b) => b.index - a.index);
+        for (const img of indexed) {
+          // Replace (deleteCount=1) instead of insert (deleteCount=0) so the
+          // original image at that slot is swapped out, not duplicated
+          result.splice(img.index, 1, img);
+        }
+        console.log("[PDP combinedImages] result after indexed replace:", result?.map((m, i) => ({ i, url: m?.url?.slice(-40), type: m?.type })));
+        // Non-indexed images fall back to prepend (legacy behavior)
+        return nonIndexed.length > 0 ? [...nonIndexed, ...result] : result;
+      }
+      // Legacy / no-index format: prepend all updated images
+      const legacyResult = [...updatedImages, ...media];
+      console.log("[PDP combinedImages] result after legacy prepend:", legacyResult?.map((m, i) => ({ i, url: m?.url?.slice(-40), type: m?.type })));
+      return legacyResult;
     }
     return updatedImages || media || [];
   }, [updatedImages, media]);
@@ -659,8 +694,16 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   handleShare={() => handleShare()}
                   displayMode={display_mode?.value}
                   showSaleTag={
-                    typeof show_sale_tag?.value === "boolean"
+                    (typeof globalConfig?.show_sale_badge === "boolean"
+                      ? globalConfig?.show_sale_badge
+                      : true) &&
+                    (typeof show_sale_tag?.value === "boolean"
                       ? show_sale_tag?.value
+                      : true)
+                  }
+                  showCustomBadge={
+                    typeof globalConfig?.show_custom_badge === "boolean"
+                      ? globalConfig?.show_custom_badge
                       : true
                   }
                   onLightboxStateChange={handleLightboxStateChange}
@@ -735,7 +778,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                       return (
                         <Fragment key="product_price">
                           {show_price &&
-                            (isPageLoading ? (
+                            (isProductDataLoading ? (
                               <div
                                 style={{
                                   marginTop: "16px",
@@ -804,7 +847,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                       return (
                         <Fragment key="product_tax_label">
                           {getBlockConfigValue(block, "tax_label") &&
-                          isPageLoading ? (
+                          isProductDataLoading ? (
                             <div className={`captionNormal ${styles.taxLabel}`}>
                               <Skeleton width="30%" />
                             </div>
@@ -952,7 +995,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                           styles.sizeSelection__wrapper
                                         }
                                       >
-                                        {isPageLoading ? (
+                                        {isProductDataLoading ? (
                                           <Skeleton
                                             height={55}
                                             width={55}
@@ -1019,7 +1062,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                             >
                               {!isSizeSelectionBlock(block) && (
                                 <>
-                                  {isPageLoading ? (
+                                  {isProductDataLoading ? (
                                     <div
                                       className={`${styles.sizeWrapper} ${
                                         isSizeCollapsed &&
@@ -1099,8 +1142,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                                 }
                                                 key={size?.value}
                                                 className={`${
-                                                  selectedSize ===
-                                                    size.display &&
+                                                  selectedSize === size.value &&
                                                   styles.selected_size
                                                 } ${
                                                   size.quantity === 0 && !isMto
@@ -1177,8 +1219,14 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                         />
                                       </>
                                     ) : (
-                                      <button
-                                        type="button"
+                                      <FyButton
+                                        variant="outlined"
+                                        size="medium"
+                                        startIcon={
+                                          <CartIcon
+                                            className={styles.cartIcon}
+                                          />
+                                        }
                                         ref={addToCartBtnRef}
                                         className={`${styles.button} btnSecondary ${styles.flexCenter} ${styles.addToCart} ${styles.fontBody}`}
                                         onClick={(e) => {
@@ -1192,11 +1240,13 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                             setIsLaodingCart(false);
                                           }, 1000);
                                         }}
-                                        disabled={isLoadingCart || is_serviceable === false}
+                                        disabled={
+                                          isLoadingCart ||
+                                          is_serviceable === false
+                                        }
                                       >
-                                        <CartIcon className={styles.cartIcon} />
                                         {t("resource.common.add_to_cart")}
-                                      </button>
+                                      </FyButton>
                                     )}
                                   </>
                                 )}
@@ -1234,7 +1284,10 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                             setIsLaodingCart(false);
                                           }, 500);
                                         }}
-                                        disabled={isLoadingCart || is_serviceable === false}
+                                        disabled={
+                                          isLoadingCart ||
+                                          is_serviceable === false
+                                        }
                                         startIcon={
                                           <BuyNowIcon
                                             className={styles.buyNow__icon}
@@ -1265,7 +1318,10 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                           setIsLaodingCart(false);
                                         }, 500);
                                       }}
-                                      disabled={isLoadingCart || is_serviceable === false}
+                                      disabled={
+                                        isLoadingCart ||
+                                        is_serviceable === false
+                                      }
                                       startIcon={
                                         <BuyNowIcon
                                           className={styles.buyNow__icon}
@@ -1278,7 +1334,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                 </div>
                               )}
                             {getBlockConfigValue(block, "is_limited_stock") &&
-                              productPriceBySlug?.quantity &&
+                              productPriceBySlug?.quantity > 0 &&
                               productPriceBySlug?.quantity <=
                                 limitedStockQuantity && (
                                 <p className={styles.limitedQuantity}>
@@ -2248,29 +2304,26 @@ Component.serverFetch = async ({ fpi, router, props }) => {
       fpi.custom.setValue("isProductNotFound", true);
       return response;
     }
-    sizeToSelect = product?.sizes?.sizes?.find((item) => item?.value === size);
-    if (!sizeToSelect) {
-      // Fallback: auto-select size and call fulfillment
-      const sizes = product?.sizes?.sizes || [];
-      if (sizes.length > 0) {
-        const isMto = product?.custom_order?.is_custom_order || false;
-        const firstAvailableSize = sizes.find(
-          (sizeOption) => sizeOption.quantity > 0 || isMto
-        );
-        sizeToSelect = firstAvailableSize || sizes[0];
+    const sizesList = product?.sizes?.sizes || [];
+    const isMto = product?.custom_order?.is_custom_order || false;
 
-        if (sizeToSelect?.value) {
-          const payload = {
-            slug,
-            size: sizeToSelect.value.toString(),
-            pincode: "",
-          };
-          try {
-            await fpi.executeGQL(FULFILLMENT_OPTIONS, payload);
-          } catch (e) {
-            console.error("FULFILLMENT_OPTIONS failed", e);
-          }
-        }
+    const urlSizeValue = size || "";
+    sizeToSelect = pickSelectableSize({
+      sizesList,
+      urlSizeValue,
+      isMto,
+    });
+
+    if (sizeToSelect?.value) {
+      const payload = {
+        slug,
+        size: sizeToSelect.value.toString(),
+        pincode: "",
+      };
+      try {
+        await fpi.executeGQL(FULFILLMENT_OPTIONS, payload);
+      } catch (e) {
+        console.error("FULFILLMENT_OPTIONS failed", e);
       }
     }
 

@@ -1,5 +1,5 @@
 import { useLocation, useSearchParams } from "react-router-dom";
-import React, { useEffect, useState, useMemo, useRef, Suspense } from "react";
+import React, { useEffect, useLayoutEffect, useState, useMemo, useRef, Suspense } from "react";
 import { FDKLink } from "fdk-core/components";
 import {
   useGlobalStore,
@@ -33,6 +33,14 @@ import TruckIcon from "../../assets/images/truck.svg";
 const LocationModal = React.lazy(
   () => import("./location-modal/location-modal")
 );
+
+const TRANSPARENT_SECTION_NAMES = new Set([
+  "application-banner",
+  "image-slideshow",
+  "hero-image",
+  "image-gallery",
+  "hero-video",
+]);
 
 function Header({ fpi }) {
   const { t } = useGlobalTranslation("translation");
@@ -75,9 +83,9 @@ function Header({ fpi }) {
   const { activeLocale } = useLocale();
   const i18N_DETAILS = useGlobalStore(fpi.getters.i18N_DETAILS);
   const { supportedLanguages } = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
-
   const [languageIscCode, setLanguageIscCode] = useState([]);
   const [scrolled, setScrolled] = useState(false);
+  const [enableTransition, setEnableTransition] = useState(false);
   const isHeaderHiddenForShipmentReattempt =
     /^\/reattempt\/shipment\/[^/]+$/.test(location.pathname);
   const buyNow = searchParams?.get("buy_now") || false;
@@ -97,23 +105,33 @@ function Header({ fpi }) {
     );
   }, [location?.pathname]);
 
-  const sections = useGlobalStore(fpi.getters.PAGE)?.sections || [];
-  const isValidSection =
-    sections[0]?.name === "application-banner" ||
-    sections[0]?.name === "image-slideshow" ||
-    sections[0]?.name === "hero-image" ||
-    sections[0]?.name === "image-gallery" ||
-    sections[0]?.name === "hero-video";
+  const sections = useGlobalStore(fpi.getters.PAGE)?.sections;
+  const sectionsReady = Array.isArray(sections) && sections.length > 0;
+
+  const isHomePage = location.pathname === "/";
+
+  const isValidSection = useMemo(() => {
+    if (!sectionsReady) return false;
+    return TRANSPARENT_SECTION_NAMES.has(sections[0]?.name);
+  }, [sectionsReady, sections]);
+
+  const shouldBeTransparent = useMemo(() => {
+    if (!transparent_header) return false;
+    if (!isHomePage) return false;
+    if (!sectionsReady) return false;
+    return isValidSection;
+  }, [transparent_header, isHomePage, sectionsReady, isValidSection]);
+
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
 
-    if (sticky_header && transparent_header && isValidSection) {
+    if (sticky_header && shouldBeTransparent) {
       window.addEventListener("scroll", handleScroll);
     }
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [transparent_header, sticky_header, isValidSection]);
+  }, [sticky_header, shouldBeTransparent]);
 
   useEffect(() => {
     if (supportedLanguages?.items?.length > 0) {
@@ -231,25 +249,30 @@ function Header({ fpi }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (isRunningOnClient()) {
-      const header = document?.querySelector(".fdk-theme-header");
-      if (transparent_header && sticky_header && isValidSection) {
-        header.style.position = "fixed";
-        header.style.width = "100%";
-      } else if (sticky_header && !isValidSection) {
-        header.style.position = "sticky ";
-      } else if (!sticky_header) {
-        header.style.position = "unset";
-      } else {
-        header.style.position = "sticky ";
-      }
+  useLayoutEffect(() => {
+    if (!isRunningOnClient()) return;
+    const header = document?.querySelector(".fdk-theme-header");
+    if (!header) return;
+
+    if (shouldBeTransparent && sticky_header) {
+      header.style.position = "fixed";
+      header.style.width = "100%";
+    } else if (sticky_header) {
+      header.style.position = "sticky";
+    } else {
+      header.style.position = "unset";
     }
-  }, [sticky_header, transparent_header, isValidSection]);
+  }, [sticky_header, shouldBeTransparent]);
+
+  useEffect(() => {
+    setEnableTransition(true);
+  }, []);
+
+
 
   useEffect(() => {
     if (isRunningOnClient()) {
-      setTimeout(() => {}, 1000);
+      setTimeout(() => { }, 1000);
       const cssVariables = {
         "--headerHeight": `${headerHeight}px`,
       };
@@ -327,6 +350,21 @@ function Header({ fpi }) {
       return;
     }
 
+    // After logout: do not auto-open "Deliver to" modal until user is on home page
+    const postLogout =
+      isRunningOnClient() && sessionStorage.getItem("fdk_post_logout");
+    const isHomePage =
+      location.pathname === "/" ||
+      (location.pathname.startsWith("/") &&
+        location.pathname.slice(1).split("/").length === 1);
+    if (postLogout) {
+      if (isHomePage) {
+        sessionStorage.removeItem("fdk_post_logout");
+      } else {
+        return;
+      }
+    }
+
     // Don't open address modal on:
     // 1. Order-status/order-tracking pages
     // 2. Checkout page (checkout page has its own address selection flow) - ALWAYS skip
@@ -398,36 +436,25 @@ function Header({ fpi }) {
     <>
       {!isHeaderHidden && (
         <div
-          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${
-            transparent_header && isValidSection && !sticky_header
-              ? styles.transparentHeader
-              : ""
-          } ${transparent_header && isValidSection && sticky_header ? styles.stickyTransparentHeader : ""}`}
+          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${shouldBeTransparent && !sticky_header ? styles.transparentHeader : ""
+            } ${shouldBeTransparent && sticky_header ? styles.stickyTransparentHeader : ""}`}
           ref={headerRef}
         >
           <header
             data-transparent-header={
-              transparent_header && isValidSection && !scrolled
-                ? "true"
-                : "false"
+              shouldBeTransparent && !scrolled ? "true" : "false"
             }
-            className={`${styles.header} ${header_border ? styles.seperator : ""} ${
-              transparent_header && isValidSection
-                ? styles.transparentBackground
-                : ""
-            } ${scrolled ? styles.scrolled : ""}`}
+            className={`${styles.header} ${header_border ? styles.seperator : ""} ${enableTransition ? styles.enableTransition : ""
+              } ${shouldBeTransparent ? styles.transparentBackground : styles.solidBackground
+              } ${scrolled ? styles.scrolled : ""}`}
           >
             <div
-              className={`${styles.headerContainer} ${
-                transparent_header && isValidSection ? styles.paddingMobile : ""
-              } basePageContainer margin0auto `}
+              className={`${styles.headerContainer} ${shouldBeTransparent ? styles.paddingMobile : ""
+                } basePageContainer margin0auto `}
             >
               <div
-                className={`${styles.desktop}  ${
-                  transparent_header && isValidSection
-                    ? styles.transparent_desktop
-                    : ""
-                }`}
+                className={`${styles.desktop}  ${shouldBeTransparent ? styles.transparent_desktop : ""
+                  }`}
               >
                 <HeaderDesktop
                   checkLogin={checkLogin}
@@ -449,21 +476,17 @@ function Header({ fpi }) {
                 />
               </div>
               <div
-                className={`${styles.mobile}  ${
-                  transparent_header && isValidSection
-                    ? styles.transparent_mobile
-                    : ""
-                }`}
+                className={`${styles.mobile}  ${shouldBeTransparent ? styles.transparent_mobile : ""
+                  }`}
               >
                 <div
-                  className={`${styles.mobileTop} ${styles[header_layout]} ${styles[logo_menu_alignment]}  ${
-                    hideNavList &&
+                  className={`${styles.mobileTop} ${styles[header_layout]} ${styles[logo_menu_alignment]}  ${hideNavList &&
                     defaultHeaderName === "My Cart" &&
                     !cartBackNavigationList[currentStep] &&
                     logo_menu_alignment !== "layout_4"
-                      ? styles.leftLogo
-                      : ""
-                  }  ${transparent_header && isValidSection ? styles.transparent_mobile : ""}`}
+                    ? styles.leftLogo
+                    : ""
+                    }  ${shouldBeTransparent ? styles.transparent_mobile : ""}`}
                 >
                   {!hideNavList ? (
                     <Navigation
@@ -517,14 +540,13 @@ function Header({ fpi }) {
 
                   <FDKLink
                     to="/"
-                    className={`${styles.middle} ${styles.flexAlignCenter} ${
-                      hideNavList &&
+                    className={`${styles.middle} ${styles.flexAlignCenter} ${hideNavList &&
                       !checkoutId &&
                       logo_menu_alignment === "layout_4" &&
                       hideNavList
-                        ? styles.paddingRight
-                        : ""
-                    } ${hideNavList && checkoutId ? styles.visibilityNone : ""}`}
+                      ? styles.paddingRight
+                      : ""
+                      } ${hideNavList && checkoutId ? styles.visibilityNone : ""}`}
                   >
                     <img
                       style={{

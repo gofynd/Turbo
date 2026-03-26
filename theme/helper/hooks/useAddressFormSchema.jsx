@@ -119,8 +119,8 @@ export const useAddressFormSchema = ({
 
     const validatePin = async () => {
       getLocality("pincode", value).then((data) => {
-        setValue("city", "");
-        setValue("state", "");
+        setValue("city", "", { shouldValidate: false });
+        setValue("state", "", { shouldValidate: false });
         if (data?.showError) {
           setError("area_code", {
             type: "manual",
@@ -128,8 +128,8 @@ export const useAddressFormSchema = ({
           });
         } else {
           const { city = "", state = "" } = data;
-          setValue("city", city);
-          setValue("state", state);
+          setValue("city", city, { shouldValidate: true });
+          setValue("state", state, { shouldValidate: true });
         }
       });
     };

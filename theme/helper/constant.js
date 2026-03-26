@@ -408,3 +408,55 @@ export const ENABLE_SWR_CACHE = false;
 // Wishlist page size for fetching all wishlist IDs
 // Used to ensure global store has complete wishlist data, not just paginated results
 export const WISHLIST_PAGE_SIZE = 100;
+
+/**
+ * Image optimization configuration for Pixelbin transformations
+ * Adjust these values to balance quality vs. performance
+ */
+export const IMAGE_OPTIMIZATION_CONFIG = {
+  // Default quality for all images (1-100)
+  // 80 is optimal: ~40-50% smaller files with minimal visible quality loss
+  DEFAULT_QUALITY: 80,
+
+  // Maximum DPR (Device Pixel Ratio) to support
+  // 2.5 balances retina display sharpness with file size
+  MAX_DPR: 2.5,
+
+  // Sharpening settings to prevent blur after resize
+  SHARPEN: {
+    ENABLED: true, // Set to false to disable sharpening globally
+    INTENSITY: 2, // 0-10, where 2 is moderate, 5+ is aggressive
+  },
+
+  // Quality presets for different use cases
+  QUALITY_PRESETS: {
+    THUMBNAIL: 70, // Small images, more compression acceptable
+    PRODUCT: 85, // Product images, higher quality needed
+    HERO: 90, // Hero/banner images, premium quality
+    BACKGROUND: 60, // Background images, can be heavily compressed
+  },
+};
+
+/**
+ * Responsive image breakpoints configuration
+ * Maps viewport widths to image sizes (considering DPR)
+ *
+ * Formula: image_width = viewport_width * target_dpr
+ * Target DPR ranges from 1.3x (large screens) to 1.8x (mobile) for optimal quality
+ */
+export const RESPONSIVE_IMAGE_BREAKPOINTS = [
+  // Desktop large (≥1440px): 1920px image (1440 * 1.33 = 1920)
+  { breakpoint: { min: 1440 }, width: 1920 },
+  // Laptop (≥1024px): 1600px image (1280 * 1.25 = 1600)
+  { breakpoint: { min: 1024 }, width: 1600 },
+  // Tablet landscape (≥768px): 1200px image (768 * 1.56 = 1200)
+  { breakpoint: { min: 768 }, width: 1200 },
+  // Tablet portrait (≥640px): 1000px image (640 * 1.56 = 1000)
+  { breakpoint: { min: 640 }, width: 1000 },
+  // Mobile large (≥480px): 800px image (480 * 1.67 = 800)
+  { breakpoint: { min: 480 }, width: 800 },
+  // Mobile (≥360px): 640px image (360 * 1.78 = 640)
+  { breakpoint: { min: 360 }, width: 640 },
+  // Mobile small (<360px): 540px image (320 * 1.69 = 540)
+  { breakpoint: { max: 359 }, width: 540 },
+];

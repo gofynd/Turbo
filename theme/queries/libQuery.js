@@ -32,8 +32,26 @@ export const USER_DATA_QUERY = `query User {
   followedListing(
     collectionType: "products"
   ) {
-    items{
+    items {
       uid
+      name
+      slug
+      brand {
+        name
+        uid
+      }
+      price {
+        effective {
+          currency_code
+          min
+          max
+        }
+        marked {
+          currency_code
+          min
+          max
+        }
+      }
     }
     page {
       current

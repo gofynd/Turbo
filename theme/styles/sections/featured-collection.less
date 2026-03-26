@@ -56,6 +56,7 @@
   }
   .description {
     max-width: 590px;
+    margin: 0 auto;
     margin-bottom: 16px;
     @media @tablet {
       margin-bottom: 16px;
@@ -94,7 +95,11 @@
 .gridItem {
   min-width: 0;
   :global {
-    h5, h4, h3, .product-title, .title {
+    h5,
+    h4,
+    h3,
+    .product-title,
+    .title {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -177,6 +182,9 @@
   @media @mobile {
     --gap: 12px;
     padding: 0;
+    &.productSliderNoBanner {
+      padding-inline-start: 10px;
+    }
   }
 
   .carouselBtn {
@@ -227,6 +235,16 @@
   }
 }
 
+/* ✅ NEW: CarouselItem basis controlled by CSS vars (SSR-safe) */
+.fcCarouselItemHorizontal {
+  flex: 0 0 calc(100% / var(--count-desktop, 4)) !important;
+  @media @tablet-strict {
+    flex: 0 0 calc(100% / 3) !important;
+  }
+  @media @mobile {
+    flex: 0 0 calc((100% - 38px) / var(--count-mobile, 1)) !important;
+  }
+}
 .bannerImageSliderWrap {
   display: flex;
   align-items: center;
@@ -235,6 +253,19 @@
     display: block;
     .titleBlock {
       display: none;
+    }
+  }
+
+  .fcCarouselItem {
+    flex: 0 0 40%;
+    @media @tablet {
+      max-height: 300px;
+      max-width: 250px;
+      flex: 0 0 50%;
+    }
+    @media @mobile {
+      max-height: 295px;
+      flex: 0 0 100%;
     }
   }
 
@@ -281,7 +312,6 @@
 
     .customPrevBtn {
       left: 25px;
-      // transform: translateY(-50%) rotate(180deg);
     }
   }
 }
@@ -360,7 +390,7 @@
         gap: 12px;
         align-items: start;
       }
-      
+
       & > * {
         height: auto;
         min-height: 0;

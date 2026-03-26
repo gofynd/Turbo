@@ -9,9 +9,21 @@ import { useLocation } from "react-router-dom";
 import { sanitizeHTMLTag, isRunningOnClient } from "../helper/utils";
 import { useThemeConfig } from "../helper/hooks";
 import { getHelmet } from "../providers/global-provider";
+import "../styles/blog-details.global.less";
+function decodeHTMLEntities(html) {
+  if (!html || !isRunningOnClient()) return html;
+  try {
+    const el = document.createElement("textarea");
+    el.innerHTML = html;
+    return el.value;
+  } catch {
+    return html;
+  }
+}
+
 export function Component({ fpi, props }) {
   const {
-    blogDetails,
+    blogDetails: rawBlogDetails,
     sliderProps,
     footerProps,
     contactInfo,
@@ -19,6 +31,18 @@ export function Component({ fpi, props }) {
     isBlogDetailsLoading,
     isBlogNotFound,
   } = useBlogDetails({ fpi, props });
+  const blogDetails = useMemo(() => {
+    if (!rawBlogDetails?.content) return rawBlogDetails;
+    return {
+      ...rawBlogDetails,
+      content: rawBlogDetails.content.map((item) =>
+        item.type === "html"
+          ? { ...item, value: decodeHTMLEntities(item.value) }
+          : item
+      ),
+    };
+  }, [rawBlogDetails]);
+
   const { t } = useGlobalTranslation("translation");
   const configuration = useGlobalStore(fpi.getters.CONFIGURATION);
   const { globalConfig } = useThemeConfig({ fpi });
@@ -98,10 +122,6 @@ export function Component({ fpi, props }) {
         cleanHTML(blogDetails?.content?.[0]?.value) ||
         ""
     );
-    console.log("blogDetails", blogDetails);
-    console.log("Blog Description:", value);
-    console.log("logDetails?.seo?.description", blogDetails?.seo?.description);
-    console.log("blogDetails?.summary", blogDetails?.summary);
     return value.replace(/\s+/g, " ").trim();
   }, [blogDetails?.seo?.description, blogDetails?.summary]);
 
@@ -135,15 +155,17 @@ export function Component({ fpi, props }) {
       {isBlogNotFound ? (
         <EmptyState title={t("resource.blog.no_blog_found")} />
       ) : (
-        <BlogPage
-          contactInfo={contactInfo}
-          blogDetails={blogDetails}
-          sliderProps={sliderProps}
-          footerProps={footerProps}
-          getBlog={getBlog}
-          isBlogDetailsLoading={isBlogDetailsLoading}
-          SocailMedia={SocailMedia}
-        ></BlogPage>
+        <div className="blog-detail-section">
+          <BlogPage
+            contactInfo={contactInfo}
+            blogDetails={blogDetails}
+            sliderProps={sliderProps}
+            footerProps={footerProps}
+            getBlog={getBlog}
+            isBlogDetailsLoading={isBlogDetailsLoading}
+            SocailMedia={SocailMedia}
+          ></BlogPage>
+        </div>
       )}
     </>
   );

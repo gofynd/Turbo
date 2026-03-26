@@ -14,7 +14,11 @@ import FyButton from "@gofynd/theme-template/components/core/fy-button/fy-button
 import "@gofynd/theme-template/pages/checkout/checkout.css";
 
 import styles from "../styles/sections/checkout.less";
-import { CHECKOUT_LANDING, PAYMENT_OPTIONS, FETCH_SHIPMENTS } from "../queries/checkoutQuery";
+import {
+  CHECKOUT_LANDING,
+  PAYMENT_OPTIONS,
+  FETCH_SHIPMENTS,
+} from "../queries/checkoutQuery";
 import { useGoogleMapConfig, useDeliverPromise } from "../helper/hooks";
 import useAddress from "../page-layouts/single-checkout/address/useAddress";
 import usePayment from "../page-layouts/single-checkout/payment/usePayment";
@@ -37,7 +41,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     fpi.getters.APP_FEATURES
   );
   const breakupValues = bagData?.breakup_values?.display || [];
-  
+
   // Calculate total price from breakupValues
   const totalPrice = useMemo(() => {
     if (!breakupValues || breakupValues.length === 0) return 0;
@@ -45,7 +49,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     const total = breakupValues.find((val) => val.key === "total");
     return total?.value ?? 0;
   }, [breakupValues]);
-  
+
   const [showShipment, setShowShipment] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
@@ -306,13 +310,13 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
             ? breakupValues[breakupValues.length - 1]?.value
             : 0;
         setCheckoutAmount(amount);
-        // When payment fails and URL has payment_mode/aggregator_name, 
+        // When payment fails and URL has payment_mode/aggregator_name,
         // open payment section and close order summary
         // If URL has payment_mode/aggregator_name, it indicates a payment attempt was made
         // If we're back on checkout (not order status), it likely means payment failed
         const hasPaymentParams = payment_mode || aggregator_name;
         const hasError = error || transactionFailed;
-        
+
         if (hasPaymentParams && amount) {
           // Open payment section and close order summary to show payment method/error
           // If URL has payment_mode/aggregator_name, it indicates a payment attempt was made
@@ -462,7 +466,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   useEffect(() => {
     if (!address_id || hasAddressFromQuery.current) return;
     const hasPaymentParams = payment_mode || aggregator_name;
-    
+
     if (hasPaymentParams) {
       // When payment params are present, fetch shipments without opening shipment section
       // This ensures shipments are loaded for order summary while keeping payment section open
@@ -481,11 +485,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       fetchShipmentsForPaymentFailure();
       return;
     }
-    
+
     if (showShipment) {
       // Check if shipments have actually loaded before marking as processed
       // If shipments haven't loaded yet, we should still try to fetch them
-      const hasShipments = shipments && Array.isArray(shipments) && shipments.length > 0;
+      const hasShipments =
+        shipments && Array.isArray(shipments) && shipments.length > 0;
       if (hasShipments) {
         hasAddressFromQuery.current = true;
         return;
@@ -507,36 +512,61 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     }
     // Removed 'shipments' from dependencies to prevent infinite loop
     // When selectAddress is called, it fetches shipments, which would trigger this effect again
-  }, [address_id, showShipment, address, payment_mode, aggregator_name, cart_id, buy_now, fpi]);
+  }, [
+    address_id,
+    showShipment,
+    address,
+    payment_mode,
+    aggregator_name,
+    cart_id,
+    buy_now,
+    fpi,
+  ]);
 
   const addressId = useMemo(() => {
     if (!address) {
       return undefined;
     }
-    
+
     // First, try to get default address (matches useAddress hook logic)
     // getDefaultAddress already filters for is_default_address: true
-    if (address.getDefaultAddress && Array.isArray(address.getDefaultAddress) && address.getDefaultAddress.length > 0) {
+    if (
+      address.getDefaultAddress &&
+      Array.isArray(address.getDefaultAddress) &&
+      address.getDefaultAddress.length > 0
+    ) {
       const defaultAddressId = address.getDefaultAddress[0]?.id;
       if (defaultAddressId) {
         return defaultAddressId;
       }
     }
-    
+
     // If no default address, fall back to first address from other addresses
     // This handles guest users or cases where no default address is set
-    if (address.getOtherAddress && Array.isArray(address.getOtherAddress) && address.getOtherAddress.length > 0) {
+    if (
+      address.getOtherAddress &&
+      Array.isArray(address.getOtherAddress) &&
+      address.getOtherAddress.length > 0
+    ) {
       return address.getOtherAddress[0]?.id;
     }
-    
+
     // If no other addresses, try allAddresses as last resort
     // This ensures we always try to select an address if available
-    if (address.allAddresses && Array.isArray(address.allAddresses) && address.allAddresses.length > 0) {
+    if (
+      address.allAddresses &&
+      Array.isArray(address.allAddresses) &&
+      address.allAddresses.length > 0
+    ) {
       return address.allAddresses[0]?.id;
     }
-    
+
     return undefined;
-  }, [address?.getDefaultAddress, address?.getOtherAddress, address?.allAddresses]);
+  }, [
+    address?.getDefaultAddress,
+    address?.getOtherAddress,
+    address?.allAddresses,
+  ]);
 
   const redirectPaymentOptions = () => {
     setIsLoading(true);
@@ -554,7 +584,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       // Use replace: true to avoid creating history entries
       // This prevents browser back from navigating through URL parameter changes
       setSearchParams(newParams, { replace: true });
-      
+
       // Reset the flag so that selectAddress can be called when address_id is set
       // This ensures shipments are fetched when address is auto-selected
       hasAddressFromQuery.current = false;
@@ -566,9 +596,10 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   useEffect(() => {
     // Skip if already processing or if first effect already handled it
     if (hasAddressFromQuery.current) return;
-    
+
     const currentAddressId = searchParams.get("address_id");
-    const hasShipments = shipments && Array.isArray(shipments) && shipments.length > 0;
+    const hasShipments =
+      shipments && Array.isArray(shipments) && shipments.length > 0;
     const hasPaymentParams = payment_mode || aggregator_name;
 
     // If we have an address_id but no shipments and address.selectAddress is available
@@ -591,7 +622,14 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     }
     // Removed 'shipments' from dependencies to prevent infinite loop
     // Only check shipments inside the effect, don't depend on it
-  }, [address_id, isShipmentLoading, address, searchParams, payment_mode, aggregator_name]);
+  }, [
+    address_id,
+    isShipmentLoading,
+    address,
+    searchParams,
+    payment_mode,
+    aggregator_name,
+  ]);
 
   const handlePlaceOrder = async () => {
     setIsLoading(true);
@@ -720,7 +758,9 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   availableFOCount={fulfillment_option?.count || 1}
                   totalValue={currencyFormat(
                     totalPrice,
-                    payment?.getCurrencySymbol || bagData?.currency?.symbol || "₹",
+                    payment?.getCurrencySymbol ||
+                      bagData?.currency?.symbol ||
+                      "₹",
                     formatLocale(locale, countryCode, true)
                   )}
                   onPriceDetailsClick={onPriceDetailsClick}
@@ -730,6 +770,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                     getFormattedPromise(promise?.iso)
                   }
                   loader={loader}
+                  globalConfig={globalConfig}
                 ></SinglePageShipment>
               </div>
             );

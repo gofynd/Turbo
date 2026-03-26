@@ -15,7 +15,7 @@ const CollectionCard = ({
   imageProps,
   ...rest
 }) => {
-  const { customClass, ...restImageProps } = imageProps;
+  const { customClass, isImageFill, ...restImageProps } = imageProps;
   return (
     <div
       className={`${styles.collectionCard} ${isNameOverImage ? styles.inside : ""} ${className}`}
@@ -27,6 +27,7 @@ const CollectionCard = ({
           {...restImageProps}
           src={collectionImage || placeholderImage}
           alt={collectionName}
+          isImageFill={isImageFill}
         />
       </FDKLink>
       <div className={styles.collectionTitleWrapper}>

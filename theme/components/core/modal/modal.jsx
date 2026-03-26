@@ -19,6 +19,15 @@ function Modal({
   }, [isOpen, childHandleFocus]);
 
   useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         modalContainerRef.current &&

@@ -11,6 +11,7 @@ import useInternational from "../../components/header/useInternational";
 import useHeader from "../../components/header/useHeader";
 import {
   FULFILLMENT_OPTIONS,
+  GET_PRODUCT_SIZES,
   PRODUCT_SIZE_PRICE,
 } from "../../queries/pdpQuery";
 import {
@@ -29,19 +30,20 @@ import { translateDynamicLabel } from "../../helper/utils";
 function generateCartItemKey(item, index = 0) {
   const itemIndex = item?.article?.item_index ?? index;
   const storeUid = item?.article?.store?.uid ?? "";
-  
+
   // Primary: Use the key from API if available
   if (item?.key) {
     return `${item.key}_${storeUid}_${itemIndex}`;
   }
-  
+
   // Fallback: Construct key from product and article data
   if (item?.product?.uid && item?.article?.size) {
-    const fulfillmentSlug = item?.article?.fulfillment_option?.slug || "standard-delivery";
+    const fulfillmentSlug =
+      item?.article?.fulfillment_option?.slug || "standard-delivery";
     const fallbackKey = `${item.product.uid}_${item.article.size}_${fulfillmentSlug}`;
     return `${fallbackKey}_${storeUid}_${itemIndex}`;
   }
-  
+
   // Last resort: Use index-based key to ensure item is always included
   return `item_${index}_${storeUid}_${itemIndex}`;
 }
@@ -76,10 +78,9 @@ const useCart = (fpi, isActive = true) => {
   const [isCartUpdating, setIsCartUpdating] = useState(false);
   const [modeLoading, setIsModeLoading] = useState(false);
   const [applyRewardResponse, setApplyRewardResponse] = useState(null);
-  const [currentCartId, setCurrentCartId] = useState(null); 
+  const [currentCartId, setCurrentCartId] = useState(null);
   const [isRewardApplied, setIsRewardApplied] = useState(false); // ← NEW
-  
-
+  const [frozenCartItems, setFrozenCartItems] = useState(null);
 
   const { buy_now_cart_items, cart_items, cart_items_count } = CART || {};
   const {
@@ -191,35 +192,37 @@ const useCart = (fpi, isActive = true) => {
     () => cart_items?.currency?.symbol || "₹",
     [cart_items]
   );
-   
-  
+
   const onApplyLoyaltyPoints = async (isChecked, showToast = true) => {
     setIsLoyaltyLoading(true);
     setIsCartUpdating(true);
-  
+
     const payload = {
       includeItems: true,
       includeBreakup: true,
       cartId: cartId,
       redeemPoints: { redeem_points: isChecked },
     };
-  
+
     try {
       const res = await fpi.executeGQL(APPLY_REWARD_POINTS, payload, {
         skipStoreUpdate: false,
       });
-  
+
       const data = res?.data?.applyLoyaltyPoints;
       setApplyRewardResponse(data);
-  
+
       if (data?.success) {
         setIsRewardApplied(isChecked);
-  
+
         const toastKey = `loyaltyToastShown_${cartId}`;
-  
+
         if (isChecked) {
           if (showToast && !localStorage.getItem(toastKey)) {
-            showSnackbar(data.message || "Reward points applied successfully", "success");
+            showSnackbar(
+              data.message || "Reward points applied successfully",
+              "success"
+            );
             localStorage.setItem(toastKey, "true");
           }
         } else {
@@ -228,7 +231,7 @@ const useCart = (fpi, isActive = true) => {
           }
           localStorage.removeItem(toastKey);
         }
-  
+
         await fetchCartDetails(fpi);
       } else {
         let errorMsg = "Could not update reward points";
@@ -247,8 +250,7 @@ const useCart = (fpi, isActive = true) => {
       setIsLoyaltyLoading(false);
     }
   };
-  
-  
+
   function updateCartItems(
     event,
     itemDetails,
@@ -264,33 +266,53 @@ const useCart = (fpi, isActive = true) => {
       event.stopPropagation();
     }
     setIsCartUpdating(true);
-  
+    setGlobalCartBusy(true);
+
+    // Compute customJson early so we can use it for the freeze decision below
+    const customJsonKey = "_custom_json";
+    const customJson = itemDetails?.article?.[customJsonKey];
+    const isCustomizedItem = !!(
+      customJson && Object.keys(customJson).length > 0
+    );
+
+    // Freeze the current cart items snapshot for size updates OR any update to a
+    // customized item. Customized items use force_new_line_item on the server, which
+    // causes the mutation response to contain a transient extra-item state before
+    // fetchCartDetails corrects the store to the true item count.
+    // CRITICAL: Only freeze if not already frozen to prevent stale snapshots
+    const shouldFreezeCart = isSizeUpdate || isCustomizedItem;
+    if (shouldFreezeCart && !frozenCartItems) {
+      setFrozenCartItems(cartItemsByItemId);
+    }
+
     try {
+      const cartItem = {
+        article_id: `${itemDetails?.product?.uid}_${itemSize}`,
+        item_id: itemDetails?.product?.uid,
+        item_size: itemSize,
+        item_index: itemIndex,
+        quantity: totalQuantity,
+        identifiers: {
+          identifier: itemDetails?.identifiers?.identifier,
+        },
+        fulfillment_option_slug:
+          foSlug || itemDetails?.article?.fulfillment_option?.slug,
+      };
+      if (isCustomizedItem) {
+        cartItem[customJsonKey] = customJson;
+      }
       const payload = {
         b: true,
         i: true,
         buyNow,
         updateCartRequestInput: {
-          items: [
-            {
-              article_id: `${itemDetails?.product?.uid}_${itemSize}`,
-              item_id: itemDetails?.product?.uid,
-              item_size: itemSize,
-              item_index: itemIndex,
-              quantity: totalQuantity,
-              identifiers: {
-                identifier: itemDetails?.identifiers?.identifier,
-              },
-              fulfillment_option_slug:
-                foSlug || itemDetails?.article?.fulfillment_option?.slug,
-            },
-          ],
+          items: [cartItem],
           operation,
         },
       };
-  
+
       return fpi
-        .executeGQL(CART_UPDATE, payload, { skipStoreUpdate: false })
+        .executeGQL(CART_UPDATE, payload, { skipStoreUpdate: shouldFreezeCart })
         .then((res) => {
           return res;
         })
@@ -305,13 +327,12 @@ const useCart = (fpi, isActive = true) => {
                 "success"
               );
             }
-        
+
             await fetchCartDetails(fpi, { buyNow });
 
             if (isRewardApplied) {
-              await onApplyLoyaltyPoints(true, false); 
+              await onApplyLoyaltyPoints(true, false);
             }
-        
           } else if (!isSizeUpdate) {
             showSnackbar(
               translateDynamicLabel(updateResponse?.message, t) ||
@@ -320,21 +341,34 @@ const useCart = (fpi, isActive = true) => {
             );
           }
 
+          // Unfreeze after fetchCartDetails has updated the store with correct items
+          if (shouldFreezeCart) {
+            setFrozenCartItems(null);
+          }
+
           return updateResponse;
         })
-        
+
         .catch((error) => {
           console.error(error);
+          if (shouldFreezeCart) {
+            setFrozenCartItems(null);
+          }
         })
         .finally(() => {
           setIsCartUpdating(false);
+          setGlobalCartBusy(false);
         });
     } catch (error) {
       console.log(error);
+      if (shouldFreezeCart) {
+        setFrozenCartItems(null);
+      }
       setIsCartUpdating(false);
+      setGlobalCartBusy(false);
     }
   }
-  
+
   function gotoCheckout() {
     if (cart_items?.id) {
       // Get selected address ID from global store if available
@@ -357,24 +391,24 @@ const useCart = (fpi, isActive = true) => {
     setIsMovingToWishlist(false);
   }
 
+  function setGlobalCartBusy(busy) {
+    fpi.custom.setValue("cartOperationInProgress", busy);
+  }
+
   function handleRemoveItem(data, moveToWishList) {
     if (!data) {
       return;
     }
     const { item, size, index } = data;
 
-    // Set removing state to show "Removing..." text and trigger shimmer immediately
     if (!moveToWishList) {
       setIsRemoving(true);
     }
+    setGlobalCartBusy(true);
 
-    // Close modal after brief delay to show "Removing..." text
     setTimeout(() => {
       setIsRemoveModalOpen(false);
 
-      // Start API call in background
-      // Note: updateCartItems will set isCartUpdating to true again, but it's already true
-      // This ensures shimmer stays visible throughout the API call
       updateCartItems(
         null,
         item,
@@ -386,8 +420,9 @@ const useCart = (fpi, isActive = true) => {
       ).finally(() => {
         setIsRemoving(false);
         setIsCartUpdating(false);
+        setGlobalCartBusy(false);
       });
-    }, 150); // 150ms delay to show "Removing..." text
+    }, 150);
   }
   const handleMoveToWishlist = (data) => {
     if (!data) {
@@ -397,6 +432,7 @@ const useCart = (fpi, isActive = true) => {
     if (isLoggedIn) {
       setIsMovingToWishlist(true);
       setIsCartUpdating(true);
+      setGlobalCartBusy(true);
       addToWishList(data.item.product)
         .then(() => {
           handleRemoveItem(data, true);
@@ -404,9 +440,9 @@ const useCart = (fpi, isActive = true) => {
         .catch(() => {
           setIsCartUpdating(false);
           setIsMovingToWishlist(false);
+          setGlobalCartBusy(false);
         })
         .finally(() => {
-          // Reset the moving to wishlist state after the entire operation
           setTimeout(() => {
             setIsMovingToWishlist(false);
           }, 200);
@@ -418,8 +454,6 @@ const useCart = (fpi, isActive = true) => {
   };
 
   const [isLoyaltyLoading, setIsLoyaltyLoading] = useState(false);
-
-
 
   function onOpenPromoModal() {
     setIsPromoModalOpen(true);
@@ -464,6 +498,15 @@ const useCart = (fpi, isActive = true) => {
     return res?.data?.productsPriceWithFulfillmentOption?.items || [];
   };
 
+  const fetchProductSizes = async (slug) => {
+    const res = await fpi.executeGQL(
+      GET_PRODUCT_SIZES,
+      { slug },
+      { skipStoreUpdate: true }
+    );
+    return res?.data?.product?.sizes?.size_details || [];
+  };
+
   const fetchProductPrice = async (slug, selectedSize, pincode, foSlug) => {
     const payload = {
       slug,
@@ -479,15 +522,25 @@ const useCart = (fpi, isActive = true) => {
     return res?.data?.productPrice || {};
   };
 
+  // user_cart_items_count is undefined until a real cart API response populates the store.
+  // On SPA nav it's already set (from header's CART_COUNT); on hard refresh it's undefined.
+  const hasCartCountBeenFetched =
+    cart_items?.user_cart_items_count !== undefined;
+
+  // Shimmer while loading, EXCEPT when we already know the cart is empty (SPA nav with count=0).
+  const showCartShimmer =
+    isLoading && (!hasCartCountBeenFetched || cartItemCount >= 1);
+
   return {
     onApplyLoyaltyPoints,
     isLoyaltyLoading,
     isLoading,
+    showCartShimmer,
     isCartUpdating,
     isLoggedIn,
     cartData: cart_items,
     checkoutMode,
-    cartItems: cartItemsByItemId,
+    cartItems: frozenCartItems ?? cartItemsByItemId,
     cartItemsWithActualIndex: items,
     breakUpValues: breakup_values,
     cartItemCount,
@@ -518,6 +571,7 @@ const useCart = (fpi, isActive = true) => {
     customerCheckoutMode,
     getFulfillmentOptions,
     fetchProductPrice,
+    fetchProductSizes,
   };
 };
 

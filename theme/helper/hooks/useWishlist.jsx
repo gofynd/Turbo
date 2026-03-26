@@ -53,14 +53,14 @@ export const useWishlist = ({ fpi }) => {
     if (fromWishlist) {
       return fpi.executeGQL(REMOVE_WISHLIST, payload).finally(() => {
         setIsLoading(false);
-        showSnackbar(t("resource.wishlist.product_removed"), "success");
+        showSnackbar(t("resource.common.wishlist_remove_success"), "success");
       });
     } else {
       return fpi
         .executeGQL(REMOVE_WISHLIST, payload)
         .then((res) => {
           if (res?.data?.unfollowById?.message) {
-            showSnackbar(t("resource.wishlist.product_removed"), "success");
+            showSnackbar(t("resource.common.wishlist_remove_success"), "success");
             return fetchFollowedProductsId().then(
               () => res?.data?.unfollowById
             );

@@ -34,6 +34,7 @@ const StickyAddToCart = ({
   const [showSizeModal, setShowSizeModal] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [modalType, setModalType] = useState("");
+  const [isLoadingCart, setIsLoadingCart] = useState(false);
 
   const {
     singleItemDetails,
@@ -61,7 +62,12 @@ const StickyAddToCart = ({
     }
   };
   const cartHandler = async (e, isBuyNow) => {
-    addProductForCheckout(e, selectedSize, isBuyNow);
+    setIsLoadingCart(true);
+    try {
+      await addProductForCheckout(e, selectedSize, isBuyNow);
+    } finally {
+      setIsLoadingCart(false);
+    }
   };
 
   return (
@@ -79,7 +85,7 @@ const StickyAddToCart = ({
             type="button"
             className={`btnSecondary ${styles.button}`}
             onClick={(e) => openSizeModal(e, "add-to-cart")}
-            disabled={is_serviceable === false}
+            disabled={isLoadingCart || is_serviceable === false}
           >
             <CartIcon className={styles.cartIcon} />
             {t("resource.common.add_to_cart")}
@@ -98,7 +104,7 @@ const StickyAddToCart = ({
               type="button"
               className={`${styles.button} btnPrimary`}
               onClick={(e) => openSizeModal(e, "buy-now")}
-              disabled={is_serviceable === false}
+              disabled={isLoadingCart || is_serviceable === false}
             >
               <BuyNowIcon className={styles.cartIcon} />
               {t("resource.common.buy_now")}
@@ -245,7 +251,7 @@ const StickyAddToCart = ({
                   type="button"
                   className={`btnSecondary ${styles.button}`}
                   onClick={(e) => cartHandler(e, false)}
-                  disabled={!productMeta.sellable || is_serviceable === false}
+                  disabled={isLoadingCart || !productMeta.sellable || is_serviceable === false}
                 >
                   <CartIcon className={styles.cartIcon} />
                   {t("resource.common.add_to_cart")}
@@ -259,7 +265,7 @@ const StickyAddToCart = ({
               type="button"
               className={`btnPrimary ${styles.button}`}
               onClick={(e) => cartHandler(e, true)}
-              disabled={!productMeta.sellable || is_serviceable === false}
+              disabled={isLoadingCart || !productMeta.sellable || is_serviceable === false}
             >
               <BuyNowIcon className={styles.cartIcon} />
               {t("resource.common.buy_now")}

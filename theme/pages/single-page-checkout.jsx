@@ -3,6 +3,7 @@ import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { SectionRenderer } from "fdk-core/components";
 
 import { useThemeConfig } from "../helper/hooks";
+import { checkoutGuard } from "../helper/auth-guard";
 import styles from "../styles/single-page-checkout.less";
 import { getHelmet } from "../providers/global-provider";
 
@@ -71,5 +72,7 @@ export const sections = JSON.stringify([
     },
   },
 ]);
+
+SingleCheckoutPage.authGuard = checkoutGuard;
 
 export default SingleCheckoutPage;

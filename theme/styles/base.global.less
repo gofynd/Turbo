@@ -52,6 +52,44 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+// Prevent text selection when interacting with quick-view gallery chevrons
+// (the arrow is an SVG; mousedown/pointerdown can start selecting nearby text)
+[class*="image-gallery__carouselArrow"] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+[class*="image-gallery__carouselArrow"] * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+// Delivery info only inside add-to-cart modal (theme-template): align with PDP layout.
+// Scoped so PDP and other delivery blocks are untouched; only the pincode block in this modal is targeted.
+[class*="add-to-cart__"] {
+  [class*="delivery-info__delivery"] {
+    gap: 8px;
+  }
+  [class*="pincodeInputContainer"] {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  [class*="pincodeInputContainer"] input,
+  [class*="pincodeInput"] {
+    min-width: 0;
+  }
+}
+
+[class*="add-to-cart__product__brand"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+[class*="add-to-cart__product__title"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .fdk-theme-header {
   position: var(--headerPosition, sticky);
   width: 100%;
@@ -277,27 +315,27 @@ h5,
     }
   }
 
-  &:disabled {
-    cursor: not-allowed;
-    border-color: @OldColorPalettePrimaryDisabled;
-    background-color: @OldColorPalettePrimaryDisabled;
-    color: @OldColorPaletteButtonColorDisabled;
+  // &:disabled {
+  //   cursor: not-allowed;
+  //   border-color: @OldColorPalettePrimaryDisabled;
+  //   background-color: @OldColorPalettePrimaryDisabled;
+  //   color: @OldColorPaletteButtonColorDisabled;
 
-    &:hover {
-      border-color: @OldColorPalettePrimaryDisabled !important;
-      background-color: @OldColorPalettePrimaryDisabled !important;
-      color: @OldColorPaletteButtonColorDisabled !important;
-    }
+  //   &:hover {
+  //     border-color: @OldColorPalettePrimaryDisabled !important;
+  //     background-color: @OldColorPalettePrimaryDisabled !important;
+  //     color: @OldColorPaletteButtonColorDisabled !important;
+  //   }
 
-    svg > path {
-      fill: @OldColorPaletteButtonColorDisabled !important;
-    }
+  //   svg > path {
+  //     fill: @OldColorPaletteButtonColorDisabled !important;
+  //   }
 
-    .cartIcon,
-    svg {
-      fill: @OldColorPaletteButtonColorDisabled !important;
-    }
-  }
+  //   .cartIcon,
+  //   svg {
+  //     fill: @OldColorPaletteButtonColorDisabled !important;
+  //   }
+  // }
 
   &:active,
   &:focus-visible,
@@ -326,27 +364,27 @@ h5,
     }
   }
 
-  &:disabled {
-    cursor: not-allowed;
-    border-color: @OldColorPalettePrimaryDisabled;
-    background-color: @OldColorPalettePrimaryDisabled;
-    color: @OldColorPaletteButtonColorDisabled;
+  // &:disabled {
+  //   cursor: not-allowed;
+  //   border-color: @OldColorPalettePrimaryDisabled;
+  //   background-color: @OldColorPalettePrimaryDisabled;
+  //   color: @OldColorPaletteButtonColorDisabled;
 
-    &:hover {
-      border-color: @OldColorPalettePrimaryDisabled !important;
-      background-color: @OldColorPalettePrimaryDisabled !important;
-      color: @OldColorPaletteButtonColorDisabled !important;
-    }
+  //   &:hover {
+  //     border-color: @OldColorPalettePrimaryDisabled !important;
+  //     background-color: @OldColorPalettePrimaryDisabled !important;
+  //     color: @OldColorPaletteButtonColorDisabled !important;
+  //   }
 
-    svg > path {
-      fill: @OldColorPaletteButtonColorDisabled !important;
-    }
+  //   svg > path {
+  //     fill: @OldColorPaletteButtonColorDisabled !important;
+  //   }
 
-    .cartIcon,
-    svg {
-      fill: @OldColorPaletteButtonColorDisabled !important;
-    }
-  }
+  //   .cartIcon,
+  //   svg {
+  //     fill: @OldColorPaletteButtonColorDisabled !important;
+  //   }
+  // }
 
   &:active,
   &:focus-visible {

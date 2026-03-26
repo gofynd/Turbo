@@ -93,6 +93,7 @@ export function Component({ props, globalConfig }) {
     padding_top,
     padding_bottom,
   } = props;
+  const desktopCount = Number(item_count?.value ?? 4);
   const itemCountMobile = Number(item_count_mobile?.value ?? 1);
 
   const [isLoading, setIsLoading] = useState(
@@ -126,128 +127,34 @@ export function Component({ props, globalConfig }) {
   }, [getGallery, max_count?.value]);
   const { isRTL } = useLocaleDirection();
 
-  const desktopCount = Number(item_count?.value ?? 4);
-  const [breakpoint, setBreakpoint] = useState("desktop");
-
-  useEffect(() => {
-    const mqDesktop = window.matchMedia("(min-width: 780px)");
-    const mqTablet = window.matchMedia(
-      "(min-width: 480px) and (max-width: 779px)"
-    );
-    const update = () => {
-      if (mqDesktop.matches) setBreakpoint("desktop");
-      else if (mqTablet.matches) setBreakpoint("tablet");
-      else setBreakpoint("mobile");
-    };
-    update();
-    mqDesktop.addEventListener("change", update);
-    mqTablet.addEventListener("change", update);
-    return () => {
-      mqDesktop.removeEventListener("change", update);
-      mqTablet.removeEventListener("change", update);
-    };
-  }, []);
-
   const itemLength = imagesForScrollView.length;
-  const showArrows = breakpoint === "desktop" && itemLength > desktopCount;
-  const loop =
-    itemLength >
-    (breakpoint === "desktop"
-      ? desktopCount
-      : breakpoint === "tablet"
-        ? 3
-        : itemCountMobile);
 
-  const config = useMemo(() => {
-    if (breakpoint === "desktop") {
-      return {
-        align: "start",
-        direction: isRTL ? "rtl" : "ltr",
-        loop,
-        draggable: true,
-        containScroll: "trimSnaps",
-        slidesToScroll: desktopCount,
-        duration: 20,
-      };
-    }
-    if (breakpoint === "tablet") {
-      return {
-        align: "start",
-        direction: isRTL ? "rtl" : "ltr",
-        loop,
-        draggable: false,
-        containScroll: "trimSnaps",
-        slidesToScroll: 3,
-        duration: 20,
-      };
-    }
-
-    return {
-      align: imagesForScrollView.length > itemCountMobile ? "center" : "start",
+  const config = useMemo(
+    () => ({
       direction: isRTL ? "rtl" : "ltr",
-      loop: imagesForScrollView.length > itemCountMobile,
+      align: itemLength > desktopCount ? "start" : "center",
+      loop: itemLength > desktopCount,
       draggable: true,
       containScroll: "trimSnaps",
-      slidesToScroll: 1,
+      slidesToScroll: desktopCount,
       duration: 20,
-    };
-  }, [
-    breakpoint,
-    isRTL,
-    loop,
-    desktopCount,
-    itemCountMobile,
-    imagesForScrollView.length,
-  ]);
-
-  let slideBasis = "100%";
-  let viewportPadding = {};
-
-  if (breakpoint === "desktop") {
-    slideBasis = `${100 / (desktop_layout?.value === "banner_horizontal_scroll" ? 2.5 : Math.max(desktopCount, 1))}%`;
-  } else if (breakpoint === "tablet") {
-    slideBasis = `${100 / 3}%`;
-  } else {
-    slideBasis = `calc((100% - 38px) / ${Math.max(mobile_layout?.value === "banner_horizontal_scroll" ? 1 : itemCountMobile, 1)})`;
-    viewportPadding = { paddingInline: "25px" };
-  }
-
-  const bannerConfig = useMemo(
-    () => ({
-      dots: false,
-      speed: 500,
-      slidesToShow: 2.5,
-      slidesToScroll: 2,
-      infinite: false,
-      cssEase: "linear",
-      arrows: false,
-      centerMode: false,
-      responsive: [
-        {
-          breakpoint: 780,
-          settings: {
-            arrows: false,
-            dots: false,
-            slidesToShow: 3,
-            slidesToScroll: 3,
-          },
+      breakpoints: {
+        "(max-width: 779px)": {
+          align: "start",
+          loop: itemLength > 3,
+          draggable: false,
+          slidesToScroll:
+            mobile_layout?.value === "banner_horizontal_scroll" ? 1 : 3,
         },
-        {
-          breakpoint: 500,
-          settings: {
-            dots: false,
-            arrows: false,
-            slidesToShow: 1,
-            slidesToScroll: 1,
-            infinite: imagesForScrollView?.length > 1,
-            centerMode: imagesForScrollView?.length > 1,
-            centerPadding: "25px",
-          },
+        "(max-width: 479px)": {
+          align: "start",
+          loop: itemLength > itemCountMobile,
+          draggable: true,
+          slidesToScroll: 1,
         },
-      ],
-      rtl: isRTL,
+      },
     }),
-    [imagesForScrollView.length]
+    [isRTL, itemLength, desktopCount, itemCountMobile]
   );
 
   useEffect(() => {
@@ -392,7 +299,9 @@ export function Component({ props, globalConfig }) {
     <>
       <section className={styles.sectionWrapper} style={dynamicStyles}>
         <div
-          className={`fx-title-block ${styles.titleBlock} ${desktop_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""}  ${mobile_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""} ${showBannerVerticalView() ? styles.hideOnAllScreens : ""}`}
+          className={`fx-title-block ${styles.titleBlock} ${desktop_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""} 
+           ${mobile_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""} 
+           ${desktop_layout?.value === "banner_vertical" ? styles.hideOnDesktop : ""} ${mobile_layout?.value === "banner_vertical" ? styles.hideOnAllScreens : ""}`}
           style={{
             alignItems:
               text_alignment?.value === "left"
@@ -513,14 +422,24 @@ export function Component({ props, globalConfig }) {
                   )}
               </div>
               <div
-                className={`${styles.productSlider} ${styles.bannerSlider} ${imagesForScrollView?.length <= 1 ? styles.lessItem : ""}`}
+                className={`${styles.productSlider} ${styles.bannerSlider} ${
+                  imagesForScrollView?.length <= 1 ? styles.lessItem : ""
+                }`}
               >
                 <Carousel opts={config}>
                   <CarouselContent>
                     {imagesForScrollView?.map((product, index) => (
                       <CarouselItem
                         key={index}
-                        style={{ flex: `0 0 ${slideBasis}` }}
+                        className={styles.fcCarouselItem}
+                        style={{
+                          "--count-desktop": desktopCount,
+                          "--count-mobile": itemCountMobile,
+                          "--is-banner-desktop":
+                            desktop_layout?.value === "banner_horizontal_scroll"
+                              ? 1
+                              : 0,
+                        }}
                       >
                         <ProductCardItem
                           key={`${product.uid}_${index}`}
@@ -537,6 +456,7 @@ export function Component({ props, globalConfig }) {
                           handleWishlistToggle={handleWishlistToggle}
                           handleAddToCart={handleAddToCart}
                           isServiceable={is_serviceable}
+                          isImageFill={globalConfig?.img_fill}
                         />
                       </CarouselItem>
                     ))}
@@ -547,7 +467,11 @@ export function Component({ props, globalConfig }) {
               </div>
               {show_view_all?.value && (
                 <div
-                  className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]} ${button_position?.value === "below_products" ? "" : styles.visibleOnMobile}`}
+                  className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]} ${
+                    button_position?.value === "below_products"
+                      ? ""
+                      : styles.visibleOnMobile
+                  }`}
                 >
                   <FDKLink to={`/collection/${slug}`}>
                     <button
@@ -665,12 +589,17 @@ export function Component({ props, globalConfig }) {
                     followedIdList={followedIdList}
                     handleWishlistToggle={handleWishlistToggle}
                     handleAddToCart={handleAddToCart}
+                    isImageFill={globalConfig?.img_fill}
                   />
                 ))}
               </div>
               {show_view_all?.value && (
                 <div
-                  className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]} ${button_position?.value === "below_products" ? "" : styles.visibleOnMobile}`}
+                  className={`${styles["flex-justify-center"]} ${styles["gap-above-button"]} ${
+                    button_position?.value === "below_products"
+                      ? ""
+                      : styles.visibleOnMobile
+                  }`}
                 >
                   <FDKLink to={`/collection/${slug}`}>
                     <button
@@ -689,7 +618,11 @@ export function Component({ props, globalConfig }) {
         )}
         {getGallery.length > 0 && (
           <div
-            className={`${styles.productSlider} ${imagesForScrollView?.length <= itemCountMobile ? styles.lessItem : ""} ${
+            className={`${styles.productSlider} ${
+              imagesForScrollView?.length <= itemCountMobile
+                ? styles.lessItem
+                : ""
+            } ${
               desktop_layout?.value === "horizontal"
                 ? styles.desktopVisible
                 : styles.desktopHidden
@@ -697,14 +630,19 @@ export function Component({ props, globalConfig }) {
               mobile_layout?.value === "horizontal"
                 ? styles.mobileVisible
                 : styles.mobileHidden
-            }`}
+            } ${styles.productSliderNoBanner}`}
           >
             <Carousel opts={config}>
               <CarouselContent>
                 {imagesForScrollView?.map((product, index) => (
                   <CarouselItem
                     key={index}
-                    style={{ flex: `0 0 ${slideBasis}` }}
+                    className={styles.fcCarouselItemHorizontal}
+                    style={{
+                      "--count-desktop": desktopCount,
+                      "--count-mobile": itemCountMobile,
+                      "--is-banner-desktop": 0,
+                    }}
                   >
                     <ProductCardItem
                       key={`${product.uid}_${index}`}
@@ -721,6 +659,7 @@ export function Component({ props, globalConfig }) {
                       handleWishlistToggle={handleWishlistToggle}
                       handleAddToCart={handleAddToCart}
                       isServiceable={is_serviceable}
+                      isImageFill={globalConfig?.img_fill}
                     />
                   </CarouselItem>
                 ))}
@@ -784,6 +723,7 @@ export function Component({ props, globalConfig }) {
                   handleWishlistToggle={handleWishlistToggle}
                   handleAddToCart={handleAddToCart}
                   isServiceable={is_serviceable}
+                  isImageFill={globalConfig?.img_fill}
                 />
               ))}
             </div>
@@ -848,6 +788,7 @@ export function Component({ props, globalConfig }) {
                       followedIdList={[]}
                       handleWishlistToggle={() => {}}
                       handleAddToCart={() => {}}
+                      isImageFill={globalConfig?.img_fill}
                     />
                   )
                 )}
@@ -938,6 +879,7 @@ export function Component({ props, globalConfig }) {
                       followedIdList={[]}
                       handleWishlistToggle={() => {}}
                       handleAddToCart={() => {}}
+                      isImageFill={globalConfig?.img_fill}
                     />
                   )
                 )}
@@ -991,7 +933,9 @@ export function Component({ props, globalConfig }) {
               className={`${showScrollView() ? styles.placeholderContainer : ""}`}
             >
               <div
-                className={`${showStackedView() ? styles.imageGrid : ""} ${showScrollView() ? styles.placeholderScroll : ""}`}
+                className={`${showStackedView() ? styles.imageGrid : ""} ${
+                  showScrollView() ? styles.placeholderScroll : ""
+                }`}
                 style={{
                   "--per-row": item_count?.value,
                   "--per-row-mobile": itemCountMobile,
@@ -1013,6 +957,7 @@ export function Component({ props, globalConfig }) {
                       followedIdList={[]}
                       handleWishlistToggle={() => {}}
                       handleAddToCart={() => {}}
+                      isImageFill={globalConfig?.img_fill}
                     />
                   )
                 )}
@@ -1027,7 +972,15 @@ export function Component({ props, globalConfig }) {
             <div
               className={`${styles["flex-justify-center"]} ${
                 imagesForScrollView?.length <= 3 ? styles.lessGap : ""
-              } ${showScrollView() && isClient ? styles["gap-above-button-horizontal"] : styles["gap-above-button"]} ${button_position?.value === "below_products" ? "" : styles.visibleOnMobile}`}
+              } ${
+                showScrollView() && isClient
+                  ? styles["gap-above-button-horizontal"]
+                  : styles["gap-above-button"]
+              } ${
+                button_position?.value === "below_products"
+                  ? ""
+                  : styles.visibleOnMobile
+              }`}
             >
               <FDKLink to={`/collection/${slug}`}>
                 <button
@@ -1095,6 +1048,7 @@ const ProductCardItem = ({
   handleWishlistToggle,
   handleAddToCart,
   isServiceable,
+  isImageFill,
 }) => {
   const { t } = useGlobalTranslation("translation");
   const {
@@ -1128,7 +1082,12 @@ const ProductCardItem = ({
         state={{
           product: {
             ...product,
-            sizes: { sellable: product?.sellable, sizes: product?.sizes },
+            sizes: {
+              sellable: product?.sellable,
+              sizes: (product?.sizes || []).map((s) =>
+                typeof s === "string" ? { display: s, value: s } : s
+              ),
+            },
           },
         }}
       >
@@ -1136,13 +1095,14 @@ const ProductCardItem = ({
           product={product}
           listingPrice={listingPrice}
           isSaleBadgeDisplayed={false}
+          isCustomBadge={globalConfig?.show_custom_badge}
           showBadge={show_badge?.value}
           columnCount={columnCount}
           isWishlistDisplayed={false}
           onWishlistClick={handleWishlistToggle}
           followedIdList={followedIdList}
           isWishlistIcon={show_wishlist_icon?.value}
-          isImageFill={img_fill?.value}
+          isImageFill={isImageFill}
           isPrice={globalConfig?.show_price}
           aspectRatio={getProductImgAspectRatio(globalConfig)}
           imagePlaceholder={placeholderProduct}

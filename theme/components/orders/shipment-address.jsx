@@ -5,8 +5,8 @@ import { useGlobalTranslation } from "fdk-core/utils";
 function ShipmentAddress({ address }) {
   const { t } = useGlobalTranslation("translation");
   const getOptionalFields = (item) => {
-    return `${item?.sector ? `${item?.sector}, ` : ""}${item?.city}, ${item?.pincode ? `- ${item?.pincode}` : ""
-      }`;
+    const postalCode = item?.area_code || item?.pincode;
+    return `${item?.sector ? `${item?.sector}, ` : ""}${item?.city}, ${postalCode ? `- ${postalCode}` : ""}`;
   };
 
   return (

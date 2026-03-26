@@ -211,7 +211,7 @@
               "show_category_breadcrumb": true,
               "show_brand_breadcrumb": true,
               "mrp_label": true,
-              "tax_label": "Price inclusive of all tax",
+              "tax_label": "Price inclusive of all taxes",
               "item_code": true,
               "product_details_bullets": true,
               "enable_buy_now": true,
@@ -450,6 +450,17 @@
             "props": {
               "show_header": true,
               "show_footer": true
+            }
+          }
+        },
+        {
+          "page": "not-found-page",
+          "settings": {
+            "props": {
+              "heading": "Page Not Found",
+              "message": "The page you are looking for does not exist.",
+              "button_text": "Return to Home"
+              
             }
           }
         },
@@ -1012,7 +1023,7 @@
                   "tax_label": {
                     "type": "text",
                     "label": "Price tax label text",
-                    "value": "Price inclusive of all tax"
+                    "value": "Price inclusive of all taxes"
                   }
                 }
               },
@@ -1265,6 +1276,46 @@
           }
         ],
         "value": "blog-detail"
+      },
+      {
+        "sections": [
+          {
+            "label": "Page Not Found",
+            "name": "not-found-page",
+            "predicate": {
+              "route": {
+                "exact_url": "",
+                "query": null,
+                "selected": "none"
+              },
+              "screen": {
+                "desktop": true,
+                "mobile": true,
+                "tablet": true
+              },
+              "user": {
+                "anonymous": true,
+                "authenticated": true
+              }
+            },
+            "preset": {},
+            "props": {
+              "heading": {
+                "type": "text",
+                "value": "Page Not Found"
+              },
+              "message": {
+                "type": "text",
+                "value": "The page you are looking for does not exist."
+              },
+              "button_text": {
+                "type": "text",
+                "value": "Return to Home"
+              }
+            }
+          }
+        ],
+        "value": "not-found-page"
       },
       {
         "sections": [
@@ -1893,22 +1944,6 @@
               "enable_otp_login": {
                 "value": true,
                 "type": "checkbox"
-              },
-              "enable_social_login": {
-                "value": false,
-                "type": "checkbox"
-              },
-              "enable_google_login": {
-                "value": false,
-                "type": "checkbox"
-              },
-              "enable_facebook_login": {
-                "value": false,
-                "type": "checkbox"
-              },
-              "enable_apple_login": {
-                "value": false,
-                "type": "checkbox"
               }
             }
           }
@@ -2422,7 +2457,7 @@
               },
               "tax_label": {
                 "type": "text",
-                "value": "Price inclusive of all tax"
+                "value": "Price inclusive of all taxes"
               },
               "mandatory_pincode": {
                 "type": "checkbox",
@@ -3428,40 +3463,6 @@
           }
         ],
         "value": "wishlist"
-      },
-      {
-        "sections": [
-          {
-            "blocks": [
-              {
-                "name": "Page Not Found",
-                "props": [],
-                "type": "page-not-found"
-              }
-            ],
-            "label": "Page Not Found",
-            "name": "page-not-found",
-            "predicate": {
-              "route": {
-                "exact_url": "",
-                "query": null,
-                "selected": "none"
-              },
-              "screen": {
-                "desktop": true,
-                "mobile": true,
-                "tablet": true
-              },
-              "user": {
-                "anonymous": true,
-                "authenticated": true
-              }
-            },
-            "props": {},
-            "value": "page-not-found"
-          }
-        ],
-        "value": "not-found-page"
       },
       {
         "sections": [

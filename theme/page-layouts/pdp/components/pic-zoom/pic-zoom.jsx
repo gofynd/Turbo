@@ -127,6 +127,8 @@ function PicZoom({
                 controls={false}
                 autoPlay
                 muted={isMute}
+                playsInline
+                webkit-playsinline="true"
                 onLoadedData={iframeload}
                 onClick={pauseVideo}
                 onEnded={onVideoEnd}

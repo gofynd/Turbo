@@ -18,6 +18,20 @@ export async function isLoggedIn({ fpi, store }) {
   }
 }
 
+export async function checkoutGuard({ fpi, store }) {
+  try {
+    const loggedIn = await isLoggedIn({ fpi, store });
+    if (loggedIn) {
+      return true;
+    }
+    const continueAsGuest =
+      store?.configuration?.app_features?.landing_page?.continue_as_guest;
+    return !!continueAsGuest;
+  } catch (error) {
+    return false;
+  }
+}
+
 export async function loginGuard({ fpi, store }) {
   try {
     const loggedIn = await isLoggedIn({ fpi, store });

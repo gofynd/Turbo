@@ -394,27 +394,38 @@ function Search({
 
                     {/* Collections Section */}
                     {Object.keys(groupedCollections).length > 0 && (
-                      <div className={styles.collectionsSection}>
+                      <div
+                        className={styles.collectionsSection}
+                        data-search-section="collections"
+                      >
                         {Object.entries(groupedCollections).map(
                           ([type, items]) => (
-                            <div key={type} className={styles.collectionGroup}>
+                            <div
+                              key={type}
+                              className={styles.collectionGroup}
+                              data-search-collection-type={type}
+                            >
                               <div
                                 className={styles["search__suggestions--title"]}
+                                data-search-collection-title={type}
                               >
                                 {type.charAt(0).toUpperCase() + type.slice(1)}
                               </div>
-                              <ul>
+                              <ul data-search-collection-list={type}>
                                 {items.map((item, index) => (
                                   <li
                                     key={index}
                                     className={
                                       styles["search__suggestions--item"]
                                     }
+                                    data-search-collection-item={type}
+                                    data-search-collection-item-index={index}
                                   >
                                     <FDKLink
                                       action={item.action}
                                       className={styles.linkButton}
                                       title={item.display}
+                                      data-search-collection-link={type}
                                       onClick={() =>
                                         redirectToProduct(
                                           item.action?.path || "/"

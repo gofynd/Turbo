@@ -93,6 +93,22 @@ function Navigation({
     }
   }, [showSidebar]);
 
+    useEffect(() => {
+    if (!showSidebar || !isRunningOnClient()) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape" || event.key === "Esc") {
+        closeSidebarNav();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showSidebar, closeSidebarNav]);
+
   // Close sidebar when route changes (e.g., browser back button)
   useEffect(() => {
     // Only close if pathname actually changed (not on initial mount)

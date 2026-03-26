@@ -138,6 +138,24 @@ export const FOLLOWED_PRODUCTS_IDS = `query FollowedListing(
   followedListing(collectionType: "products", pageSize: $pageSize) {
     items {
       uid
+      name
+      slug
+      brand {
+        name
+        uid
+      }
+      price {
+        effective {
+          currency_code
+          min
+          max
+        }
+        marked {
+          currency_code
+          min
+          max
+        }
+      }
     }
     page {
       item_total
@@ -480,6 +498,24 @@ export const FOLLOWED_PRODUCTS_ID = `query followedListing(
   ) {
     items {
       uid
+      name
+      slug
+      brand {
+        name
+        uid
+      }
+      price {
+        effective {
+          currency_code
+          min
+          max
+        }
+        marked {
+          currency_code
+          min
+          max
+        }
+      }
     }
     page {
       item_total

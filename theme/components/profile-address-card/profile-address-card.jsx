@@ -32,10 +32,17 @@ function ProfileAddressCard({ address, isDefault, onEdit, onDelete }) {
       address?.landmark,
       address?.city,
       address?.state,
-      address?.country,
     ].filter(Boolean);
 
-    return parts.join(", ");
+    let addressStr = parts.join(", ");
+    const postalCode = address?.area_code || address?.pincode;
+    if (postalCode) {
+      addressStr += ` ${postalCode}`;
+    }
+    if (address?.country) {
+      addressStr += `, ${address.country}`;
+    }
+    return addressStr;
   };
 
   const getPhoneNumber = () => {

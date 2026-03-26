@@ -13,6 +13,7 @@ import RefundToSourceIcon from "../assets/images/refund-to-source.svg";
 import ShipmentVehicle from "../assets/images/shipment-vehicle.svg";
 import useShipmentDetails from "../page-layouts/orders/useShipmentDetails";
 import styles from "../styles/return-summary-status.less";
+import { useThemeConfig } from "../helper/hooks";
 
 const includesIgnoreCase = (str = "", keyword = "") =>
   str?.toLowerCase().includes(keyword.toLowerCase());
@@ -247,7 +248,7 @@ const RefundDetailsSection = ({ shipmentDetails, t, isLoading }) => {
   );
 };
 
-const ProductItem = ({ bag, t }) => {
+const ProductItem = ({ bag, t, globalConfig }) => {
   const product = bag?.item;
   const productImage = product?.image?.[0] || "";
   const productName = product?.slug_key || "Unknown Product";
@@ -268,6 +269,9 @@ const ProductItem = ({ bag, t }) => {
                 "noopener,noreferrer"
               );
             }}
+            className={
+              globalConfig?.img_fill ? styles.imageCover : styles.imageContain
+            }
           />
         ) : (
           <div className={styles.placeholderImage}>
@@ -290,7 +294,7 @@ const ProductItem = ({ bag, t }) => {
   );
 };
 
-const ProductsSection = ({ shipmentDetails, t, isLoading }) => {
+const ProductsSection = ({ shipmentDetails, t, isLoading, globalConfig }) => {
   return (
     <div
       className={styles.productContainer}
@@ -316,7 +320,12 @@ const ProductsSection = ({ shipmentDetails, t, isLoading }) => {
 
           {shipmentDetails?.bags?.length > 0 ? (
             shipmentDetails.bags.map((bag, index) => (
-              <ProductItem key={index} bag={bag} t={t} />
+              <ProductItem
+                key={index}
+                bag={bag}
+                t={t}
+                globalConfig={globalConfig}
+              />
             ))
           ) : (
             <div className={styles.noProducts}>
@@ -329,7 +338,7 @@ const ProductsSection = ({ shipmentDetails, t, isLoading }) => {
   );
 };
 
-const LeftSection = ({ shipmentDetails, t, isLoading, fpi }) => (
+const LeftSection = ({ shipmentDetails, t, isLoading, fpi, globalConfig }) => (
   <div
     className={styles.leftSection}
     style={{
@@ -349,6 +358,7 @@ const LeftSection = ({ shipmentDetails, t, isLoading, fpi }) => (
         shipmentDetails={shipmentDetails}
         t={t}
         isLoading={isLoading}
+        globalConfig={globalConfig}
       />
     </div>
   </div>
@@ -371,6 +381,7 @@ const RightSection = ({ shipmentDetails, isLoading }) => {
 
 const ReturnSummaryStatus = ({ fpi }) => {
   const navigate = useNavigate();
+  const { globalConfig } = useThemeConfig({ fpi });
   const { t } = useGlobalTranslation("translation");
 
   const { isLoading, shipmentDetails } = useShipmentDetails(fpi);
@@ -399,6 +410,7 @@ const ReturnSummaryStatus = ({ fpi }) => {
               t={t}
               isLoading={isLoading}
               fpi={fpi}
+              globalConfig={globalConfig}
             />
             <RightSection
               shipmentDetails={shipmentDetails}

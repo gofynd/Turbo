@@ -93,13 +93,12 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       return;
     }
 
-    // For guest users or logged-in users with no addresses:
-    // allAddresses will be empty array [] or undefined
-    // allAddresses && !allAddresses.length will be true for empty array
-    // (!allAddresses || !allAddresses.length) handles both undefined and empty array cases
-    // This ensures the "Add New Address" modal opens for users with no addresses
+    // Only open the modal when allAddresses has been fetched and is explicitly empty.
+    // allAddresses === undefined means the store is not yet initialized (still loading),
+    // so we must NOT open the modal in that case to avoid showing it to logged-in users
+    // who already have addresses (the fetch just hasn't completed yet).
     const shouldOpenForGuest =
-      !allAddresses || !allAddresses.length; // No addresses = empty array or undefined
+      Array.isArray(allAddresses) && !allAddresses.length;
     const shouldOpenForOtherMode =
       cart_items?.checkout_mode === "other" && !hideAddress;
 
@@ -1017,25 +1016,22 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         setSelectedAddressId(addressIdString);
         setIsShipmentLoading(true);
         updateQuery("address_id", addressIdString);
-        updatedSelectedAddress(findAddress)
-          .then(() => {
-            fpi
-              .executeGQL(FETCH_SHIPMENTS, {
-                addressId: addressIdString,
-                id: `${cart_id}`,
-                buyNow,
-              })
-              .then((res) => {
-                if (!res?.data?.cartShipmentDetails?.is_valid) {
-                  showSnackbar(res?.data?.cartShipmentDetails?.message);
-                  setIsCartValid(false);
-                }
-              })
-              .finally(() => {
-                setIsShipmentLoading(false);
-              });
+        updatedSelectedAddress(findAddress).catch(() => {});
+        fpi
+          .executeGQL(FETCH_SHIPMENTS, {
+            addressId: addressIdString,
+            id: `${cart_id}`,
+            buyNow,
           })
-          .catch(() => {});
+          .then((res) => {
+            if (!res?.data?.cartShipmentDetails?.is_valid) {
+              showSnackbar(res?.data?.cartShipmentDetails?.message);
+              setIsCartValid(false);
+            }
+          })
+          .finally(() => {
+            setIsShipmentLoading(false);
+          });
         // Only open shipment accordion if shouldOpenShipment is true
         if (shouldOpenShipment) {
           setShowShipment(true);

@@ -2,6 +2,8 @@
 
 .delivery {
   display: flex;
+  align-items: center;
+  gap: 8px;
   border-radius: @ButtonRadius;
   background-color: @ThemeAccentL4;
 }
@@ -116,6 +118,8 @@
   border: none;
   padding: 0.8rem;
   width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
   text-overflow: ellipsis;
 
   @media @mobile {

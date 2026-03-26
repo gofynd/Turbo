@@ -218,6 +218,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
                   props={props}
                   srcset={getImgSrcSet()}
                   defer={index >= itemsPerRow}
+                  globalConfig={globalConfig}
                 />
               )
           )}
@@ -249,6 +250,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
                         props={props}
                         srcset={getImgSrcSet()}
                         defer={index >= itemsPerRow}
+                        globalConfig={globalConfig}
                       />
                     )}
                   </CarouselItem>
@@ -270,6 +272,7 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
                 props={props}
                 srcset={getImgSrcSet()}
                 defer={false}
+                globalConfig={globalConfig}
               />
             )
           )}
@@ -285,6 +288,7 @@ const CollectionItem = ({
   collection,
   srcset,
   defer = false,
+  globalConfig ,
 }) => {
   const { img_fill, img_container_bg, button_text, name_placement } = props;
   return (

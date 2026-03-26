@@ -468,6 +468,19 @@ export const OFFERS = `query Offers($slug: String!) {
   }
 }`;
 
+export const GET_PRODUCT_SIZES = `query ProductSizes($slug: String!) {
+  product(slug: $slug) {
+    sizes {
+      size_details {
+        display
+        is_available
+        quantity
+        value
+      }
+    }
+  }
+}`;
+
 export const PRODUCT_SIZE_PRICE = `query ProductPrice($slug: String!, $size: String!,  $pincode: String!, $fulfillmentOptionSlug: String) {
   productPrice(slug: $slug, size: $size,  pincode: $pincode, fulfillmentOptionSlug: $fulfillmentOptionSlug) {
     article_id

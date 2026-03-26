@@ -5,6 +5,7 @@ import {
   DIRECTION_ADAPTIVE_CSS_PROPERTIES,
   FLOAT_MAP,
   TEXT_ALIGNMENT_MAP,
+  IMAGE_OPTIMIZATION_CONFIG,
 } from "./constant";
 import { useEffect, useState } from "react";
 
@@ -37,6 +38,18 @@ export function capitalize(str) {
   if (!str) return str; // Return the string as-is if it's empty or undefined
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
+
+/**
+ * Validates custom badge (teaser_tag) for display.
+ * Returns false if badge is empty, whitespace-only, single character, or "."
+ * @param {string|null|undefined} teaserTag - The custom badge text
+ * @returns {boolean} - True if badge should be rendered
+ */
+export const isValidCustomBadge = (teaserTag) => {
+  if (teaserTag == null || typeof teaserTag !== "string") return false;
+  const trimmed = teaserTag.trim();
+  return trimmed.length > 1 && trimmed !== ".";
+};
 
 /**
  * Format number with locale-aware comma separation
@@ -214,7 +227,8 @@ export const convertUTCDateToLocalDate = (date, format, locale = "en-US") => {
     }
 
     // Convert the UTC date to the local date using toLocaleString() with specific time zone
-    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    const browserTimezone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
     const options = {
       ...frm,
       timeZone: browserTimezone,
@@ -230,7 +244,7 @@ export const convertUTCDateToLocalDate = (date, format, locale = "en-US") => {
 };
 
 export function validateName(name) {
-  const regexp = /^[a-zA-Z0-9-_'. ]+$/;
+  const regexp = /^\p{L}+(?:[' -]\p{L}+)*$/u;
   return regexp.test(String(name).toLowerCase().trim());
 }
 
@@ -264,27 +278,109 @@ export function isEmptyOrNull(obj) {
   );
 }
 
-export const transformImage = (url, width) => {
+/**
+ * Transform image URL with Pixelbin optimizations for better quality and performance
+ * @param {string} url - Original image URL
+ * @param {number} width - Target width in pixels
+ * @param {Object} options - Additional transformation options
+ * @param {number} options.quality - Image quality (1-100, default: from IMAGE_OPTIMIZATION_CONFIG)
+ * @param {number} options.dpr - Device pixel ratio (default: auto-detect, max from config)
+ * @param {string} options.format - Output format ('auto', 'webp', 'jpeg', 'png', default: 'auto')
+ * @param {boolean} options.sharpen - Apply sharpening to prevent blur (default: from config)
+ * @param {number} options.sharpness - Sharpening intensity (0-10, default: from config)
+ * @returns {string} Transformed image URL
+ */
+export const transformImage = (url, width, options = {}) => {
   let updatedUrl = url;
   try {
     const obj = Pixelbin.utils.urlToObj(url);
-    if (width) {
+    if (
+      width ||
+      options.quality ||
+      options.format ||
+      options.sharpen !== false
+    ) {
       const pixelbin = new Pixelbin({
         cloudName: obj.cloudName,
         zone: obj.zone || "default",
       });
 
-      const resizeTransformation = transformations.Basic.resize({
-        width,
-        dpr: 1,
-      });
+      // Detect device pixel ratio (DPR) for retina displays
+      const deviceDPR =
+        typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+      // Cap DPR using config value to balance quality and performance
+      const dpr =
+        options.dpr !== undefined
+          ? options.dpr
+          : Math.min(deviceDPR, IMAGE_OPTIMIZATION_CONFIG.MAX_DPR);
+
+      const transformationArray = [];
+
+      // 1. Resize with DPR support for sharp images on retina displays
+      if (width) {
+        transformationArray.push(
+          transformations.Basic.resize({
+            width,
+            height: 0, // Auto height to maintain aspect ratio
+            fit: "cover", // Better cropping than default
+            dpr,
+          })
+        );
+      }
+
+      // 2. Apply sharpening to prevent blurry images (especially after resize)
+      const shouldSharpen =
+        options.sharpen !== false &&
+        IMAGE_OPTIMIZATION_CONFIG.SHARPEN.ENABLED;
+      if (shouldSharpen) {
+        const sharpness =
+          options.sharpness || IMAGE_OPTIMIZATION_CONFIG.SHARPEN.INTENSITY;
+        transformationArray.push(
+          transformations.Basic.sharpen({
+            sigma: sharpness,
+          })
+        );
+      }
+
+      // 3. Optimize image quality (reduces file size without visible quality loss)
+      const quality =
+        options.quality !== undefined
+          ? options.quality
+          : IMAGE_OPTIMIZATION_CONFIG.DEFAULT_QUALITY;
+      if (quality && quality !== 100) {
+        transformationArray.push(
+          transformations.Basic.compress({
+            quality,
+          })
+        );
+      }
+
+      // 4. Auto format conversion (WebP/AVIF for modern browsers)
+      const format = options.format || "auto";
+      if (format === "auto") {
+        // Let Pixelbin choose the best format based on browser support
+        transformationArray.push(
+          transformations.Basic.toFormat({
+            format: "webp", // WebP as fallback, browser will use AVIF if supported
+            quality,
+          })
+        );
+      } else if (format !== "original") {
+        transformationArray.push(
+          transformations.Basic.toFormat({
+            format,
+            quality,
+          })
+        );
+      }
 
       updatedUrl = pixelbin
         .image(obj.workerPath)
-        .setTransformation(resizeTransformation)
+        .setTransformation(...transformationArray)
         .getUrl();
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.warn("Error processing the URL:", error.message);
   }
   return updatedUrl;
@@ -395,7 +491,8 @@ export const currencyFormat = (
   }
 
   // Determine if we should use Indian numbering system
-  const isIndianLocale = finalLocale === "en-IN" || finalLocale?.startsWith("en-IN");
+  const isIndianLocale =
+    finalLocale === "en-IN" || finalLocale?.startsWith("en-IN");
 
   try {
     // Use Intl.NumberFormat for locale-aware formatting
@@ -479,7 +576,8 @@ export function priceFormatCurrencySymbol(
   }
 
   // Determine if we should use Indian numbering system
-  const isIndianLocale = finalLocale === "en-IN" || finalLocale?.startsWith("en-IN");
+  const isIndianLocale =
+    finalLocale === "en-IN" || finalLocale?.startsWith("en-IN");
 
   try {
     // Use Intl.NumberFormat for locale-aware formatting
@@ -494,15 +592,16 @@ export function priceFormatCurrencySymbol(
       useGrouping: true,
     });
 
-    const formattedPrice = formatter.format(num);
+    const sign = num < 0 ? "- " : "";
+    const formattedPrice = formatter.format(Math.abs(num));
     const hasAlphabeticCurrency = /^[A-Za-z]+$/.test(symbol);
 
     // Handle currency symbol placement
     let finalResult;
     if (hasAlphabeticCurrency) {
-      finalResult = `${symbol} ${formattedPrice}`;
+      finalResult = `${sign}${symbol} ${formattedPrice}`;
     } else {
-      finalResult = `${symbol}${formattedPrice}`;
+      finalResult = `${sign}${symbol}${formattedPrice}`;
     }
 
     return finalResult;
@@ -969,8 +1068,9 @@ export const getAddressStr = (item, isAddressTypeAvailable) => {
       parts.unshift(item.address_type);
     }
     let addressStr = parts.join(", ");
-    if (item.area_code) {
-      addressStr += ` ${item.area_code}`;
+    const postalCode = item.area_code || item.pincode;
+    if (postalCode) {
+      addressStr += ` ${postalCode}`;
     }
     if (item.country) {
       // Handle country as object or string
@@ -1227,4 +1327,138 @@ export const formatOrderAcceptanceTiming = (timingArray) => {
   );
 
   return `Open today: ${openingTime} - ${closingTime}`;
+};
+
+export const isSizeSelectable = (sizeItem, isMto) => {
+  if (!sizeItem) return false;
+  if (isMto) return true;
+
+  const quantity =
+    typeof sizeItem.quantity === "number" ? sizeItem.quantity : 0;
+  const isExplicitlyUnavailable = sizeItem.is_available === false;
+
+  return quantity > 0 && !isExplicitlyUnavailable;
+};
+
+export const pickSelectableSize = ({
+  sizesList = [],
+  urlSizeValue = "",
+  isMto = false,
+} = {}) => {
+  if (!Array.isArray(sizesList) || sizesList.length === 0) {
+    return null;
+  }
+
+  const normalizedUrlSize = urlSizeValue || "";
+  let selectedFromUrl = null;
+
+  if (normalizedUrlSize) {
+    selectedFromUrl = sizesList.find(
+      (item) => item?.value === normalizedUrlSize
+    );
+  }
+
+  // If URL size exists and is selectable, prefer it
+  if (selectedFromUrl && isSizeSelectable(selectedFromUrl, isMto)) {
+    return selectedFromUrl;
+  }
+
+  let fallbackSize = null;
+
+  if (selectedFromUrl) {
+    const urlIndex = sizesList.findIndex(
+      (item) => item?.value === selectedFromUrl.value
+    );
+
+    if (urlIndex !== -1) {
+      // Try next sizes after the URL size
+      fallbackSize = sizesList
+        .slice(urlIndex + 1)
+        .find((item) => isSizeSelectable(item, isMto));
+
+      // If none after, try sizes before the URL size
+      if (!fallbackSize) {
+        fallbackSize = sizesList
+          .slice(0, urlIndex)
+          .find((item) => isSizeSelectable(item, isMto));
+      }
+    }
+  }
+
+  // If still no fallback (no/invalid URL size or all around are invalid),
+  // pick the first selectable size or just the first size.
+  if (!fallbackSize) {
+    fallbackSize = sizesList.find((item) => isSizeSelectable(item, isMto));
+  }
+
+  return fallbackSize || sizesList[0] || null;
+};
+
+/**
+ * Transforms _custom_json._display options into accordion-ready content.
+ * Used by order-status (and cart chip-item when using theme-template).
+ * Excludes options where alt === "Template Name". Never adds price.
+ * @param {Array} rawOptions - From _custom_json._display
+ * @returns {Array} Accordion content (filtered, transformed, no price)
+ */
+const buildCanvasChildren = (val) => {
+  const children = [];
+  if (val.text != null) children.push({ key: "text", value: val.text });
+  if (val.previewImage) {
+    children.push({ key: "preview", value: { imageUrl: val.previewImage } });
+  }
+  return children;
+};
+
+const isCanvasLike = (val) =>
+  val &&
+  typeof val === "object" &&
+  !Array.isArray(val) &&
+  ("text" in val || "previewImage" in val);
+
+const transformDisplayHandlers = {
+  number: (opt) => ({
+    key: opt.key,
+    children: [{ key: "value", value: opt.value }],
+  }),
+  imageUpload: (opt) => {
+    const url = opt.value ?? opt.url;
+    if (url == null) return { key: opt.key, children: [] };
+    return {
+      key: opt.key,
+      children: [{ key: "value", value: { imageUrl: url } }],
+    };
+  },
+  dropdownImage: (opt) => ({
+    key: opt.key,
+    children: [{ key: "value", value: opt.value }],
+  }),
+  productCanvas: (opt) => {
+    const canvasData = opt.value;
+    if (!canvasData || typeof canvasData !== "object") {
+      return { key: opt.key, children: [] };
+    }
+    return { key: opt.key, children: buildCanvasChildren(canvasData) };
+  },
+};
+
+const transformDisplayDefaultHandler = (opt) => {
+  const val = opt.value;
+  if (isCanvasLike(val)) {
+    return { key: opt.key, children: buildCanvasChildren(val) };
+  }
+  return { key: opt.key, children: [{ key: "value", value: opt.value }] };
+};
+
+export const transformDisplayToAccordionContent = (rawOptions = []) => {
+  const options = Array.isArray(rawOptions) ? rawOptions : [];
+  return options
+    .filter((opt) => opt && opt.alt !== "Template Name")
+    .map((opt) => {
+      const customType = opt.customType || opt.type;
+      const fn =
+        transformDisplayHandlers[customType] || transformDisplayDefaultHandler;
+      return fn(opt);
+    })
+    .filter((item) => item.children?.length > 0);
 };

@@ -34,6 +34,7 @@
       display: flex;
       align-items: center;
       flex: 1;
+
       &.dontShow {
         display: none;
       }
@@ -42,20 +43,24 @@
     .right__icons {
       justify-content: flex-end;
       .column-gap(16px);
+
       .navButton {
         display: flex;
         gap: 4px;
         width: auto !important;
         align-items: center;
+
         span {
           color: @TextHeading;
           font-size: 14px;
           width: max-content;
+
           @media @tablet {
             display: none;
           }
         }
       }
+
       .icon {
         width: 24px;
         height: 24px;
@@ -68,7 +73,7 @@
 
       &--bag,
       &--wishlist {
-        & > div {
+        &>div {
           position: relative;
 
           .count {
@@ -103,6 +108,7 @@
   .secondRow {
     display: flex;
     justify-content: center;
+
     &.visiblityNone {
       visibility: hidden;
     }
@@ -115,6 +121,7 @@
       &.increasePadding {
         padding: 14px 0;
       }
+
       .left {
         margin: 0 74px;
         justify-content: center;
@@ -173,14 +180,14 @@
 
         &--bag,
         &--wishlist {
-          & > div .count {
+          &>div .count {
             width: 14px;
             height: 14px;
           }
         }
 
         &--bag {
-          & > div .count {
+          &>div .count {
             transform: translate(4px, 0px);
 
             [dir="rtl"] & {
@@ -190,7 +197,7 @@
         }
 
         &--wishlist {
-          & > div .count {
+          &>div .count {
             transform: translate(3px, -3px);
 
             [dir="rtl"] & {
@@ -215,6 +222,20 @@
       }
     }
   }
+
+  &.enableLeftNav {
+    .firstRow {
+      .left {
+        justify-content: flex-start;
+        margin: 0 24px 0 0;
+      }
+    }
+  }
+}
+
+.leftNavHamburger {
+  display: flex;
+  align-items: center;
 }
 
 .headerIcon {
@@ -224,7 +245,7 @@
   fill: @HeaderIcon;
 }
 
-.singleRowIcon g > path {
+.singleRowIcon g>path {
   fill: @HeaderIcon;
 }
 

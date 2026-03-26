@@ -39,6 +39,17 @@ const useHyperlocal = (fpi) => {
     "selectedAddress",
     null,
     (value) => {
+      // After logout: do not restore location from localStorage so user starts fresh
+      if (
+        value &&
+        isRunningOnClient() &&
+        sessionStorage.getItem("fdk_post_logout")
+      ) {
+        fpi.custom.setValue("selectedAddress", null);
+        setPersistedAddress(null);
+        setIsAddressLoading(false);
+        return;
+      }
       // Always restore full addresses (with id) from localStorage, even if a pincode-only address is already set
       // This ensures that when page refreshes, full addresses are preserved
       if (value) {

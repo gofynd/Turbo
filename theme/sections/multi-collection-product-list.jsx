@@ -316,7 +316,18 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                               onClick={() => {
                                 navigate?.(`/product/${product.slug}`, {
                                   state: {
-                                    product,
+                                    product: {
+                                      ...product,
+                                      sizes: {
+                                        sellable: product?.sellable,
+                                        sizes: (product?.sizes || []).map(
+                                          (s) =>
+                                            typeof s === "string"
+                                              ? { display: s, value: s }
+                                              : s
+                                        ),
+                                      },
+                                    },
                                   },
                                 });
                               }}
@@ -325,11 +336,12 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                                 product={product}
                                 listingPrice={listingPrice}
                                 isSaleBadge={enable_sales_badge?.value}
+                                isCustomBadge={globalConfig?.show_custom_badge}
                                 isWishlistDisplayed={false}
                                 isWishlistIcon={show_wishlist_icon?.value}
                                 columnCount={columnCount}
                                 isPrice={globalConfig?.show_price}
-                                isImageFill={img_fill?.value}
+                                isImageFill={globalConfig?.img_fill}
                                 onWishlistClick={handleWishlistToggle}
                                 followedIdList={followedIdList}
                                 showAddToCart={showAddToCart}

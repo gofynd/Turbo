@@ -23,9 +23,28 @@
     align-items: center;
     gap: 25px;
     flex-wrap: wrap;
+    width: 100%;
     img {
       max-width: 73.22px;
       max-height: 27.259px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    @media (max-width: 480px) {
+      gap: 18px;
+      img {
+        max-width: 60px;
+        max-height: 22px;
+      }
+    }
+    @media (max-width: 360px) {
+      gap: 8px;
+      img {
+        max-width: 52px;
+        max-height: 19px;
+      }
     }
   }
 }

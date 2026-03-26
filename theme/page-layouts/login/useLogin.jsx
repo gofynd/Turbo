@@ -258,23 +258,6 @@ const useLogin = ({ fpi, pageConfig = {} }) => {
     console.error("Google login failed:", error);
   };
 
-  // Social login configuration based on pageConfig
-  const socialConfig = useMemo(() => {
-    const enableSocialLogin = pageConfig?.enable_social_login || false;
-    const showGoogle = pageConfig?.show_google || false;
-    const showFacebook = pageConfig?.show_facebook || false;
-    const showApple = pageConfig?.show_apple || false;
-
-    const config = {
-      enableSocialLogin,
-      google: enableSocialLogin && showGoogle,
-      facebook: enableSocialLogin && showFacebook,
-      apple: enableSocialLogin && showApple,
-    };
-
-    return config;
-  }, [pageConfig]);
-
   return {
     logo,
     title: platformData?.display,
@@ -286,7 +269,7 @@ const useLogin = ({ fpi, pageConfig = {} }) => {
     appleId,
     appleRedirectURI,
     facebookAppId,
-    social: socialConfig,
+    social: platformData?.social,
     handleGoogleError,
     isRegisterEnabled: platformData?.register,
     registerButtonLabel: t("resource.common.go_to_register"),

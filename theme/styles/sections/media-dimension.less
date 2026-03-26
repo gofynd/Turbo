@@ -1,3 +1,15 @@
+.mediaShell {
+  position: relative;
+  width: 100%;
+}
+
+/* Desktop first - base rule */
+.mediaShellFixedHeight {
+  height: var(--media-desktop-height, auto);
+  min-height: var(--media-desktop-height, auto);
+}
+
+/* Mobile override - must come after desktop so it wins on small viewports */
 @media (max-width: 768px) {
   .mediaShellAspect {
     aspect-ratio: var(--media-aspect-mobile, var(--media-aspect-desktop, 1));
@@ -7,16 +19,6 @@
     min-height: var(--media-mobile-height, auto);
     height: var(--media-mobile-height, auto);
   }
-}
-
-.mediaShell {
-  position: relative;
-  width: 100%;
-}
-
-.mediaShellFixedHeight {
-  height: var(--media-desktop-height, auto);
-  min-height: var(--media-desktop-height, auto);
 }
 
 .mediaShellFixedHeight :global(.fy-image__imageWrapper___wKmP2),

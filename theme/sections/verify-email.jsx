@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useEmail } from "../page-layouts/profile/useEmail";
 import EmptyState from "../components/empty-state/empty-state";
@@ -15,22 +15,29 @@ export function Component() {
   const [isEmailCodeValid, setIsEmailCodeValid] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleEmailVerification = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const code = searchParams.get("code");
-      await verifyEmail(code);
-      setIsEmailCodeValid(true);
-      setIsLoading(false);
-    } catch (error) {
+  useEffect(() => {
+    const code = searchParams.get("code");
+
+    if (!code) {
       setIsEmailCodeValid(false);
       setIsLoading(false);
+      return;
     }
-  }, [searchParams, verifyEmail]);
 
-  useEffect(() => {
-    handleEmailVerification();
-  }, [handleEmailVerification]);
+    (async () => {
+      try {
+        setIsLoading(true);
+        await verifyEmail(code);
+        setIsEmailCodeValid(true);
+      } catch (error) {
+        setIsEmailCodeValid(false);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+    // Run once on mount; React Router remounts on URL change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return isLoading ? (
     <></>

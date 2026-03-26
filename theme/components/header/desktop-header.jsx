@@ -5,6 +5,7 @@ import {
   useLocale,
 } from "fdk-core/utils";
 import Navigation from "./navigation";
+import LeftNavigation from "./left-navigation";
 import I18Dropdown from "./i18n-dropdown";
 import Search from "./search";
 import styles from "./styles/desktop-header.less";
@@ -34,8 +35,11 @@ function HeaderDesktop({
   onServiceabilityClick = () => {},
   languageIscCode,
   hideNavList,
+  onLogoClick = () => {},
 }) {
   const { t } = useGlobalTranslation("translation");
+    const enableLeftNavigation = globalConfig?.enable_left_navigation;
+
   const {
     profile_icon_text,
     wishlist_icon_text,
@@ -73,8 +77,10 @@ function HeaderDesktop({
   return (
     <div
       className={`${styles.headerDesktop}  ${
-        styles[globalConfig.header_layout]
-      } ${styles[globalConfig.logo_menu_alignment]}`}
+          styles[globalConfig.header_layout]
+        } ${styles[globalConfig.logo_menu_alignment]} ${
+          enableLeftNavigation ? styles.enableLeftNav : ""
+        }`}
     >
       <div
         className={`${styles.firstRow} ${
@@ -84,7 +90,13 @@ function HeaderDesktop({
         }`}
       >
         <div className={`${styles.left}`}>
-          {!isDoubleRowHeader && !hideNavList && (
+           {enableLeftNavigation && !hideNavList && (
+              <LeftNavigation
+                navigationList={navigation}
+                triggerClassName={styles.leftNavHamburger}
+              />
+            )}
+          {!isDoubleRowHeader && !hideNavList &&  !enableLeftNavigation && (
             <Navigation
               customClass={`${styles.firstRowNav} ${
                 styles[globalConfig?.header_layout]
@@ -121,7 +133,7 @@ function HeaderDesktop({
             )}
         </div>
         <div className={`${styles.middle} ${styles.flexCenter}`}>
-          <FDKLink to="/">
+          <FDKLink to="/" onClick={onLogoClick}>
             <div
               className={styles.logoShell}
               style={{ "--logo-height": `${desktopLogoHeight}px` }}
@@ -253,7 +265,7 @@ function HeaderDesktop({
             )}
         </div>
       </div>
-      {isDoubleRowHeader && !hideNavList && (
+      {isDoubleRowHeader && !hideNavList &&  !enableLeftNavigation && (
         <Navigation
           customClass={`${styles.secondRow}`}
           maxMenuLength={getMenuMaxLength()}

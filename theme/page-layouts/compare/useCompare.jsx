@@ -74,8 +74,6 @@ const useCompare = (fpi) => {
     return fpi
       .executeGQL(PRODUCT_COMPARISON, { slug: slugs })
       .then((res) => {
-        console.log(res, "ressssssss");
-
         if (res?.errors?.length) {
           const errorMsg =
             res.errors[0]?.message ?? t("resource.common.error_message");
@@ -114,7 +112,7 @@ const useCompare = (fpi) => {
           );
           return true;
         } else {
-          console.log(
+          console.error(
             res?.errors?.[0]?.message ?? t("resource.common.error_message")
           );
         }

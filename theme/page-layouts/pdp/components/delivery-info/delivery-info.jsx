@@ -175,7 +175,7 @@ function DeliveryInfo({
   if (isLoading) {
     return (
       <div className={`${styles.deliveryInfo} ${className}`}>
-        <Shimmer height="70px" />
+        <Shimmer height="90px" />
       </div>
     );
   }

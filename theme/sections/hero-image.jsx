@@ -66,8 +66,8 @@ export function Component({ props, globalConfig, blocks }) {
   const getImgSrcSet = () => {
     if (globalConfig?.img_hd) {
       return [
-        { breakpoint: { min: 481 } },
-        { breakpoint: { max: 480 }, url: getMobileUrl },
+        { breakpoint: { min: 720 } },
+        { breakpoint: { max: 719 }, url: getMobileUrl },
       ];
     }
     return [
@@ -79,7 +79,7 @@ export function Component({ props, globalConfig, blocks }) {
       { breakpoint: { min: 720 }, width: 1530 },
       { breakpoint: { max: 180 }, width: 450, url: getMobileUrl },
       { breakpoint: { max: 360 }, width: 810, url: getMobileUrl },
-      { breakpoint: { max: 540 }, width: 1170, url: getMobileUrl },
+      { breakpoint: { max: 719 }, width: 1170, url: getMobileUrl },
     ];
   };
 

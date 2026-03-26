@@ -10,6 +10,7 @@ import "@gofynd/theme-template/components/date-picker/fy-date-picker/fy-date-pic
 import styles from "./profile-details-form.less";
 import RadioIcon from "../../assets/images/radio";
 import { convertISOToDDMMYYYY, convertDDMMYYYYToISO } from "../../helper/utils";
+import { validateName } from "../../helper/utils";
 
 function ProfileDetailsForm({ userData, onSave, isLoading }) {
   const { t } = useGlobalTranslation("translation");
@@ -156,7 +157,11 @@ function ProfileDetailsForm({ userData, onSave, isLoading }) {
             <Controller
               name="firstName"
               control={control}
-              rules={{ required: "First name is required" }}
+              rules={{
+                required: "First name is required",
+                validate: (value) =>
+                  validateName(value) || "Please enter a valid first name",
+              }}
               render={({ field }) => (
                 <div className={styles.inputWrapper}>
                   <FyInput
@@ -178,7 +183,11 @@ function ProfileDetailsForm({ userData, onSave, isLoading }) {
             <Controller
               name="lastName"
               control={control}
-              rules={{ required: "Last name is required" }}
+              rules={{
+                required: "Last name is required",
+                validate: (value) =>
+                  validateName(value) || "Please enter a valid last name",
+              }}
               render={({ field }) => (
                 <div className={styles.inputWrapper}>
                   <FyInput

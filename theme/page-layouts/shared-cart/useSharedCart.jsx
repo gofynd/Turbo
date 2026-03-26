@@ -13,6 +13,9 @@ import { isRunningOnClient } from "../../helper/utils";
 let sharedCartCache = null;
 let cacheToken = null;
 
+// Delay before clearing cartOperationInProgress after navigate to cart (allows cart to load without empty-state flash)
+const CART_OPERATION_CLEAR_DELAY_MS = 2500;
+
 const useSharedCart = (fpi) => {
   const { t } = useGlobalTranslation("translation");
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -102,15 +105,16 @@ const useSharedCart = (fpi) => {
       // return allItems;
       /* eslint no-param-reassign: "error" */
       const grpBySameSellerAndProduct = allItems.reduce((result, item) => {
-        result[
-          `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
-        ] = (
-          result[
-            `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
-          ] || []
-        ).concat(item);
+        // Customized items must not be merged with other items since each has
+        // unique customization data. Use article.uid as an isolated key.
+        const hasCustomization =
+          item.article?._custom_json?._display?.length > 0;
+        const groupKey = hasCustomization
+          ? item.article.uid
+          : `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`;
+        result[groupKey] = (result[groupKey] || []).concat(item);
         return result;
-      }, []);
+      }, {});
 
       const updateArr = [];
       Object.entries(grpBySameSellerAndProduct).forEach(([key, value]) => {
@@ -130,36 +134,54 @@ const useSharedCart = (fpi) => {
 
   const updateCartWithSharedItem = (action, successInfo = null) => {
     try {
+      // Prevent cart page from showing "no items" flash while navigating after add
+      fpi.custom.setValue("cartOperationInProgress", true);
+
       const payload = {
         action,
         token: token?.current?.toString(),
       };
-      fpi.executeGQL(UPDATE_CART_WITH_SHARED_ITEMS, payload).then((res) => {
-        if (res?.errors) {
+      fpi
+        .executeGQL(UPDATE_CART_WITH_SHARED_ITEMS, payload)
+        .then((res) => {
+          if (res?.errors) {
+            fpi.custom.setValue("cartOperationInProgress", false);
+            showSnackbar(
+              res?.errors?.message ||
+                t("resource.cart.failed_to_action_cart", {
+                  action: t(`resource.cart.${action}`),
+                }),
+              "error"
+            );
+          } else {
+            // Clear the cache when cart is updated
+            sharedCartCache = null;
+            cacheToken = null;
+            // Note: shared_cart_staff_data is already stored in CUSTOM_VALUE store
+            // and will persist automatically. No need to manually preserve it here.
+            showSnackbar(
+              successInfo ??
+                t("resource.cart.cart_action_successful", {
+                  action: t(`resource.cart.${action}`),
+                }),
+              "success"
+            );
+            navigate("/cart/bag/");
+            // Clear after delay so cart page can load without showing empty state
+            setTimeout(() => {
+              fpi.custom.setValue("cartOperationInProgress", false);
+            }, CART_OPERATION_CLEAR_DELAY_MS);
+          }
+        })
+        .catch((err) => {
+          fpi.custom.setValue("cartOperationInProgress", false);
           showSnackbar(
-            res?.errors?.message ||
-              t("resource.cart.failed_to_action_cart", {
-                action: t(`resource.cart.${action}`),
-              }),
+            err?.message || t("resource.common.error_message"),
             "error"
           );
-        } else {
-          // Clear the cache when cart is updated
-          sharedCartCache = null;
-          cacheToken = null;
-          // Note: shared_cart_staff_data is already stored in CUSTOM_VALUE store
-          // and will persist automatically. No need to manually preserve it here.
-          showSnackbar(
-            successInfo ??
-              t("resource.cart.cart_action_successful", {
-                action: t(`resource.cart.${action}`),
-              }),
-            "success"
-          );
-          navigate("/cart/bag/");
-        }
-      });
+        });
     } catch (err) {
+      fpi.custom.setValue("cartOperationInProgress", false);
       showSnackbar(err?.message || t("resource.common.error_message"), "error");
     }
   };

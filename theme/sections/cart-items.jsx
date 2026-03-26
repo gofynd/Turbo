@@ -48,6 +48,8 @@ export function Component({ props, globalConfig = {}, blocks }) {
 
   const {
     isLoading,
+    showCartShimmer,
+    cartItemCount,
     isLoyaltyLoading,
     cartData,
     currencySymbol,
@@ -85,6 +87,11 @@ export function Component({ props, globalConfig = {}, blocks }) {
     getFulfillmentOptions = () => {},
     fetchProductPrice = () => {},
   } = useCart(fpi);
+  const CART = useGlobalStore(fpi.getters.CART);
+  const { cart_items } = CART || {};
+  const cartItemsLoading = cart_items?.loading || false;
+  const { cartOperationInProgress } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
+
   const cartDeliveryLocation = useCartDeliveryLocation({ fpi });
   const cartShare = useCartShare({ fpi, cartData });
   const cartComment = useCartComment({ fpi, cartData });
@@ -220,7 +227,15 @@ export function Component({ props, globalConfig = {}, blocks }) {
     onRemoveIconClick();
   };
 
-  if (cartData?.items?.length === 0) {
+  const isCartOperationInProgress = isRemoving || isMovingToWishlist || isCartUpdating || !!cartOperationInProgress;
+  const canShowEmptyState = !showCartShimmer && !cartItemsLoading && !isCartOperationInProgress;
+  const hasItems = Array.isArray(cartData?.items) && cartData.items.length > 0;
+  const isCartEmpty =
+    !hasItems &&
+    (cartItemCount === 0 ||
+      cartData?.user_cart_items_count === 0 ||
+      !cartData?.items?.length);
+  if (canShowEmptyState && isCartEmpty) {
     return (
       <EmptyState
         Icon={
@@ -259,15 +274,15 @@ export function Component({ props, globalConfig = {}, blocks }) {
                             {t("resource.section.cart.your_bag")}
                           </span>
                           <span className={styles.bagCount}>
-                            {isLoading ? (
+                            {showCartShimmer ? (
                               <Skeleton height={17} width={60} />
                             ) : (
                               <>
                                 (
                                 {(() => {
                                   const itemCount =
-                                    cartData?.user_cart_items_count ??
-                                    cartItemsArray?.length ??
+                                    cartData?.user_cart_items_count ||
+                                    cartItemsArray?.length ||
                                     0;
                                   return `${itemCount} ${
                                     itemCount > 1
@@ -286,7 +301,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
                           </div>
                         )}
                       </div>
-                      {isLoading ||
+                      {showCartShimmer ||
                       ((isRemoving || isMovingToWishlist) && isCartUpdating) ? (
                         Array(2)
                           .fill()
@@ -356,7 +371,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
                                     "resize-w:250"
                                   );
 
-                                const currentSize = singleItem?.split("_")[1];
+                                const currentSize = singleItemDetails?.article?.size;
                                 return (
                                   <ChipItem
                                     key={`${singleItemDetails?.key}_${singleItemDetails?.article?.store?.uid}_${singleItemDetails?.article?.item_index}`}
@@ -506,7 +521,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
                 case "gst_card":
                   return (
                     <React.Fragment key={key}>
-                      {isLoading ? (
+                      {showCartShimmer ? (
                         <Skeleton
                           className={styles.gstCardLoader}
                           height="100%"
@@ -532,13 +547,13 @@ export function Component({ props, globalConfig = {}, blocks }) {
                         key={key}
                         breakUpValues={breakUpValues?.display || []}
                         cartItemCount={
-                          cartData?.user_cart_items_count ??
-                          cartItemsArray?.length ??
+                          cartData?.user_cart_items_count ||
+                          cartItemsArray?.length ||
                           0
                         }
                         currencySymbol={currencySymbol}
                         isInternationalTaxLabel={isCrossBorderOrder}
-                        isLoading={isLoading}
+                        isLoading={showCartShimmer}
                       />
                     </div>
                   );
@@ -564,7 +579,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
                 case "checkout_buttons":
                   return (
                     <React.Fragment key={key}>
-                      {isLoading ? (
+                      {showCartShimmer ? (
                         <>
                           <Skeleton
                             height={48}
@@ -655,6 +670,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
         <RemoveCartItem
           isOpen={isRemoveModalOpen}
           cartItem={removeItemData?.item}
+          globalConfig={globalConfig}
           isRemoving={isRemoving}
           isMovingToWishlist={isMovingToWishlist}
           onRemoveButtonClick={() => onRemoveButtonClick(removeItemData)}

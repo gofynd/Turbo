@@ -39,6 +39,13 @@ export function Component({ props, globalConfig }) {
       ? mobileVideoUrl
       : videoUrl;
 
+  const isUrlOnlyDesktop = videoUrl?.value && !videoFile?.value;
+  const isUrlOnlyMobile = mobileVideoUrl?.value && !mobileVideoFile?.value;
+  const ytDefaultAspect =
+    isUrlOnlyDesktop && !(desktop_height?.value || desktop_aspect_ratio?.value);
+  const ytDefaultAspectMb =
+    isUrlOnlyMobile && !(mobile_height?.value || mobile_aspect_ratio?.value);
+
   const {
     videoRef,
     mobileVideoRef,
@@ -111,9 +118,9 @@ export function Component({ props, globalConfig }) {
 
   const mobilePlaceHolder = Boolean(
     mobileVideoFile?.value ||
-      mobileVideoUrl?.value ||
-      videoFile?.value ||
-      videoUrl?.value
+    mobileVideoUrl?.value ||
+    videoFile?.value ||
+    videoUrl?.value
   );
 
   const desktopPlaceHolder = Boolean(videoFile?.value || videoUrl?.value);
@@ -171,13 +178,13 @@ export function Component({ props, globalConfig }) {
   return (
     <section style={dynamicStyles}>
       {title?.value && (
-      <h2 className={`fx-title ${styles.video_heading} fontHeader`}>
-        {title?.value}
-      </h2>
-    )}
+        <h2 className={`fx-title ${styles.video_heading} fontHeader`}>
+          {title?.value}
+        </h2>
+      )}
 
       <div
-        className={`${videoWrapperClass} ${styles.show_on_desktop}`}
+        className={`${videoWrapperClass} ${styles.show_on_desktop} ${ytDefaultAspect ? styles.ytDefaultAspect : ""}`}
         style={mediaLayout?.style}
       >
         {videoFile?.value ? (
@@ -208,7 +215,9 @@ export function Component({ props, globalConfig }) {
           isYoutube() &&
           isValidUrl &&
           !isMobile && (
-            <div className={`${styles.youtube_wrapper} ${styles.mediaFill}`}>
+            <div
+              className={`${styles.youtube_wrapper} ${styles.mediaFill} ${!desktop_aspect_ratio?.value && !desktop_height?.value ? styles.default_ratio : ""}`}
+            >
               <div
                 className={styles.yt_video}
                 ref={ytVideoRef}
@@ -223,7 +232,7 @@ export function Component({ props, globalConfig }) {
         <VideoControls />
       </div>
       <div
-        className={`${videoWrapperClass} ${styles.show_on_mobile}`}
+        className={`${videoWrapperClass} ${styles.show_on_mobile} ${ytDefaultAspectMb ? styles.ytDefaultAspectMb : ""}`}
         style={mediaLayout?.style}
       >
         {mobileVideoFile?.value || videoFile?.value ? (
@@ -254,7 +263,9 @@ export function Component({ props, globalConfig }) {
           isYoutube() &&
           VideoUrlValue &&
           isMobile && (
-            <div className={`${styles.youtube_wrapper} ${styles.mediaFill}`}>
+            <div
+              className={`${styles.youtube_wrapper} ${styles.mediaFill} ${!mobile_aspect_ratio?.value && !mobile_height?.value ? styles.default_ratio : ""}`}
+            >
               <div
                 className={styles.yt_video}
                 ref={ytVideoRef}

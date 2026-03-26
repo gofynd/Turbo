@@ -416,6 +416,7 @@ export const CART_UPDATE = `mutation updateCart($areaCode: String, $b: Boolean, 
       pan_config
       pan_no
       restrict_checkout
+      user_cart_items_count
       uid
       ${CART_BREAKUP_VALUES}
       ${CART_ITEMS}
@@ -449,6 +450,7 @@ export const APPLY_COUPON = `mutation ApplyCoupon($buyNow: Boolean, $applyCoupon
     restrict_checkout
     staff_user_id
     success
+    user_cart_items_count
     uid
     ${CART_BREAKUP_VALUES}
     ${CART_ITEMS}
@@ -520,6 +522,7 @@ export const REMOVE_COUPON = `mutation RemoveCoupon($buyNow: Boolean, $removeCou
     restrict_checkout
     staff_user_id
     success
+    user_cart_items_count
     uid
     ${CART_BREAKUP_VALUES}
     ${CART_ITEMS}

@@ -9,6 +9,7 @@ import Hotspot from "../components/hotspot/product-hotspot";
 import { useViewport } from "../helper/hooks";
 import { useWindowWidth } from "../helper/hooks";
 import { getMediaLayout } from "../helper/media-layout";
+import { useFPI, useGlobalStore } from "fdk-core/utils";
 
 export function Component({ props, blocks, globalConfig }) {
   const isMobile = useViewport(0, 540);
@@ -25,8 +26,16 @@ export function Component({ props, blocks, globalConfig }) {
     desktop_aspect_ratio,
     mobile_aspect_ratio,
   } = props;
+  const fpi = useFPI();
+  const page = useGlobalStore(fpi.getters.PAGE) || {};
+  const sections = page?.sections || [];
+  const currentSection =
+    sections.find((section) => section?.blocks === blocks) || {};
+  const sectionLabel = currentSection?.label;
+  console.log(sectionLabel,'"sectionLabel"')
   const windowWidth = useWindowWidth();
   const isMobileViewport = windowWidth <= 768;
+ 
   const dynamicBoxStyle = (block) => {
     return {
       "--x_position": `${block.props?.x_position?.value || 0}%`,
@@ -44,8 +53,8 @@ export function Component({ props, blocks, globalConfig }) {
   const getImgSrcSet = () => {
     if (globalConfig?.img_hd) {
       return [
-        { breakpoint: { min: 481 } },
-        { breakpoint: { max: 540 }, url: mobileImage },
+        { breakpoint: { min: 720 } },
+        { breakpoint: { max: 719 }, url: mobileImage },
       ];
     }
     return [
@@ -57,7 +66,7 @@ export function Component({ props, blocks, globalConfig }) {
       { breakpoint: { min: 720 }, width: 1530 },
       { breakpoint: { max: 180 }, width: 450, url: mobileImage },
       { breakpoint: { max: 360 }, width: 810, url: mobileImage },
-      { breakpoint: { max: 540 }, width: 1170, url: mobileImage },
+      { breakpoint: { max: 719 }, width: 1170, url: mobileImage },
     ];
   };
 
@@ -137,9 +146,10 @@ export function Component({ props, blocks, globalConfig }) {
                     isFixedAspectRatio: false,
                   })}
               alt={
-                hover_application_banner?.value
+                sectionLabel ||
+                (hover_application_banner?.value
                   ? "Application banner with hotspots"
-                  : "Application banner"
+                  : "Application banner")
               }
             />
           </div>
@@ -163,7 +173,7 @@ export function Component({ props, blocks, globalConfig }) {
               : {
                   isFixedAspectRatio: false,
                 })}
-            alt="Application banner"
+            alt={sectionLabel || "Application banner"}
           />
         </div>
       )}

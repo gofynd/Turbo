@@ -5,6 +5,7 @@ import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import {
   getProductImgAspectRatio,
   isRunningOnClient,
+  isValidCustomBadge,
 } from "../../../../helper/utils";
 import styles from "./image-gallery.less";
 import MobileSlider from "../mobile-slider/mobile-slider";
@@ -16,6 +17,7 @@ import ArrowRightIcon from "../../../../assets/images/arrow-right.svg";
 import { useGlobalTranslation, useGlobalStore, useFPI } from "fdk-core/utils";
 import { Skeleton } from "../../../../components/core/skeletons";
 import { createPortal } from "react-dom";
+import WishlistIcon from "../../../../assets/images/wishlist";
 
 const LightboxImage = React.lazy(
   () => import("../lightbox-image/lightbox-image")
@@ -40,6 +42,7 @@ function PdpImageGallery({
   isDataLoad = false,
   // Sale tag props (configuration-based)
   showSaleTag = false,
+  showCustomBadge = true, // Platform setting: show_custom_badge (teaser_tag)
   displayMode = "carousel", // "carousel", "vertical", or "vertical-with-thumbnail"
   onLightboxStateChange, // Callback to notify parent about lightbox state
 }) {
@@ -254,6 +257,24 @@ function PdpImageGallery({
     setCurrentImageIndex((prevIndex) => prevIndex + 1);
   };
 
+  const handlePrevArrowClick = (e) => {
+    if (currentImageIndex <= 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    prevSlide();
+  };
+
+  const handleNextArrowClick = (e) => {
+    if (currentImageIndex >= images.length - 1) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    nextSlide();
+  };
+
   const openGallery = (index = 0) => {
     setSelectedImageIndex(index);
     setEnableLightBox(true);
@@ -273,8 +294,11 @@ function PdpImageGallery({
           <span>{t("resource.common.out_of_stock")}</span>
         </div>
       );
-    } else if (productDetails.teaser_tag && showSaleTag) {
-      // Teaser tag
+    } else if (
+      isValidCustomBadge(productDetails.teaser_tag) &&
+      showCustomBadge
+    ) {
+      // Custom badge (teaser_tag) - controlled by platform show_custom_badge
       return (
         <div className={styles.saleTag}>
           <span>{productDetails.teaser_tag.substring(0, 14)}</span>
@@ -306,9 +330,15 @@ function PdpImageGallery({
           className={`${styles.carouselArrow} ${
             styles["carouselArrow--left"]
           } ${currentImageIndex <= 0 ? styles.disableArrow : ""}`}
-          onClick={prevSlide}
+          onClick={handlePrevArrowClick}
           data-carousel="nav-prev"
           data-carousel-arrow="prev"
+          onMouseDown={(e) => {
+            if (currentImageIndex <= 0) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}
         >
           <CarouselNavArrowIcon />
         </div>
@@ -356,7 +386,13 @@ function PdpImageGallery({
           className={`${styles.carouselArrow} ${
             currentImageIndex >= images.length - 1 ? styles.disableArrow : ""
           }`}
-          onClick={nextSlide}
+          onClick={handleNextArrowClick}
+          onMouseDown={(e) => {
+            if (currentImageIndex >= images.length - 1) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}
           data-carousel="nav-next"
           data-carousel-arrow="next"
         >
@@ -479,10 +515,7 @@ function PdpImageGallery({
       data-carousel="root"
       data-carousel-mode="vertical"
     >
-      <div
-        className={styles.verticalImageContainer}
-        data-carousel="track"
-      >
+      <div className={styles.verticalImageContainer} data-carousel="track">
         {images.map((item, index) => (
           <div
             key={index}
@@ -515,7 +548,7 @@ function PdpImageGallery({
               </div>
             )} */}
             <div className={styles.saleTagContainer}>
-              {index === 0 && !isDataLoad ? (
+              {!isDataLoad ? (
                 renderTag()
               ) : (
                 <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
@@ -619,10 +652,7 @@ function PdpImageGallery({
 
         {/* Main Images Vertical Line */}
         <div className={styles.mainImagesArea} data-carousel="main">
-          <div
-            className={styles.mainImagesVertical}
-            data-carousel="track"
-          >
+          <div className={styles.mainImagesVertical} data-carousel="track">
             {images.map((item, index) => (
               <div
                 key={index}
@@ -648,9 +678,10 @@ function PdpImageGallery({
                   removeFromWishlist={removeFromWishlist}
                   addToWishList={addToWishList}
                   hideImagePreview={hideImagePreview}
+                  showWishlist={false}
                 />
                 <div className={styles.saleTagContainer}>
-                  {index === 0 && !isDataLoad ? (
+                  {!isDataLoad ? (
                     renderTag()
                   ) : (
                     <Skeleton
@@ -667,6 +698,16 @@ function PdpImageGallery({
               </div>
             ))}
           </div>
+          <button
+            type="button"
+            aria-label={t("resource.common.breadcrumb.wishlist")}
+            className={`${styles.wishlistIcon} ${followed ? styles.activeWishlist : ""}`}
+            onClick={(e) =>
+              followed ? removeFromWishlist(e) : addToWishList(e)
+            }
+          >
+            <WishlistIcon isActive={followed} />
+          </button>
         </div>
       </div>
     </div>
@@ -701,7 +742,6 @@ function PdpImageGallery({
           slideTabCentreNone={slideTabCentreNone}
           handleShare={handleShare}
           showShareIcon={showShareIcon}
-          showSaleTag={showSaleTag}
           renderTag={renderTag}
           isDataLoad={isDataLoad}
         />

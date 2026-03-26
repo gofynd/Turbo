@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFPI } from "fdk-core/utils";
 import { PLPShimmer } from "../components/core/skeletons";
 import ProductListing from "@gofynd/theme-template/pages/product-listing/product-listing";
@@ -10,7 +10,12 @@ import { PLP_PRODUCTS, BRAND_META, CATEGORY_META } from "../queries/plpQuery";
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const fpi = useFPI();
 
-  const listingProps = useProductListing({ fpi, props });
+  useEffect(() => {
+    fpi.custom.setValue("plpSectionMounted", true);
+    return () => fpi.custom.setValue("plpSectionMounted", false);
+  }, []);
+
+  const listingProps = useProductListing({ fpi, props, globalConfig });
 
   // Show shimmer only on client side when page is actually loading
   const shouldShowShimmer = isRunningOnClient() && listingProps?.isPageLoading;
@@ -405,6 +410,8 @@ Component.serverFetch = async ({ fpi, router, props }) => {
     pageType: "number",
   };
   if (pageNo) payload.pageNo = pageNo;
+
+  fpi.custom.setValue("plpSectionMounted", true);
 
   if (isAlgoliaEnabled) {
     const BASE_URL = `https://${fpiState?.custom?.appHostName}/ext/search/application/api/v1.0/products`;

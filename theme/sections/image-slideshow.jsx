@@ -41,8 +41,8 @@ function getDesktopImage(block, index) {
 function getImgSrcSet(block, globalConfig, index) {
   if (globalConfig?.img_hd) {
     return [
-      { breakpoint: { min: 501 } },
-      { breakpoint: { max: 540 }, url: getMobileImage(block, index) },
+      { breakpoint: { min: 720 } },
+      { breakpoint: { max: 719 }, url: getMobileImage(block, index) },
     ];
   }
   return [
@@ -55,7 +55,7 @@ function getImgSrcSet(block, globalConfig, index) {
     { breakpoint: { max: 180 }, width: 450, url: getMobileImage(block, index) },
     { breakpoint: { max: 360 }, width: 810, url: getMobileImage(block, index) },
     {
-      breakpoint: { max: 540 },
+      breakpoint: { max: 719 },
       width: 1170,
       url: getMobileImage(block, index),
     },
@@ -77,6 +77,7 @@ export function Component({ props, blocks, globalConfig, preset }) {
     desktop_aspect_ratio,
     mobile_aspect_ratio,
   } = props;
+
   const shouldOpenInNewTab =
     open_in_new_tab?.value === true || open_in_new_tab?.value === "true";
   const windowWidth = useWindowWidth();
@@ -354,7 +355,7 @@ export function Component({ props, blocks, globalConfig, preset }) {
                       src={getDesktopImage(block, index)}
                       sources={getImgSrcSet(block, globalConfig, index)}
                       defer={index >= 1}
-                      alt={`slide-${index}`}
+                      alt={block?.name || `slide-${index}`}
                       {...(mediaLayout
                         ? {
                             isFixedAspectRatio: mediaLayout.isAspectRatio,

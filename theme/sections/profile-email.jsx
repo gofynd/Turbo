@@ -18,6 +18,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
     setEmailAsPrimary,
     addEmail,
     deleteEmail,
+    updateEmail,
     emails,
   } = useEmail({
     fpi,
@@ -92,6 +93,22 @@ export function Component({ props, blocks, preset, globalConfig }) {
     [addEmail, showSnackbar, t]
   );
 
+  const handleUpdateEmail = useCallback(
+    async (email) => {
+      try {
+        await updateEmail(email);
+        showSnackbar(
+          t("resource.profile.email_updated_successfully"),
+          "success"
+        );
+      } catch (error) {
+        showSnackbar(error?.message, "error");
+        throw error;
+      }
+    },
+    [updateEmail, showSnackbar, t]
+  );
+
   const emailList = useMemo(
     () =>
       emails?.length === 1 ? emails : emails?.filter((item) => item?.primary),
@@ -118,6 +135,7 @@ export function Component({ props, blocks, preset, globalConfig }) {
         setEmailAsPrimary={handleSetPrimary}
         addEmail={handleAddEmail}
         deleteEmail={handleDelete}
+        updateEmail={handleUpdateEmail}
         emails={emailList}
       />
     </div>

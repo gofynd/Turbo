@@ -111,12 +111,27 @@ export function ThemeProvider({ children }) {
   const [searchParams] = useSearchParams();
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
 
-  const isValidSection =
-    sections[0]?.name === "application-banner" ||
-    sections[0]?.name === "image-slideshow" ||
-    sections[0]?.name === "hero-image" ||
-    sections[0]?.name === "image-gallery" ||
-    sections[0]?.name === "hero-video";
+  const TRANSPARENT_SECTION_NAMES_PROVIDER = useMemo(
+    () =>
+      new Set([
+        "application-banner",
+        "image-slideshow",
+        "hero-image",
+        "image-gallery",
+        "hero-video",
+      ]),
+    []
+  );
+
+  const isHomePage = location.pathname === "/";
+
+  const isValidSection = useMemo(() => {
+    if (!isHomePage) return false;
+    if (!sections || sections.length === 0) return false;
+    return sections.some((s) =>
+      TRANSPARENT_SECTION_NAMES_PROVIDER.has(s?.name)
+    );
+  }, [isHomePage, sections, TRANSPARENT_SECTION_NAMES_PROVIDER]);
 
   const headerPosition = useMemo(() => {
     if (
@@ -125,14 +140,12 @@ export function ThemeProvider({ children }) {
       isValidSection
     ) {
       return "fixed";
-    } else if (globalConfig?.sticky_header && !isValidSection) {
-      return "sticky ";
-    } else if (!globalConfig?.sticky_header) {
-      return "unset";
+    } else if (globalConfig?.sticky_header) {
+      return "sticky";
     } else {
-      return "sticky ";
+      return "unset";
     }
-  }, [globalConfig]);
+  }, [globalConfig, isValidSection]);
 
   const fontStyles = useMemo(() => {
     let styles = "";
@@ -210,13 +223,13 @@ export function ThemeProvider({ children }) {
         --buttonLinkL1: #${buttonLinkShade.tint(20).hex};
         --buttonLinkL2: #${buttonLinkShade.tint(40).hex};
         --page-max-width: ${globalConfig?.enable_page_max_width ? "1440px" : "unset"};
-        --header-position: ${headerPosition};
+        --headerPosition: ${headerPosition};
         ${accentDarkShades?.reduce((acc, color, index) => acc.concat(`--themeAccentD${index + 1}: #${color.hex};`), "")}
         ${accentLightShades?.reduce((acc, color, index) => acc.concat(`--themeAccentL${index + 1}: #${color.hex};`), "")}
       }`
     );
     return styles.replace(/\s+/g, "");
-  }, [globalConfig]);
+  }, [globalConfig, headerPosition]);
 
   const fontLinks = useMemo(() => {
     const links = [];

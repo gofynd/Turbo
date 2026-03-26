@@ -157,7 +157,6 @@
       "id": "header_mega_menu",
       "category": "t:resource.common.header",
       "label": "t:resource.settings_schema.header.switch_to_mega_menu",
-
       "info": "t:resource.settings_schema.header.mega_menu_double_row_required",
       "default": "t:resource.common.default",
       "options": [
@@ -643,6 +642,14 @@
       "default": false,
       "label": "t:resource.settings_schema.header.transparent_header",
       "info": "t:resource.settings_schema.header.transparent_header_info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_left_navigation",
+      "category": "t:resource.common.header",
+      "label": "Enable Left Navigation (Hamburger)",
+      "default": false,
+      "info": "Use a left-side hamburger drawer on desktop instead of inline header navigation"
     },
     {
       "type": "header",

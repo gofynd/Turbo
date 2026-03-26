@@ -21,6 +21,7 @@ function OrderShipment({
   orderInfo,
   onBuyAgainClick = () => {},
   isBuyAgainEligible,
+  globalConfig,
 }) {
   const fpi = useFPI();
   const { language, countryCode } = useGlobalStore(fpi.getters.i18N_DETAILS);
@@ -129,7 +130,15 @@ function OrderShipment({
               >
                 {/* Product Image */}
                 <div className={styles.productImage}>
-                  <img src={finalProductImage} alt={brandName} />
+                  <img
+                    src={finalProductImage}
+                    alt={brandName}
+                    className={
+                      globalConfig?.img_fill
+                        ? styles.imageCover
+                        : styles.imageContain
+                    }
+                  />
                 </div>
 
                 {/* Product Details */}

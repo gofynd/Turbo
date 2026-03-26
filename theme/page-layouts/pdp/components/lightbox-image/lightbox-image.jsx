@@ -286,6 +286,8 @@ function LightboxImage({
                           controls={false}
                           autoPlay
                           muted={isMute}
+                          playsInline
+                          webkit-playsinline="true"
                           onClick={pauseVideo}
                           onEnded={onVideoEnd}
                         />

@@ -5,6 +5,7 @@ import { useThemeConfig } from "../helper/hooks";
 import { sanitizeHTMLTag } from "../helper/utils";
 import { getHelmet } from "../providers/global-provider";
 import useSeoMeta from "../helper/hooks/useSeoMeta";
+import { PLPShimmer } from "../components/core/skeletons";
 
 const CollectionListing = ({ fpi }) => {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
@@ -55,25 +56,65 @@ const CollectionListing = ({ fpi }) => {
     seoDescription,
   ]);
 
+  const isPageReady = page?.value === "collection-listing";
+  const isSectionMounted = customValues?.collectionSectionMounted;
+  const isClient = typeof window !== "undefined";
+  const showShimmer = isClient && (!isPageReady || !isSectionMounted);
+
+  if (!isPageReady) {
+    return isClient ? (
+      <div className="margin0auto basePageContainer">
+        <PLPShimmer
+          gridDesktop={4}
+          gridTablet={3}
+          gridMobile={1}
+          showFilters={true}
+          showSortBy={true}
+          showPagination={true}
+          productCount={12}
+        />
+      </div>
+    ) : null;
+  }
+
   return (
-    page?.value === "collection-listing" && (
-      <>
-        {getHelmet({
-          title,
-          description,
-          image: socialImage,
-          canonicalUrl,
-          url: pageUrl,
-          siteName: brandName,
-          ogType: "website",
-        })}
+    <>
+      {getHelmet({
+        title,
+        description,
+        image: socialImage,
+        canonicalUrl,
+        url: pageUrl,
+        siteName: brandName,
+        ogType: "website",
+      })}
+      {showShimmer && (
+        <div className="margin0auto basePageContainer">
+          <PLPShimmer
+            gridDesktop={4}
+            gridTablet={3}
+            gridMobile={1}
+            showFilters={true}
+            showSortBy={true}
+            showPagination={true}
+            productCount={12}
+          />
+        </div>
+      )}
+      <div
+        style={
+          showShimmer
+            ? { visibility: "hidden", height: 0, overflow: "hidden" }
+            : undefined
+        }
+      >
         <SectionRenderer
           sections={sections}
           fpi={fpi}
           globalConfig={globalConfig}
         />
-      </>
-    )
+      </div>
+    </>
   );
 };
 

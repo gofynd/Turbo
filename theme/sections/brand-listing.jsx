@@ -39,17 +39,27 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
   const windowWidth = useWindowWidth();
   const brandCustomValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) ?? {};
   const brandIds = useMemo(() => {
+    // Normalize blocks into a simple array of { type, slug, block }.
+    // For brand/category blocks, we always treat props.brand.value as the
+    // brand slug string coming from the platform.
     return (
       blocks
-        ?.map((block, index) => ({
-          type: block?.type,
-          slug:
-            block?.type !== "category"
-              ? `${block?.type}_${index}`
-              : block?.props?.brand?.value?.id,
-          block,
-        }))
-        ?.filter(({ slug }) => slug) ?? []
+        ?.map((block, index) => {
+          if (!block) return null;
+
+          const type = block.type;
+
+          if (type !== "category") {
+            return { type, slug: `${type}_${index}`, block };
+          }
+
+          const value = block?.props?.brand?.value;
+          const slug = typeof value === "string" ? value : null;
+
+          if (!slug) return null;
+          return { type, slug, block };
+        })
+        ?.filter(Boolean) ?? []
     );
   }, [blocks]);
   const customSectionId = brandIds?.map(({ slug }) => slug)?.join?.("__");
@@ -213,14 +223,18 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
   );
 
   const isDemoBlock = () => {
-    const brands =
+    const selectedBrands =
       blocks?.reduce((acc, b) => {
-        if (b?.props?.brand?.value?.id) {
-          return [...acc, b?.props?.brand?.value?.id];
+        const value = b?.props?.brand?.value;
+
+        if (typeof value === "string" && value) {
+          return [...acc, value];
         }
+
         return acc;
       }, []) || [];
-    return brands?.length === 0;
+
+    return selectedBrands?.length === 0;
   };
 
   const dynamicStyles = {
@@ -385,7 +399,9 @@ export function Component({ props, globalConfig, blocks, id: sectionId }) {
                                           aspectRatio={1}
                                           mobileAspectRatio={1}
                                           sources={[{ width: 100 }]}
-                                          alt={card?.brand?.name || "Brand logo"}
+                                          alt={
+                                            card?.brand?.name || "Brand logo"
+                                          }
                                         />
                                       </div>
                                       <span className={styles["font-body"]}>
@@ -642,14 +658,17 @@ Component.serverFetch = async ({ fpi, blocks }) => {
         // Non-category blocks: client expects { type, data }
         ids.push(`${block.type}_${index}`);
         promises.push(Promise.resolve({ type: block.type, data: block }));
-      } else if (block?.props?.brand?.value?.id) {
-        // Category blocks: fetch brand details and wrap as { type, data }
-        const slug = block.props.brand.value.id;
-        ids.push(slug);
-        const p = fpi
-          .executeGQL(BRAND_DETAILS, { slug })
-          .then((res) => ({ type: "category", data: res?.data || {} }));
-        promises.push(p);
+      } else {
+        const value = block?.props?.brand?.value;
+        const slug = typeof value === "string" ? value : null;
+
+        if (slug) {
+          ids.push(slug);
+          const p = fpi
+            .executeGQL(BRAND_DETAILS, { slug })
+            .then((res) => ({ type: "category", data: res?.data || {} }));
+          promises.push(p);
+        }
       }
     });
 

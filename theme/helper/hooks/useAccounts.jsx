@@ -19,7 +19,11 @@ import {
 } from "../../queries/authQuery";
 import { USER_DATA_QUERY } from "../../queries/libQuery";
 import { useSnackbar } from "./hooks";
-import { isRunningOnClient, getLocalizedRedirectUrl } from "../utils";
+import {
+  isRunningOnClient,
+  getLocalizedRedirectUrl,
+  removeCookie,
+} from "../utils";
 import {
   useGlobalStore,
   useNavigate,
@@ -226,6 +230,29 @@ export const useAccounts = ({ fpi }) => {
           throw res?.errors?.[0];
         }
         if (res?.data?.user?.logout?.logout) {
+          // Clear hyperlocal location on sign out so logged-out users start fresh.
+          // Safe for non-hyperlocal setups: no-op if keys/API unused; backward compatible.
+          try {
+            fpi.custom.setValue("selectedAddress", null);
+            if (typeof fpi.setLocationDetails === "function") {
+              fpi.setLocationDetails(null);
+            }
+          } catch (e) {
+            // Ignore store/SDK errors (e.g. SDK may not accept null)
+          }
+          if (isRunningOnClient()) {
+            try {
+              localStorage.removeItem("selectedAddress");
+              localStorage.removeItem("fynd_guest_pincode");
+              // Clear location cookie so FPI/bootstrap does not re-populate location after redirect
+              removeCookie("app_location_details");
+              // Prevent "Deliver to" modal from auto-opening until user navigates to home page
+              sessionStorage.setItem("fdk_post_logout", "1");
+            } catch (e) {
+              // Ignore storage errors
+            }
+          }
+
           const queryParams = isRunningOnClient()
             ? new URLSearchParams(location.search)
             : null;

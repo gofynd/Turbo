@@ -16,6 +16,12 @@ export const CREATE_ORDER_PAYMENT_LINK = `mutation createOrderHandlerPaymentLink
       merchant_order_id
       method
       order_id
+      base64_html
+      enc_message
+      access_code
+      merchant_id
+      merchant_transaction_id
+      gid
     }
     message
     order_id

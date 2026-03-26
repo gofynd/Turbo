@@ -12,6 +12,7 @@ function ProductDescription({ fpi }) {
   const { globalConfig } = useThemeConfig({ fpi });
   const { sections = [] } = page || {};
   const PRODUCT = useGlobalStore(fpi.getters.PRODUCT);
+  const customValues = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
   const seo = PRODUCT?.product_details?.seo || {};
   const productDescription =
     PRODUCT?.product_details?.description ||
@@ -21,12 +22,17 @@ function ProductDescription({ fpi }) {
     PRODUCT?.product_details?.media?.[0]?.secure_url ||
     PRODUCT?.product_details?.media?.[0]?.url ||
     "";
-  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
-    useSeoMeta({
-      fpi,
-      seo: { ...seo, image: seo?.image || productImage },
-      fallbackImage: productImage,
-    });
+  const {
+    brandName,
+    canonicalUrl,
+    pageUrl,
+    description: seoDescription,
+    socialImage,
+  } = useSeoMeta({
+    fpi,
+    seo: { ...seo, image: seo?.image || productImage },
+    fallbackImage: productImage,
+  });
 
   const title = useMemo(() => {
     const raw = sanitizeHTMLTag(seo?.title || productName);
@@ -38,10 +44,19 @@ function ProductDescription({ fpi }) {
     const rawProductDesc = sanitizeMetaDescription(productDescription || "");
     const rawTitle = sanitizeHTMLTag(title || "");
     const rawBrandName = sanitizeHTMLTag(brandName || "");
-    
+
     const raw = rawSeoDesc || rawProductDesc || rawTitle || rawBrandName || "";
     return raw;
   }, [seo?.description, productDescription, title, brandName]);
+
+  const isPageReady = page?.value === "product-description";
+  const isSectionMounted = customValues?.pdpSectionMounted;
+  const isClient = typeof window !== "undefined";
+  const showShimmer = isClient && (!isPageReady || !isSectionMounted);
+
+  if (!isPageReady) {
+    return null;
+  }
 
   return (
     <>
@@ -56,14 +71,17 @@ function ProductDescription({ fpi }) {
       })}
       <div
         className={`${styles.productDescWrapper} basePageContainer margin0auto`}
+        style={
+          showShimmer
+            ? { visibility: "hidden", height: 0, overflow: "hidden" }
+            : undefined
+        }
       >
-        {page?.value === "product-description" && (
-          <SectionRenderer
-            sections={sections}
-            fpi={fpi}
-            globalConfig={globalConfig}
-          />
-        )}
+        <SectionRenderer
+          sections={sections}
+          fpi={fpi}
+          globalConfig={globalConfig}
+        />
       </div>
       {/* Note: Do not remove the below empty div, it is required to insert sticky add to cart at the bottom of the sections */}
       <div id="sticky-add-to-cart" className={styles.stickyAddToCart}></div>

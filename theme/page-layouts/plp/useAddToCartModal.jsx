@@ -132,22 +132,18 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
           { skipStoreUpdate: false }
         );
 
-        const isSingleSize =
-          productDetails?.data?.product?.sizes?.sizes?.length === 1;
-        const isSizeCollapsed = pageConfig?.hide_single_size && isSingleSize;
-        const preSelectFirstOfMany = pageConfig?.preselect_size;
-        if (
-          isSizeCollapsed ||
-          (preSelectFirstOfMany &&
-            productDetails?.data?.product?.sizes !== undefined)
-        ) {
+        const isMtoProduct =
+          productDetails?.data?.product?.custom_order?.is_custom_order || false;
+        const allSizes = productDetails?.data?.product?.sizes?.sizes || [];
+        const firstAvailableSize =
+          allSizes.find((size) => size.quantity > 0 || isMtoProduct) ||
+          allSizes[0];
+        if (firstAvailableSize) {
           const productPriceData = await fetchProductPrice(
-            productDetails?.data?.product?.sizes?.sizes[0]?.value,
+            firstAvailableSize?.value,
             productDetails?.data?.product?.slug
           );
-          setSelectedSize(
-            productDetails?.data?.product?.sizes?.sizes[0]?.value
-          );
+          setSelectedSize(firstAvailableSize?.value);
           setProductData({
             productPrice: productPriceData || {},
             product: productDetails?.data?.product,
@@ -526,18 +522,18 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
   useEffect(() => {
     const handlePlaceSelection = async () => {
       setIsOpen(true);
-      const isSingleSize = productData?.product?.sizes?.sizes?.length === 1;
-      const isSizeCollapsed = pageConfig?.hide_single_size && isSingleSize;
-      const preSelectFirstOfMany = pageConfig?.preselect_size;
-      if (
-        isSizeCollapsed ||
-        (preSelectFirstOfMany && productData?.product?.sizes !== undefined)
-      ) {
+      const isMtoProduct =
+        productData?.product?.custom_order?.is_custom_order || false;
+      const allSizes = productData?.product?.sizes?.sizes || [];
+      const firstAvailableSize =
+        allSizes.find((size) => size.quantity > 0 || isMtoProduct) ||
+        allSizes[0];
+      if (firstAvailableSize) {
         const productPriceData = await fetchProductPrice(
-          productData?.product?.sizes?.sizes[0]?.value,
+          firstAvailableSize?.value,
           slug
         );
-        setSelectedSize(productData?.product?.sizes?.sizes[0]?.value);
+        setSelectedSize(firstAvailableSize?.value);
         setProductData((prevData) => ({
           ...prevData,
           productPrice: productPriceData || {},

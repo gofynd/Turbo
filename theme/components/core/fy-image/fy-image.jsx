@@ -5,6 +5,7 @@ import { motion, useInView } from "framer-motion";
 import styles from "./fy-image.less";
 import { ImageSkeleton } from "../skeletons";
 import { isRunningOnClient, transformImage } from "../../../helper/utils";
+import { RESPONSIVE_IMAGE_BREAKPOINTS } from "../../../helper/constant";
 import PLACEHOLDER_URL from "../../../assets/images/placeholder.png";
 
 const FyImage = ({
@@ -17,20 +18,18 @@ const FyImage = ({
   showSkeleton = false,
   showOverlay = false,
   overlayColor = "#ffffff",
-  sources = [
-    { breakpoint: { min: 780 }, width: 1280 },
-    { breakpoint: { min: 600 }, width: 1100 },
-    { breakpoint: { min: 480 }, width: 1200 },
-    { breakpoint: { min: 361 }, width: 900 },
-    { breakpoint: { max: 360 }, width: 640 },
-  ],
+  // Use optimized breakpoints from config by default
+  sources = RESPONSIVE_IMAGE_BREAKPOINTS,
   isLazyLoaded = true,
   blurWidth = 50,
   customClass,
   overlayCustomClass,
   globalConfig,
   defer = true,
+  // Legacy prop name in this file
   isImageCover = false,
+  // New prop name to match Firestone FyImage and callers
+  isImageFill = false,
 }) => {
   const { t } = useGlobalTranslation("translation");
   const [isError, setIsError] = useState(false);
@@ -180,10 +179,13 @@ const FyImage = ({
     // You can emit events or perform any other actions here
   };
 
+  const shouldFillImage =
+    !!(globalConfig?.img_fill || isImageCover || isImageFill);
+
   return (
     <div
       className={`${styles.imageWrapper} ${
-        globalConfig?.img_fill || isImageCover ? styles.fill : ""
+        shouldFillImage ? styles.fill : ""
       } ${customClass}`}
       style={dynamicStyles}
       ref={imgWrapperRef}

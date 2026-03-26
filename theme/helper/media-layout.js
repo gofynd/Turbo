@@ -42,6 +42,22 @@ export const parseAspectRatio = (value) => {
   return undefined;
 };
 
+/**
+ * Parses a height value for fixed_height mode.
+ * Accepts any CSS value: px, vh, vw, %, em, rem, calc(), min(), max(), etc.
+ * Unitless values (plain numbers) default to px.
+ */
+const parseCssHeight = (value) => {
+  const raw = String(value?.value ?? value ?? "").trim();
+  if (!raw) return null;
+  // Unitless (plain number) -> default to px
+  if (/^\d+(\.\d+)?$/.test(raw)) {
+    return `${raw}px`;
+  }
+  // User provided value with unit or CSS function - use as-is
+  return raw;
+};
+
 export const getMediaLayout = (
   {
     height_mode,
@@ -55,8 +71,8 @@ export const getMediaLayout = (
 ) => {
   const mode = getMode(height_mode);
 
-  const desktopHeight = Number(desktop_height?.value ?? desktop_height);
-  const mobileHeight = Number(mobile_height?.value ?? mobile_height);
+  const desktopHeightCss = parseCssHeight(desktop_height?.value ?? desktop_height);
+  const mobileHeightCss = parseCssHeight(mobile_height?.value ?? mobile_height);
 
   const desktopAspect =
     parseAspectRatio(desktop_aspect_ratio?.value ?? desktop_aspect_ratio) ??
@@ -66,17 +82,11 @@ export const getMediaLayout = (
     desktopAspect;
 
   const resolvedAspect = isMobile ? mobileAspect : desktopAspect;
-  
-  // Calculate heights with fallbacks
-  const finalDesktopHeight = Number.isFinite(desktopHeight)
-    ? desktopHeight
-    : mobileHeight;
-    
-  const finalMobileHeight = Number.isFinite(mobileHeight)
-    ? mobileHeight
-    : desktopHeight;
 
-  const hasValidHeight = Number.isFinite(finalDesktopHeight);
+  // Desktop and mobile heights are kept separate (no cross-fallback)
+  const finalDesktopHeight = desktopHeightCss;
+  const finalMobileHeight = mobileHeightCss;
+
 
   const desktopPadding = desktopAspect
     ? `${(1 / desktopAspect) * 100}%`
@@ -88,14 +98,14 @@ export const getMediaLayout = (
   return {
     mode,
     isAspectRatio: mode === MEDIA_HEIGHT_MODES.ASPECT_RATIO && !!resolvedAspect,
-    isFixedHeight: mode === MEDIA_HEIGHT_MODES.FIXED && hasValidHeight,
+    isFixedHeight: mode === MEDIA_HEIGHT_MODES.FIXED ,
     aspectRatio: desktopAspect,
     mobileAspectRatio: mobileAspect,
     style: {
-      ...(mode === MEDIA_HEIGHT_MODES.FIXED && hasValidHeight
-        ? { 
-            "--media-desktop-height": `${finalDesktopHeight}px`,
-            "--media-mobile-height": `${finalMobileHeight}px`
+      ...(mode === MEDIA_HEIGHT_MODES.FIXED 
+        ? {
+            "--media-desktop-height": finalDesktopHeight ?? "auto",
+            "--media-mobile-height": finalMobileHeight ?? "auto",
           }
         : {}),
       ...(mode === MEDIA_HEIGHT_MODES.ASPECT_RATIO && resolvedAspect

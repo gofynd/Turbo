@@ -273,49 +273,52 @@ const HorizontalLayout = ({
           {items.map((block, index) => (
             <CarouselItem
               key={index}
-                className={styles.carouselItem}
-                style={{
-                  "--count-desktop": colCount,
-                  "--count-mobile": colCountMobile,
-                }}
-              >
-                {block.type === "gallery" ? (
-                  <div key={index} className={styles.sliderItem}>
-                    <FDKLink
-                      to={block?.props?.link?.value || ""}
-                      target={in_new_tab?.value ? "_blank" : "_self"}
+              className={styles.carouselItem}
+              style={{
+                "--count-desktop": colCount,
+                "--count-mobile": colCountMobile,
+              }}
+            >
+              {block.type === "gallery" ? (
+                <div key={index} className={styles.sliderItem}>
+                  <FDKLink
+                    to={block?.props?.link?.value || ""}
+                    target={in_new_tab?.value ? "_blank" : "_self"}
+                  >
+                    <div
+                      className={mediaWrapperClass}
+                      style={mediaLayout?.style}
                     >
-                      <div className={mediaWrapperClass} style={mediaLayout?.style}>
-                        <FyImage
-                          customClass={styles.imageGallery}
-                          src={block?.props?.image?.value || placeholderImage}
-                          sources={sources}
-                          globalConfig={globalConfig}
-                          {...(mediaLayout
-                            ? {
-                                isFixedAspectRatio: mediaLayout.isAspectRatio,
-                                aspectRatio: mediaLayout.aspectRatio ?? 1,
-                                mobileAspectRatio:
-                                  mediaLayout.mobileAspectRatio ?? 1,
-                                isImageFill:
-                                  mediaLayout.isAspectRatio ||
-                                  mediaLayout.isFixedHeight,
-                              }
-                            : {
-                                isFixedAspectRatio: false,
-                              })}
-                          alt={
-                            block?.props?.image?.alt ||
-                            block?.props?.title?.value ||
-                            "Gallery image"
-                          }
-                        />
-                      </div>
-                    </FDKLink>
-                  </div>
-                ) : (
-                  <BlockRenderer key={index} block={block} />
-                )}
+                      <FyImage
+                        customClass={styles.imageGallery}
+                        src={block?.props?.image?.value || placeholderImage}
+                        sources={sources}
+                        globalConfig={globalConfig}
+                        {...(mediaLayout
+                          ? {
+                              isFixedAspectRatio: mediaLayout.isAspectRatio,
+                              aspectRatio: mediaLayout.aspectRatio ?? 1,
+                              mobileAspectRatio:
+                                mediaLayout.mobileAspectRatio ?? 1,
+                              isImageFill:
+                                mediaLayout.isAspectRatio ||
+                                mediaLayout.isFixedHeight,
+                            }
+                          : {
+                              isFixedAspectRatio: false,
+                            })}
+                        alt={
+                          block?.name ||
+                          block?.props?.link?.value ||
+                          "Gallery image"
+                        }
+                      />
+                    </div>
+                  </FDKLink>
+                </div>
+              ) : (
+                <BlockRenderer key={index} block={block} />
+              )}
             </CarouselItem>
           ))}
         </CarouselContent>

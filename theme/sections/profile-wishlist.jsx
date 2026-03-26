@@ -10,7 +10,7 @@ import styles from "../styles/canvas-profile.less";
 export function Component({ props, blocks, preset, globalConfig }) {
   const fpi = useFPI();
   const { t } = useGlobalTranslation("translation");
-  const { loading, ...wishlistProps } = useWishlist({ fpi });
+  const { loading, ...wishlistProps } = useWishlist({ fpi, globalConfig });
 
   // Destructure props with defaults
   const { title = "My Wishlist" } = Object.fromEntries(
@@ -22,8 +22,8 @@ export function Component({ props, blocks, preset, globalConfig }) {
     count === 1
       ? `${count} ${t("resource.common.item")}`
       : count > 1
-      ? `${count} ${t("resource.common.items")}`
-      : "";
+        ? `${count} ${t("resource.common.items")}`
+        : "";
 
   const breadcrumbItems = useMemo(
     () => [

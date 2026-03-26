@@ -57,7 +57,7 @@ function Card({ card, cardType, isImageFill, globalConfig, img_fill = false }) {
           <FDKLink className={styles.displayBlock} to={getUrl()}>
             <FyImage
               src={getImageURL()}
-              isImageFill={isImageFill}
+              isImageFill={globalConfig?.img_fill}
               aspectRatio="0.8"
               mobileAspectRatio="0.8"
               customClass={styles.cardImg}
@@ -79,7 +79,7 @@ function Card({ card, cardType, isImageFill, globalConfig, img_fill = false }) {
                 <div className={styles.cardLogo}>
                   <FyImage
                     customClass={styles.imgWrapper}
-                    isImageFill={img_fill}
+                    isImageFill={globalConfig?.img_fill}
                     src={getCardLogo()}
                     aspectRatio="1"
                     mobileAspectRatio="1"

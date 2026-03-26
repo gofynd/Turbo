@@ -3,6 +3,7 @@ import { useFPI, useGlobalTranslation, useGlobalStore } from "fdk-core/utils";
 import { FDKLink } from "fdk-core/components";
 import { BagImage } from "@gofynd/theme-template/components/bag/bag";
 import Accordion from "@gofynd/theme-template/components/accordion/accordion";
+import { transformDisplayToAccordionContent } from "../helper/utils";
 import CartGiftItem from "@gofynd/theme-template/pages/order-status/components/cart-gift-item/cart-gift-item";
 import PriceBreakup from "@gofynd/theme-template/components/price-breakup/price-breakup";
 import FyButton from "@gofynd/theme-template/components/core/fy-button/fy-button";
@@ -43,7 +44,8 @@ function OrderHeader({ orderData, isLoggedIn, locale, countryCode, t }) {
         {t("resource.order.order_success")}
       </div>
       <div className={styles.orderId}>
-        {t("resource.order.order_id_caps")} {": "} <span>{orderData.order_id}</span>
+        {t("resource.order.order_id_caps")} {": "}{" "}
+        <span>{orderData.order_id}</span>
       </div>
       <div className={styles.orderTime}>
         {t("resource.order.placed_on")} {": "}
@@ -202,149 +204,32 @@ function ProductItem({
     product?.bundle_details?.bundle_group_id &&
     bundleGroups &&
     bundleGroups[product?.bundle_details?.bundle_group_id]?.length > 0;
-  const customizationOptions =
+  const rawCustomizationOptions =
     // eslint-disable-next-line dot-notation
     product?.meta?.["_custom_json"]?.["_display"] || [];
 
-  // Transform customization options into accordion format (matching Firestone ChipItem logic)
-  const transformedCustomizationContent = React.useMemo(() => {
-    if (!customizationOptions || customizationOptions.length === 0) return [];
-    
-    return customizationOptions.map((option) => {
-      const items = [];
-      
-      // Handle productCanvas type (nested value object)
-      if (option.type === "productCanvas" && option.value) {
-        const canvasData = option.value;
-        
-        if (canvasData.text) {
-          items.push({ 
-            key: option.key || "Text", 
-            value: canvasData.text 
-          });
-        }
-        
-        if (canvasData.price || option.price) {
-          items.push({ 
-            key: "Price", 
-            value: `${canvasData.price || option.price}` 
-          });
-        }
-        
-        if (canvasData.previewImage) {
-          items.push({ 
-            key: "Preview", 
-            value: canvasData.previewImage, 
-            type: "image",
-            alt: option.key || "Customization preview",
-            dimensions: canvasData.textBounds ? {
-              width: canvasData.textBounds.width,
-              height: canvasData.textBounds.height
-            } : undefined
-          });
-        }
-      } 
-      // Handle simple string type
-      else if (option.type === "string" && option.value) {
-        items.push({ 
-          key: option.alt || option.key, 
-          value: option.value 
-        });
-      }
-      // Handle other types with direct text/price/previewImage properties
-      else {
-        if (option.text) {
-          items.push({ key: "Text", value: option.text });
-        }
-        
-        if (option.price) {
-          items.push({ key: "Price", value: option.price });
-        }
-        
-        if (option.previewImage) {
-          items.push({ 
-            key: "Preview", 
-            value: option.previewImage, 
-            type: "image",
-            alt: "Customization preview" 
-          });
-        }
-      }
-      return items;
-    }).flat();
-  }, [customizationOptions]);
-
-  const renderCustomizationContent = () => {
-    if (!transformedCustomizationContent || transformedCustomizationContent.length === 0) return null;
-
-    return (
-      <ul className={styles.accordionContentList}>
-        {transformedCustomizationContent.map((content, i) => {
-          if (content.type === "image") {
-            const imgSrc = content.value;
-            return (
-              <li key={i} className={styles.accordionContentInner} style={{ marginBottom: "4px" }}>
-                 <span className={styles.accordionContentKey}>
-                    {content.key && <span>{content.key}: </span>}
-                 </span>
-                 <div className={styles.accordionContentImageItem}>
-                    <img
-                      src={imgSrc}
-                      alt={content.alt || content.key}
-                      className={styles.accordionContentImg}
-                    />
-                    <div className={styles.imagePreview}>
-                      <img
-                        src={imgSrc}
-                        alt={content.alt || content.key}
-                        className={styles.largePreviewImg}
-                      />
-                    </div>
-                 </div>
-              </li>
-            );
-          } else {
-            return (
-              <li key={i} className={styles.accordionContentInner} style={{ marginBottom: "4px" }}>
-                {content.key && (
-                  <span className={styles.accordionContentKey}>
-                    {content.key}:{" "}
-                  </span>
-                )}
-                <span className={styles.accordionContentValue}>
-                  {content.value}
-                </span>
-              </li>
-            );
-          }
-        })}
-      </ul>
-    );
-  };
+  const accordionContent = React.useMemo(
+    () => transformDisplayToAccordionContent(rawCustomizationOptions),
+    [rawCustomizationOptions]
+  );
 
   const [items, setItems] = React.useState([
     {
       title: "Customization",
-      content: renderCustomizationContent(),
+      content: accordionContent,
       open: false,
     },
   ]);
 
-  // Update items state when transformed content changes
+  // Update items when accordionContent changes
   React.useEffect(() => {
-      setItems(prev => {
-          const newContent = renderCustomizationContent();
-          // Only update if content changed to avoid infinite loop (simple check)
-          if(prev[0].content !== newContent) {
-              return [{
-                  ...prev[0],
-                  content: newContent
-              }];
-          }
-          return prev;
-      })
-  }, [transformedCustomizationContent]);
-
+    setItems((prev) => [
+      {
+        ...prev[0],
+        content: accordionContent,
+      },
+    ]);
+  }, [accordionContent]);
 
   const handleItemClick = (index) => {
     setItems((prevItems) => {
@@ -442,6 +327,7 @@ function ProductItem({
             bag={product}
             isBundle={isBundleItem}
             aspectRatio={aspectRatio}
+            isImageFill={globalConfig?.img_fill}
           />
         </div>
         <div className={styles.prodItemData}>
@@ -480,7 +366,7 @@ function ProductItem({
                 </div>
               )}
             </div>
-            {customizationOptions.length > 0 && (
+            {accordionContent.length > 0 && (
               <div className={styles.productCustomizationContainer}>
                 <Accordion
                   key={`${product.shipment_id}`}

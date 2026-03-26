@@ -23,14 +23,17 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
   const clearTimer = () => {
     if (resendTimerRef.current) {
       clearInterval(resendTimerRef.current);
+      resendTimerRef.current = null;
     }
   };
 
   const timer = (remaining) => {
+    clearTimer();
     let remainingTime = remaining;
     resendTimerRef.current = setInterval(() => {
       remainingTime -= 1;
       if (remainingTime <= 0) {
+        remainingTime = 0;
         clearTimer();
       }
       setOtpResendTime(remainingTime);
@@ -43,6 +46,7 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
       countryCode: phone.countryCode,
     };
     setGetOtpLoading(true);
+    setOtpError(null);
     sendOtp(payload)
       .then((response) => {
         if (response?.success) {
@@ -55,6 +59,7 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
       })
       .catch((err) => {
         setIsFormSubmitSuccess(false);
+        setOtpError({ message: translateDynamicLabel(err?.message, t) || t("resource.common.error_message") });
       })
       .finally(() => {
         setGetOtpLoading(false);
@@ -104,8 +109,13 @@ const useLoginOtp = ({ fpi, isLoginToggle }) => {
     setSendOtpResponse({});
     setOtpError(null);
     clearTimer();
-    resendTimerRef.current = null;
   }, [isLoginToggle]);
+
+  useEffect(() => {
+    return () => {
+      clearTimer();
+    };
+  }, []);
 
   return {
     mobileInfo: {

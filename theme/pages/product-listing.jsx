@@ -6,12 +6,14 @@ import { useThemeConfig } from "../helper/hooks";
 import { getHelmet } from "../providers/global-provider";
 import { sanitizeHTMLTag } from "../helper/utils";
 import useSeoMeta from "../helper/hooks/useSeoMeta";
+import { PLPShimmer } from "../components/core/skeletons";
 
 const ProductListing = ({ fpi }) => {
   const { t } = useGlobalTranslation("translation");
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const { globalConfig } = useThemeConfig({ fpi });
   const { sections = [] } = page || {};
+  const customValues = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
   const seoData = page?.seo || {};
   const [searchParams] = useSearchParams();
   const department = searchParams.get("department") || "";
@@ -51,25 +53,65 @@ const ProductListing = ({ fpi }) => {
     return normalized || seoDescription;
   }, [seoData?.description, t, seoDescription]);
 
+  const isPageReady = page?.value === "product-listing";
+  const isSectionMounted = customValues?.plpSectionMounted;
+  const isClient = typeof window !== "undefined";
+  const showShimmer = isClient && (!isPageReady || !isSectionMounted);
+
+  if (!isPageReady) {
+    return isClient ? (
+      <div className="margin0auto basePageContainer">
+        <PLPShimmer
+          gridDesktop={4}
+          gridTablet={3}
+          gridMobile={1}
+          showFilters={true}
+          showSortBy={true}
+          showPagination={true}
+          productCount={12}
+        />
+      </div>
+    ) : null;
+  }
+
   return (
-    page?.value === "product-listing" && (
-      <>
-        {getHelmet({
-          title,
-          description,
-          image: socialImage,
-          canonicalUrl,
-          url: pageUrl,
-          siteName: brandName,
-          ogType: "website",
-        })}
+    <>
+      {getHelmet({
+        title,
+        description,
+        image: socialImage,
+        canonicalUrl,
+        url: pageUrl,
+        siteName: brandName,
+        ogType: "website",
+      })}
+      {showShimmer && (
+        <div className="margin0auto basePageContainer">
+          <PLPShimmer
+            gridDesktop={4}
+            gridTablet={3}
+            gridMobile={1}
+            showFilters={true}
+            showSortBy={true}
+            showPagination={true}
+            productCount={12}
+          />
+        </div>
+      )}
+      <div
+        style={
+          showShimmer
+            ? { visibility: "hidden", height: 0, overflow: "hidden" }
+            : undefined
+        }
+      >
         <SectionRenderer
           sections={sections}
           fpi={fpi}
           globalConfig={globalConfig}
         />
-      </>
-    )
+      </div>
+    </>
   );
 };
 

@@ -29,6 +29,9 @@
   letter-spacing: -0.24px;
   pointer-events: none; // Allow mouse events to pass through to image underneath
   z-index: 2;
+  display: inline-flex;
+  width: auto;
+  white-space: nowrap;
 }
 
 .skeletonSaleTag {
@@ -306,6 +309,14 @@
 
       // Main Images Vertical Line
       .mainImagesArea {
+        .wishlistIcon {
+          position: absolute;
+          top: 25px;
+          inset-inline-end: 25px;
+          z-index: 1;
+          cursor: pointer;
+          color: var(--buttonPrimary, #4e3f09);
+        }
         .mainImagesVertical {
           display: flex;
           flex-direction: column;
@@ -492,8 +503,13 @@
 
 .disableArrow {
   cursor: default;
-  pointer-events: none;
   opacity: 0.5;
+  // Ensure arrow and SVG capture clicks so they don't pass through to content
+  // behind (e.g. product brand text getting highlighted).
+  pointer-events: auto;
+  * {
+    pointer-events: auto;
+  }
 }
 
 .navArrowIcon {

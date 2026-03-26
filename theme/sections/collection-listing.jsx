@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { useFPI } from "fdk-core/utils";
 import { useParams } from "react-router-dom";
 import { PLPShimmer } from "../components/core/skeletons";
@@ -15,12 +15,18 @@ import useSeoMeta from "../helper/hooks/useSeoMeta";
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const fpi = useFPI();
+
+  useEffect(() => {
+    fpi.custom.setValue("collectionSectionMounted", true);
+    return () => fpi.custom.setValue("collectionSectionMounted", false);
+  }, []);
+
   const isClient = typeof window !== "undefined";
   const params = isClient ? useParams() : null;
   const slug = props?.collection?.value // Don't replace with double ?? operator <----
     ? props?.collection?.value
     : params?.slug;
-  const listingProps = useCollectionListing({ fpi, slug, props });
+  const listingProps = useCollectionListing({ fpi, slug, props, globalConfig });
 
   const { seo } = listingProps;
   const {
@@ -498,6 +504,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
     }
   };
 
+  fpi.custom.setValue("collectionSectionMounted", true);
   return Promise.all([getCollectionWithItems()]);
 };
 

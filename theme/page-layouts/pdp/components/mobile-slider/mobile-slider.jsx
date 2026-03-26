@@ -33,9 +33,7 @@ function MobileSlider({
   showShareIcon = true,
   sources = [],
   isDataLoad = false,
-  // Sale tag props (configuration-based)
-  showSaleTag = false,
-  renderTag,
+  renderTag, // Renders out-of-stock, custom badge (teaser_tag), or sale badge based on platform/section config
 }) {
   const { t } = useGlobalTranslation("translation");
   const { isRTL } = useLocaleDirection();
@@ -179,7 +177,7 @@ function MobileSlider({
                 {isDataLoad ? (
                   <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
                 ) : (
-                  showSaleTag && renderTag()
+                  renderTag()
                 )}
                 {media.type === "image" && (
                   <div onClick={() => onImageClick()}>
@@ -213,6 +211,8 @@ function MobileSlider({
                             controls={false}
                             autoPlay
                             muted={isMute}
+                            playsInline
+                            webkit-playsinline="true"
                             onClick={pauseVideo}
                             onEnded={onVideoEnd}
                             // onLoadedData={videoLoaded(i)}

@@ -404,6 +404,20 @@
 /* PRODUCTION-SAFE TRANSPARENT HEADER SUPPORT */
 /* Works even when CSS modules minify classnames */
 /* Uses stable data attributes that never get renamed */
-:global(header[data-transparent-header="true"]) [data-role="search-overlay"] {
-  background-color: transparent !important;
+
+/* Desktop: Allow transparent background when transparent header is enabled */
+@media @desktop {
+  :global(header[data-transparent-header="true"]) [data-role="search-overlay"] {
+    background-color: transparent !important;
+  }
+}
+
+/* Mobile/Tablet: Always use solid background for search overlay to prevent icon overlap */
+/* This ensures close icon doesn't overlap with cart icon on transparent headers */
+@media @tablet {
+  :global(header[data-transparent-header="true"]) [data-role="search-overlay"],
+  :global(header[data-transparent-header="false"]) [data-role="search-overlay"],
+  [data-role="search-overlay"] {
+    background-color: @HeaderBackground !important;
+  }
 }

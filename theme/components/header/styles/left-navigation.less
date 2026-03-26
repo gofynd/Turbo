@@ -1,0 +1,216 @@
+@import "../../../styles/main.less";
+
+.leftNavTrigger {
+  display: flex;
+  align-items: center;
+}
+
+.leftNavOverlay {
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  bottom: 0;
+  z-index: @header + 1;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: flex-start;
+}
+
+.leftNavContainer {
+  background-color: transparent;
+  width: 100%;
+  max-width: 1440px;
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 12px 16px rgba(0, 0, 0, 0.16),
+    0 4px 4px rgba(0, 0, 0, 0.15);
+}
+
+.offerBar {
+  width: 100%;
+  height: 32px;
+  padding: 7px 0;
+  background-color: @ButtonPrimary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.offerText {
+  color: @ButtonSecondary;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+}
+
+.leftNavBody {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  height: 100%;
+}
+
+.leftPanel {
+  background-color: @DialogBackground;
+  width: 240px;
+  border-inline-end: 1px solid @DividerStokes;
+  display: flex;
+  padding: 24px 40px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 48px;
+  align-self: stretch;
+  height: 100%;
+}
+
+.leftPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .logo {
+    max-height: 32px;
+    width: auto;
+  }
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.leftPanelNav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 160px;
+}
+
+.leftPanelNavItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--header-color-navlink-text-icons, #261a1a);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.32px;
+  cursor: pointer;
+  width: 160px;
+}
+
+.leftPanelNavItemActive {
+  font-weight: 600;
+  color: #7d7976;
+}
+
+.leftPanelNavLink {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leftNavRightPanel {
+  background-color: @DialogBackground;
+  display: flex;
+  padding: 96px 48px 24px 48px;
+  flex: 1 0 0;
+  align-self: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 42px;
+}
+
+.leftNavContent {
+  display: flex;
+  gap: 42px;
+  width: 100%;
+}
+
+.leftNavColumns {
+  flex: 1;
+  height: 100%;
+  column-width: 238px;
+  column-gap: 48px;
+  column-fill: auto;
+}
+
+.leftNavColumn {
+  flex: 1;
+  min-width: 0;
+  width: 238px;
+}
+
+.leftNavBlock {
+  display: flex;
+  break-inside: avoid;
+  margin-bottom: 24px;
+  padding: 0 12px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.leftNavL2Item,
+.leftNavL3Item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.leftNavLogo {
+  flex: 0 0 24px;
+  min-width: 0;
+  height: auto;
+}
+
+.leftNavL2Text,
+.leftNavL3Text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.leftNavL2Text {
+  color: @ButtonLink;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -0.32px;
+}
+
+.leftNavL3Text {
+  color: @HeaderNav;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+}
+
+.leftNavL3List {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+
+.leftNavImage {
+  flex: 0 0 21.219%;
+}

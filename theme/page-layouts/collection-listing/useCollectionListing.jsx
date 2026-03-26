@@ -543,6 +543,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     isScrollTop: back_top,
     isBrand: !hide_brand,
     isSaleBadge: globalConfig?.show_sale_badge,
+    isCustomBadge: globalConfig?.show_custom_badge,
     isPrice: globalConfig?.show_price,
     imgSrcSet,
     isResetFilterDisable,

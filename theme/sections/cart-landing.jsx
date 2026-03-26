@@ -45,6 +45,8 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
   const CART = useGlobalStore(fpi.getters.CART);
   const {
     isLoading,
+    showCartShimmer,
+    cartItemCount,
     isLoyaltyLoading,
     cartData,
     currencySymbol,
@@ -86,6 +88,7 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
   // Get loading state from store for more reliable check
   const { cart_items } = CART || {};
   const cartItemsLoading = cart_items?.loading || false;
+  const { cartOperationInProgress } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
 
   const { is_limited_stock, limited_stock_label } = props;
 
@@ -221,21 +224,16 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
     return !!blocks?.find((block) => block?.type === "share_cart");
   }, [blocks]);
 
-  // Only show empty state if cart is fully loaded and has no items
-  // Don't show empty state while loading to prevent flash of empty state in incognito
-  // Check multiple conditions to ensure cart data has been fetched:
-  // 1. isLoading must be false (cart fetch completed from hook)
-  // 2. cartItemsLoading must be false (cart fetch completed from store)
-  // 3. cartData must exist and have been initialized (has id or items property)
-  // 4. items array must be empty (truly empty cart, not initial state)
-  const isCartFullyLoaded =
-    !isLoading &&
-    !cartItemsLoading &&
-    cartData &&
-    (cartData.id !== undefined || cartData.items !== undefined);
-  const isCartTrulyEmpty = cartData?.items?.length === 0;
+  const isCartOperationInProgress = isRemoving || isMovingToWishlist || isCartUpdating || !!cartOperationInProgress;
+  const canShowEmptyState = !showCartShimmer && !cartItemsLoading && !isCartOperationInProgress;
+  const hasItems = Array.isArray(cartData?.items) && cartData.items.length > 0;
+  const isCartEmpty =
+    !hasItems &&
+    (cartItemCount === 0 ||
+      cartData?.user_cart_items_count === 0 ||
+      !cartData?.items?.length);
 
-  if (isCartFullyLoaded && isCartTrulyEmpty) {
+  if (canShowEmptyState && isCartEmpty) {
     return (
       <EmptyState
         Icon={
@@ -265,15 +263,15 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                 </span>
 
                 <span className={styles.bagCount}>
-                  {isLoading ? (
+                  {showCartShimmer ? (
                     <Skeleton height={17} width={60} />
                   ) : (
                     <>
                       (
                         {(() => {
                           const itemCount =
-                            cartData?.user_cart_items_count ??
-                            cartItemsArray?.length ??
+                            cartData?.user_cart_items_count ||
+                            cartItemsArray?.length ||
                             0;
                           return `${itemCount} ${
                             itemCount > 1
@@ -292,7 +290,7 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                 </div>
               )}
             </div>
-            {isLoading ||
+            {showCartShimmer ||
             ((isRemoving || isMovingToWishlist) && isCartUpdating) ? (
               Array(2)
                 .fill()
@@ -352,7 +350,7 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                       //     "resize-w:250"
                       //   );
 
-                      const currentSize = singleItem?.split("_")[1];
+                      const currentSize = singleItemDetails?.article?.size;
                       return (
                         <ChipItem
                           key={`${singleItemDetails?.key}_${singleItemDetails?.article?.store?.uid}_${singleItemDetails?.article?.item_index}`}
@@ -503,7 +501,7 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                 case "gst_card":
                   return (
                     <React.Fragment key={key}>
-                      {isLoading ? (
+                      {showCartShimmer ? (
                         <Skeleton
                           className={styles.gstCardLoader}
                           height="100%"
@@ -529,13 +527,13 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                         key={key}
                         breakUpValues={breakUpValues?.display || []}
                         cartItemCount={
-                          cartData?.user_cart_items_count ??
-                          cartItemsArray?.length ??
+                          cartData?.user_cart_items_count ||
+                          cartItemsArray?.length ||
                           0
                         }
                         currencySymbol={currencySymbol}
                         isInternationalTaxLabel={isCrossBorderOrder}
-                        isLoading={isLoading}
+                        isLoading={showCartShimmer}
                       />
                     </div>
                   );
@@ -561,7 +559,7 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                 case "checkout_buttons":
                   return (
                     <React.Fragment key={key}>
-                      {isLoading ? (
+                      {showCartShimmer ? (
                         <>
                           <Skeleton
                             height={48}

@@ -33,44 +33,11 @@ function PageNotFound({ fpi }) {
   );
 }
 
-export const settings = JSON.stringify({
-  props: [],
-});
-
 export const sections = JSON.stringify([
   {
     attributes: {
       page: "not-found-page",
     },
-    blocks: [
-      {
-        type: "page-not-found",
-        name: "Page Not Found",
-        props: [
-          {
-            type: "text",
-            id: "heading",
-            label: "Heading",
-            default: "Page Not Found",
-            value: "Page Not Found",
-          },
-          {
-            type: "text",
-            id: "message",
-            label: "Message",
-            default: "The page you are looking for does not exist.",
-            value: "The page you are looking for does not exist.",
-          },
-          {
-            type: "text",
-            id: "button_text",
-            label: "Button Text",
-            default: "Return to Home",
-            value: "Return to Home",
-          },
-        ],
-      },
-    ],
   },
 ]);
 

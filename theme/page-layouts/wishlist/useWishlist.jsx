@@ -23,7 +23,7 @@ const useWishlistPage = ({ fpi }) => {
     fpi,
   });
 
-  const { globalConfig, pageConfig } = useThemeConfig({
+  const { globalConfig, pageConfig, listingPrice } = useThemeConfig({
     fpi,
     page: "wishlist",
   });
@@ -170,13 +170,14 @@ const useWishlistPage = ({ fpi }) => {
     imageBackgroundColor: globalConfig?.img_container_bg,
     isBrand: true,
     isSaleBadge: globalConfig?.show_sale_badge,
+    isCustomBadge: globalConfig?.show_custom_badge,
     isPrice: globalConfig?.show_price,
     showImageOnHover: globalConfig?.show_image_on_hover,
     imagePlaceholder: placeholder,
     imgSrcSet,
     aspectRatio: getProductImgAspectRatio(globalConfig),
     isProductOpenInNewTab: false,
-    listingPrice: "range",
+    listingPrice,
     hasNext: !!wishListData?.page?.has_next,
     isLoading: isFetchingProducts,
     onLoadMore: handleLoadmore,

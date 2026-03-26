@@ -61,7 +61,7 @@ const useHeader = (fpi) => {
     if (bNowCount && buyNowParam) {
       return bNowCount;
     } else {
-      return CART_ITEMS?.cart_items?.user_cart_items_count || 0;
+      return CART_ITEMS?.cart_items?.user_cart_items_count || CART_ITEMS?.cart_items?.items?.length || 0;
     }
   }, [CART_ITEMS, BUY_NOW, buyNowParam]);
 
