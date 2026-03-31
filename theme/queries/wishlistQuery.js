@@ -60,6 +60,7 @@ export const FETCH_FOLLOWED_PRODUCTS = `query followedListing(
       teaser_tag
       discount
       name
+      item_type
       grouped_attributes {
         title
         details {
@@ -140,6 +141,7 @@ export const FOLLOWED_PRODUCTS_IDS = `query FollowedListing(
       uid
       name
       slug
+      item_type
       brand {
         name
         uid
@@ -500,6 +502,7 @@ export const FOLLOWED_PRODUCTS_ID = `query followedListing(
       uid
       name
       slug
+      item_type
       brand {
         name
         uid

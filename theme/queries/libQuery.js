@@ -36,6 +36,7 @@ export const USER_DATA_QUERY = `query User {
       uid
       name
       slug
+      item_type
       brand {
         name
         uid
