@@ -305,14 +305,11 @@ export const transformImage = (url, width, options = {}) => {
         zone: obj.zone || "default",
       });
 
-      // Detect device pixel ratio (DPR) for retina displays
-      const deviceDPR =
-        typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
-      // Cap DPR using config value to balance quality and performance
-      const dpr =
-        options.dpr !== undefined
-          ? options.dpr
-          : Math.min(deviceDPR, IMAGE_OPTIMIZATION_CONFIG.MAX_DPR);
+      // DPR is intentionally fixed at 1 here — RESPONSIVE_IMAGE_BREAKPOINTS already
+      // bakes DPR into the width values (e.g. 1440px viewport → 1920px image).
+      // Auto-detecting window.devicePixelRatio caused SSR/client URL mismatch
+      // (dpr=1 on server, dpr=2 on client), which re-fetched every image on hydration.
+      const dpr = options.dpr !== undefined ? options.dpr : 1;
 
       const transformationArray = [];
 

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
-import { motion, useInView } from "framer-motion";
+import { useGlobalTranslation } from "fdk-core/utils";
+import { motion } from "framer-motion";
 
 import styles from "./fy-image.less";
 import { ImageSkeleton } from "../skeletons";
-import { isRunningOnClient, transformImage } from "../../../helper/utils";
+import { transformImage } from "../../../helper/utils";
 import { RESPONSIVE_IMAGE_BREAKPOINTS } from "../../../helper/constant";
 import PLACEHOLDER_URL from "../../../assets/images/placeholder.png";
 
@@ -35,16 +35,10 @@ const FyImage = ({
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isIntersecting, setIsIntersecting] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const imgWrapperRef = useRef(null);
   // const THEME = useGlobalStore(fpi.getters.THEME);
   // const globalConfig = THEME?.config?.list[0]?.global_config?.custom?.props;
-  const ref = React.useRef(null);
-  const isInView = useInView(ref, { once: true });
   useEffect(() => {
-    if (isRunningOnClient()) {
-      setIsClient(true);
-    }
     const handleIntersection = (entries) => {
       if (entries?.[0]?.isIntersecting) {
         setIsIntersecting(true);
@@ -197,12 +191,10 @@ const FyImage = ({
         ></div>
       )}
       <motion.div
-        ref={ref}
-        initial={isClient ? { opacity: 0, y: 15 } : null} // Initial state: transparent and slightly below
-        animate={
-          isClient ? { opacity: isInView ? 1 : 0, y: isInView ? 0 : 15 } : null
-        } // Animate to visible and position in place
-        transition={{ duration: 0.8 }} // Duration of the animation
+        initial={{ opacity: 0, y: 15 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
       >
         <picture>
           {getSources().map((source, index) => (

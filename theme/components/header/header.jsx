@@ -178,8 +178,9 @@ function Header({ fpi }) {
 
     sessionStorage.setItem(LOCALE_SYNC_FLAG, validLocale);
 
-    // If your app truly needs a full refresh to pick up the new i18n wiring, reload once.
-    window.location.replace(window.location.href);
+    // NOTE: Commented out — caused double page load on every fresh visit.
+    // fpi.setI18nDetails above updates Redux reactively; full reload not needed.
+    // window.location.replace(window.location.href);
   }, [activeLocale]); // <-- only when the selected locale changes
 
   useEffect(() => {
