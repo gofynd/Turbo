@@ -414,6 +414,14 @@ const usePayment = (fpi) => {
       upiSaveForLaterChecked,
     } = paymentPayload;
 
+    const MODES_WITHOUT_PAYMENT_CHECK = [
+      "QR",
+      "COD",
+      "newCARD",
+      "CREDITNOTE",
+      "PP",
+    ];
+
     const hasValidPayment = [
       selectedCardless,
       selectedPayLater,
@@ -426,28 +434,21 @@ const usePayment = (fpi) => {
       selectedCard,
       selectedCardData,
     ].some((method) => method && Object.keys(method).length > 0);
-    if (
-      !hasValidPayment &&
-      mode !== "QR" &&
-      mode !== "COD" &&
-      mode !== "newCARD" &&
-      mode !== "CREDITNOTE" &&
-      mode !== "PP"
-    ) {
+
+    if (!hasValidPayment && !MODES_WITHOUT_PAYMENT_CHECK.includes(mode)) {
       showSnackbar(t("resource.common.select_payment_option"), "error");
       return;
     }
 
-    if (disbaleCheckout?.message) {
-      return;
-    }
+    if (disbaleCheckout?.message) return;
 
-    let { mrp_total, store_credit, subtotal = 0, total } = breakUpValues;
+    const { store_credit, total } = breakUpValues;
+
     const isStoreCreditApplied =
-      Math.abs(store_credit) &&
       Math.abs(store_credit) > 0 &&
       Math.abs(total) > 0 &&
       storeCreditApplied?.isApplied;
+
     const storeCreditPayment = {
       mode: partialPaymentOption?.name,
       name: partialPaymentOption?.name,
@@ -460,401 +461,370 @@ const usePayment = (fpi) => {
       },
       amount: Math.abs(store_credit),
     };
-    if (mode === "CREDITNOTE") {
-      setIsPaymentLoading(true);
-      const { merchant_code, code, aggregator_name } =
-        partialPaymentOption?.list[0] || {};
 
-      addParamsToLocation({
-        ...getQueryParams(),
-        aggregator_name,
-        payment_mode: code ?? "",
-        payment_identifier: code ?? "",
-        merchant_code,
-      });
+    // --- Helpers ---
 
-      if (storeCreditApplied?.isFullyApplied) {
-        const checkoutPayload = {
-          payment: partialPaymentOption?.list[0],
-          id: cart_id,
-          buy_now: buyNow,
-          address_id,
-          billing_address_id: billing_address_id || address_id,
-          ...getStaffPayload(),
-          payment_mode: code ?? "",
+    const getPaymentflow = (aggregatorName, options = paymentOption) =>
+      options?.aggregator_details?.find(
+        (item) => item.aggregator_key === aggregatorName
+      );
+
+    const getLinkPaymentflow = (aggregatorName) =>
+      linkDataOption?.aggregator_details?.find(
+        (item) => item.aggregator_key === aggregatorName
+      );
+
+    const buildLinkOrderPayload = (selected, modeOverride = mode) => ({
+      createOrderUserRequestInput: {
+        currency: "INR",
+        payment_link_id: id,
+        failure_callback_url: `${window.location.origin}/payment/link`,
+        success_callback_url: `${window.location.origin}/order-tracking`,
+        payment_methods: {
+          meta: {
+            merchant_code: selected.merchant_code,
+            payment_gateway: selected.aggregator_name,
+            payment_identifier: selected.code ?? "",
+          },
+          mode: modeOverride,
+          name: selected.name,
+        },
+      },
+    });
+
+    const createLinkOrder = async (selected, modeOverride) => {
+      const res = await fpi.executeGQL(
+        CREATE_ORDER_PAYMENT_LINK,
+        buildLinkOrderPayload(selected, modeOverride)
+      );
+      return res?.data?.createOrderHandlerPaymentLink;
+    };
+
+    const baseLinkCheckoutPayload = (selected, modeOverride = mode) => ({
+      ...linkDataOption,
+      merchant_code: selected.merchant_code,
+      payment_gateway: selected.aggregator_name,
+      aggregator_name: selected.aggregator_name,
+      payment_identifier: selected.code ?? "",
+      payment_mode: modeOverride,
+      name: selected.name,
+      queryParams: getQueryParams(),
+      ...getStaffPayload(),
+      enableLinkPaymentOption,
+      paymentflow: getLinkPaymentflow(selected.aggregator_name),
+    });
+
+    const baseCheckoutPayload = (selected, modeOverride = mode) => ({
+      payment_mode: modeOverride,
+      address_id,
+      billing_address_id: address_id,
+      aggregator_name: selected.aggregator_name,
+      payment_identifier: selected.code ?? "",
+      merchant_code: selected.merchant_code,
+      payment: selected,
+      paymentflow: getPaymentflow(selected.aggregator_name),
+      ...getStaffPayload(),
+      buy_now: buyNow,
+    });
+
+    const withStoreCredit = (currentModeOfPayment, extra = {}) =>
+      isStoreCreditApplied
+        ? {
+            payment_methods: [currentModeOfPayment, storeCreditPayment],
+            ...extra,
+          }
+        : {};
+
+    const handleLinkOrStandardCheckout = async (
+      selected,
+      modeOverride,
+      linkDataFn,
+      standardFn
+    ) => {
+      if (enableLinkPaymentOption) {
+        const linkOrderInfo = await createLinkOrder(selected, modeOverride);
+        return fpi.payment.checkoutPayment({
+          ...baseLinkCheckoutPayload(selected, modeOverride),
+          success: linkOrderInfo?.success,
+          ...linkDataFn(linkOrderInfo),
+        });
+      }
+      return standardFn();
+    };
+
+    const handleCheckoutError = (res, fallback) => {
+      if (res?.error?.message) setErrorMessage(res?.payload?.message);
+      return fallback?.(res);
+    };
+
+    // --- Mode handlers ---
+
+    const handlers = {
+      CREDITNOTE: async () => {
+        setIsPaymentLoading(true);
+        const { merchant_code, code, aggregator_name } =
+          partialPaymentOption?.list[0] || {};
+
+        addParamsToLocation({
+          ...getQueryParams(),
           aggregator_name,
+          payment_mode: code ?? "",
           payment_identifier: code ?? "",
           merchant_code,
-        };
+        });
 
-        const res = await fpi.payment.checkoutPayment(checkoutPayload);
-      }
-    } else if (mode === "newCARD") {
-      // if (!isCardSecure) {
-      //     openRbiGuidelineDialog = true;
-      //     return;
-      // }
-      try {
+        if (storeCreditApplied?.isFullyApplied) {
+          await fpi.payment.checkoutPayment({
+            payment: partialPaymentOption?.list[0],
+            id: cart_id,
+            buy_now: buyNow,
+            address_id,
+            billing_address_id: billing_address_id || address_id,
+            ...getStaffPayload(),
+            payment_mode: code ?? "",
+            aggregator_name,
+            payment_identifier: code ?? "",
+            merchant_code,
+          });
+        }
+      },
+
+      newCARD: async () => {
+        try {
+          setIsPaymentLoading(true);
+          addParamsToLocation({
+            ...getQueryParams(),
+            aggregator_name: selectedNewCardData.aggregator_name,
+            payment_mode: "CARD",
+          });
+
+          if (enableLinkPaymentOption) {
+            const linkOrderInfo = await createLinkOrder(
+              selectedNewCardData,
+              "CARD"
+            );
+            const cardRes = await fpi.payment.checkoutPayment({
+              ...baseLinkCheckoutPayload(selectedNewCardData, "CARD"),
+              success: linkOrderInfo?.success,
+              data: {
+                amount: linkOrderInfo?.data?.amount,
+                callback_url: linkOrderInfo?.data?.callback_url,
+                contact: linkOrderInfo?.data?.contact,
+                currency: linkOrderInfo?.data?.currency,
+                customer_id: linkOrderInfo?.data?.customer_id,
+                email: linkOrderInfo?.data?.email,
+                method: linkOrderInfo?.data?.method,
+                order_id: linkOrderInfo?.data?.order_id,
+                "card[name]": selectedCardData?.name,
+                "card[number]": selectedCardData?.card_number,
+                "card[cvv]": selectedCardData?.cvv,
+                "card[expiry_month]": selectedCardData?.exp_month,
+                "card[expiry_year]": selectedCardData?.exp_year,
+              },
+              payment: {
+                ...selectedNewCardData,
+                ...selectedCardData,
+                is_card_secure: isCardSecure,
+              },
+            });
+            if (cardRes?.meta?.requestStatus === "rejected") {
+              setIsPaymentLoading(false);
+              return cardRes?.payload;
+            }
+          } else {
+            const payload = { payment_mode: "CARD", id: cart_id, address_id };
+            const { id, is_redirection, ...options } = payload;
+            const currentModeOfPayment = getCurrentModeOfPayment(
+              payload,
+              selectedNewCardData
+            );
+            const res = await fpi.payment.checkoutPayment({
+              ...options,
+              aggregator_name: selectedNewCardData.aggregator_name,
+              payment: {
+                ...selectedNewCardData,
+                ...selectedCardData,
+                is_card_secure: isCardSecure,
+              },
+              address_id,
+              billing_address_id: address_id,
+              paymentflow: getPaymentflow(selectedNewCardData.aggregator_name),
+              buy_now: buyNow,
+              ...getStaffPayload(),
+              ...(isStoreCreditApplied && {
+                payment_methods: [currentModeOfPayment, storeCreditPayment],
+              }),
+            });
+            if (res?.meta?.requestStatus === "rejected") {
+              setIsPaymentLoading(false);
+              return res?.payload;
+            }
+            return res?.payload?.data?.checkoutCart;
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setIsPaymentLoading(false);
+        }
+      },
+
+      CARD: async () => {
+        try {
+          setIsPaymentLoading(true);
+          addParamsToLocation({
+            ...getQueryParams(),
+            aggregator_name: selectedCard.aggregator_name,
+            payment_mode: mode,
+            payment_identifier: selectedCard.card_id,
+            card_reference: selectedCard.card_reference,
+          });
+          const payload = { payment_mode: "CARD", id: cart_id, address_id };
+          const { id, is_redirection, ...options } = payload;
+          const res = await fpi.payment.checkoutPayment({
+            ...options,
+            aggregator_name: selectedCard.aggregator_name,
+            payment_identifier: selectedCard.card_id,
+            payment: {
+              ...selectedCard,
+              card_security_code: selectedCardCvv,
+              is_card_secure:
+                selectedCard.compliant_with_tokenisation_guidelines,
+            },
+            address_id,
+            billing_address_id: address_id,
+            paymentflow: getPaymentflow(selectedCard.aggregator_name),
+            buy_now: buyNow,
+            ...getStaffPayload(),
+            ...(isStoreCreditApplied && {
+              payment_methods: ["store_credits", mode],
+              store_credit,
+              partialPaymentOption,
+            }),
+          });
+          if (res?.meta?.requestStatus === "rejected") {
+            setIsPaymentLoading(false);
+            return res?.payload;
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setIsPaymentLoading(false);
+        }
+      },
+
+      WL: async () => {
         setIsPaymentLoading(true);
         addParamsToLocation({
           ...getQueryParams(),
-          aggregator_name: selectedNewCardData.aggregator_name,
-          payment_mode: "CARD",
+          aggregator_name: selectedWallet.aggregator_name,
+          payment_mode: mode,
+          payment_identifier: selectedWallet.code ?? "",
+          merchant_code: selectedWallet.merchant_code,
         });
-        if (enableLinkPaymentOption) {
-          const payload = {
-            createOrderUserRequestInput: {
-              currency: "INR",
-              payment_link_id: id,
-              failure_callback_url: window.location.origin + "/payment/link",
-              success_callback_url: window.location.origin + "/order-tracking",
-              payment_methods: {
-                meta: {
-                  merchant_code: selectedNewCardData.merchant_code ?? "",
-                  payment_gateway: selectedNewCardData.aggregator_name ?? "",
-                  payment_identifier: selectedNewCardData.code ?? "",
-                },
-                mode: "CARD",
-                name: selectedNewCardData.name,
-              },
-            },
-          };
-          const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
-          let linkOrderInfo = res?.data?.createOrderHandlerPaymentLink;
-          const cardRes = await fpi.payment.checkoutPayment({
-            ...linkDataOption,
-            merchant_code: selectedNewCardData.merchant_code,
-            payment_gateway: selectedNewCardData.aggregator_name,
-            aggregator_name: selectedNewCardData.aggregator_name,
-            payment_identifier: selectedNewCardData.code ?? "",
-            payment_mode: mode,
-            name: selectedNewCardData.name,
-            queryParams: getQueryParams(),
-            data: {
-              amount: linkOrderInfo?.data?.amount,
-              callback_url: linkOrderInfo?.data?.callback_url,
-              contact: linkOrderInfo?.data?.contact,
-              currency: linkOrderInfo?.data?.currency,
-              customer_id: linkOrderInfo?.data?.customer_id,
-              email: linkOrderInfo?.data?.email,
-              method: linkOrderInfo?.data?.method,
-              order_id: linkOrderInfo?.data?.order_id,
-              "card[name]": selectedCardData?.name,
-              "card[number]": selectedCardData?.card_number,
-              "card[cvv]": selectedCardData?.cvv,
-              "card[expiry_month]": selectedCardData?.exp_month,
-              "card[expiry_year]": selectedCardData?.exp_year,
-            },
-            payment: {
-              ...selectedNewCardData,
-              ...selectedCardData,
-              is_card_secure: isCardSecure,
-            },
-            ...getStaffPayload(),
-            enableLinkPaymentOption: enableLinkPaymentOption,
-            paymentflow: linkDataOption?.aggregator_details?.find(
-              (item) =>
-                item.aggregator_key === selectedNewCardData?.aggregator_name
-            ),
-            success: linkOrderInfo?.success,
-          });
-          if (cardRes?.meta?.requestStatus === "rejected") {
-            setIsPaymentLoading(false);
-            return cardRes?.payload;
+
+        const linkDataFn = (linkOrderInfo) => ({
+          data: {
+            ...pickLinkOrderData(linkOrderInfo),
+            wallet: selectedWallet.code ?? "",
+          },
+          success: linkOrderInfo?.success,
+        });
+
+        const res = await handleLinkOrStandardCheckout(
+          selectedWallet,
+          mode,
+          linkDataFn,
+          async () => {
+            const payload = { payment_mode: "WL", id: cart_id, address_id };
+            const { id, is_redirection, ...options } = payload;
+            const currentModeOfPayment = getCurrentModeOfPayment(
+              payload,
+              selectedWallet
+            );
+            return fpi.payment.checkoutPayment({
+              ...baseCheckoutPayload(selectedWallet),
+              ...options,
+              ...withStoreCredit(currentModeOfPayment),
+            });
           }
-        } else {
-          const payload = {
-            payment_mode: "CARD",
-            id: cart_id,
-            address_id,
-          };
-          const { id, is_redirection, ...options } = payload;
-          const currentModeOfPayment = getCurrentModeOfPayment(
-            payload,
-            selectedNewCardData
-          );
-          const paymentPayload = {
-            ...options,
-            aggregator_name: selectedNewCardData.aggregator_name,
-            payment: {
-              ...selectedNewCardData,
-              ...selectedCardData,
-              is_card_secure: isCardSecure,
-            },
-            ...getStaffPayload(),
+        );
+        setIsPaymentLoading(false);
+        handleCheckoutError(res);
+      },
+
+      UPI: async () => {
+        setIsPaymentLoading(true);
+        try {
+          if (selectedUpiIntentApp && selectedUpiIntentApp !== "any") {
+            setShowUpiRedirectionModal(true);
+          }
+
+          if (vpa) {
+            const res = await fpi.executeGQL(VALID_UPI, {
+              validateVPARequestInput: {
+                upi_vpa: vpa,
+                aggregator: selectedUPIData.aggregator_name,
+              },
+            });
+            if (!res?.data?.validateVPA?.data?.is_valid) {
+              setUPIError(true);
+              return { isUPIError: true };
+            }
+          }
+
+          addParamsToLocation({
+            ...getQueryParams(),
+            aggregator_name: selectedUPIData.aggregator_name,
+            payment_mode: mode,
+            payment_identifier: vpa,
+            merchant_code: selectedUPIData.merchant_code,
+          });
+
+          const upiExtras = {
+            upi_app: selectedUpiIntentApp,
+            payment_identifier: vpa,
+            payment_extra_identifiers: { consent: upiSaveForLaterChecked },
+            payment: { ...selectedUPIData, upi: vpa },
             address_id,
             billing_address_id: address_id,
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) =>
-                item.aggregator_key === selectedNewCardData?.aggregator_name
-            ),
+            aggregator_name: selectedUPIData.aggregator_name,
+            paymentflow: getPaymentflow(selectedUPIData.aggregator_name),
             buy_now: buyNow,
-            ...(isStoreCreditApplied && {
+            ...getStaffPayload(),
+          };
+
+          let finalres;
+          if (enableLinkPaymentOption) {
+            const linkOrderInfo = await createLinkOrder(selectedUPIData);
+            finalres = await fpi.payment.checkoutPayment({
+              ...baseLinkCheckoutPayload(selectedUPIData),
+              ...upiExtras,
+              success: linkOrderInfo?.success,
+              data: { ...pickLinkOrderData(linkOrderInfo), vpa },
+            });
+          } else {
+            const payload = {
+              aggregator_name: selectedUPIData.aggregator_name,
+              payment_mode: mode,
+              payment_identifier: selectedUPIData.code ?? "",
+              merchant_code: selectedUPIData.merchant_code,
+              id: cart_id,
+            };
+            const { id, is_redirection, ...options } = payload;
+            const currentModeOfPayment = getCurrentModeOfPayment(
+              payload,
+              selectedUPIData,
+              vpa
+            );
+            finalres = await fpi.payment.checkoutPayment({
+              ...options,
+              ...upiExtras,
               payment_methods: isStoreCreditApplied
                 ? [currentModeOfPayment, storeCreditPayment]
                 : [],
-            }),
-          };
-          const res = await fpi.payment.checkoutPayment(paymentPayload);
-          if (res?.meta?.requestStatus === "rejected") {
-            setIsPaymentLoading(false);
-            return res?.payload;
+            });
           }
-          return res?.payload?.data?.checkoutCart;
-        }
-      } catch (error) {
-        console.log(error);
-        setIsPaymentLoading(false);
-      } finally {
-        setIsPaymentLoading(false);
-      }
-    } else if (mode === "CARD") {
-      try {
-        if (
-          !selectedCard.compliant_with_tokenisation_guidelines
-          //  &&!isSavedCardSecure
-        ) {
-          // openRbiGuidelineDialog = true;
-          // return;
-        }
-        setIsPaymentLoading(true);
-        // const confirmedPayment = fpi.payment.confirmPayment(payload);
-        addParamsToLocation({
-          ...getQueryParams(),
-          aggregator_name: selectedCard.aggregator_name,
-          payment_mode: mode,
-          payment_identifier: selectedCard.card_id,
-          card_reference: selectedCard.card_reference,
-        });
-        const payload = {
-          payment_mode: "CARD",
-          id: cart_id,
-          address_id,
-        };
-        const { id, is_redirection, ...options } = payload;
-        const paymentPayload = {
-          ...options,
-          aggregator_name: selectedCard.aggregator_name,
-          payment_identifier: selectedCard.card_id,
-          ...getStaffPayload(),
-          payment: {
-            ...selectedCard,
-            card_security_code: selectedCardCvv,
-            is_card_secure: selectedCard.compliant_with_tokenisation_guidelines,
 
-            // : isSavedCardSecure,
-          },
-          address_id,
-          billing_address_id: address_id,
-          paymentflow: paymentOption?.aggregator_details?.find(
-            (item) => item.aggregator_key === selectedCard?.aggregator_name
-          ),
-          buy_now: buyNow,
-          ...(isStoreCreditApplied && {
-            payment_methods: ["store_credits", mode],
-            store_credit,
-            partialPaymentOption,
-          }),
-        };
-        const res = await fpi.payment.checkoutPayment(paymentPayload);
-        if (res?.meta?.requestStatus === "rejected") {
-          setIsPaymentLoading(false);
-          return res?.payload;
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsPaymentLoading(false);
-      }
-    } else if (mode === "WL") {
-      setIsPaymentLoading(true);
-      addParamsToLocation({
-        ...getQueryParams(),
-        aggregator_name: selectedWallet.aggregator_name,
-        payment_mode: mode,
-        payment_identifier: selectedWallet.code ?? "",
-        merchant_code: selectedWallet.merchant_code,
-      });
-      if (enableLinkPaymentOption) {
-        const payload = {
-          createOrderUserRequestInput: {
-            currency: "INR",
-            payment_link_id: id,
-            failure_callback_url: window.location.origin + "/payment/link",
-            success_callback_url: window.location.origin + "/order-tracking",
-            payment_methods: {
-              meta: {
-                merchant_code: selectedWallet.merchant_code,
-                payment_gateway: selectedWallet.aggregator_name,
-                payment_identifier: selectedWallet.code ?? "",
-              },
-              mode: mode,
-              name: selectedWallet.name,
-            },
-          },
-        };
-        const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
-        let linkOrderInfo = res?.data?.createOrderHandlerPaymentLink;
-
-        fpi.payment
-          .checkoutPayment({
-            ...linkDataOption,
-            merchant_code: selectedWallet.merchant_code,
-            payment_gateway: selectedWallet.aggregator_name,
-            aggregator_name: selectedWallet.aggregator_name,
-            payment_identifier: selectedWallet.code ?? "",
-            payment_mode: mode,
-            name: selectedWallet.name,
-            queryParams: getQueryParams(),
-            data: {
-              amount: linkOrderInfo?.data?.amount,
-              callback_url: linkOrderInfo?.data?.callback_url,
-              contact: linkOrderInfo?.data?.contact,
-              currency: linkOrderInfo?.data?.currency,
-              customer_id: linkOrderInfo?.data?.customer_id,
-              email: linkOrderInfo?.data?.email,
-              method: linkOrderInfo?.data?.method,
-              order_id: linkOrderInfo?.data?.order_id,
-              wallet: selectedWallet.code ?? "",
-            },
-            ...getStaffPayload(),
-            enableLinkPaymentOption: enableLinkPaymentOption,
-            paymentflow: linkDataOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === selectedWallet?.aggregator_name
-            ),
-            success: linkOrderInfo?.success,
-          })
-          .then((res) => {
-            setIsPaymentLoading(false);
-            if (res?.error?.message) {
-              console.log(res, "error value in usePayment");
-              setErrorMessage(res?.payload?.message);
-            }
-          });
-      } else {
-        const payload = {
-          payment_mode: "WL",
-          id: cart_id,
-          address_id,
-        };
-        setIsPaymentLoading(true);
-        const { id, is_redirection, ...options } = payload;
-        const currentModeOfPayment = getCurrentModeOfPayment(
-          payload,
-          selectedWallet
-        );
-        const paymentPayload = {
-          ...options,
-          aggregator_name: selectedWallet.aggregator_name,
-          payment_identifier: selectedWallet.code ?? "",
-          merchant_code: selectedWallet.merchant_code,
-          payment: selectedWallet,
-          address_id,
-          billing_address_id: address_id,
-          paymentflow: paymentOption?.aggregator_details?.find(
-            (item) => item.aggregator_key === selectedWallet?.aggregator_name
-          ),
-          ...getStaffPayload(),
-          buy_now: buyNow,
-          ...(isStoreCreditApplied && {
-            payment_methods: isStoreCreditApplied
-              ? [currentModeOfPayment, storeCreditPayment]
-              : [],
-          }),
-        };
-        fpi.payment.checkoutPayment(paymentPayload).then((res) => {
-          setIsPaymentLoading(false);
-          if (res?.error?.message) {
-            setErrorMessage(res?.payload?.message);
-          }
-        });
-      }
-    } else if (mode === "UPI") {
-      setIsPaymentLoading(true);
-      const payload = {
-        aggregator_name: selectedUPIData.aggregator_name,
-        payment_mode: mode,
-        payment_identifier: selectedUPIData.code ?? "",
-        merchant_code: selectedUPIData.merchant_code,
-        id: cart_id,
-      };
-      try {
-        if (selectedUpiIntentApp && selectedUpiIntentApp !== "any") {
-          setShowUpiRedirectionModal(true);
-        }
-
-        // Uncomment and use this block if VALID_UPI validation is required
-        if (vpa) {
-          const res = await fpi.executeGQL(VALID_UPI, {
-            validateVPARequestInput: {
-              upi_vpa: vpa,
-              aggregator: selectedUPIData.aggregator_name,
-            },
-          });
-          if (
-            // !res?.data?.validateVPA?.success &&
-            !res?.data?.validateVPA?.data?.is_valid
-          ) {
-            setUPIError(true);
-            return { isUPIError: true };
-          }
-        }
-        addParamsToLocation({
-          ...getQueryParams(),
-          aggregator_name: selectedUPIData.aggregator_name,
-          payment_mode: mode,
-          payment_identifier: vpa,
-          merchant_code: selectedUPIData.merchant_code,
-        });
-        if (enableLinkPaymentOption) {
-          const payload = {
-            createOrderUserRequestInput: {
-              currency: "INR",
-              payment_link_id: id,
-              failure_callback_url: window.location.origin + "/payment/link",
-              success_callback_url: window.location.origin + "/order-tracking",
-              payment_methods: {
-                meta: {
-                  merchant_code: selectedUPIData.merchant_code,
-                  payment_gateway: selectedUPIData.aggregator_name,
-                  payment_identifier: selectedUPIData.code ?? "",
-                },
-                mode: mode,
-                name: selectedUPIData.name,
-              },
-            },
-          };
-          const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
-          let linkOrderInfo = res?.data?.createOrderHandlerPaymentLink;
-
-          const finalres = await fpi.payment.checkoutPayment({
-            ...linkDataOption,
-            upi_app: selectedUpiIntentApp,
-            payment_extra_identifiers: {
-              consent: upiSaveForLaterChecked,
-            },
-            payment_identifier: vpa,
-            payment_mode: mode,
-            aggregator_name: selectedUPIData.aggregator_name,
-            queryParams: getQueryParams(),
-            data: {
-              amount: linkOrderInfo?.data?.amount,
-              callback_url: linkOrderInfo?.data?.callback_url,
-              contact: linkOrderInfo?.data?.contact,
-              currency: linkOrderInfo?.data?.currency,
-              customer_id: linkOrderInfo?.data?.customer_id,
-              email: linkOrderInfo?.data?.email,
-              method: linkOrderInfo?.data?.method,
-              order_id: linkOrderInfo?.data?.order_id,
-              vpa: vpa,
-            },
-            ...getStaffPayload(),
-            enableLinkPaymentOption: enableLinkPaymentOption,
-            paymentflow: linkDataOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === selectedUPIData?.aggregator_name
-            ),
-            success: linkOrderInfo?.success,
-          });
           if (finalres?.meta?.requestStatus === "rejected") {
             setShowUpiRedirectionModal(false);
             return finalres?.payload;
@@ -863,689 +833,280 @@ const usePayment = (fpi) => {
             ...finalres,
             aggregator_name: selectedUPIData.aggregator_name,
           };
-        } else {
-          const { id, is_redirection, ...options } = payload;
-          const currentModeOfPayment = getCurrentModeOfPayment(
-            payload,
-            selectedUPIData,
-            vpa
-          );
-          const finalres = isStoreCreditApplied
-            ? await fpi.payment.checkoutPayment({
-                ...options,
-                upi_app: selectedUpiIntentApp,
-                payment_identifier: vpa,
-                payment_extra_identifiers: {
-                  consent: upiSaveForLaterChecked,
-                },
-                payment: {
-                  ...selectedUPIData,
-                  upi: vpa,
-                },
-                address_id,
-                billing_address_id: address_id,
-                aggregator_name: selectedUPIData.aggregator_name,
-                ...getStaffPayload(),
-                paymentflow: paymentOption?.aggregator_details?.find(
-                  (item) =>
-                    item.aggregator_key === selectedUPIData?.aggregator_name
-                ),
-                buy_now: buyNow,
-                payment_methods: [currentModeOfPayment, storeCreditPayment],
-              })
-            : await fpi.payment.checkoutPayment({
-                ...options,
-                upi_app: selectedUpiIntentApp,
-                payment_identifier: vpa,
-                payment_extra_identifiers: {
-                  consent: upiSaveForLaterChecked,
-                },
-                payment: {
-                  ...selectedUPIData,
-                  upi: vpa,
-                },
-                address_id,
-                billing_address_id: address_id,
-                aggregator_name: selectedUPIData.aggregator_name,
-                ...getStaffPayload(),
-                paymentflow: paymentOption?.aggregator_details?.find(
-                  (item) =>
-                    item.aggregator_key === selectedUPIData?.aggregator_name
-                ),
-                buy_now: buyNow,
-                payment_methods: [],
-              });
-          if (finalres?.meta?.requestStatus === "rejected") {
-            setShowUpiRedirectionModal(false);
-            return finalres?.payload;
-          }
-          return {
-            ...finalres,
-            aggregator_name: selectedUPIData.aggregator_name,
-          };
+        } catch (error) {
+          console.error("Error during UPI payment process:", error);
+        } finally {
+          setIsPaymentLoading(false);
         }
-      } catch (error) {
-        console.error("Error during UPI payment process:", error);
-      } finally {
-        setIsPaymentLoading(false);
-      }
-    } else if (mode === "QR") {
-      setIsQrCodeLoading(true);
-      try {
-        addParamsToLocation({
-          ...getQueryParams(),
-          aggregator_name: selectedQrData.aggregator_name,
-          payment_mode: mode,
-          payment_identifier: selectedQrData.code ?? "",
-          merchant_code: selectedQrData.merchant_code,
-        });
-        if (enableLinkPaymentOption) {
-          const payload = {
-            createOrderUserRequestInput: {
-              currency: "INR",
-              payment_link_id: id,
-              failure_callback_url: window.location.origin + "/payment/link",
-              success_callback_url: window.location.origin + "/order-tracking",
-              payment_methods: {
-                meta: {
-                  merchant_code: selectedQrData.merchant_code,
-                  payment_gateway: selectedQrData.aggregator_name,
-                  payment_identifier: selectedQrData.code ?? "",
-                },
-                mode: mode,
-                name: selectedQrData.name,
-              },
-            },
-          };
-          const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
+      },
 
-          const qrRes = await fpi.payment.checkoutPayment({
-            ...linkDataOption,
-            merchant_code: selectedQrData.merchant_code,
-            payment_gateway: selectedQrData.aggregator_name,
+      QR: async () => {
+        setIsQrCodeLoading(true);
+        try {
+          addParamsToLocation({
+            ...getQueryParams(),
             aggregator_name: selectedQrData.aggregator_name,
+            payment_mode: mode,
             payment_identifier: selectedQrData.code ?? "",
-            payment_mode: mode,
-            name: selectedQrData.name,
-            queryParams: getQueryParams(),
-            payment: {
-              ...selectedQrData,
-            },
-            ...getStaffPayload(),
-            data: res?.data,
-            enableLinkPaymentOption: enableLinkPaymentOption,
-            paymentflow: linkDataOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === selectedQrData?.aggregator_name
-            ),
+            merchant_code: selectedQrData.merchant_code,
           });
-          if (qrRes?.meta?.requestStatus === "rejected") {
-            return qrRes?.payload;
+
+          let res;
+          if (enableLinkPaymentOption) {
+            const linkOrderInfo = await createLinkOrder(selectedQrData);
+            res = await fpi.payment.checkoutPayment({
+              ...baseLinkCheckoutPayload(selectedQrData),
+              payment: { ...selectedQrData },
+              data: linkOrderInfo?.data,
+              success: linkOrderInfo?.success,
+            });
+          } else {
+            const payload = { payment_mode: "QR", id: cart_id, address_id };
+            const { id, is_redirection, ...options } = payload;
+            const currentModeOfPayment = getCurrentModeOfPayment(
+              payload,
+              selectedQrData
+            );
+            res = await fpi.payment.checkoutPayment({
+              ...baseCheckoutPayload(selectedQrData),
+              ...options,
+              payment_mode: mode,
+              ...withStoreCredit(currentModeOfPayment),
+            });
           }
-          return qrRes;
-        } else {
-          const payload = {
-            payment_mode: "QR",
-            id: cart_id,
-            address_id,
-          };
-          const { id, is_redirection, ...options } = payload;
-          const currentModeOfPayment = getCurrentModeOfPayment(
-            payload,
-            selectedQrData
-          );
-          const res = isStoreCreditApplied
-            ? await fpi.payment.checkoutPayment({
-                ...options,
-                aggregator_name: selectedQrData.aggregator_name,
-                payment_identifier: selectedQrData.code ?? "",
-                merchant_code: selectedQrData.merchant_code,
-                payment_mode: mode,
-                payment: {
-                  ...selectedQrData,
-                },
-                address_id,
-                billing_address_id: address_id,
-                ...getStaffPayload(),
-                paymentflow: paymentOption?.aggregator_details?.find(
-                  (item) =>
-                    item.aggregator_key === selectedQrData?.aggregator_name
-                ),
-                buy_now: buyNow,
-                payment_methods: [currentModeOfPayment, storeCreditPayment],
-              })
-            : await fpi.payment.checkoutPayment({
-                ...options,
-                aggregator_name: selectedQrData.aggregator_name,
-                payment_identifier: selectedQrData.code ?? "",
-                merchant_code: selectedQrData.merchant_code,
-                payment_mode: mode,
-                payment: {
-                  ...selectedQrData,
-                },
-                address_id,
-                billing_address_id: address_id,
-                ...getStaffPayload(),
-                paymentflow: paymentOption?.aggregator_details?.find(
-                  (item) =>
-                    item.aggregator_key === selectedQrData?.aggregator_name
-                ),
-                buy_now: buyNow,
-              });
-          if (res?.meta?.requestStatus === "rejected") {
-            return res?.payload;
-          }
+
+          if (res?.meta?.requestStatus === "rejected") return res?.payload;
           return res;
+        } catch (err) {
+          setIsQrCodeLoading(false);
         }
-      } catch (err) {
-        setIsQrCodeLoading(false);
-      }
-    } else if (mode === "NB") {
-      setIsPaymentLoading(true);
-      addParamsToLocation({
-        ...getQueryParams(),
-        aggregator_name: selectedNB.aggregator_name,
-        payment_mode: mode,
-        payment_identifier: selectedNB.code ?? "",
-        merchant_code: selectedNB.merchant_code,
-      });
-      if (enableLinkPaymentOption) {
-        const payload = {
-          createOrderUserRequestInput: {
-            currency: "INR",
-            payment_link_id: id,
-            failure_callback_url: window.location.origin + "/payment/link",
-            success_callback_url: window.location.origin + "/order-tracking",
-            payment_methods: {
-              meta: {
-                merchant_code: selectedNB.merchant_code,
-                payment_gateway: selectedNB.aggregator_name,
-                payment_identifier: selectedNB.code ?? "",
-              },
-              mode: mode,
-              name: selectedNB.name,
-            },
-          },
-        };
-        const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
-        const linkOrderInfo = res?.data?.createOrderHandlerPaymentLink;
-        fpi.payment
-          .checkoutPayment({
-            ...linkDataOption,
-            merchant_code: selectedNB.merchant_code,
-            payment_gateway: selectedNB.aggregator_name,
-            aggregator_name: selectedNB.aggregator_name,
-            payment_identifier: selectedNB.code ?? "",
-            payment_mode: mode,
-            name: selectedNB.name,
-            queryParams: getQueryParams(),
+      },
+
+      NB: async () => {
+        setIsPaymentLoading(true);
+        addParamsToLocation({
+          ...getQueryParams(),
+          aggregator_name: selectedNB.aggregator_name,
+          payment_mode: mode,
+          payment_identifier: selectedNB.code ?? "",
+          merchant_code: selectedNB.merchant_code,
+        });
+
+        const res = await handleLinkOrStandardCheckout(
+          selectedNB,
+          mode,
+          (linkOrderInfo) => ({
             data: {
-              amount: linkOrderInfo?.data?.amount,
-              callback_url: linkOrderInfo?.data?.callback_url,
-              contact: linkOrderInfo?.data?.contact,
-              currency: linkOrderInfo?.data?.currency,
-              customer_id: linkOrderInfo?.data?.customer_id,
-              email: linkOrderInfo?.data?.email,
-              method: linkOrderInfo?.data?.method,
-              order_id: linkOrderInfo?.data?.order_id,
+              ...pickLinkOrderData(linkOrderInfo),
               bank: selectedNB.code ?? "",
             },
             success: linkOrderInfo?.success,
-            enableLinkPaymentOption: enableLinkPaymentOption,
-            paymentflow: linkDataOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === selectedNB?.aggregator_name
-            ),
-          })
-          .then((res) => {
-            setIsPaymentLoading(false);
-            if (res?.error?.message) {
-              console.log(res, "error value in usePayment");
-              setErrorMessage(res?.payload?.message);
-            }
-          });
-      } else {
-        const payload = {
-          payment_mode: "NB",
-          id: cart_id,
-          address_id,
-        };
-        setIsPaymentLoading(true);
-        const { id, is_redirection, ...options } = payload;
-        const currentModeOfPayment = getCurrentModeOfPayment(
-          payload,
-          selectedNB
+          }),
+          async () => {
+            const payload = { payment_mode: "NB", id: cart_id, address_id };
+            const { id, is_redirection, ...options } = payload;
+            const currentModeOfPayment = getCurrentModeOfPayment(
+              payload,
+              selectedNB
+            );
+            return fpi.payment.checkoutPayment({
+              ...baseCheckoutPayload(selectedNB),
+              ...options,
+              queryParams: getQueryParams(),
+              ...withStoreCredit(currentModeOfPayment),
+            });
+          }
         );
-        const paymentPayload = {
+        setIsPaymentLoading(false);
+        handleCheckoutError(res);
+      },
+
+      COD: async () => handlers.PP(),
+      PP: async () => {
+        setIsPaymentLoading(true);
+        const payload = { payment_mode: mode, id: cart_id, address_id };
+        addParamsToLocation({
+          ...getQueryParams(),
+          aggregator_name: selectedTabData?.aggregator_name,
+          payment_mode: mode,
+          payment_identifier: `${selectedTabData?.payment_mode_id}`,
+        });
+        const { id, is_redirection, ...options } = payload;
+        const basePayload = {
           ...options,
-          aggregator_name: selectedNB.aggregator_name,
-          payment_identifier: selectedNB.code ?? "",
-          merchant_code: selectedNB.merchant_code,
+          aggregator_name: selectedTabData?.aggregator_name,
           queryParams: getQueryParams(),
-          payment: selectedNB,
+          payment: selectedTabData,
           address_id,
           billing_address_id: address_id,
-          ...getStaffPayload(),
-          paymentflow: paymentOption?.aggregator_details?.find(
-            (item) => item.aggregator_key === options?.aggregator_name
-          ),
+          paymentflow: getPaymentflow(selectedTabData?.aggregator_name),
           buy_now: buyNow,
-          ...(isStoreCreditApplied && {
-            payment_methods: isStoreCreditApplied
-              ? [currentModeOfPayment, storeCreditPayment]
-              : [],
-          }),
+          ...getStaffPayload(),
         };
-        fpi.payment.checkoutPayment(paymentPayload).then((res) => {
-          setIsPaymentLoading(false);
-          if (res?.error?.message) {
-            setErrorMessage(res?.payload?.message);
-          }
-        });
-      }
-    } else if (mode === "COD" || mode === "PP") {
-      const payload = {
-        payment_mode: mode,
-        id: cart_id,
-        address_id,
-      };
-      setIsPaymentLoading(true);
-      addParamsToLocation({
-        ...getQueryParams(),
-        aggregator_name: selectedTabData?.aggregator_name,
-        payment_mode: mode,
-        payment_identifier: `${selectedTabData?.payment_mode_id}`,
-      });
-      const { id, is_redirection, ...options } = payload;
-      if (isStoreCreditApplied) {
-        fpi.payment
-          .checkoutPayment({
-            ...options,
-            aggregator_name: selectedTabData?.aggregator_name,
-            queryParams: getQueryParams(),
-            payment: selectedTabData,
-            address_id,
-            billing_address_id: address_id,
-            ...getStaffPayload(),
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === selectedTabData?.aggregator_name
-            ),
-            buy_now: buyNow,
+        const res = await fpi.payment.checkoutPayment({
+          ...basePayload,
+          ...(isStoreCreditApplied && {
             payment_methods: ["store_credits", mode],
             store_credit,
             partialPaymentOption,
-          })
-          .then((res) => {
-            if (res?.error?.message) {
-              setIsPaymentLoading(false);
-              setErrorMessage(res?.payload?.message);
-            }
-          });
-      } else {
-        fpi.payment
-          .checkoutPayment({
-            ...options,
-            aggregator_name: selectedTabData?.aggregator_name,
-            queryParams: getQueryParams(),
-            payment: selectedTabData,
-            address_id,
-            billing_address_id: address_id,
-            ...getStaffPayload(),
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) => item.aggregator_key === selectedTabData?.aggregator_name
-            ),
-            buy_now: buyNow,
-          })
-          .then((res) => {
-            if (res?.error?.message) {
-              setIsPaymentLoading(false);
-              setErrorMessage(res?.payload?.message);
-            }
-          });
-      }
-    } else if (mode === "PL") {
-      setIsPaymentLoading(true);
-      addParamsToLocation({
-        ...getQueryParams(),
-        aggregator_name: selectedPayLater.aggregator_name,
-        payment_mode: mode,
-        payment_identifier: selectedPayLater.code ?? "",
-        merchant_code: selectedPayLater.merchant_code,
-      });
-      if (enableLinkPaymentOption) {
-        const payload = {
-          createOrderUserRequestInput: {
-            currency: "INR",
-            payment_link_id: id,
-            failure_callback_url: window.location.origin + "/payment/link",
-            success_callback_url: window.location.origin + "/order-tracking",
-            payment_methods: {
-              meta: {
-                merchant_code: selectedPayLater.merchant_code,
-                payment_gateway: selectedPayLater.aggregator_name,
-                payment_identifier: selectedPayLater.code ?? "",
-              },
-              mode: mode,
-              name: selectedPayLater.name,
-            },
-          },
-        };
-        const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
-        let linkOrderInfo = res?.data?.createOrderHandlerPaymentLink;
-        fpi.payment
-          .checkoutPayment({
-            ...linkDataOption,
-            merchant_code: selectedPayLater.merchant_code,
-            payment_gateway: selectedPayLater.aggregator_name,
-            aggregator_name: selectedPayLater.aggregator_name,
-            payment_identifier: selectedPayLater.code ?? "",
-            payment_mode: mode,
-            name: selectedPayLater.name,
-            queryParams: getQueryParams(),
-            data: {
-              amount: linkOrderInfo?.data?.amount,
-              callback_url: linkOrderInfo?.data?.callback_url,
-              contact: linkOrderInfo?.data?.contact,
-              currency: linkOrderInfo?.data?.currency,
-              customer_id: linkOrderInfo?.data?.customer_id,
-              email: linkOrderInfo?.data?.email,
-              method: linkOrderInfo?.data?.method,
-              order_id: linkOrderInfo?.data?.order_id,
-              provider: selectedPayLater?.code ?? "",
-            },
-            ...getStaffPayload(),
-            success: linkOrderInfo?.success,
-            enableLinkPaymentOption: enableLinkPaymentOption,
-            paymentflow: linkDataOption?.aggregator_details?.find(
-              (item) =>
-                item.aggregator_key === selectedPayLater?.aggregator_name
-            ),
-          })
-          .then((res) => {
-            setIsPaymentLoading(false);
-            if (res?.error?.message) {
-              console.log(res, "error value in usePayment");
-              setErrorMessage(res?.payload?.message);
-            }
-          });
-      } else {
-        const payload = {
-          payment_mode: "PL",
-          id: cart_id,
-          address_id,
-        };
-        setIsPaymentLoading(true);
-
-        const { id, is_redirection, ...options } = payload;
-        const currentModeOfPayment = getCurrentModeOfPayment(
-          payload,
-          selectedPayLater
-        );
-        if (isStoreCreditApplied) {
-          fpi.payment
-            .checkoutPayment({
-              ...options,
-              aggregator_name: selectedPayLater.aggregator_name,
-              payment_identifier: selectedPayLater.code ?? "",
-              merchant_code: selectedPayLater.merchant_code,
-              queryParams: getQueryParams(),
-              payment: selectedPayLater,
-              address_id,
-              billing_address_id: address_id,
-              ...getStaffPayload(),
-              paymentflow: paymentOption?.aggregator_details?.find(
-                (item) =>
-                  item.aggregator_key === selectedPayLater?.aggregator_name
-              ),
-              buy_now: buyNow,
-              payment_methods: isStoreCreditApplied
-                ? [currentModeOfPayment, storeCreditPayment]
-                : [],
-            })
-            .then((res) => {
-              setIsPaymentLoading(false);
-              if (res?.error?.message) {
-                setErrorMessage(res?.payload?.message);
-              }
-            });
-        } else {
-          fpi.payment
-            .checkoutPayment({
-              ...options,
-              aggregator_name: selectedPayLater.aggregator_name,
-              payment_identifier: selectedPayLater.code ?? "",
-              merchant_code: selectedPayLater.merchant_code,
-              queryParams: getQueryParams(),
-              payment: selectedPayLater,
-              address_id,
-              billing_address_id: address_id,
-              ...getStaffPayload(),
-              paymentflow: paymentOption?.aggregator_details?.find(
-                (item) =>
-                  item.aggregator_key === selectedPayLater?.aggregator_name
-              ),
-              buy_now: buyNow,
-            })
-            .then((res) => {
-              setIsPaymentLoading(false);
-              if (res?.error?.message) {
-                setErrorMessage(res?.payload?.message);
-              }
-            });
+          }),
+        });
+        if (res?.error?.message) {
+          setIsPaymentLoading(false);
+          setErrorMessage(res?.payload?.message);
         }
-      }
-    } else if (mode === "CARDLESS_EMI") {
-      setIsPaymentLoading(true);
-      addParamsToLocation({
-        ...getQueryParams(),
-        aggregator_name: selectedCardless.aggregator_name,
-        payment_mode: mode,
-        payment_identifier: selectedCardless.code ?? "",
-        merchant_code: selectedCardless.merchant_code,
-      });
-      if (enableLinkPaymentOption) {
-        const payload = {
-          createOrderUserRequestInput: {
-            currency: "INR",
-            payment_link_id: id,
-            failure_callback_url: window.location.origin + "/payment/link",
-            success_callback_url: window.location.origin + "/order-tracking",
-            payment_methods: {
-              meta: {
-                merchant_code: selectedCardless.merchant_code,
-                payment_gateway: selectedCardless.aggregator_name,
-                payment_identifier: selectedCardless.code ?? "",
-              },
-              mode: mode,
-              name: selectedCardless.name,
+      },
+
+      PL: async () => {
+        setIsPaymentLoading(true);
+        addParamsToLocation({
+          ...getQueryParams(),
+          aggregator_name: selectedPayLater.aggregator_name,
+          payment_mode: mode,
+          payment_identifier: selectedPayLater.code ?? "",
+          merchant_code: selectedPayLater.merchant_code,
+        });
+
+        const res = await handleLinkOrStandardCheckout(
+          selectedPayLater,
+          mode,
+          (linkOrderInfo) => ({
+            data: {
+              ...pickLinkOrderData(linkOrderInfo),
+              provider: selectedPayLater.code ?? "",
             },
-          },
-        };
-        const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
-
-        fpi.payment
-          .checkoutPayment({
-            ...linkDataOption,
-            merchant_code: selectedCardless.merchant_code,
-            payment_gateway: selectedCardless.aggregator_name,
-            aggregator_name: selectedCardless.aggregator_name,
-            payment_identifier: selectedCardless.code ?? "",
-            payment_mode: mode,
-            name: selectedCardless.name,
-            queryParams: getQueryParams(),
-            data: res?.data,
-            enableLinkPaymentOption: enableLinkPaymentOption,
-            paymentflow: linkDataOption?.aggregator_details?.find(
-              (item) =>
-                item.aggregator_key === selectedCardless?.aggregator_name
-            ),
-          })
-          .then((res) => {
-            setIsPaymentLoading(false);
-            if (res?.error?.message) {
-              console.log(res, "error value in usePayment");
-              setErrorMessage(res?.payload?.message);
-            }
-          });
-      } else {
-        const payload = {
-          payment_mode: "CARDLESS_EMI",
-          id: cart_id,
-          address_id,
-        };
-
-        const { id, is_redirection, ...options } = payload;
-        const currentModeOfPayment = getCurrentModeOfPayment(
-          payload,
-          selectedCardless
+            success: linkOrderInfo?.success,
+          }),
+          async () => {
+            const payload = { payment_mode: "PL", id: cart_id, address_id };
+            const { id, is_redirection, ...options } = payload;
+            const currentModeOfPayment = getCurrentModeOfPayment(
+              payload,
+              selectedPayLater
+            );
+            return fpi.payment.checkoutPayment({
+              ...baseCheckoutPayload(selectedPayLater),
+              ...options,
+              queryParams: getQueryParams(),
+              ...withStoreCredit(currentModeOfPayment),
+            });
+          }
         );
-        const paymentPayload = {
-          queryParams: getQueryParams(),
-          ...options,
+        setIsPaymentLoading(false);
+        handleCheckoutError(res);
+      },
+
+      CARDLESS_EMI: async () => {
+        setIsPaymentLoading(true);
+        addParamsToLocation({
+          ...getQueryParams(),
           aggregator_name: selectedCardless.aggregator_name,
+          payment_mode: mode,
           payment_identifier: selectedCardless.code ?? "",
           merchant_code: selectedCardless.merchant_code,
-          payment: selectedCardless,
-          address_id,
-          billing_address_id: address_id,
-          ...getStaffPayload(),
-          paymentflow: paymentOption?.aggregator_details?.find(
-            (item) => item.aggregator_key === selectedCardless?.aggregator_name
-          ),
-          buy_now: buyNow,
-          ...(isStoreCreditApplied && {
-            payment_methods: isStoreCreditApplied
-              ? [currentModeOfPayment, storeCreditPayment]
-              : [],
-          }),
-        };
-        fpi.payment.checkoutPayment(paymentPayload).then((res) => {
-          setIsPaymentLoading(false);
-          if (res?.error?.message) {
-            setErrorMessage(res?.payload?.message);
-          }
         });
-      }
-    } else if (mode === "Other") {
-      setIsPaymentLoading(true);
-      addParamsToLocation({
-        ...getQueryParams(),
-        aggregator_name: selectedOtherPayment.aggregator_name,
-        payment_mode: selectedOtherPayment.code ?? "",
-        payment_identifier: selectedOtherPayment.code ?? "",
-        merchant_code: selectedOtherPayment.merchant_code,
-      });
-      if (enableLinkPaymentOption) {
-        const payload = {
-          createOrderUserRequestInput: {
-            currency: "INR",
-            payment_link_id: id,
-            failure_callback_url: window.location.origin + "/payment/link",
-            success_callback_url: window.location.origin + "/order-tracking",
-            payment_methods: {
-              meta: {
-                merchant_code: selectedOtherPayment.merchant_code,
-                payment_gateway: selectedOtherPayment.aggregator_name,
-                payment_identifier: selectedOtherPayment.code ?? "",
-              },
-              mode: selectedOtherPayment.code ?? "",
-              name: selectedOtherPayment.name,
-            },
-          },
-        };
-        const res = await fpi.executeGQL(CREATE_ORDER_PAYMENT_LINK, payload);
-        const linkOrderInfo = res?.data?.createOrderHandlerPaymentLink;
-        fpi.payment
-          .checkoutPayment({
-            ...linkDataOption,
-            merchant_code: selectedOtherPayment.merchant_code,
-            payment_gateway: selectedOtherPayment.aggregator_name,
-            aggregator_name: selectedOtherPayment.aggregator_name,
-            payment_identifier: selectedOtherPayment.code ?? "",
-            payment_mode: selectedOtherPayment.code ?? "",
-            name: selectedOtherPayment.code ?? "",
+
+        const res = await handleLinkOrStandardCheckout(
+          selectedCardless,
+          mode,
+          (linkOrderInfo) => ({ data: linkOrderInfo?.data }),
+          async () => {
+            const payload = {
+              payment_mode: "CARDLESS_EMI",
+              id: cart_id,
+              address_id,
+            };
+            const { id, is_redirection, ...options } = payload;
+            const currentModeOfPayment = getCurrentModeOfPayment(
+              payload,
+              selectedCardless
+            );
+            return fpi.payment.checkoutPayment({
+              ...baseCheckoutPayload(selectedCardless),
+              ...options,
+              queryParams: getQueryParams(),
+              ...withStoreCredit(currentModeOfPayment),
+            });
+          }
+        );
+        setIsPaymentLoading(false);
+        handleCheckoutError(res);
+      },
+
+      Other: async () => {
+        setIsPaymentLoading(true);
+        addParamsToLocation({
+          ...getQueryParams(),
+          aggregator_name: selectedOtherPayment.aggregator_name,
+          payment_mode: selectedOtherPayment.code ?? "",
+          payment_identifier: selectedOtherPayment.code ?? "",
+          merchant_code: selectedOtherPayment.merchant_code,
+        });
+
+        const res = await handleLinkOrStandardCheckout(
+          { ...selectedOtherPayment, name: selectedOtherPayment.code ?? "" },
+          selectedOtherPayment.code ?? "",
+          (linkOrderInfo) => ({
             payment: selectedOtherPayment,
-            queryParams: getQueryParams(),
             data: {
-              amount: linkOrderInfo?.data?.amount || "",
-              callback_url: linkOrderInfo?.data?.callback_url || "",
-              contact: linkOrderInfo?.data?.contact || "",
-              currency: linkOrderInfo?.data?.currency || "",
-              customer_id: linkOrderInfo?.data?.customer_id || "",
-              email: linkOrderInfo?.data?.email || "",
-              method: linkOrderInfo?.data?.method || "",
-              order_id: linkOrderInfo?.data?.order_id || "",
-              merchant_order_id: linkOrderInfo?.data?.merchant_order_id || "",
+              ...pickLinkOrderData(linkOrderInfo),
+              merchant_order_id: linkOrderInfo?.data?.merchant_order_id,
               merchant_transaction_id:
                 linkOrderInfo?.data?.merchant_transaction_id || "",
+              upi_app: "",
               access_code: linkOrderInfo?.data?.access_code || "",
               base64_html: linkOrderInfo?.data?.base64_html || "",
               enc_message: linkOrderInfo?.data?.enc_message || "",
               merchant_id: linkOrderInfo?.data?.merchant_id || "",
               transaction_token: linkOrderInfo?.data?.transaction_token || "",
-              upi_app: "",
             },
-            ...getStaffPayload(),
             success: linkOrderInfo?.success,
-            enableLinkPaymentOption: enableLinkPaymentOption,
-            paymentflow: linkDataOption?.aggregator_details?.find(
-              (item) =>
-                item.aggregator_key === selectedOtherPayment?.aggregator_name
-            ),
-          })
-          .then((res) => {
-            if (res?.error?.message) {
-              setIsPaymentLoading(false);
-              console.log(res, "error value in usePayment");
-              setErrorMessage(res?.payload?.message);
-            }
-          });
-      } else {
-        const payload = {
-          aggregator_name: selectedOtherPayment.aggregator_name,
-          payment_mode: selectedOtherPayment.code ?? "",
-          payment_identifier: selectedOtherPayment.code ?? "",
-          merchant_code: selectedOtherPayment.merchant_code,
-          id: cart_id,
-        };
-
-        const { id, is_redirection, ...options } = payload;
-        const currentModeOfPayment = getCurrentModeOfPayment(
-          payload,
-          selectedOtherPayment
+          }),
+          async () => {
+            const payload = {
+              aggregator_name: selectedOtherPayment.aggregator_name,
+              payment_mode: selectedOtherPayment.code ?? "",
+              payment_identifier: selectedOtherPayment.code ?? "",
+              merchant_code: selectedOtherPayment.merchant_code,
+              id: cart_id,
+            };
+            const { id, is_redirection, ...options } = payload;
+            const currentModeOfPayment = getCurrentModeOfPayment(
+              payload,
+              selectedOtherPayment
+            );
+            return fpi.payment.checkoutPayment({
+              ...options,
+              merchant_code: selectedOtherPayment.code ?? "",
+              payment: selectedOtherPayment,
+              address_id,
+              billing_address_id: address_id,
+              paymentflow: getPaymentflow(selectedOtherPayment.aggregator_name),
+              buy_now: buyNow,
+              ...getStaffPayload(),
+              ...withStoreCredit(currentModeOfPayment),
+            });
+          }
         );
-        fpi.payment
-          .checkoutPayment({
-            ...options,
-            aggregator_name: selectedOtherPayment.aggregator_name,
-            payment_identifier: selectedOtherPayment.code ?? "",
-            merchant_code: selectedOtherPayment.code ?? "",
-            payment: selectedOtherPayment,
-            address_id,
-            billing_address_id: address_id,
-            ...getStaffPayload(),
-            paymentflow: paymentOption?.aggregator_details?.find(
-              (item) =>
-                item.aggregator_key === selectedOtherPayment?.aggregator_name
-            ),
-            buy_now: buyNow,
-            ...(isStoreCreditApplied && {
-              payment_methods: isStoreCreditApplied
-                ? [currentModeOfPayment, storeCreditPayment]
-                : [],
-            }),
-          })
-          .then((res) => {
-            if (res?.error?.message) {
-              setIsPaymentLoading(false);
-              console.log(
-                res,
-                "response while calling fpi.payment.checkoutPayment"
-              );
-              setErrorMessage(res?.payload?.message);
-            }
-          });
-      }
-    }
+        handleCheckoutError(res, () => setIsPaymentLoading(false));
+      },
+    };
+
+    const handler = handlers[mode];
+    if (handler) return handler();
   };
+
+  // Helper to extract common link order response fields
+  const pickLinkOrderData = (linkOrderInfo) => ({
+    amount: linkOrderInfo?.data?.amount,
+    callback_url: linkOrderInfo?.data?.callback_url,
+    contact: linkOrderInfo?.data?.contact,
+    currency: linkOrderInfo?.data?.currency,
+    customer_id: linkOrderInfo?.data?.customer_id,
+    email: linkOrderInfo?.data?.email,
+    method: linkOrderInfo?.data?.method,
+    order_id: linkOrderInfo?.data?.order_id,
+  });
 
   const checkAndUpdatePaymentStatus = async (payload) => {
     return fpi.executeGQL(CHECK_AND_UPDATE_PAYMENT_STATUS, {
@@ -1570,7 +1131,7 @@ const usePayment = (fpi) => {
     orderedOptions = orderedOptions.filter(
       (opt) => !opt.list?.[0]?.partial_payment_allowed
     );
-    orderedOptions = orderedOptions.filter((opt) => opt.name !== "QR");
+    // orderedOptions = orderedOptions.filter((opt) => opt.name !== "QR");
     orderedOptions?.forEach((optn) => {
       const data = PAYMENT_OPTIONS_SVG[optn.name];
       const subMopIcons = [];

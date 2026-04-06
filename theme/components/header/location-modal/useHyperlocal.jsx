@@ -145,9 +145,10 @@ const useHyperlocal = (fpi) => {
       // ✅ True not-serviceable case (explicit backend error)
       const notServiceableErr = errors?.find((e) => {
         const msg = (e?.message || e?.details?.message || "").toLowerCase();
-        // Check for explicit not serviceable indicators
+        const statusCode =
+          e?.status_code || e?.statusCode || e?.extensions?.status_code;
         return (
-          (e?.status_code === 400 || e?.statusCode === 400) &&
+          statusCode === 400 &&
           (msg.includes("not serviceable") ||
             msg.includes("not_serviceable") ||
             msg.includes("location not serviceable"))

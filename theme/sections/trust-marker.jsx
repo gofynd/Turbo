@@ -326,6 +326,11 @@ export const settings = {
           label: "t:resource.common.icon",
           options: {
             aspect_ratio: "1:1",
+            aspect_ratio_strict_check: false,
+            maxSize: 1024,
+            file_types: ["image/png", "image/jpeg", "image/svg+xml"],
+            min_resolution: { width: 200, height: 200 },
+            max_resolution: { width: 2000, height: 2000 },
           },
         },
         {

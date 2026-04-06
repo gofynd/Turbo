@@ -176,6 +176,14 @@ export const settings = {
       id: "fallback_image",
       label: "t:resource.sections.blog.fallback_image",
       default: "",
+      options: {
+        aspect_ratio: "3:2",
+        aspect_ratio_strict_check: false,
+        maxSize: 2048,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 1200, height: 800 },
+        max_resolution: { width: 3840, height: 2560 },
+      },
     },
   ],
 };

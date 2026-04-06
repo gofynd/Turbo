@@ -373,6 +373,11 @@ export const settings = {
       default: "",
       options: {
         aspect_ratio: "314:229",
+        aspect_ratio_strict_check: false,
+        maxSize: 3072,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 1200, height: 875 },
+        max_resolution: { width: 3840, height: 2800 },
       },
     },
     {
@@ -382,6 +387,11 @@ export const settings = {
       default: "",
       options: {
         aspect_ratio: "320:467",
+        aspect_ratio_strict_check: false,
+        maxSize: 3072,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 750, height: 1095 },
+        max_resolution: { width: 1170, height: 1708 },
       },
     },
     {

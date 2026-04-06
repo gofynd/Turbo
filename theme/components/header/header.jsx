@@ -122,7 +122,6 @@ function Header({ fpi }) {
     return isValidSection;
   }, [transparent_header, isHomePage, sectionsReady, isValidSection]);
 
-
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
 
@@ -269,8 +268,6 @@ function Header({ fpi }) {
     setEnableTransition(true);
   }, []);
 
-
-
   useEffect(() => {
     if (isRunningOnClient()) {
       setTimeout(() => { }, 1000);
@@ -293,10 +290,13 @@ function Header({ fpi }) {
     }
   }, [headerHeight]);
 
-  const getShopLogoMobile = () =>
-    appInfo?.mobile_logo?.secure_url?.replace("original", "resize-h:165") ||
-    appInfo?.logo?.secure_url?.replace("original", "resize-h:165") ||
-    fallbackLogo;
+  const getShopLogoMobile = () => {
+    const url = appInfo?.mobile_logo?.secure_url || appInfo?.logo?.secure_url;
+    if (!url) return fallbackLogo;
+    return /\.(svg|gif)(\?|$)/i.test(url)
+      ? url
+      : url.replace("original", "resize-h:165");
+  };
 
   const checkLogin = (type) => {
     if (type === "cart") {
@@ -451,11 +451,11 @@ function Header({ fpi }) {
           >
             <div
               className={`${styles.headerContainer} ${shouldBeTransparent ? styles.paddingMobile : ""
-                } basePageContainer margin0auto `}
+              } basePageContainer margin0auto `}
             >
               <div
                 className={`${styles.desktop}  ${shouldBeTransparent ? styles.transparent_desktop : ""
-                  }`}
+                }`}
               >
                 <HeaderDesktop
                   checkLogin={checkLogin}

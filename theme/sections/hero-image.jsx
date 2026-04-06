@@ -332,7 +332,7 @@ export function Component({ props, globalConfig, blocks }) {
             ? {
                 isFixedAspectRatio: mediaLayout.isAspectRatio,
                 aspectRatio: mediaLayout.aspectRatio ?? 16 / 9,
-                mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 16 / 9,
+                mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 9 / 16,
                 isImageFill:
                   mediaLayout.isAspectRatio || mediaLayout.isFixedHeight,
               }
@@ -507,6 +507,11 @@ export const settings = {
       default: "",
       options: {
         aspect_ratio: "16:9",
+        aspect_ratio_strict_check: false,
+        maxSize: 5120,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 1920, height: 1080 },
+        max_resolution: { width: 5120, height: 2880 },
       },
     },
     {
@@ -580,6 +585,11 @@ export const settings = {
       default: "",
       options: {
         aspect_ratio: "9:16",
+        aspect_ratio_strict_check: false,
+        maxSize: 3072,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 750, height: 1334 },
+        max_resolution: { width: 1170, height: 2080 },
       },
     },
     {
@@ -779,6 +789,10 @@ export const settings = {
           options: {
             aspect_ratio: "1:1",
             aspect_ratio_strict_check: true,
+            maxSize: 512,
+            file_types: ["image/png", "image/jpeg"],
+            min_resolution: { width: 100, height: 100 },
+            max_resolution: { width: 500, height: 500 },
           },
         },
         {
@@ -882,6 +896,10 @@ export const settings = {
           options: {
             aspect_ratio: "1:1",
             aspect_ratio_strict_check: true,
+            maxSize: 512,
+            file_types: ["image/png", "image/jpeg"],
+            min_resolution: { width: 100, height: 100 },
+            max_resolution: { width: 500, height: 500 },
           },
         },
         {

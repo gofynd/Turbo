@@ -62,9 +62,13 @@ function HeaderDesktop({
     }[logoMenuAlignment];
   };
 
-  const getShopLogo = () =>
-    appInfo?.logo?.secure_url?.replace("original", "resize-h:165") ||
-    fallbackLogo;
+  const getShopLogo = () => {
+    const url = appInfo?.logo?.secure_url;
+    if (!url) return fallbackLogo;
+    return /\.(svg|gif)(\?|$)/i.test(url)
+      ? url
+      : url.replace("original", "resize-h:165");
+  };
 
   const staticHeight =
     isDoubleRowHeader && globalConfig?.always_on_search

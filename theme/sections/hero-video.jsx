@@ -353,6 +353,11 @@ export const settings = {
       default: "",
       options: {
         aspect_ratio: "16:9",
+        aspect_ratio_strict_check: false,
+        maxSize: 5120,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 1920, height: 1080 },
+        max_resolution: { width: 5120, height: 2880 },
       },
     },
     {

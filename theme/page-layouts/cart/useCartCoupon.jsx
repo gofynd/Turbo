@@ -123,7 +123,17 @@ const useCartCoupon = ({
         const couponBreakup =
           res?.data?.applyCoupon?.breakup_values?.coupon || {};
         if (!(couponBreakup?.code && couponBreakup?.is_applied)) {
-          throw new Error(couponBreakup?.message || "Coupon not applied");
+          const cartTotal = res?.data?.applyCoupon?.breakup_values?.raw?.total;
+          const errorMsg =
+            couponBreakup?.message ||
+            (typeof cartTotal === "number" && cartTotal <= 0
+              ? t(
+                  "resource.cart.coupon_code_not_applicable_items_are_already_at_the_best_price"
+                )
+              : t("resource.common.error_message"));
+          const couponError = new Error(errorMsg);
+          couponError.isUserFacing = true;
+          throw couponError;
         }
         if (mopPayload) {
           validateCoupon(mopPayload);
@@ -147,7 +157,11 @@ const useCartCoupon = ({
       })
       .catch((err) => {
         console.error("Error applying coupon or fetching cart:", err);
-        setError({ message: t("resource.common.error_message") });
+        setError({
+          message: err?.isUserFacing
+            ? err.message
+            : t("resource.common.error_message"),
+        });
         setIsLoading(false);
       });
   };

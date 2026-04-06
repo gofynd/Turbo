@@ -191,9 +191,9 @@ const FyImage = ({
         ></div>
       )}
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+        initial={defer ? { opacity: 0, y: 15 } : false}
+        whileInView={defer ? { opacity: 1, y: 0 } : undefined}
+        viewport={defer ? { once: true } : undefined}
         transition={{ duration: 0.8 }}
       >
         <picture>

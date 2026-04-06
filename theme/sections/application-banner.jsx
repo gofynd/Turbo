@@ -103,7 +103,7 @@ export function Component({ props, blocks, globalConfig }) {
           mobile_aspect_ratio,
         },
         isMobileViewport,
-        16 / 9
+        19 / 6
       )
     : null;
 
@@ -137,8 +137,8 @@ export function Component({ props, blocks, globalConfig }) {
               {...(mediaLayout
                 ? {
                     isFixedAspectRatio: mediaLayout.isAspectRatio,
-                    aspectRatio: mediaLayout.aspectRatio ?? 16 / 9,
-                    mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 16 / 9,
+                    aspectRatio: mediaLayout.aspectRatio ?? 19 / 6,
+                    mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 4 / 5,
                     isImageFill:
                       mediaLayout.isAspectRatio || mediaLayout.isFixedHeight,
                   }
@@ -258,6 +258,11 @@ export const settings = {
       default: "",
       options: {
         aspect_ratio: "19:6",
+        aspect_ratio_strict_check: false,
+        maxSize: 5120,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 1920, height: 608 },
+        max_resolution: { width: 5120, height: 1620 },
       },
     },
     {
@@ -267,6 +272,11 @@ export const settings = {
       default: "",
       options: {
         aspect_ratio: "4:5",
+        aspect_ratio_strict_check: false,
+        maxSize: 3072,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 750, height: 938 },
+        max_resolution: { width: 1170, height: 1462 },
       },
     },
     {
@@ -416,6 +426,10 @@ export const settings = {
           options: {
             aspect_ratio: "1:1",
             aspect_ratio_strict_check: true,
+            maxSize: 512,
+            file_types: ["image/png", "image/jpeg"],
+            min_resolution: { width: 100, height: 100 },
+            max_resolution: { width: 500, height: 500 },
           },
           info: "t:resource.sections.application_banner.circular_pointer_only",
         },
@@ -524,6 +538,10 @@ export const settings = {
           options: {
             aspect_ratio: "1:1",
             aspect_ratio_strict_check: true,
+            maxSize: 512,
+            file_types: ["image/png", "image/jpeg"],
+            min_resolution: { width: 100, height: 100 },
+            max_resolution: { width: 500, height: 500 },
           },
           info: "t:resource.sections.application_banner.circular_pointer_only",
         },

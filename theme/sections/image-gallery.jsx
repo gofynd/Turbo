@@ -501,6 +501,11 @@ export const settings = {
           default: "",
           options: {
             aspect_ratio: "1:1",
+            aspect_ratio_strict_check: false,
+            maxSize: 3072,
+            file_types: ["image/png", "image/jpeg"],
+            min_resolution: { width: 1200, height: 1200 },
+            max_resolution: { width: 3840, height: 3840 },
           },
         },
         {

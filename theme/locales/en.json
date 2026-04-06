@@ -1114,6 +1114,7 @@
       "accepted_video_formats_and_size": "Accepted Video formats MP4, MOV , File size should be less than 25mb",
       "profile_page_description": "This is a custom page for Profile in flow",
       "edit_profile": "Edit Profile",
+      "edit_email": "Edit Email",
       "my_account": "My Account",
       "sign_out": "Sign Out",
       "logout": "Logout",

@@ -673,6 +673,14 @@ export const settings = {
           id: "icon_image",
           label: "t:resource.common.icon",
           default: "",
+          options: {
+            aspect_ratio: "1:1",
+            aspect_ratio_strict_check: false,
+            maxSize: 1024,
+            file_types: ["image/png", "image/jpeg", "image/svg+xml"],
+            min_resolution: { width: 100, height: 100 },
+            max_resolution: { width: 500, height: 500 },
+          },
         },
         {
           type: "text",

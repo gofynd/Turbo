@@ -104,6 +104,14 @@ export const settings = {
       label: "t:resource.sections.products_listing.desktop_banner_image",
       info: "t:resource.sections.products_listing.desktop_banner_info",
       default: "",
+      options: {
+        aspect_ratio: "16:9",
+        aspect_ratio_strict_check: false,
+        maxSize: 5120,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 1920, height: 1080 },
+        max_resolution: { width: 5120, height: 2880 },
+      },
     },
     {
       type: "image_picker",
@@ -111,6 +119,14 @@ export const settings = {
       label: "t:resource.sections.products_listing.mobile_banner_image",
       info: "t:resource.sections.products_listing.mobile_banner_info",
       default: "",
+      options: {
+        aspect_ratio: "9:16",
+        aspect_ratio_strict_check: false,
+        maxSize: 3072,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 750, height: 1334 },
+        max_resolution: { width: 1170, height: 2080 },
+      },
     },
     {
       type: "url",
