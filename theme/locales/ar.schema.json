@@ -45,6 +45,8 @@
       "size_selection_style": "أسلوب اختيار الحجم",
       "dropdown_style": "نمط القائمة المنسدلة",
       "block_style": "نمط الكتلة",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "إخفاء الحجم الفردي",
       "price_tax_label_text": "نص ملصق ضريبة السعر",
       "redirect_link": "رابط إعادة التوجيه",

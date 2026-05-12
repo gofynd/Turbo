@@ -240,6 +240,15 @@
       color: @TextHeading;
       cursor: pointer;
     }
+    .hideAccountOnMobile {
+      @media @mobile {
+        display: none !important;
+      }
+
+      @media @mobile-up {
+        display: flex !important;
+      }
+    }
     .sidebarIcon {
       width: 16px;
       height: 16px;

@@ -182,7 +182,7 @@ export const useAddressFormSchema = ({
     }
     if (slug === "phone") {
       formField.countryCode = countryCode?.replace("+", "");
-      // formField.countryIso = countryIso?.toLowerCase();
+      formField.countryIso = countryIso?.toLowerCase();
     }
     if (type === "list") {
       if (!prev || !!addressItem?.[key] || isFieldAvailable({ key })) {

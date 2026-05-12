@@ -45,6 +45,8 @@
       "size_selection_style": "Größenauswahlstil",
       "dropdown_style": "Dropdown-Stil",
       "block_style": "Blockstil",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Einzelne Größe ausblenden",
       "price_tax_label_text": "Preissteuer-Etiketttext",
       "redirect_link": "Weiterleitungslink",

@@ -166,7 +166,7 @@ function OrderStatus({ fpi }) {
   if (success === "true" && !orderData?.order_id && !showPolling) {
     return (
       <div className="basePageContainer margin0auto">
-        <Modal isOpen={true} hideHeader={true}>
+        <Modal isOpen={true} hideHeader={true} dataModalType="order-status">
           <div className={styles.orderStatusModal}>
             <div className={styles.loader}></div>
             <p className={styles.title}>

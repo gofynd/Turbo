@@ -46,13 +46,13 @@ function sanitizeAddressPayload(formValues = {}) {
     if (payload[k] === undefined) delete payload[k];
   });
 
-  // Convert country object to string (uid) if it's an object
+  // Convert country object to country name string if it's an object
   if (
     payload.country &&
     typeof payload.country === "object" &&
-    payload.country.uid
+    payload.country !== null
   ) {
-    payload.country = payload.country.uid;
+    payload.country = payload.country.display_name || payload.country.name || payload.country.iso2 || String(payload.country);
   }
 
   if (
@@ -60,7 +60,9 @@ function sanitizeAddressPayload(formValues = {}) {
     payload?.phone?.mobile &&
     payload?.phone?.countryCode
   ) {
-    payload.country_phone_code = `+${payload.phone.countryCode}`;
+    // Clean countryCode by removing all plus signs, then add a single plus
+    const cleanCountryCode = payload.phone.countryCode?.replace(/\+/g, "") || "";
+    payload.country_phone_code = cleanCountryCode ? `+${cleanCountryCode}` : "";
     payload.phone = payload.phone.mobile;
   }
 
@@ -82,6 +84,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
   const [isPincodeModalOpen, setIsPincodeModalOpen] = useState(false);
   // Get restored address from localStorage as fallback
   const [restoredAddress] = useLocalStorage("selectedAddress", null);
+
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
   const [error, setError] = useState(null);
@@ -220,6 +223,16 @@ const useCartDeliveryLocation = ({ fpi }) => {
     otherAddresses,
   ]);
 
+  // Track if addresses have been fetched at least once
+  const hasAddressesFetchedRef = useRef(false);
+
+  // Mark addresses as fetched when we get a non-empty response
+  useEffect(() => {
+    if (!isAddressLoading && allAddress?.length > 0) {
+      hasAddressesFetchedRef.current = true;
+    }
+  }, [isAddressLoading, allAddress?.length]);
+
   /**
    * Validate that the selected address from global store still exists
    * This handles the case when an address is deleted in checkout page
@@ -263,7 +276,9 @@ const useCartDeliveryLocation = ({ fpi }) => {
           setSelectedAddressId("");
         }
       }
-    } else if (allAddress?.length === 0) {
+    } else if (allAddress?.length === 0 && hasAddressesFetchedRef.current) {
+      // IMPORTANT: Only clear if we've actually fetched addresses before and got empty result
+      // This prevents clearing on initial page load when addresses haven't been fetched yet
       // If we have a selected address but no addresses in the list, clear it
       // This handles the case where all addresses were deleted
       // But preserve Google-selected addresses
@@ -274,6 +289,8 @@ const useCartDeliveryLocation = ({ fpi }) => {
         }
       }
     }
+    // NOTE: If allAddress is empty and we haven't fetched yet, do nothing
+    // The selected address from localStorage will be preserved
   }, [
     isLoggedIn,
     isAddressLoading,
@@ -1024,12 +1041,15 @@ const useCartDeliveryLocation = ({ fpi }) => {
       if (isEditing) {
         const success = res?.data?.updateAddress?.success;
         if (!success) {
-          showSnackbar(
-            res?.errors?.[0]?.message ??
-              t("resource.common.address.address_update_failure"),
-            "error"
-          );
-          return;
+          const fieldErrors = res?.errors?.[0]?.extensions?.details?.field_errors;
+          if (!fieldErrors || Object.keys(fieldErrors).length === 0) {
+            showSnackbar(
+              res?.errors?.[0]?.message ??
+                t("resource.common.address.address_update_failure"),
+              "error"
+            );
+          }
+          return { success: false, errors: res?.errors };
         }
 
         const updatedId = res?.data?.updateAddress?.id || editingAddressId;
@@ -1045,18 +1065,21 @@ const useCartDeliveryLocation = ({ fpi }) => {
         setIsAddressModalOpen(true);
         setAddrError(null);
         resetAddressFlowState();
-        return;
+        return { success: true };
       }
 
       // ADD FLOW
       const success = res?.data?.addAddress?.success;
       if (!success) {
-        showSnackbar(
-          res?.errors?.[0]?.message ??
-            t("resource.common.address.address_addition_failure"),
-          "error"
-        );
-        return;
+        const fieldErrors = res?.errors?.[0]?.extensions?.details?.field_errors;
+        if (!fieldErrors || Object.keys(fieldErrors).length === 0) {
+          showSnackbar(
+            res?.errors?.[0]?.message ??
+              t("resource.common.address.address_addition_failure"),
+            "error"
+          );
+        }
+        return { success: false, errors: res?.errors };
       }
 
       const newId = res?.data?.addAddress?.id;
@@ -1080,12 +1103,14 @@ const useCartDeliveryLocation = ({ fpi }) => {
       setSelectedAddressId(newId);
       gotoCheckout(newId);
       setAddrError(null);
+      return { success: true };
     } catch (e) {
       // network/unknown error for both add & update
       showSnackbar(
         t("resource.common.address.address_addition_failure"),
         "error"
       );
+      return { success: false, errors: [{ message: e?.message }] };
     }
   };
 
@@ -1104,7 +1129,7 @@ const useCartDeliveryLocation = ({ fpi }) => {
       // If country is an object, extract iso2; if it's a string, use it directly
       addressCountryIso =
         typeof address.country === "object"
-          ? address.country.iso2 || address.country.uid
+          ? address.country.iso2 || address.country.meta?.country_code
           : address.country;
     }
 
@@ -1203,26 +1228,29 @@ const useCartDeliveryLocation = ({ fpi }) => {
   };
 
   const addressTags = useMemo(() => {
-    if (!selectedAddress) return [];
+    // Use restored address from localStorage if selectedAddress from store is null
+    // This ensures tags are displayed correctly on page refresh before global store is populated
+    const addressToUse = selectedAddress || restoredAddress;
+    if (!addressToUse) return [];
 
     const tags = [];
 
     // Add "Default" tag if this is the default address
-    if (selectedAddress?.is_default_address) {
+    if (addressToUse?.is_default_address) {
       tags.push("Default");
     }
 
     // Add address type tag (Home, Office, etc.) if available
-    if (selectedAddress?.address_type) {
+    if (addressToUse?.address_type) {
       // Capitalize first letter
       const formattedType =
-        selectedAddress.address_type.charAt(0).toUpperCase() +
-        selectedAddress.address_type.slice(1);
+        addressToUse.address_type.charAt(0).toUpperCase() +
+        addressToUse.address_type.slice(1);
       tags.push(formattedType);
     }
 
     return tags;
-  }, [selectedAddress]);
+  }, [selectedAddress, restoredAddress]);
 
   const deliveryLocation = useMemo(() => {
     // Use restored address from localStorage if selectedAddress from store is null

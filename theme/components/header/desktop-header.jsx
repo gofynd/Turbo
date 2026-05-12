@@ -36,9 +36,10 @@ function HeaderDesktop({
   languageIscCode,
   hideNavList,
   onLogoClick = () => {},
+  shouldBeTransparent,
 }) {
   const { t } = useGlobalTranslation("translation");
-    const enableLeftNavigation = globalConfig?.enable_left_navigation;
+  const enableLeftNavigation = globalConfig?.enable_left_navigation;
 
   const {
     profile_icon_text,
@@ -81,10 +82,10 @@ function HeaderDesktop({
   return (
     <div
       className={`${styles.headerDesktop}  ${
-          styles[globalConfig.header_layout]
-        } ${styles[globalConfig.logo_menu_alignment]} ${
-          enableLeftNavigation ? styles.enableLeftNav : ""
-        }`}
+        styles[globalConfig.header_layout]
+      } ${styles[globalConfig.logo_menu_alignment]} ${
+        enableLeftNavigation ? styles.enableLeftNav : ""
+      }`}
     >
       <div
         className={`${styles.firstRow} ${
@@ -94,13 +95,13 @@ function HeaderDesktop({
         }`}
       >
         <div className={`${styles.left}`}>
-           {enableLeftNavigation && !hideNavList && (
-              <LeftNavigation
-                navigationList={navigation}
-                triggerClassName={styles.leftNavHamburger}
-              />
-            )}
-          {!isDoubleRowHeader && !hideNavList &&  !enableLeftNavigation && (
+          {enableLeftNavigation && !hideNavList && (
+            <LeftNavigation
+              navigationList={navigation}
+              triggerClassName={styles.leftNavHamburger}
+            />
+          )}
+          {!isDoubleRowHeader && !hideNavList && !enableLeftNavigation && (
             <Navigation
               customClass={`${styles.firstRowNav} ${
                 styles[globalConfig?.header_layout]
@@ -125,13 +126,14 @@ function HeaderDesktop({
                 data-role="always-on-search"
               >
                 <Search
-                  customSearchClass={styles.customSearchClass}
+                  customSearchClass={`${styles.customSearchClass} ${shouldBeTransparent ? styles.transparentBackground : ""}`}
                   customSearchWrapperClass={styles.customSearchWrapperClass}
                   showCloseButton={false}
                   alwaysOnSearch={true}
                   screen="desktop"
                   globalConfig={globalConfig}
                   fpi={fpi}
+                  shouldBeTransparent={shouldBeTransparent}
                 />
               </div>
             )}
@@ -269,7 +271,7 @@ function HeaderDesktop({
             )}
         </div>
       </div>
-      {isDoubleRowHeader && !hideNavList &&  !enableLeftNavigation && (
+      {isDoubleRowHeader && !hideNavList && !enableLeftNavigation && (
         <Navigation
           customClass={`${styles.secondRow}`}
           maxMenuLength={getMenuMaxLength()}

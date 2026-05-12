@@ -23,10 +23,11 @@ function Home({ numberOfSections, fpi }) {
     useSeoMeta({ fpi, seo: seoData });
 
   const title = useMemo(() => {
-    const baseTitle = sanitizeHTMLTag(
-      seoData?.title || brandName || t("resource.common.page_titles.home")
-    );
-    return baseTitle ? `${baseTitle} - Official Online Store` : "";
+    const seoTitle = sanitizeHTMLTag(seoData?.title);
+    if (seoTitle) {
+      return seoTitle;
+    }
+    return `${brandName || t("resource.common.page_titles.home")} - Official Online Store`;
   }, [seoData?.title, brandName, t]);
 
   const renderSections = useMemo(

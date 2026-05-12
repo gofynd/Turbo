@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from "react";
 import Values from "values.js";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useFPI, useGlobalStore } from "fdk-core/utils";
+import MobileNavigation from "../components/mobile-navigation/mobile-navigation";
 import { Helmet } from "react-helmet-async";
 import {
   getProductImgAspectRatio,
@@ -10,12 +11,15 @@ import {
 } from "../helper/utils";
 import { useThemeConfig } from "../helper/hooks";
 import useInternational from "../components/header/useInternational";
+import usePrefetchCollectionOnHover from "../helper/hooks/usePrefetchCollectionOnHover";
+import usePrefetchProductsOnHover from "../helper/hooks/usePrefetchProductsOnHover";
 import { fetchCartDetails } from "../page-layouts/cart/useCart";
 import { initializeCopilot } from "../../copilot";
 
 export function ThemeProvider({ children }) {
   const fpi = useFPI();
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
   const locationDetails = useGlobalStore(fpi.getters.LOCATION_DETAILS);
   const seoData = useGlobalStore(fpi.getters.CONTENT)?.seo?.seo?.details;
   const title = sanitizeHTMLTag(seoData?.title);
@@ -29,6 +33,26 @@ export function ThemeProvider({ children }) {
       CONFIGURATION?.application?.name ||
       CONFIGURATION?.app?.name
   );
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const mq = window.matchMedia("(max-width: 767px)");
+      setIsMobile(mq.matches);
+      const handler = (e) => setIsMobile(e.matches);
+      if (mq.addEventListener) {
+        mq.addEventListener("change", handler);
+      } else if (mq.addListener) {
+        mq.addListener(handler);
+      }
+      return () => {
+        if (mq.removeEventListener) {
+          mq.removeEventListener("change", handler);
+        } else if (mq.removeListener) {
+          mq.removeListener(handler);
+        }
+      };
+    }
+  }, []);
 
   useEffect(() => {
     // Strict SSR check - only run in browser
@@ -58,6 +82,8 @@ export function ThemeProvider({ children }) {
 
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", initCopilot);
+      return () =>
+        document.removeEventListener("DOMContentLoaded", initCopilot);
     } else {
       initCopilot();
     }
@@ -107,6 +133,9 @@ export function ThemeProvider({ children }) {
     fetchCountrieDetails,
     countryCurrencies,
   } = useInternational({ fpi });
+
+  usePrefetchCollectionOnHover({ fpi, globalConfig });
+  usePrefetchProductsOnHover({ fpi, globalConfig });
 
   const [searchParams] = useSearchParams();
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
@@ -376,8 +405,34 @@ export function ThemeProvider({ children }) {
     }
   }, [i18nDetails?.countryCode]);
 
+  const isCartOrCheckout =
+    location.pathname.startsWith("/cart/checkout") ||
+    location.pathname.startsWith("/payment/");
+  const showMobileFooter =
+    isMobile && (globalConfig?.show_mobile_icons ?? false) && !isCartOrCheckout;
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (showMobileFooter) {
+      document.body.setAttribute("data-mobile-footer", "true");
+    } else {
+      document.body.removeAttribute("data-mobile-footer");
+    }
+    return () => document.body.removeAttribute("data-mobile-footer");
+  }, [showMobileFooter]);
+
   const content = (
-    <>
+    <div
+      data-mobile-footer={showMobileFooter ? "true" : undefined}
+      style={
+        showMobileFooter
+          ? {
+              paddingBottom: "56px",
+              "--mobile-nav-height": "56px",
+            }
+          : undefined
+      }
+    >
       <Helmet>
         {fontLinks}
         <style type="text/css">{fontStyles}</style>
@@ -408,7 +463,8 @@ export function ThemeProvider({ children }) {
         {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       </Helmet>
       {children}
-    </>
+      <MobileNavigation fpi={fpi} />
+    </div>
   );
 
   return content;

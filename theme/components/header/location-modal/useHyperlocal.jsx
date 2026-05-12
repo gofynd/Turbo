@@ -30,6 +30,11 @@ const useHyperlocal = (fpi) => {
   const [isAddressLoading, setIsAddressLoading] = useState(true);
   const hasPincodeRestoredRef = useRef(false);
   const isRestoringAddressRef = useRef(false);
+  // Tracks whether the initial page-load LOCALITY call is in-flight.
+  // Blocks fetchDeliveryPromise until the backend has the user's location context.
+  const localityPendingRef = useRef(false);
+  // Ensures the initial LOCALITY setup only fires once per page load.
+  const localityCalledOnLoadRef = useRef(false);
 
   // Get unique key for this fpi instance to track fetching state
   const fpiKey = fpi?.store?.getState
@@ -52,22 +57,23 @@ const useHyperlocal = (fpi) => {
       }
       // Always restore full addresses (with id) from localStorage, even if a pincode-only address is already set
       // This ensures that when page refreshes, full addresses are preserved
-      if (value) {
+      if (value && value.id) {
         // Mark that we're restoring an address to prevent pincode persistence from interfering
         isRestoringAddressRef.current = true;
 
-        // Read current selectedAddress from store to avoid stale closure values
-        const currentState = fpi.store?.getState();
-        const currentSelectedAddress =
-          fpi.getters?.CUSTOM_VALUE(currentState)?.selectedAddress;
-
-        // If restored value is a full address (has id), always restore it
-        // If current selectedAddress is pincode-only (no id) or null, replace it with restored value
-        if (value.id || !currentSelectedAddress?.id) {
-          fpi.custom.setValue(`selectedAddress`, value);
-        }
+        // Always set the full address from localStorage to global store
+        // This is the source of truth for page refresh scenarios
+        fpi.custom.setValue("selectedAddress", value);
 
         // Reset flag after a short delay to allow state to settle
+        setTimeout(() => {
+          isRestoringAddressRef.current = false;
+        }, 100);
+      } else if (value && !value.id) {
+        // If localStorage has a pincode-only address, still mark as restoring
+        // to prevent the pincode restore effect from interfering
+        isRestoringAddressRef.current = true;
+        fpi.custom.setValue("selectedAddress", value);
         setTimeout(() => {
           isRestoringAddressRef.current = false;
         }, 100);
@@ -144,7 +150,7 @@ const useHyperlocal = (fpi) => {
 
       // ✅ True not-serviceable case (explicit backend error)
       const notServiceableErr = errors?.find((e) => {
-        const msg = (e?.message || e?.details?.message || "").toLowerCase();
+        const msg = (e?.message || e?.details?.message || "")?.toLowerCase();
         const statusCode =
           e?.status_code || e?.statusCode || e?.extensions?.status_code;
         return (
@@ -225,6 +231,14 @@ const useHyperlocal = (fpi) => {
       return;
     }
 
+    // Don't run while an address is being restored from localStorage
+    // This prevents race conditions where pincode would overwrite the full address
+    // Also mark as done to prevent future runs after the restore flag is cleared
+    if (isRestoringAddressRef.current) {
+      hasPincodeRestoredRef.current = true;
+      return;
+    }
+
     const persistedPincode = getPersistedPincode();
 
     // Check localStorage for full address FIRST, before any restoration
@@ -236,8 +250,7 @@ const useHyperlocal = (fpi) => {
               return JSON.parse(item);
             }
             return null;
-          } catch (e) {
-            // Silently handle parsing errors
+          } catch {
             return null;
           }
         })()
@@ -264,6 +277,27 @@ const useHyperlocal = (fpi) => {
 
     hasPincodeRestoredRef.current = true;
 
+    // Double-check localStorage right before writing to prevent race conditions
+    // This is a final safeguard against any timing issues
+    const finalCheck = isRunningOnClient()
+      ? (() => {
+          try {
+            const item = localStorage.getItem("selectedAddress");
+            if (item && item !== "null") {
+              const parsed = JSON.parse(item);
+              return parsed && parsed.id;
+            }
+            return false;
+          } catch {
+            return false;
+          }
+        })()
+      : false;
+
+    if (finalCheck) {
+      return;
+    }
+
     const pincodeAddress = {
       area_code: persistedPincode,
       pincode: persistedPincode,
@@ -272,7 +306,12 @@ const useHyperlocal = (fpi) => {
     fpi.custom.setValue("selectedAddress", pincodeAddress);
     setPersistedAddress(pincodeAddress);
 
-    // 🔥 KEY FIX: rebuild backend cookie/context so deliveryPromise works
+    // Mark as handled so the initial-load effect below does not double-call LOCALITY.
+    localityCalledOnLoadRef.current = true;
+    // Block fetchDeliveryPromise until LOCALITY establishes the backend location context.
+    localityPendingRef.current = true;
+
+    // rebuild backend cookie/context so deliveryPromise works
     fpi
       .executeGQL(LOCALITY, {
         locality: "pincode",
@@ -282,11 +321,16 @@ const useHyperlocal = (fpi) => {
       .then(() => {
         // clear only after successful locality (so we can retry next time if it fails)
         clearPersistedPincode();
-        // Don't call fetchDeliveryPromise here - let the main useEffect handle it
-        // This prevents duplicate calls when selectedAddress changes trigger the main useEffect
       })
       .catch(() => {
         // keep persisted pincode so next reload can retry
+      })
+      .finally(() => {
+        // Unblock and explicitly trigger the delivery promise now that the backend
+        // location context is established. Reset the dedup key so the call goes through.
+        localityPendingRef.current = false;
+        lastFetchedPincodeMap.delete(fpiKey);
+        fetchDeliveryPromise();
       });
   }, [
     // ensure effect runs when country details ready and address loading is complete
@@ -321,10 +365,8 @@ const useHyperlocal = (fpi) => {
       return;
     }
 
-    const currentPincode =
-      locationDetails?.pincode || selectedAddress?.area_code;
-
     // Check localStorage for full address - don't persist pincode if full address exists
+    // Do this FIRST before any other operations
     const storedAddress = isRunningOnClient()
       ? (() => {
           try {
@@ -332,7 +374,8 @@ const useHyperlocal = (fpi) => {
             if (!item || item === "null") {
               return null;
             }
-            return JSON.parse(item);
+            const parsed = JSON.parse(item);
+            return parsed;
           } catch {
             return null;
           }
@@ -340,22 +383,30 @@ const useHyperlocal = (fpi) => {
       : null;
 
     const hasFullAddressInStorage = storedAddress && storedAddress.id;
+
+    // If there's a full address in localStorage, just clear pincode and return
+    // Don't do anything else - the full address will be restored by useLocalStorage
+    if (hasFullAddressInStorage) {
+      clearPersistedPincode();
+      return;
+    }
+
+    const currentPincode =
+      locationDetails?.pincode || selectedAddress?.area_code;
     const hasFullAddressInState = selectedAddress && selectedAddress.id;
 
     // Only persist pincode if:
     // 1. We have a pincode
     // 2. We don't have a full address in state
-    // 3. We don't have a full address in localStorage
+    // 3. We don't have a full address in localStorage (already checked above)
     // 4. We're not currently restoring an address
     if (
       currentPincode &&
       !hasFullAddressInState &&
-      !hasFullAddressInStorage &&
       !isRestoringAddressRef.current
     ) {
       persistPincode(currentPincode);
-    } else if (hasFullAddressInState || hasFullAddressInStorage) {
-      // Clear persisted pincode if we have a full address
+    } else if (hasFullAddressInState) {
       clearPersistedPincode();
     }
   }, [
@@ -363,6 +414,56 @@ const useHyperlocal = (fpi) => {
     selectedAddress?.area_code,
     selectedAddress?.id,
     isAddressLoading,
+  ]);
+
+  /**
+   * Initial page-load LOCALITY setup.
+   *
+   * When selectedAddress is restored from localStorage the useLocalStorage callback
+   * sets isRestoringAddressRef=true, which causes the pincode-restore effect above to
+   * skip entirely — meaning LOCALITY is never called and the backend has no location
+   * context. After a few days the backend session expires, so fetchDeliveryPromise
+   * gets a stale/empty context and returns "not serviceable" even for valid pincodes.
+   *
+   * This effect re-establishes the backend context once on every page load by calling
+   * LOCALITY with the restored address, then explicitly triggers fetchDeliveryPromise
+   * only after that call completes.
+   *
+   * localityCalledOnLoadRef prevents a double-call when the pincode-restore effect
+   * above already handled LOCALITY (i.e. no address was in localStorage).
+   */
+  useEffect(() => {
+    if (isAddressLoading || !countryDetails?.iso2) return;
+    if (localityCalledOnLoadRef.current) return;
+
+    const pincode = selectedAddress?.area_code || selectedAddress?.pincode;
+    if (!pincode) return;
+
+    localityCalledOnLoadRef.current = true;
+    localityPendingRef.current = true;
+
+    fpi
+      .executeGQL(LOCALITY, {
+        locality: "pincode",
+        localityValue: pincode,
+        country: countryDetails.iso2,
+      })
+      .then(() => {
+        clearPersistedPincode();
+      })
+      .catch(() => {
+        // Keep persisted pincode for retry on next load
+      })
+      .finally(() => {
+        localityPendingRef.current = false;
+        lastFetchedPincodeMap.delete(fpiKey);
+        fetchDeliveryPromise();
+      });
+  }, [
+    isAddressLoading,
+    countryDetails?.iso2,
+    selectedAddress?.area_code,
+    selectedAddress?.pincode,
   ]);
 
   const handleLocationUpdate = async (address) => {
@@ -481,6 +582,12 @@ const useHyperlocal = (fpi) => {
 
   useEffect(() => {
     if (!isServiceability || !isDeliveryPromise || !selectedAddress) {
+      return;
+    }
+
+    // Wait for the initial LOCALITY call to complete so the backend has the
+    // correct location context before we run the serviceability check.
+    if (localityPendingRef.current) {
       return;
     }
 

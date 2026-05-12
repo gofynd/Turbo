@@ -34,6 +34,7 @@ export function Component({ props, globalConfig, blocks }) {
     desktop_aspect_ratio,
     mobile_aspect_ratio,
   } = props;
+
   const windowWidth = useWindowWidth();
   const isMobile = windowWidth <= 540;
   const [tooltipHeight, setTooltipHeight] = useState(0);
@@ -45,12 +46,15 @@ export function Component({ props, globalConfig, blocks }) {
       const tooltip = document.querySelector(
         `.${styles["application-banner-container"]} .${styles["tooltip-visible"]}`
       );
+
       if (tooltip) {
         const newHeight = tooltip.clientHeight - 20;
         const newWidth = tooltip.clientWidth;
+
         if (newHeight !== tooltipHeight) {
           setTooltipHeight(newHeight);
         }
+
         if (newWidth !== tooltipWidth) {
           setTooltipWidth(newWidth);
         }
@@ -70,6 +74,7 @@ export function Component({ props, globalConfig, blocks }) {
         { breakpoint: { max: 719 }, url: getMobileUrl },
       ];
     }
+
     return [
       { breakpoint: { min: 1728 }, width: 3564 },
       { breakpoint: { min: 1512 }, width: 3132 },
@@ -97,6 +102,7 @@ export function Component({ props, globalConfig, blocks }) {
         view === "mobile"
           ? text_alignment_mobile?.value
           : text_alignment_desktop?.value;
+
       const isMobileDevice = windowWidth <= 480;
 
       const HORIZONTAL_SPACING_TABLET = "1.75rem";
@@ -127,7 +133,6 @@ export function Component({ props, globalConfig, blocks }) {
                 ? HORIZONTAL_SPACING_TABLET
                 : HORIZONTAL_SPACING_DESKTOP;
           }
-
           break;
 
         case "top_center":
@@ -139,10 +144,10 @@ export function Component({ props, globalConfig, blocks }) {
                 ? VERTICAL_SPACING_TABLET
                 : VERTICAL_SPACING_DESKTOP;
             positions[`--left-position-${view}`] = "50%";
-            positions[`--transform-${view}`] =
-              `translateX(${getLocaleDirection(fpi) === "ltr" ? "-" : ""}50%)`;
+            positions[`--transform-${view}`] = `translateX(${
+              getLocaleDirection(fpi) === "ltr" ? "-" : ""
+            }50%)`;
           }
-
           break;
 
         case "top_end":
@@ -158,7 +163,6 @@ export function Component({ props, globalConfig, blocks }) {
                 ? HORIZONTAL_SPACING_TABLET
                 : HORIZONTAL_SPACING_DESKTOP;
           }
-
           break;
 
         case "center_start":
@@ -168,7 +172,6 @@ export function Component({ props, globalConfig, blocks }) {
             view === "mobile"
               ? HORIZONTAL_SPACING_TABLET
               : HORIZONTAL_SPACING_DESKTOP;
-
           break;
 
         case "center_center":
@@ -178,10 +181,10 @@ export function Component({ props, globalConfig, blocks }) {
             positions[`--transform-${view}`] = "translateY(-50%)";
           } else {
             positions[`--left-position-${view}`] = "50%";
-            positions[`--transform-${view}`] =
-              `translate(${getLocaleDirection(fpi) === "ltr" ? "-" : ""}50%, -50%)`;
+            positions[`--transform-${view}`] = `translate(${
+              getLocaleDirection(fpi) === "ltr" ? "-" : ""
+            }50%, -50%)`;
           }
-
           break;
 
         case "center_end":
@@ -191,7 +194,6 @@ export function Component({ props, globalConfig, blocks }) {
             view === "mobile"
               ? HORIZONTAL_SPACING_TABLET
               : HORIZONTAL_SPACING_DESKTOP;
-
           break;
 
         case "bottom_start":
@@ -207,7 +209,6 @@ export function Component({ props, globalConfig, blocks }) {
                 ? HORIZONTAL_SPACING_TABLET
                 : HORIZONTAL_SPACING_DESKTOP;
           }
-
           break;
 
         case "bottom_center":
@@ -219,10 +220,10 @@ export function Component({ props, globalConfig, blocks }) {
                 ? VERTICAL_SPACING_TABLET
                 : VERTICAL_SPACING_DESKTOP;
             positions[`--left-position-${view}`] = "50%";
-            positions[`--transform-${view}`] =
-              `translateX(${getLocaleDirection(fpi) === "ltr" ? "-" : ""}50%)`;
+            positions[`--transform-${view}`] = `translateX(${
+              getLocaleDirection(fpi) === "ltr" ? "-" : ""
+            }50%)`;
           }
-
           break;
 
         case "bottom_end":
@@ -238,7 +239,6 @@ export function Component({ props, globalConfig, blocks }) {
                 ? HORIZONTAL_SPACING_TABLET
                 : HORIZONTAL_SPACING_DESKTOP;
           }
-
           break;
 
         default:
@@ -257,8 +257,8 @@ export function Component({ props, globalConfig, blocks }) {
       "--box_height": `${block?.props?.box_height?.value || 0}%`,
       "--tooltip-height": `${tooltipHeight}px`,
       "--tooltip-width": `${tooltipWidth}px`,
-      "--x_offset": `-${block.props?.x_position?.value || 0}%`,
-      "--y_offset": `-${block.props?.y_position?.value || 0}%`,
+      "--x_offset": `-${block?.props?.x_position?.value || 0}%`,
+      "--y_offset": `-${block?.props?.y_position?.value || 0}%`,
     };
   };
 
@@ -284,74 +284,69 @@ export function Component({ props, globalConfig, blocks }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
-  // Only use mediaLayout when height_mode is explicitly configured
   const hasHeightConfig =
     height_mode?.value &&
     height_mode.value !== "auto" &&
     (height_mode.value === "aspect_ratio" ||
       height_mode.value === "fixed_height");
 
-  const mediaLayout = hasHeightConfig
-    ? getMediaLayout(
-        {
-          height_mode,
-          desktop_height,
-          mobile_height,
-          desktop_aspect_ratio,
-          mobile_aspect_ratio,
-        },
-        windowWidth <= 768,
-        16 / 9
-      )
-    : null;
+  const mediaLayout =
+    (hasHeightConfig
+      ? getMediaLayout(
+          {
+            height_mode,
+            desktop_height,
+            mobile_height,
+            desktop_aspect_ratio,
+            mobile_aspect_ratio,
+          },
+          windowWidth <= 768,
+          16 / 9
+        )
+      : null) || {};
+
+  const isAspectRatio = mediaLayout?.isAspectRatio ?? false;
+  const isFixedHeight = mediaLayout?.isFixedHeight ?? false;
+  const mediaWrapperStyle = mediaLayout?.style ?? undefined;
 
   const heroContainerClassNames = [
     styles.heroImageContainer,
-    mediaLayout
-      ? [
-          styles.mediaShell,
-          mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
-          mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
-        ]
-      : [],
+    hasHeightConfig && styles.mediaShell,
+    isAspectRatio && styles.mediaShellAspect,
+    isFixedHeight && styles.mediaShellFixedHeight,
   ]
-    .flat()
     .filter(Boolean)
     .join(" ");
 
   return (
     <section style={dynamicStyles}>
-      <div className={heroContainerClassNames} style={mediaLayout?.style}>
+      <div className={heroContainerClassNames} style={mediaWrapperStyle}>
         <FyImage
           src={getDesktopUrl}
           sources={getImgSrcSet()}
           showOverlay={displayOverlay}
           overlayColor={getOverlayColor}
           defer={false}
-          {...(mediaLayout
-            ? {
-                isFixedAspectRatio: mediaLayout.isAspectRatio,
-                aspectRatio: mediaLayout.aspectRatio ?? 16 / 9,
-                mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 9 / 16,
-                isImageFill:
-                  mediaLayout.isAspectRatio || mediaLayout.isFixedHeight,
-              }
-            : {
-                isFixedAspectRatio: false,
-              })}
+          isFixedAspectRatio={isAspectRatio}
+          aspectRatio={mediaLayout?.aspectRatio ?? 16 / 9}
+          mobileAspectRatio={mediaLayout?.mobileAspectRatio ?? 9 / 16}
+          isImageFill={isAspectRatio || isFixedHeight}
           alt={heading?.value || "Hero banner"}
         />
+
         <div className={styles.overlayItems} style={getOverlayPositionStyles()}>
           {heading?.value && (
             <h1 className={`fx-title ${styles.header} fontHeader`}>
               {heading?.value}
             </h1>
           )}
+
           {description?.value && (
             <p className={`fx-description ${styles.description} b2`}>
               {description?.value}
             </p>
           )}
+
           {button_text?.value && (
             <FDKLink to={button_link?.value}>
               <button
@@ -366,6 +361,7 @@ export function Component({ props, globalConfig, blocks }) {
             </FDKLink>
           )}
         </div>
+
         {!isMobile &&
           getHotspots()?.desktop?.map((hotspot, index) => {
             if (hotspot.type !== "hotspot_desktop") {
@@ -391,17 +387,26 @@ export function Component({ props, globalConfig, blocks }) {
                 redirect_link={hotspot?.props?.redirect_link?.value}
               />
             ) : (
-              <FDKLink to={hotspot?.props?.redirect_link?.value} target="_self">
+              <FDKLink
+                key={index}
+                to={hotspot?.props?.redirect_link?.value}
+                target="_self"
+              >
                 <div
                   className={`
-                        ${styles["box-wrapper"]}
-                        ${hotspot?.props?.edit_visible?.value ? `${styles["box-wrapper-visible"]}` : ""}
-                      `}
+                    ${styles["box-wrapper"]}
+                    ${
+                      hotspot?.props?.edit_visible?.value
+                        ? styles["box-wrapper-visible"]
+                        : ""
+                    }
+                  `}
                   style={dynamicBoxStyle(hotspot)}
                 ></div>
               </FDKLink>
             );
           })}
+
         {isMobile &&
           getHotspots()?.mobile?.map((hotspot, index) => {
             if (hotspot.type !== "hotspot_mobile") {
@@ -427,12 +432,16 @@ export function Component({ props, globalConfig, blocks }) {
                 redirect_link={hotspot?.props?.redirect_link?.value}
               />
             ) : (
-              <FDKLink to={hotspot?.props?.redirect_link?.value}>
+              <FDKLink key={index} to={hotspot?.props?.redirect_link?.value}>
                 <div
                   className={`
-                        ${styles["box-wrapper"]}
-                        ${hotspot?.props?.edit_visible?.value ? `${styles["box-wrapper-visible"]}` : ""}
-                      `}
+                    ${styles["box-wrapper"]}
+                    ${
+                      hotspot?.props?.edit_visible?.value
+                        ? styles["box-wrapper-visible"]
+                        : ""
+                    }
+                  `}
                   style={dynamicBoxStyle(hotspot)}
                 ></div>
               </FDKLink>

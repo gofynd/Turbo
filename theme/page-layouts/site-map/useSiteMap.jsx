@@ -12,14 +12,14 @@ import { useGlobalStore } from "fdk-core/utils";
 
 function convertSocialLinks(socialObj) {
   if (!socialObj || typeof socialObj !== "object") return [];
-  return Object.values(socialObj).map((item) => ({
-    label: item?.title ?? "",
-    path: item?.link
-      ? item.link.startsWith("http")
+  return Object.values(socialObj)
+    .filter((item) => item?.link)
+    .map((item) => ({
+      label: item?.title ?? "",
+      path: item.link.startsWith("http")
         ? item.link
-        : `https://${item.link}`
-      : "",
-  }));
+        : `https://${item.link}`,
+    }));
 }
 
 export function tranformCategoriesData(data) {
@@ -37,7 +37,7 @@ export default function useSiteMap() {
   const [loading, setLoading] = useState(false);
 
   const SOCIAL_LINKS = contactInfo?.social_links;
-
+console.log("SOCIAL_LINKS", SOCIAL_LINKS);
   const { siteMapSectionData = {} } = useGlobalStore(
     fpi?.getters?.CUSTOM_VALUE
   );
@@ -93,9 +93,9 @@ export default function useSiteMap() {
   const OTHER_PAGES = useMemo(
     () => [
       { label: "FAQ", path: "/faq" },
-      { label: "Forgot Password", path: "/forgot-password" },
+      { label: "Forgot Password", path: "/auth/forgot-password" },
       { label: "Locate Us", path: "/locate-us" },
-      { label: "Login", path: "/login" },
+      { label: "Login", path: "/auth/login" },
       { label: "Order Tracking", path: "/order-tracking" },
     ],
     []
@@ -114,7 +114,7 @@ export default function useSiteMap() {
       {
         title: "Categories",
         data: categoryRes,
-        pathPrefix: "products?category=",
+        pathPrefix: "/products?category=",
         labelKey: "name",
         pathKey: "slug",
         sectionLink: "/categories",

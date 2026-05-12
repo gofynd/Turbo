@@ -8,10 +8,7 @@ import InfiniteLoader from "../components/infinite-loader/infinite-loader";
 import ScrollToTop from "../components/scroll-to-top/scroll-to-top";
 import { getConfigFromProps } from "../helper/utils";
 import EmptyState from "../components/empty-state/empty-state";
-import {
-  BrandsPageShimmer,
-  BrandsGridShimmer,
-} from "../components/core/skeletons";
+import { BrandsGridShimmer, BrandsPageShimmer } from "../components/core/skeletons";
 import { BRAND_LISTING } from "../queries/brandsQuery";
 
 export function Component({ props }) {
@@ -26,20 +23,25 @@ export function Component({ props }) {
   const { title, description, infinite_scroll, logo_only, back_top, img_fill } =
     pageConfig ?? {};
 
+  const showShimmer = props?.show_shimmer?.value ?? true;
+
+  useEffect(() => {
+    fpi.custom.setValue("brandsShowShimmer", showShimmer);
+  }, [showShimmer]);
+
   if (!isLoading && Boolean(brands) && !brands?.length) {
     return <EmptyState title={t("resource.brand.no_brand_found")} />;
   }
 
-  // Show shimmer when loading and no brands yet
   if (isLoading && !brands?.length) {
-    return (
-      <BrandsPageShimmer
-        showTitle={!!title}
-        showDescription={!!description}
-        showBreadcrumbs={true}
-        brandCount={12}
-      />
-    );
+    if (showShimmer) {
+      return (
+        <div className="basePageContainer margin0auto">
+          <BrandsPageShimmer brandCount={12} />
+        </div>
+      );
+    }
+    return null;
   }
 
   return (
@@ -132,6 +134,13 @@ export const settings = {
       info: "t:resource.common.clip_image_to_fit_container",
     },
     {
+      type: "checkbox",
+      id: "show_shimmer",
+      label: "t:resource.common.show_shimmer",
+      info: "t:resource.common.show_shimmer_info",
+      default: true,
+    },
+    {
       type: "text",
       id: "title",
       default: "",
@@ -148,7 +157,8 @@ export const settings = {
   ],
 };
 
-Component.serverFetch = async ({ fpi }) => {
+Component.serverFetch = async ({ fpi, props }) => {
+  fpi.custom.setValue("brandsShowShimmer", props?.show_shimmer?.value ?? true);
   try {
     const values = {
       pageNo: 1,
@@ -158,7 +168,7 @@ Component.serverFetch = async ({ fpi }) => {
       return res;
     });
   } catch (error) {
-    console.log(error);
+    // serverFetch errors are non-fatal
   }
 };
 

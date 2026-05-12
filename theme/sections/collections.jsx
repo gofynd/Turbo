@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { FDKLink } from "fdk-core/components";
 import Loader from "../components/loader/loader";
-import {
-  CollectionsPageShimmer,
-  CollectionsGridShimmer,
-} from "../components/core/skeletons";
+import { CollectionsGridShimmer } from "../components/core/skeletons";
 import styles from "../styles/collections.less";
 import CardList from "../components/card-list/card-list";
 import useCollections from "../page-layouts/collections/useCollections";
@@ -33,6 +30,10 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     setIsMobile(detectMobileWidth());
   }, []);
 
+  if (isLoading && !collections?.length) {
+    return null; // Blank while initial collections load — no shimmer flash
+  }
+
   if (!isLoading && !collections?.length) {
     return <EmptyState title={t("resource.collections.empty_state")} />;
   }
@@ -43,66 +44,55 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     <div
       className={`${styles.collections} basePageContainer margin0auto fontBody`}
     >
-      {isLoading && !collections?.length ? (
-        <CollectionsPageShimmer
-          showTitle={!!title}
-          showDescription={!!description}
-          showBreadcrumbs={true}
-          collectionCount={12}
-        />
-      ) : (
-        <>
-          <div className={`${styles.collections__breadcrumbs} captionNormal`}>
-            <span>
-              <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>
-              &nbsp; / &nbsp;
-            </span>
-            <span className={styles.active}>
-              {t("resource.common.breadcrumb.collections")}
-            </span>
+      <div className={`${styles.collections__breadcrumbs} captionNormal`}>
+        <span>
+          <FDKLink to="/">{t("resource.common.breadcrumb.home")}</FDKLink>
+          &nbsp; / &nbsp;
+        </span>
+        <span className={styles.active}>
+          {t("resource.common.breadcrumb.collections")}
+        </span>
+      </div>
+      <div>
+        {title && (
+          <h1 className={`${styles.collections__title} fontHeader`}>
+            {title}
+          </h1>
+        )}
+        {description && (
+          <div
+            className={`${styles.collections__description} ${isMobile ? styles.b2 : styles.b1}`}
+          >
+            <p>{description}</p>
           </div>
-          <div>
-            {title && (
-              <h1 className={`${styles.collections__title} fontHeader`}>
-                {title}
-              </h1>
-            )}
-            {description && (
+        )}
+        <div className={styles.collections__cards}>
+          <InfiniteLoader
+            isLoading={isLoading}
+            infiniteLoaderEnabled={true}
+            hasNext={pageData?.has_next}
+            loadMore={fetchCollection}
+          >
+            <CardList
+              cardList={collections}
+              cardType="COLLECTIONS"
+              showOnlyLogo={false}
+              isImageFill={img_fill}
+              globalConfig={globalConfig}
+            />
+            {/* Show shimmer cards only when loading more (not initial load) */}
+            {isLoading && collections?.length > 0 && (
               <div
-                className={`${styles.collections__description} ${isMobile ? styles.b2 : styles.b1}`}
+                className={`${styles.collections} basePageContainer margin0auto fontBody`}
+                style={{ padding: 0, minHeight: "auto" }}
               >
-                <p>{description}</p>
+                <CollectionsGridShimmer collectionCount={4} />
               </div>
             )}
-            <div className={styles.collections__cards}>
-              <InfiniteLoader
-                isLoading={isLoading}
-                infiniteLoaderEnabled={true}
-                hasNext={pageData?.has_next}
-                loadMore={fetchCollection}
-              >
-                <CardList
-                  cardList={collections}
-                  cardType="COLLECTIONS"
-                  showOnlyLogo={false}
-                  isImageFill={img_fill}
-                  globalConfig={globalConfig}
-                />
-                {/* Show shimmer cards when loading more */}
-                {isLoading && collections?.length > 0 && (
-                  <div
-                    className={`${styles.collections} basePageContainer margin0auto fontBody`}
-                    style={{ padding: 0, minHeight: "auto" }}
-                  >
-                    <CollectionsGridShimmer collectionCount={4} />
-                  </div>
-                )}
-              </InfiniteLoader>
-            </div>
-          </div>
-          {showBackToTop && <ScrollToTop />}
-        </>
-      )}
+          </InfiniteLoader>
+        </div>
+      </div>
+      {showBackToTop && <ScrollToTop />}
     </div>
   );
 }

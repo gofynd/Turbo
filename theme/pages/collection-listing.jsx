@@ -26,12 +26,17 @@ const CollectionListing = ({ fpi }) => {
     );
   }, [sections]);
 
-  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
-    useSeoMeta({
-      fpi,
-      seo: seoData,
-      fallbackImage,
-    });
+  const {
+    brandName,
+    canonicalUrl,
+    pageUrl,
+    description: seoDescription,
+    socialImage,
+  } = useSeoMeta({
+    fpi,
+    seo: seoData,
+    fallbackImage,
+  });
 
   const title = useMemo(() => {
     const raw = sanitizeHTMLTag(
@@ -57,24 +62,24 @@ const CollectionListing = ({ fpi }) => {
   ]);
 
   const isPageReady = page?.value === "collection-listing";
-  const isSectionMounted = customValues?.collectionSectionMounted;
-  const isClient = typeof window !== "undefined";
-  const showShimmer = isClient && (!isPageReady || !isSectionMounted);
 
   if (!isPageReady) {
-    return isClient ? (
-      <div className="margin0auto basePageContainer">
-        <PLPShimmer
-          gridDesktop={4}
-          gridTablet={3}
-          gridMobile={1}
-          showFilters={true}
-          showSortBy={true}
-          showPagination={true}
-          productCount={12}
-        />
-      </div>
-    ) : null;
+    if (customValues?.collectionShowShimmer === true) {
+      return (
+        <div className="margin0auto basePageContainer">
+          <PLPShimmer
+            gridDesktop={4}
+            gridTablet={3}
+            gridMobile={1}
+            showFilters={true}
+            showSortBy={true}
+            showPagination={true}
+            productCount={12}
+          />
+        </div>
+      );
+    }
+    return null;
   }
 
   return (
@@ -88,32 +93,11 @@ const CollectionListing = ({ fpi }) => {
         siteName: brandName,
         ogType: "website",
       })}
-      {showShimmer && (
-        <div className="margin0auto basePageContainer">
-          <PLPShimmer
-            gridDesktop={4}
-            gridTablet={3}
-            gridMobile={1}
-            showFilters={true}
-            showSortBy={true}
-            showPagination={true}
-            productCount={12}
-          />
-        </div>
-      )}
-      <div
-        style={
-          showShimmer
-            ? { visibility: "hidden", height: 0, overflow: "hidden" }
-            : undefined
-        }
-      >
-        <SectionRenderer
-          sections={sections}
-          fpi={fpi}
-          globalConfig={globalConfig}
-        />
-      </div>
+      <SectionRenderer
+        sections={sections}
+        fpi={fpi}
+        globalConfig={globalConfig}
+      />
     </>
   );
 };

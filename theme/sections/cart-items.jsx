@@ -90,7 +90,8 @@ export function Component({ props, globalConfig = {}, blocks }) {
   const CART = useGlobalStore(fpi.getters.CART);
   const { cart_items } = CART || {};
   const cartItemsLoading = cart_items?.loading || false;
-  const { cartOperationInProgress } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
+  const { cartOperationInProgress } =
+    useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
 
   const cartDeliveryLocation = useCartDeliveryLocation({ fpi });
   const cartShare = useCartShare({ fpi, cartData });
@@ -227,8 +228,13 @@ export function Component({ props, globalConfig = {}, blocks }) {
     onRemoveIconClick();
   };
 
-  const isCartOperationInProgress = isRemoving || isMovingToWishlist || isCartUpdating || !!cartOperationInProgress;
-  const canShowEmptyState = !showCartShimmer && !cartItemsLoading && !isCartOperationInProgress;
+  const isCartOperationInProgress =
+    isRemoving ||
+    isMovingToWishlist ||
+    isCartUpdating ||
+    !!cartOperationInProgress;
+  const canShowEmptyState =
+    !showCartShimmer && !cartItemsLoading && !isCartOperationInProgress;
   const hasItems = Array.isArray(cartData?.items) && cartData.items.length > 0;
   const isCartEmpty =
     !hasItems &&
@@ -265,7 +271,16 @@ export function Component({ props, globalConfig = {}, blocks }) {
                     />
                   );
 
-                case "cart_items":
+                case "cart_items": {
+                  const rawLimitedStockLabel =
+                    block?.props?.limited_stock_label?.value;
+                  const resolvedLimitedStockLabel = (() => {
+                    if (!rawLimitedStockLabel)
+                      return t("resource.common.limited_stock_label");
+                    if (rawLimitedStockLabel.startsWith("t:"))
+                      return t(rawLimitedStockLabel.slice(2));
+                    return rawLimitedStockLabel;
+                  })();
                   return (
                     <div className={styles.cartItemDetailsContainer}>
                       <div className={styles.cartTitleContainer}>
@@ -371,7 +386,8 @@ export function Component({ props, globalConfig = {}, blocks }) {
                                     "resize-w:250"
                                   );
 
-                                const currentSize = singleItemDetails?.article?.size;
+                                const currentSize =
+                                  singleItemDetails?.article?.size;
                                 return (
                                   <ChipItem
                                     key={`${singleItemDetails?.key}_${singleItemDetails?.article?.store?.uid}_${singleItemDetails?.article?.item_index}`}
@@ -408,6 +424,13 @@ export function Component({ props, globalConfig = {}, blocks }) {
                                     pincode={cartDeliveryLocation?.pincode}
                                     isCartValid={isValid}
                                     inValidCartMsg={cartData?.message}
+                                    isLimitedStock={
+                                      block?.props?.is_limited_stock?.value ??
+                                      true
+                                    }
+                                    limitedStockLabel={
+                                      resolvedLimitedStockLabel
+                                    }
                                     getDeliveryPromise={(promise) =>
                                       getFormattedPromise(promise?.iso)
                                     }
@@ -420,6 +443,7 @@ export function Component({ props, globalConfig = {}, blocks }) {
                       )}
                     </div>
                   );
+                }
 
                 case "coupon":
                   return (
@@ -709,6 +733,19 @@ export const settings = {
           default: true,
           label: "Show share bag (Mobile/Tablet)",
           info: "This option displays the Share Bag button only on mobile and tablet views.",
+        },
+        {
+          type: "checkbox",
+          id: "is_limited_stock",
+          label: "t:resource.common.is_limited_stock",
+          default: true,
+        },
+        {
+          type: "text",
+          id: "limited_stock_label",
+          label: "t:resource.common.limited_stock_label",
+          default: "t:resource.default_values.limited_stock_label",
+          info: "t:resource.common.limited_stock_info",
         },
       ],
     },

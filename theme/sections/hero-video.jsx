@@ -81,38 +81,37 @@ export function Component({ props, globalConfig }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
-  // Only use mediaLayout when height_mode is explicitly configured
   const hasHeightConfig =
     height_mode?.value &&
     height_mode.value !== "auto" &&
     (height_mode.value === "aspect_ratio" ||
       height_mode.value === "fixed_height");
 
-  const mediaLayout = hasHeightConfig
-    ? getMediaLayout(
-        {
-          height_mode,
-          desktop_height,
-          mobile_height,
-          desktop_aspect_ratio,
-          mobile_aspect_ratio,
-        },
-        isMobileViewport,
-        16 / 9
-      )
-    : null;
+  const mediaLayout =
+    (hasHeightConfig
+      ? getMediaLayout(
+          {
+            height_mode,
+            desktop_height,
+            mobile_height,
+            desktop_aspect_ratio,
+            mobile_aspect_ratio,
+          },
+          isMobileViewport,
+          16 / 9
+        )
+      : null) || {};
+
+  const isAspectRatio = mediaLayout?.isAspectRatio ?? false;
+  const isFixedHeight = mediaLayout?.isFixedHeight ?? false;
+  const mediaWrapperStyle = mediaLayout?.style ?? undefined;
 
   const videoWrapperClass = [
     styles.video_container,
-    mediaLayout
-      ? [
-          styles.mediaShell,
-          mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
-          mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
-        ]
-      : [],
+    hasHeightConfig && styles.mediaShell,
+    isAspectRatio && styles.mediaShellAspect,
+    isFixedHeight && styles.mediaShellFixedHeight,
   ]
-    .flat()
     .filter(Boolean)
     .join(" ");
 
@@ -125,7 +124,6 @@ export function Component({ props, globalConfig }) {
 
   const desktopPlaceHolder = Boolean(videoFile?.value || videoUrl?.value);
 
-  // Only show image when there's no video (cover image or placeholder as fallback)
   const shouldShowImage = !mobilePlaceHolder;
 
   const VideoControls = () => {
@@ -136,7 +134,7 @@ export function Component({ props, globalConfig }) {
             onClick={playVideo}
             className={`overlay-noimage:${coverUrl?.value} youtube-noimage: ${isYoutube()}`}
           >
-            {coverUrl.value && (
+            {coverUrl?.value && (
               <div
                 className={styles.overlay__image}
                 style={{
@@ -144,29 +142,27 @@ export function Component({ props, globalConfig }) {
                 }}
               ></div>
             )}
-            {isMobile && !hidecontrols?.value ? (
-              <></>
-            ) : (
+            {isMobile && !hidecontrols?.value ? null : (
               <div className={styles.overlay__content}>
-                <div
-                  id="play"
-                  // onClick={playVideo}
-                  className={styles.overlay__playButton}
-                >
+                <div id="play" className={styles.overlay__playButton}>
                   <PlayIcon />
                 </div>
               </div>
             )}
           </div>
         )}
+
         {is_pause_button?.value && !showOverlay && ytOverlay && (
           <div className={styles.pauseButton} onClick={closeVideo}>
             <PauseIcon />
           </div>
         )}
+
         {shouldShowImage && (
           <img
-            className={`${styles.imagePlaceholder} ${styles.mediaFill} ${!desktopPlaceHolder ? styles.showDesktopPlaceholder : ""} ${!mobilePlaceHolder ? styles.showImagePlaceholder : ""} `}
+            className={`${styles.imagePlaceholder} ${styles.mediaFill} ${
+              !desktopPlaceHolder ? styles.showDesktopPlaceholder : ""
+            } ${!mobilePlaceHolder ? styles.showImagePlaceholder : ""}`}
             src={coverUrl?.value || placeholderImage}
             alt={t("resource.common.placeholder")}
             srcSet={getImgSrcSet()}
@@ -184,8 +180,10 @@ export function Component({ props, globalConfig }) {
       )}
 
       <div
-        className={`${videoWrapperClass} ${styles.show_on_desktop} ${ytDefaultAspect ? styles.ytDefaultAspect : ""}`}
-        style={mediaLayout?.style}
+        className={`${videoWrapperClass} ${styles.show_on_desktop} ${
+          ytDefaultAspect ? styles.ytDefaultAspect : ""
+        }`}
+        style={mediaWrapperStyle}
       >
         {videoFile?.value ? (
           <video
@@ -216,7 +214,11 @@ export function Component({ props, globalConfig }) {
           isValidUrl &&
           !isMobile && (
             <div
-              className={`${styles.youtube_wrapper} ${styles.mediaFill} ${!desktop_aspect_ratio?.value && !desktop_height?.value ? styles.default_ratio : ""}`}
+              className={`${styles.youtube_wrapper} ${styles.mediaFill} ${
+                !desktop_aspect_ratio?.value && !desktop_height?.value
+                  ? styles.default_ratio
+                  : ""
+              }`}
             >
               <div
                 className={styles.yt_video}
@@ -231,9 +233,12 @@ export function Component({ props, globalConfig }) {
         )}
         <VideoControls />
       </div>
+
       <div
-        className={`${videoWrapperClass} ${styles.show_on_mobile} ${ytDefaultAspectMb ? styles.ytDefaultAspectMb : ""}`}
-        style={mediaLayout?.style}
+        className={`${videoWrapperClass} ${styles.show_on_mobile} ${
+          ytDefaultAspectMb ? styles.ytDefaultAspectMb : ""
+        }`}
+        style={mediaWrapperStyle}
       >
         {mobileVideoFile?.value || videoFile?.value ? (
           <video
@@ -264,7 +269,11 @@ export function Component({ props, globalConfig }) {
           VideoUrlValue &&
           isMobile && (
             <div
-              className={`${styles.youtube_wrapper} ${styles.mediaFill} ${!mobile_aspect_ratio?.value && !mobile_height?.value ? styles.default_ratio : ""}`}
+              className={`${styles.youtube_wrapper} ${styles.mediaFill} ${
+                !mobile_aspect_ratio?.value && !mobile_height?.value
+                  ? styles.default_ratio
+                  : ""
+              }`}
             >
               <div
                 className={styles.yt_video}

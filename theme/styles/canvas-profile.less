@@ -51,7 +51,7 @@
 .canvasSection {
   background: @PageBackground;
   border-radius: @border-radius;
-  padding: 1.5rem;
+  // padding: 1.5rem;
   margin-bottom: 1rem;
 
   &:last-child {
@@ -192,6 +192,21 @@
   display: inline-block;
   color: @TextBody;
   font-weight: 500;
+}
+
+.wishlistTitleContainer {
+  display: block;
+  padding: 0 0 12px;
+  border-bottom: 1px solid @DividerStokes;
+
+  @media @tablet {
+    padding: 0 16px 16px 16px;
+  }
+
+  @media @mobile {
+    border-bottom: none;
+    padding: 0;
+  }
 }
 
 .ordersBody {

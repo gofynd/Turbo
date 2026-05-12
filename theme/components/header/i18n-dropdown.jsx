@@ -129,12 +129,6 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
     );
   }, [countryCurrenciesWithFallback]);
 
-  // Determine if we should show LocationModal instead of i18n modal
-  // When price factory is enabled AND features.international is false, show LocationModal
-  const shouldShowLocationModal = useMemo(() => {
-    return !!(isPriceFactoryEnabled && !isInternationalFeature);
-  }, [isPriceFactoryEnabled, isInternationalFeature]);
-
   // Use hyperlocal hook for location modal functionality
   const {
     isServiceabilityModalOpen,
@@ -143,6 +137,10 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
     handleLocationUpdate,
     deliveryAddress,
   } = useHyperlocal(fpi);
+
+  // The truck/location button is handled by the dedicated ServiceabilityButton in the header.
+  // I18Dropdown never shows its own truck button.
+  const shouldShowLocationModal = false;
 
   const [formSchema, setFormSchema] = useState([]);
   const [formOptions, setFormOptions] = useState({});

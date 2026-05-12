@@ -8,6 +8,7 @@ function Modal({
   modalType = "",
   closeDialog,
   children,
+  dataModalType,
 }) {
   const modalRef = useRef(null);
   const modalContainerRef = useRef(null);
@@ -18,13 +19,24 @@ function Modal({
     }
   }, [isOpen, childHandleFocus]);
 
+  // Lock body scroll when modal is open to prevent scroll chaining to content behind
   useEffect(() => {
     if (isOpen) {
+      const scrollY = window.scrollY;
       document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      return () => {
+        document.body.style.overflow = "";
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        window.scrollTo(0, scrollY);
+      };
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -46,6 +58,10 @@ function Modal({
     isOpen && (
       <div
         role="button"
+        {...(dataModalType && { [`data-${dataModalType}-modal`]: "true" })}
+        {...(modalType === "order-filter" && {
+          "data-order-filter-modal": "true",
+        })}
         className={`${styles.modal} ${
           modalType === "right-modal"
             ? styles.rightModal

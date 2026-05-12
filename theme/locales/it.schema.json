@@ -45,6 +45,8 @@
       "size_selection_style": "Stile di selezione delle dimensioni",
       "dropdown_style": "Stile a discesa",
       "block_style": "Stile a blocchi",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Nascondi taglia unica",
       "price_tax_label_text": "Testo dell'etichetta del prezzo dell'imposta",
       "redirect_link": "Collegamento di reindirizzamento",

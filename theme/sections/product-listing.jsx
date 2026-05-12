@@ -1,24 +1,25 @@
 import React, { useEffect } from "react";
 import { useFPI } from "fdk-core/utils";
-import { PLPShimmer } from "../components/core/skeletons";
 import ProductListing from "@gofynd/theme-template/pages/product-listing/product-listing";
 import "@gofynd/theme-template/pages/product-listing/index.css";
 import useProductListing from "../page-layouts/plp/useProductListing";
 import { isRunningOnClient } from "../helper/utils";
+import { PLPShimmer } from "../components/core/skeletons";
 import { PLP_PRODUCTS, BRAND_META, CATEGORY_META } from "../queries/plpQuery";
 
 export function Component({ props = {}, blocks = [], globalConfig = {} }) {
   const fpi = useFPI();
 
-  useEffect(() => {
-    fpi.custom.setValue("plpSectionMounted", true);
-    return () => fpi.custom.setValue("plpSectionMounted", false);
-  }, []);
-
   const listingProps = useProductListing({ fpi, props, globalConfig });
 
-  // Show shimmer only on client side when page is actually loading
-  const shouldShowShimmer = isRunningOnClient() && listingProps?.isPageLoading;
+  const showShimmer = props?.show_shimmer?.value ?? true;
+
+  useEffect(() => {
+    fpi.custom.setValue("plpShowShimmer", showShimmer);
+  }, [showShimmer]);
+
+  const shouldShowShimmer =
+    isRunningOnClient() && listingProps?.isPageLoading && showShimmer;
 
   return (
     <div className="margin0auto basePageContainer">
@@ -306,6 +307,13 @@ export const settings = {
     },
     {
       type: "checkbox",
+      id: "show_shimmer",
+      label: "t:resource.common.show_shimmer",
+      info: "t:resource.common.show_shimmer_info",
+      default: true,
+    },
+    {
+      type: "checkbox",
       id: "hide_single_size",
       label: "t:resource.common.hide_single_size",
       info: "t:resource.pages.wishlist.hide_single_size_info",
@@ -354,27 +362,42 @@ Component.serverFetch = async ({ fpi, router, props }) => {
     {};
   const isAlgoliaEnabled = globalConfig?.algolia_enabled || false;
 
-  Object.keys(router.filterQuery)?.forEach((key) => {
+  // Helper function to get valid filter keys from filters array
+  const getValidFilterKeys = (filters) => {
+    if (!filters || !Array.isArray(filters)) return new Set();
+    return new Set(filters.map((filter) => filter?.key?.name).filter(Boolean));
+  };
+
+  // Helper function to validate and build filter query
+  const buildFilterQuery = (filterQueryObj, validFilterKeys) => {
+    let query = "";
+    const skipKeys = new Set(["sort_on", "page_no", "q", "siteTheme"]);
+
+    Object.keys(filterQueryObj || {})
+      ?.filter((key) => !skipKeys.has(key) && validFilterKeys.has(key))
+      ?.forEach((key) => {
+        if (typeof filterQueryObj[key] === "string") {
+          query = query
+            ? `${query}:::${key}:${filterQueryObj[key]}`
+            : `${key}:${filterQueryObj[key]}`;
+        } else {
+          filterQueryObj[key]?.forEach((item) => {
+            query = query ? `${query}:::${key}:${item}` : `${key}:${item}`;
+          });
+        }
+      });
+
+    return query;
+  };
+
+  // Parse page_no, sort_on, and search first (these don't need validation)
+  Object.keys(router.filterQuery || {})?.forEach((key) => {
     if (key === "page_no") {
       pageNo = parseInt(router.filterQuery[key], 10);
     } else if (key === "sort_on") {
       sortQuery = router.filterQuery[key];
     } else if (key === "q") {
       search = router.filterQuery[key];
-    } else if (typeof router.filterQuery[key] === "string") {
-      if (filterQuery.includes(":")) {
-        filterQuery = `${filterQuery}:::${key}:${router.filterQuery[key]}`;
-      } else {
-        filterQuery = `${key}:${router.filterQuery[key]}`;
-      }
-    } else {
-      router.filterQuery[key]?.forEach((item) => {
-        if (filterQuery.includes(":")) {
-          filterQuery = `${filterQuery}:::${key}:${item}`;
-        } else {
-          filterQuery = `${key}:${item}`;
-        }
-      });
     }
 
     if (key === "category") {
@@ -391,30 +414,58 @@ Component.serverFetch = async ({ fpi, router, props }) => {
     }
   });
 
+  // Algolia filter formatting (keep original - no validation)
   if (isAlgoliaEnabled) {
     const filterParams = [];
     const skipKeys = new Set(["q", "sort_on", "page_no"]);
 
-    for (const [key, value] of Object.entries(router?.filterQuery || {})) {
-      if (skipKeys.has(key)) continue;
-      // Decode value to handle URL encoding
-      const decodedValue = Array.isArray(value)
-        ? value.map((v) => decodeURIComponent(v)).join("||")
-        : decodeURIComponent(value);
+    Object.entries(router?.filterQuery || {})
+      .filter(([key]) => !skipKeys.has(key))
+      .forEach(([key, value]) => {
+        // Decode value to handle URL encoding
+        const decodedValue = Array.isArray(value)
+          ? value.map((v) => decodeURIComponent(v)).join("||")
+          : decodeURIComponent(value);
 
-      const existingParam = filterParams.find((param) =>
-        param.startsWith(`${key}:`)
-      );
+        const existingParam = filterParams.find((param) =>
+          param.startsWith(`${key}:`)
+        );
 
-      if (existingParam) {
-        const updatedParam = `${existingParam}||${decodedValue}`;
-        filterParams[filterParams.indexOf(existingParam)] = updatedParam;
-      } else {
-        filterParams.push(`${key}:${decodedValue}`);
-      }
-    }
+        if (existingParam) {
+          const updatedParam = `${existingParam}||${decodedValue}`;
+          filterParams[filterParams.indexOf(existingParam)] = updatedParam;
+        } else {
+          filterParams.push(`${key}:${decodedValue}`);
+        }
+      });
 
     filterQuery = filterParams.join(":::");
+  } else {
+    // For non-Algolia, validate filters against available filter keys
+    let validFilterKeys = new Set();
+    try {
+      const initialPayload = {
+        filterQuery: "",
+        sortOn: undefined,
+        search: search || undefined,
+        enableFilter: true,
+        first: 1,
+        pageType: "number",
+        pageNo: 1,
+      };
+      const initialResponse = await fpi.executeGQL(
+        PLP_PRODUCTS,
+        initialPayload
+      );
+      const initialFilters = initialResponse?.data?.products?.filters || [];
+      validFilterKeys = getValidFilterKeys(initialFilters);
+    } catch (error) {
+      // If we can't get filters, allow all filters (fallback behavior)
+      // This ensures the page still works even if filter validation fails
+      validFilterKeys = new Set(Object.keys(router.filterQuery || {}));
+    }
+    // Rebuild filter query with validated filters
+    filterQuery = buildFilterQuery(router.filterQuery, validFilterKeys);
   }
 
   const payload = {
@@ -428,6 +479,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
   if (pageNo) payload.pageNo = pageNo;
 
   fpi.custom.setValue("plpSectionMounted", true);
+  fpi.custom.setValue("plpShowShimmer", props?.show_shimmer?.value ?? true);
 
   if (isAlgoliaEnabled) {
     const BASE_URL = `https://${fpiState?.custom?.appHostName}/ext/search/application/api/v1.0/products`;

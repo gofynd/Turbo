@@ -97,9 +97,9 @@ const useLogin = ({ fpi, pageConfig = {} }) => {
   const appleRedirectURI = useMemo(() => {
     if (
       platformData?.social_tokens &&
-      platformData?.social_tokens?.apple?.redirectURI
+      platformData?.social_tokens?.apple?.redirect_uri
     ) {
-      return platformData?.social_tokens?.apple?.redirectURI;
+      return platformData?.social_tokens?.apple?.redirect_uri;
     }
   }, [platformData]);
 

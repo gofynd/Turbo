@@ -17,6 +17,7 @@ import {
 
 export function Component({ props, blocks, globalConfig, id: sectionId }) {
   const fpi = useFPI();
+
   const {
     heading,
     description,
@@ -288,7 +289,7 @@ const CollectionItem = ({
   collection,
   srcset,
   defer = false,
-  globalConfig ,
+  globalConfig,
 }) => {
   const { img_fill, img_container_bg, button_text, name_placement } = props;
   return (

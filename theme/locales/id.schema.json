@@ -45,6 +45,8 @@
       "size_selection_style": "Gaya pemilihan ukuran",
       "dropdown_style": "Gaya tarik-turun",
       "block_style": "Gaya blok",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Sembunyikan ukuran tunggal",
       "price_tax_label_text": "Teks label pajak harga",
       "redirect_link": "Tautan Pengalihan",

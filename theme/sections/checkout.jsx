@@ -81,7 +81,6 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   const [cancelQrPayment, setCancelQrPayment] = useState(null);
   const [checkoutAmount, setCheckoutAmount] = useState(0);
-  const [mopPayload, setMopPayload] = useState("");
   const urlCartId = searchParams.get("id");
   // For buy_now flows, prioritize URL cart ID (extension APIs may create new carts)
   const cart_id =
@@ -286,11 +285,14 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     setIsLoading,
     currentStepIdx,
     setCheckoutAmount,
-    mopPayload,
   });
-
-  const { availableCouponList, successCoupon, ...restCouponProps } = cartCoupon;
-  const { isCouponValid, setIsCouponValid, inValidCouponData } = cartCoupon;
+  const {
+    availableCouponList,
+    successCoupon,
+    isCouponValid,
+    inValidCouponData,
+    ...restCouponProps
+  } = cartCoupon;
 
   useEffect(() => {
     setIsApiLoading(true);
@@ -788,9 +790,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                 onFailedGetCartShipmentDetails={onFailedGetCartShipmentDetails}
                 isCouponApplied={successCoupon?.is_applied}
                 redirectPaymentOptions={redirectPaymentOptions}
-                setMopPayload={setMopPayload}
                 isCouponValid={isCouponValid}
-                setIsCouponValid={setIsCouponValid}
                 inValidCouponData={inValidCouponData}
               ></CheckoutPayment>
             );

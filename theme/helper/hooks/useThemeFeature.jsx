@@ -57,7 +57,7 @@ export const useThemeFeature = ({ fpi }) => {
     is_serviceability: isServiceability,
     is_serviceability_mandatory: isServiceabilityMandatory,
     is_delivery_promise: isServiceabilityPromise,
-  } = globalConfig;
+  } = globalConfig ?? {};
 
   return {
     isInternational,

@@ -73,7 +73,6 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     "--bd-radius": `${(cardRadius || 0) / 2}%`,
   };
 
-  // Only use mediaLayout when height_mode is explicitly configured
   const hasHeightConfig =
     height_mode?.value &&
     height_mode.value !== "auto" &&
@@ -82,7 +81,7 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
 
   const mediaLayout = useMemo(
     () =>
-      hasHeightConfig
+      (hasHeightConfig
         ? getMediaLayout(
             {
               height_mode,
@@ -94,7 +93,7 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
             isMobileViewport,
             1
           )
-        : null,
+        : null) || {},
     [
       hasHeightConfig,
       height_mode?.value,
@@ -106,16 +105,15 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
     ]
   );
 
+  const isAspectRatio = mediaLayout?.isAspectRatio ?? false;
+  const isFixedHeight = mediaLayout?.isFixedHeight ?? false;
+  const mediaWrapperStyle = mediaLayout?.style ?? undefined;
+
   const mediaWrapperClass = [
-    mediaLayout
-      ? [
-          styles.mediaShell,
-          mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
-          mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
-        ]
-      : [],
+    hasHeightConfig && styles.mediaShell,
+    isAspectRatio && styles.mediaShellAspect,
+    isFixedHeight && styles.mediaShellFixedHeight,
   ]
-    .flat()
     .filter(Boolean)
     .join(" ");
 
@@ -148,6 +146,9 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
           in_new_tab={in_new_tab}
           mediaLayout={mediaLayout}
           mediaWrapperClass={mediaWrapperClass}
+          mediaWrapperStyle={mediaWrapperStyle}
+          isAspectRatio={isAspectRatio}
+          isFixedHeight={isFixedHeight}
         />
       )}
       {isStackView && (
@@ -165,6 +166,9 @@ export function Component({ props, blocks = [], globalConfig = {}, preset }) {
           in_new_tab={in_new_tab}
           mediaLayout={mediaLayout}
           mediaWrapperClass={mediaWrapperClass}
+          mediaWrapperStyle={mediaWrapperStyle}
+          isAspectRatio={isAspectRatio}
+          isFixedHeight={isFixedHeight}
         />
       )}
     </section>
@@ -181,6 +185,9 @@ const StackLayout = ({
   in_new_tab,
   mediaLayout,
   mediaWrapperClass,
+  mediaWrapperStyle,
+  isAspectRatio,
+  isFixedHeight,
 }) => {
   const dynamicStyles = {
     "--item-count": `${colCount}`,
@@ -195,23 +202,16 @@ const StackLayout = ({
             to={block?.link?.value || ""}
             target={in_new_tab?.value ? "_blank" : "_self"}
           >
-            <div className={mediaWrapperClass} style={mediaLayout?.style}>
+            <div className={mediaWrapperClass} style={mediaWrapperStyle}>
               <FyImage
                 customClass={styles.imageGallery}
                 src={block?.image?.value || placeholderImage}
                 sources={sources}
                 globalConfig={globalConfig}
-                {...(mediaLayout
-                  ? {
-                      isFixedAspectRatio: mediaLayout.isAspectRatio,
-                      aspectRatio: mediaLayout.aspectRatio ?? 1,
-                      mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 1,
-                      isImageFill:
-                        mediaLayout.isAspectRatio || mediaLayout.isFixedHeight,
-                    }
-                  : {
-                      isFixedAspectRatio: false,
-                    })}
+                isFixedAspectRatio={isAspectRatio}
+                aspectRatio={mediaLayout?.aspectRatio ?? 1}
+                mobileAspectRatio={mediaLayout?.mobileAspectRatio ?? 1}
+                isImageFill={isAspectRatio || isFixedHeight}
                 alt={block?.image?.alt || "Gallery image"}
               />
             </div>
@@ -234,6 +234,9 @@ const HorizontalLayout = ({
   in_new_tab,
   mediaLayout,
   mediaWrapperClass,
+  mediaWrapperStyle,
+  isAspectRatio,
+  isFixedHeight,
 }) => {
   const { direction } = useLocaleDirection();
   const len = items?.length;
@@ -280,33 +283,24 @@ const HorizontalLayout = ({
               }}
             >
               {block.type === "gallery" ? (
-                <div key={index} className={styles.sliderItem}>
+                <div className={styles.sliderItem}>
                   <FDKLink
                     to={block?.props?.link?.value || ""}
                     target={in_new_tab?.value ? "_blank" : "_self"}
                   >
                     <div
                       className={mediaWrapperClass}
-                      style={mediaLayout?.style}
+                      style={mediaWrapperStyle}
                     >
                       <FyImage
                         customClass={styles.imageGallery}
                         src={block?.props?.image?.value || placeholderImage}
                         sources={sources}
                         globalConfig={globalConfig}
-                        {...(mediaLayout
-                          ? {
-                              isFixedAspectRatio: mediaLayout.isAspectRatio,
-                              aspectRatio: mediaLayout.aspectRatio ?? 1,
-                              mobileAspectRatio:
-                                mediaLayout.mobileAspectRatio ?? 1,
-                              isImageFill:
-                                mediaLayout.isAspectRatio ||
-                                mediaLayout.isFixedHeight,
-                            }
-                          : {
-                              isFixedAspectRatio: false,
-                            })}
+                        isFixedAspectRatio={isAspectRatio}
+                        aspectRatio={mediaLayout?.aspectRatio ?? 1}
+                        mobileAspectRatio={mediaLayout?.mobileAspectRatio ?? 1}
+                        isImageFill={isAspectRatio || isFixedHeight}
                         alt={
                           block?.name ||
                           block?.props?.link?.value ||

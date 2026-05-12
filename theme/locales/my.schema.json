@@ -45,6 +45,8 @@
       "size_selection_style": "အရွယ်အစားရွေးချယ်မှုစတိုင်",
       "dropdown_style": "ဆွဲချပုံစံ",
       "block_style": "ဘလောက်စတိုင်",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "အရွယ်အစားတစ်ခုတည်းကို ဝှက်ပါ။",
       "price_tax_label_text": "စျေးနှုန်းအခွန်တံဆိပ်စာသား",
       "redirect_link": "လင့်ခ်ကို ပြန်ညွှန်းပါ။",

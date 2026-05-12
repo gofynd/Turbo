@@ -6,6 +6,7 @@
   z-index: @header;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
   transition: opacity 0.25s ease;
   .flex-center();
   @media @tablet {
@@ -28,6 +29,7 @@
     min-height: 100px;
     max-width: 720px;
     overflow: auto;
+    overscroll-behavior: contain;
     @media @tablet {
       width: 100%;
       max-width: unset;
@@ -70,6 +72,7 @@
     border-radius: 12px;
     
     @media @mobile {
+      align-items: flex-end;
       border-radius: 0;
     }
   }

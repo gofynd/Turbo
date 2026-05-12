@@ -7,17 +7,15 @@ function WishlistShimmer({ count = 8 }) {
     <div className="basePageContainer margin0auto">
       <div className={styles.wishlistShimmerWrap}>
         {/* Breadcrumb shimmer */}
-        <div className={styles.breadcrumbShimmer}>
+        {/* <div className={styles.breadcrumbShimmer}>
           <Shimmer height="16px" width="80px" />
-          {/* <span className={styles.separator}>›</span>
-          <Shimmer height="16px" width="60px" /> */}
-        </div>
+        </div> */}
 
         {/* Title shimmer */}
-        <div className={styles.titleShimmer}>
+        {/* <div className={styles.titleShimmer}>
           <Shimmer height="32px" width="120px" />
           <Shimmer height="20px" width="60px" />
-        </div>
+        </div> */}
 
         {/* Grid of product card shimmers */}
         <div className={styles.gridShimmer}>

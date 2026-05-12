@@ -609,8 +609,9 @@ function Navigation({
           <div className={styles.sidebar__footer}>
             <button
               type="button"
-              className={`${styles["sidebar__footer--item"]} ${styles.account} ${styles.flexAlignCenter} ${styles.fontBody} h5`}
-              style={{ display: "flex" }}
+              className={`${styles["sidebar__footer--item"]} ${styles.account} ${styles.flexAlignCenter} ${styles.fontBody} h5 ${
+                globalConfig?.show_mobile_icons && styles.hideAccountOnMobile 
+              } `}
               onClick={() => {
                 checkLogin("profile_mobile");
                 setShowSidebar(false);

@@ -21,6 +21,7 @@ import {
   useGlobalTranslation,
   useGlobalStore,
 } from "fdk-core/utils";
+import { prefetchCache } from "../../helper/prefetch-cache";
 
 const INFINITE_PAGE_SIZE = 12;
 const PAGES_TO_SHOW = 5;
@@ -102,10 +103,30 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     items,
   } = customCollectionList || {};
 
-  const [productList, setProductList] = useState(items || undefined);
+  const CACHE_KEY = `collection-${slug}`;
+  // Prefetch only ever stores unfiltered page-1 data. If the current URL
+  // has any query params (filters, sort, page_no), the cached payload
+  // does not match this request — bypass the cache so we don't render
+  // the wrong products. Cache is only safe to consume on clean URLs.
+  const isCacheUsable = () =>
+    typeof window !== "undefined" && !location?.search;
+  // Read cache once at mount — used by all three useState initializers below.
+  // Must be a useState so the value is captured at first render only.
+  const [_initialCache] = useState(() => {
+    if (isCollectionsSsrFetched) return null;
+    if (!isCacheUsable()) return null;
+    return prefetchCache.get(CACHE_KEY);
+  });
+
+  const [productList, setProductList] = useState(
+    _initialCache ? (_initialCache.collectionItems?.items ?? undefined) : (items || undefined)
+  );
+
   const currentPage = pageInfo?.current ?? 1;
-  const [apiLoading, setApiLoading] = useState(!isCollectionsSsrFetched);
-  const [isPageLoading, setIsPageLoading] = useState(!isCollectionsSsrFetched);
+
+  const [apiLoading, setApiLoading] = useState(_initialCache ? false : !isCollectionsSsrFetched);
+
+  const [isPageLoading, setIsPageLoading] = useState(_initialCache ? false : !isCollectionsSsrFetched);
 
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const {
@@ -157,8 +178,12 @@ const useCollectionListing = ({ fpi, slug, props }) => {
   const isClient = useMemo(() => isRunningOnClient(), []);
 
   useEffect(() => {
-    fpi.custom.setValue("isCollectionsSsrFetched", false);
-  }, []);
+    // Reset in cleanup so SSR-fetched data is preserved on initial mount.
+    // Fires when slug changes or component unmounts — not on first render.
+    return () => {
+      fpi.custom.setValue("isCollectionsSsrFetched", false);
+    };
+  }, [slug]);
 
   useEffect(() => {
     if (!isCollectionsSsrFetched && isAlgoliaEnabled) {
@@ -184,12 +209,26 @@ const useCollectionListing = ({ fpi, slug, props }) => {
 
   useEffect(() => {
     if (!isCollectionsSsrFetched) {
+      // Only consult the prefetch cache when the URL is clean (no filters,
+      // sort, or page_no). Prefetched data is unfiltered page 1; consuming
+      // it for any other request would render the wrong products.
+      const cacheUsable = isCacheUsable();
+      const cached = cacheUsable ? prefetchCache.get(CACHE_KEY) : null;
+      const cachePending = cacheUsable
+        ? prefetchCache.hasPending(CACHE_KEY)
+        : false;
+
+      // If no immediate cache hit and we have stale data from a previous collection,
+      // set loading so the section shows blank instead of wrong products.
+      if (!cached?.collectionItems && !cachePending) {
+        setIsPageLoading(true);
+      }
+
+      // Build payload — needed for both cache-miss and background-refetch paths
       const searchParams = isClient
         ? new URLSearchParams(location?.search)
         : null;
-
       const pageNo = Number(searchParams?.get("page_no"));
-
       const payload = {
         slug,
         pageType: "number",
@@ -197,8 +236,49 @@ const useCollectionListing = ({ fpi, slug, props }) => {
         search: appendDelimiter(searchParams?.toString()) || undefined,
         sortOn: searchParams?.get("sort_on") || undefined,
       };
-
       if (loading_options === "pagination") payload.pageNo = pageNo || 1;
+
+      if (cached && cached.collectionItems) {
+        // Cache hit: render instantly with prefetched data (no shimmer)
+        fpi.custom.setValue("customCollectionList", cached.collectionItems);
+        fpi.custom.setValue("customCollection", cached.collection);
+        setProductList(cached.collectionItems?.items || []);
+        setApiLoading(false);
+        setIsPageLoading(false);
+        prefetchCache.delete(CACHE_KEY);
+        // If prefetch fetched fewer items than page_size (e.g. prefetch=12, page_size=24),
+        // silently refetch in background — no loading state, data updates when it arrives
+        const prefetchedCount = cached.collectionItems?.items?.length ?? 0;
+        if (prefetchedCount < pageSize) {
+          fetchProducts(payload);
+        }
+        return;
+      }
+
+      // Prefetch in-flight: piggyback on it instead of starting a duplicate request
+      const pending = cacheUsable ? prefetchCache.getPending(CACHE_KEY) : null;
+      if (pending) {
+        let cancelled = false;
+        pending.then(() => {
+          if (cancelled) return;
+          const result = prefetchCache.get(CACHE_KEY);
+          if (result?.collectionItems) {
+            // Prefetch landed — use it
+            fpi.custom.setValue("customCollectionList", result.collectionItems);
+            fpi.custom.setValue("customCollection", result.collection);
+            setProductList(result.collectionItems?.items || []);
+            setApiLoading(false);
+            setIsPageLoading(false);
+            prefetchCache.delete(CACHE_KEY);
+          } else {
+            // Prefetch failed or returned no data — fall back to normal fetch
+            fetchProducts(payload);
+          }
+        });
+        return () => { cancelled = true; }; // cancel on unmount or dep change
+      }
+
+      // No cache, no in-flight — fetch normally
       fetchProducts(payload);
     }
   }, [location?.search, locationDetails, slug]);
@@ -341,9 +421,17 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     const searchParams = isClient ? new URLSearchParams(queryString) : null;
     const params = Array.from(searchParams?.entries() || []);
 
+    // Get valid filter keys from the filters array
+    const validFilterKeys = new Set(
+      (filters || []).map((filter) => filter?.key?.name).filter(Boolean)
+    );
+
     const result = params.reduce((acc, [key, value]) => {
       if (key !== "page_no" && key !== "sort_on") {
-        acc.push(`${key}:${value}`);
+        // Only include filters that are in the valid filter keys list
+        if (validFilterKeys.has(key)) {
+          acc.push(`${key}:${value}`);
+        }
       }
       return acc;
     }, []);

@@ -324,7 +324,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     if (!addressCountryIso && selectedAddress?.country) {
       addressCountryIso =
         typeof selectedAddress.country === "object"
-          ? selectedAddress.country.iso2 || selectedAddress.country.uid
+          ? selectedAddress.country.iso2 || selectedAddress.country.meta?.country_code
           : selectedAddress.country;
     }
 
@@ -544,6 +544,8 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     setIssNewAddress(true);
     setAddressItem(false);
     setModalTitle("");
+    // Clear editing country details so it doesn't persist to next modal open
+    setEditingAddressCountryDetails(null);
     // Reset the flag after a delay to allow useEffect to process it
     setTimeout(() => {
       isUserClosingModal.current = false;
@@ -563,7 +565,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
       // If country is an object, extract iso2; if it's a string, use it directly
       addressCountryIso =
         typeof item.country === "object"
-          ? item.country.iso2 || item.country.uid
+          ? item.country.iso2 || item.country.meta?.country_code
           : item.country;
     }
 
@@ -633,10 +635,10 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         delete obj[key]; // Removes undefined values directly from the original object
       }
     }
-    // Convert country object to string (uid/id/iso2) if it's an object
-    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    // Convert country object to country name string if it's an object
+    // Handles: countryCurrencies objects (with name/display_name/iso2) and API country objects
     if (obj.country && typeof obj.country === "object" && obj.country !== null) {
-      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
+      obj.country = obj.country.display_name || obj.country.name || obj.country.iso2 || String(obj.country);
     }
     // Remove any existing country_phone_code to prevent accumulation of plus signs
     delete obj.country_phone_code;
@@ -650,7 +652,7 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         ...obj,
       },
     };
-    fpi
+    return fpi
       .executeGQL(
         `mutation AddAddress($address2Input: Address2Input) {
           addAddress(address2Input: $address2Input) {
@@ -718,15 +720,28 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
           }, 100);
           
           setAddressLoader(false);
+          return { success: true };
         } else {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id });
-          showSnackbar(
-            res?.errors?.[0]?.message ??
-              t("resource.common.address.new_address_creation_failure"),
-            "error"
-          );
+          const fieldErrors = res?.errors?.[0]?.extensions?.details?.field_errors;
+          if (!fieldErrors || Object.keys(fieldErrors).length === 0) {
+            showSnackbar(
+              res?.errors?.[0]?.message ??
+                t("resource.common.address.new_address_creation_failure"),
+              "error"
+            );
+          }
           setAddressLoader(false);
+          return { success: false, errors: res?.errors };
         }
+      })
+      .catch((err) => {
+        setAddressLoader(false);
+        showSnackbar(
+          err?.message ?? t("resource.common.address.new_address_creation_failure"),
+          "error"
+        );
+        return { success: false, errors: [{ message: err?.message }] };
       });
   };
 
@@ -742,10 +757,10 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
         delete obj[key]; // Removes undefined values directly from the original object
       }
     }
-    // Convert country object to string (uid/id/iso2) if it's an object
-    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    // Convert country object to country name string if it's an object
+    // Handles: countryCurrencies objects (with name/display_name/iso2) and API country objects
     if (obj.country && typeof obj.country === "object" && obj.country !== null) {
-      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
+      obj.country = obj.country.display_name || obj.country.name || obj.country.iso2 || String(obj.country);
     }
     // Remove any existing country_phone_code to prevent accumulation of plus signs
     delete obj.country_phone_code;
@@ -801,14 +816,26 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
             "success"
           );
           resetAddressState();
+          return { success: true };
         } else {
           fpi.executeGQL(CHECKOUT_LANDING, { includeBreakup: true, buyNow, id: cart_id });
-          showSnackbar(
-            res?.errors?.[0]?.message ||
-              t("resource.common.address.address_update_failure"),
-            "error"
-          );
+          const fieldErrors = res?.errors?.[0]?.extensions?.details?.field_errors;
+          if (!fieldErrors || Object.keys(fieldErrors).length === 0) {
+            showSnackbar(
+              res?.errors?.[0]?.message ||
+                t("resource.common.address.address_update_failure"),
+              "error"
+            );
+          }
+          return { success: false, errors: res?.errors };
         }
+      })
+      .catch((err) => {
+        showSnackbar(
+          err?.message ?? t("resource.common.address.address_update_failure"),
+          "error"
+        );
+        return { success: false, errors: [{ message: err?.message }] };
       });
   };
 
@@ -1115,6 +1142,8 @@ const useAddress = (setShowShipment, setShowPayment, fpi) => {
     setIssNewAddress(true);
     setAddressItem(false);
     setModalTitle(t("resource.common.address.add_new_address"));
+    // Clear editing country details so new address uses header country (countryDetails)
+    setEditingAddressCountryDetails(null);
     setOpenModal(true);
     // Reset the flag after a short delay to allow useEffect to process it
     setTimeout(() => {

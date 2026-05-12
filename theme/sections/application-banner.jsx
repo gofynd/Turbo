@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React from "react";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import placeholderDesktop from "../assets/images/placeholder/application-banner-desktop.png";
@@ -6,8 +6,7 @@ import placeholderMobile from "../assets/images/placeholder/application-banner-m
 import { BlockRenderer, FDKLink } from "fdk-core/components";
 import styles from "../styles/sections/application-banner.less";
 import Hotspot from "../components/hotspot/product-hotspot";
-import { useViewport } from "../helper/hooks";
-import { useWindowWidth } from "../helper/hooks";
+import { useViewport, useWindowWidth } from "../helper/hooks";
 import { getMediaLayout } from "../helper/media-layout";
 import { useFPI, useGlobalStore } from "fdk-core/utils";
 
@@ -26,16 +25,17 @@ export function Component({ props, blocks, globalConfig }) {
     desktop_aspect_ratio,
     mobile_aspect_ratio,
   } = props;
+
   const fpi = useFPI();
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const sections = page?.sections || [];
   const currentSection =
     sections.find((section) => section?.blocks === blocks) || {};
   const sectionLabel = currentSection?.label;
-  console.log(sectionLabel,'"sectionLabel"')
+
   const windowWidth = useWindowWidth();
   const isMobileViewport = windowWidth <= 768;
- 
+
   const dynamicBoxStyle = (block) => {
     return {
       "--x_position": `${block.props?.x_position?.value || 0}%`,
@@ -57,6 +57,7 @@ export function Component({ props, blocks, globalConfig }) {
         { breakpoint: { max: 719 }, url: mobileImage },
       ];
     }
+
     return [
       { breakpoint: { min: 1728 }, width: 3564 },
       { breakpoint: { min: 1512 }, width: 3132 },
@@ -86,39 +87,48 @@ export function Component({ props, blocks, globalConfig }) {
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
 
-  // Only use mediaLayout when height_mode is explicitly configured
   const hasHeightConfig =
     height_mode?.value &&
     height_mode.value !== "auto" &&
     (height_mode.value === "aspect_ratio" ||
       height_mode.value === "fixed_height");
 
-  const mediaLayout = hasHeightConfig
-    ? getMediaLayout(
-        {
-          height_mode,
-          desktop_height,
-          mobile_height,
-          desktop_aspect_ratio,
-          mobile_aspect_ratio,
-        },
-        isMobileViewport,
-        19 / 6
-      )
-    : null;
+  const mediaLayout =
+    (hasHeightConfig
+      ? getMediaLayout(
+          {
+            height_mode,
+            desktop_height,
+            mobile_height,
+            desktop_aspect_ratio,
+            mobile_aspect_ratio,
+          },
+          isMobileViewport,
+          19 / 6
+        )
+      : null) || {};
+
+  const isAspectRatio = mediaLayout?.isAspectRatio ?? false;
+  const isFixedHeight = mediaLayout?.isFixedHeight ?? false;
+  const mediaWrapperStyle = mediaLayout?.style ?? undefined;
 
   const mediaWrapperClass = [
-    mediaLayout
-      ? [
-          styles.mediaShell,
-          mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
-          mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
-        ]
-      : [],
+    hasHeightConfig && styles.mediaShell,
+    isAspectRatio && styles.mediaShellAspect,
+    isFixedHeight && styles.mediaShellFixedHeight,
   ]
-    .flat()
     .filter(Boolean)
     .join(" ");
+
+  const commonImageProps = {
+    customClass: `${styles.imageWrapper} ${
+      hover_application_banner?.value ? styles.imageHoverEnabled : ""
+    }`,
+    src: desktopImage,
+    sources: getImgSrcSet(),
+    isLazyLoaded: false,
+    defer: false,
+  };
 
   return (
     <section
@@ -127,24 +137,13 @@ export function Component({ props, blocks, globalConfig }) {
     >
       {banner_link?.value?.length > 0 ? (
         <FDKLink to={banner_link?.value}>
-          <div className={mediaWrapperClass} style={mediaLayout?.style}>
+          <div className={mediaWrapperClass} style={mediaWrapperStyle}>
             <FyImage
-              customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
-              src={desktopImage}
-              sources={getImgSrcSet()}
-              isLazyLoaded={false}
-              defer={false}
-              {...(mediaLayout
-                ? {
-                    isFixedAspectRatio: mediaLayout.isAspectRatio,
-                    aspectRatio: mediaLayout.aspectRatio ?? 19 / 6,
-                    mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 4 / 5,
-                    isImageFill:
-                      mediaLayout.isAspectRatio || mediaLayout.isFixedHeight,
-                  }
-                : {
-                    isFixedAspectRatio: false,
-                  })}
+              {...commonImageProps}
+              isFixedAspectRatio={isAspectRatio}
+              aspectRatio={mediaLayout?.aspectRatio ?? 19 / 6}
+              mobileAspectRatio={mediaLayout?.mobileAspectRatio ?? 4 / 5}
+              isImageFill={isAspectRatio || isFixedHeight}
               alt={
                 sectionLabel ||
                 (hover_application_banner?.value
@@ -155,24 +154,13 @@ export function Component({ props, blocks, globalConfig }) {
           </div>
         </FDKLink>
       ) : (
-        <div className={mediaWrapperClass} style={mediaLayout?.style}>
+        <div className={mediaWrapperClass} style={mediaWrapperStyle}>
           <FyImage
-            customClass={`${styles.imageWrapper} ${hover_application_banner?.value ? styles.imageHoverEnabled : ""}`}
-            src={desktopImage}
-            sources={getImgSrcSet()}
-            isLazyLoaded={false}
-            defer={false}
-            {...(mediaLayout
-              ? {
-                  isFixedAspectRatio: mediaLayout.isAspectRatio,
-                  aspectRatio: mediaLayout.aspectRatio ?? 16 / 9,
-                  mobileAspectRatio: mediaLayout.mobileAspectRatio ?? 16 / 9,
-                  isImageFill:
-                    mediaLayout.isAspectRatio || mediaLayout.isFixedHeight,
-                }
-              : {
-                  isFixedAspectRatio: false,
-                })}
+            {...commonImageProps}
+            isFixedAspectRatio={isAspectRatio}
+            aspectRatio={mediaLayout?.aspectRatio ?? 16 / 9}
+            mobileAspectRatio={mediaLayout?.mobileAspectRatio ?? 16 / 9}
+            isImageFill={isAspectRatio || isFixedHeight}
             alt={sectionLabel || "Application banner"}
           />
         </div>
@@ -200,17 +188,22 @@ export function Component({ props, blocks, globalConfig }) {
               redirect_link={hotspot?.props?.redirect_link?.value}
             />
           ) : (
-            <FDKLink to={hotspot?.props?.redirect_link?.value}>
+            <FDKLink key={index} to={hotspot?.props?.redirect_link?.value}>
               <div
                 className={`
-                      ${styles["box-wrapper"]}
-                      ${hotspot?.props?.edit_visible?.value ? `${styles["box-wrapper-visible"]}` : ""}
-                    `}
+                  ${styles["box-wrapper"]}
+                  ${
+                    hotspot?.props?.edit_visible?.value
+                      ? styles["box-wrapper-visible"]
+                      : ""
+                  }
+                `}
                 style={dynamicBoxStyle(hotspot)}
-              ></div>
+              />
             </FDKLink>
           );
         })}
+
       {isMobile &&
         getHotspots()?.mobile?.map((hotspot, index) => {
           if (hotspot.type !== "hotspot_mobile") {
@@ -233,14 +226,18 @@ export function Component({ props, blocks, globalConfig }) {
               redirect_link={hotspot?.props?.redirect_link?.value}
             />
           ) : (
-            <FDKLink to={hotspot?.props?.redirect_link?.value}>
+            <FDKLink key={index} to={hotspot?.props?.redirect_link?.value}>
               <div
                 className={`
-                      ${styles["box-wrapper"]}
-                      ${hotspot?.props?.edit_visible?.value ? `${styles["box-wrapper-visible"]}` : ""}
-                    `}
+                  ${styles["box-wrapper"]}
+                  ${
+                    hotspot?.props?.edit_visible?.value
+                      ? styles["box-wrapper-visible"]
+                      : ""
+                  }
+                `}
                 style={dynamicBoxStyle(hotspot)}
-              ></div>
+              />
             </FDKLink>
           );
         })}
@@ -306,7 +303,7 @@ export const settings = {
       type: "text",
       id: "mobile_height",
       label: "t:resource.common.mobile_height",
-      info: "t:resource.common.mobile_height_info",
+      info: "t:resource.common.desktop_height_info",
     },
     {
       type: "text",
@@ -577,4 +574,5 @@ export const settings = {
     },
   ],
 };
+
 export default Component;

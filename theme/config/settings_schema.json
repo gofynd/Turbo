@@ -440,6 +440,21 @@
       "info": "t:resource.settings_schema.product_details_modal_settings.hide_brand_name_info",
       "default": false
     },
+     {
+       "type": "checkbox",
+       "id": "is_limited_stock",
+       "category": "t:resource.settings_schema.common.product_details_modal_settings",
+       "label": "t:resource.common.is_limited_stock",
+       "default": true
+     },
+      {
+       "type": "text",
+       "id": "limited_stock_label",
+       "category": "t:resource.settings_schema.common.product_details_modal_settings",
+       "label": "t:resource.common.limited_stock_label",
+       "default": "t:resource.default_values.limited_stock_label",
+       "info": "t:resource.common.limited_stock_info"
+        },
     {
       "type": "color",
       "id": "img_container_bg",
@@ -673,6 +688,14 @@
       "category": "t:resource.settings_schema.common.copilot_configuration",
       "label": "t:resource.settings_schema.copilot_configuration.storefront_copilot_actions",
       "info": "t:resource.settings_schema.copilot_configuration.storefront_copilot_actions_info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobile_icons",
+      "default": false,
+      "category": "t:resource.settings_schema.common.mobile_configuration",
+      "label": "t:resource.settings_schema.mobile_configuration.show_mobile_icons",
+      "info": "t:resource.settings_schema.mobile_configuration.show_mobile_icons_info"
     }
   ]
 }

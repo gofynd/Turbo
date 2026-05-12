@@ -73,7 +73,7 @@
 
       &--bag,
       &--wishlist {
-        &>div {
+        & > div {
           position: relative;
 
           .count {
@@ -180,14 +180,14 @@
 
         &--bag,
         &--wishlist {
-          &>div .count {
+          & > div .count {
             width: 14px;
             height: 14px;
           }
         }
 
         &--bag {
-          &>div .count {
+          & > div .count {
             transform: translate(4px, 0px);
 
             [dir="rtl"] & {
@@ -197,7 +197,7 @@
         }
 
         &--wishlist {
-          &>div .count {
+          & > div .count {
             transform: translate(3px, -3px);
 
             [dir="rtl"] & {
@@ -245,7 +245,7 @@
   fill: @HeaderIcon;
 }
 
-.singleRowIcon g>path {
+.singleRowIcon g > path {
   fill: @HeaderIcon;
 }
 
@@ -259,7 +259,10 @@
     transform: scaleY(1) !important;
     opacity: 1 !important;
     transition: none !important;
-
+    &.transparentBackground {
+      background: unset;
+      background-color: unset;
+    }
     .search__wrapper {
       width: unset !important;
     }
@@ -273,7 +276,9 @@
 /* PRODUCTION-SAFE TRANSPARENT HEADER SUPPORT FOR ALWAYS-ON SEARCH */
 /* Works even when CSS modules minify classnames */
 /* Uses stable data attributes that never get renamed */
-:global(header[data-transparent-header="true"]) [data-role="always-on-search"] [data-role="search-overlay"] {
+:global(header[data-transparent-header="true"])
+  [data-role="always-on-search"]
+  [data-role="search-overlay"] {
   background-color: transparent !important;
 }
 

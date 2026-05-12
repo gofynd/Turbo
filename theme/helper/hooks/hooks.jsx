@@ -68,6 +68,12 @@ function getSnackbarPosition(currentPosition) {
 export const useSnackbar = () => {
   const snackbarRef = useRef(null);
 
+  useEffect(() => {
+    if (isRunningOnClient() && typeof Snackbar.appendCSS === "function") {
+      Snackbar.appendCSS();
+    }
+  }, []);
+
   const showSnackbar = (message, type, position = "top-right") => {
     // Dismiss the current snackbar if it exists
     if (snackbarRef?.current) {

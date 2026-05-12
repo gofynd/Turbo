@@ -45,6 +45,8 @@
       "size_selection_style": "आकार चयन शैली",
       "dropdown_style": "ड्रॉपडाउन शैली",
       "block_style": "ब्लॉक शैली",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "एकल आकार छुपाएं",
       "price_tax_label_text": "मूल्य कर लेबल पाठ",
       "redirect_link": "रीडायरेक्ट लिंक",

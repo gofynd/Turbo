@@ -75,9 +75,9 @@ function StoreLocatorField({
     if (type !== "dropdown" || !query) {
       return options;
     }
-    const searchTerm = query.toLowerCase();
-    return options.filter((option) =>
-      (option.display || option).toLowerCase().includes(searchTerm)
+    const searchTerm = query?.toLowerCase();
+    return options?.filter((option) =>
+      (option?.display || option)?.toLowerCase().includes(searchTerm)
     );
   }, [type, query, options]);
 
@@ -133,7 +133,7 @@ function StoreLocatorField({
       if (blurTimeoutRef.current) {
         clearTimeout(blurTimeoutRef.current);
       }
-      
+
       // Delay to allow click on dropdown option to register
       blurTimeoutRef.current = setTimeout(() => {
         // Don't close if user is clicking on dropdown elements
@@ -141,7 +141,7 @@ function StoreLocatorField({
           isDropdownClickRef.current = false;
           return;
         }
-        
+
         setIsFocused(false);
         if (type === "dropdown" && !isDropdownClickRef.current) {
           setIsDropdownOpen(false);
@@ -171,13 +171,13 @@ function StoreLocatorField({
         if (blurTimeoutRef.current) {
           clearTimeout(blurTimeoutRef.current);
         }
-        
+
         // Filter options based on new value to determine if dropdown should open
         const hasMatches = newValue
           ? options.some((option) =>
-              (option.display || option)
-                .toLowerCase()
-                .includes(newValue.toLowerCase())
+              (option?.display || option)
+                ?.toLowerCase()
+                ?.includes(newValue?.toLowerCase())
             )
           : options.length > 0; // Show all options if empty and has options
         setIsDropdownOpen(hasMatches);
@@ -195,13 +195,13 @@ function StoreLocatorField({
       setQuery(displayValue);
       setIsDropdownOpen(false);
       setIsFocused(false);
-      
+
       // Create a synthetic event for consistency
       const syntheticEvent = {
         target: { value: displayValue },
       };
       onChange?.(syntheticEvent);
-      
+
       // Reset the ref after a short delay
       setTimeout(() => {
         isDropdownClickRef.current = false;
@@ -214,15 +214,15 @@ function StoreLocatorField({
     (e) => {
       e.preventDefault();
       e.stopPropagation();
-      
+
       if (type === "dropdown") {
         isDropdownClickRef.current = true;
-        
+
         // Clear any pending blur timeout
         if (blurTimeoutRef.current) {
           clearTimeout(blurTimeoutRef.current);
         }
-        
+
         setIsDropdownOpen((prev) => {
           const newState = !prev;
           if (newState) {
@@ -232,7 +232,7 @@ function StoreLocatorField({
           }
           return newState;
         });
-        
+
         // Reset the ref after a short delay
         setTimeout(() => {
           isDropdownClickRef.current = false;
@@ -326,8 +326,8 @@ function StoreLocatorField({
 
       {/* Options Dropdown (for dropdown mode) */}
       {type === "dropdown" && isDropdownOpen && filteredOptions.length > 0 && (
-        <div 
-          className={styles.optionsDropdown} 
+        <div
+          className={styles.optionsDropdown}
           ref={dropdownRef}
           onMouseDown={(e) => {
             // Prevent blur from firing when clicking dropdown

@@ -60,7 +60,9 @@ const usePayment = (fpi) => {
   const disbaleCheckout = useGlobalStore(fpi?.getters?.SHIPMENTS);
   const customValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
   const { shared_cart_staff_data = null } = customValue;
-  const { currentStep = null } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
+  const { currentStep = null, validateCouponPayload } = useGlobalStore(
+    fpi.getters.CUSTOM_VALUE
+  );
 
   // Restore staff data from sessionStorage on mount if not already in store
   useEffect(() => {
@@ -130,6 +132,7 @@ const usePayment = (fpi) => {
   const [isApiLoading, setIsApiLoading] = useState(true);
   const [creditUpdating, setCreditUpdating] = useState(false);
   const [callOnce, setCallOnce] = useState(false);
+  const [mopSelectionLoading, setMopSelectionLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const { isCouponValid = true } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
@@ -156,28 +159,41 @@ const usePayment = (fpi) => {
   };
 
   const selectPaymentMode = async (payload) => {
-    const response = await fpi.executeGQL(SELECT_PAYMENT_MODE, {
-      id: cart_id,
-      buyNow,
-      updateCartPaymentRequestInput: payload,
-      buyNow,
-    });
-    const [mrpTotal, subTotal, storeCredit, total] =
-      response.data.selectPaymentMode.breakup_values.display;
-    setBreakupValues([mrpTotal, subTotal, storeCredit, total]);
-    if (!isCouponValid) {
-      await fpi.executeGQL(REMOVE_COUPON, {
-        buyNow: buyNow,
-        removeCouponId: bagData?.breakup_values?.coupon?.uid?.toString(),
+    try {
+      setMopSelectionLoading(true);
+      const response = await fpi.executeGQL(SELECT_PAYMENT_MODE, {
+        id: cart_id,
+        buyNow,
+        updateCartPaymentRequestInput: payload,
       });
+
+      const displayValues =
+        response?.data?.selectPaymentMode?.breakup_values?.display ?? [];
+      const [mrpTotal, subTotal, storeCredit, total] = displayValues;
+      setBreakupValues([mrpTotal, subTotal, storeCredit, total]);
+      if (!isCouponValid && bagData?.breakup_values?.coupon?.uid) {
+        const isCouponRemoved = await fpi.executeGQL(REMOVE_COUPON, {
+          buyNow,
+          removeCouponId: bagData.breakup_values.coupon.uid.toString(),
+        });
+        if (isCouponRemoved?.data?.removeCoupon?.success)
+          showSnackbar(
+            t("resource.cart.coupon_removed_successfully"),
+            "success"
+          );
+      }
+      const cartPayload = {
+        buyNow,
+        includeAllItems: true,
+        includeBreakup: true,
+        includeCodCharges: true,
+      };
+      await fpi?.executeGQL?.(CART_DETAILS, cartPayload);
+    } catch (error) {
+      console.error("selectPaymentMode failed", error);
+    } finally {
+      setMopSelectionLoading(false);
     }
-    const cartPayload = {
-      buyNow,
-      includeAllItems: true,
-      includeBreakup: true,
-      includeCodCharges: true,
-    };
-    await fpi?.executeGQL?.(CART_DETAILS, cartPayload);
   };
 
   useEffect(() => {
@@ -249,12 +265,12 @@ const usePayment = (fpi) => {
         getTotalValue?.() === 0
           ? optn.name === "PP" || optn.name === "COD"
           : optn.name === selectedTab
-      )
+      ) || (selectedTab === "Other" ? otherOptions()?.[0] : undefined)
     : paymentOption?.payment_option?.find((optn) =>
         getTotalValue?.() === 0
           ? optn.name === "PP" || optn.name === "COD"
           : optn.name === selectedTab
-      );
+      ) || (selectedTab === "Other" ? otherOptions()?.[0] : undefined);
 
   const selectedUPIData = enableLinkPaymentOption
     ? linkPaymentOptions?.filter((optn) => optn.name === "UPI")[0]?.list[0]
@@ -392,7 +408,7 @@ const usePayment = (fpi) => {
       name: payload.payment_mode,
       payment: "required",
       payment_meta: {
-        merchant_code: currentSelection?.merchant_code,
+        merchant_code: currentSelection?.merchant_code ?? "",
         payment_gateway: currentSelection?.aggregator_name,
         payment_identifier: vpa ? vpa : (currentSelection?.code ?? ""),
       },
@@ -482,8 +498,8 @@ const usePayment = (fpi) => {
         success_callback_url: `${window.location.origin}/order-tracking`,
         payment_methods: {
           meta: {
-            merchant_code: selected.merchant_code,
-            payment_gateway: selected.aggregator_name,
+            merchant_code: selected.merchant_code ?? "",
+            payment_gateway: selected.aggregator_name ?? "",
             payment_identifier: selected.code ?? "",
           },
           mode: modeOverride,
@@ -497,14 +513,20 @@ const usePayment = (fpi) => {
         CREATE_ORDER_PAYMENT_LINK,
         buildLinkOrderPayload(selected, modeOverride)
       );
+      if (res?.errors?.length > 0) {
+        showSnackbar(
+          t(res?.errors?.[0].message || "resource.common.error_message"),
+          "error"
+        );
+      }
       return res?.data?.createOrderHandlerPaymentLink;
     };
 
     const baseLinkCheckoutPayload = (selected, modeOverride = mode) => ({
       ...linkDataOption,
-      merchant_code: selected.merchant_code,
-      payment_gateway: selected.aggregator_name,
-      aggregator_name: selected.aggregator_name,
+      merchant_code: selected.merchant_code ?? "",
+      payment_gateway: selected.aggregator_name ?? "",
+      aggregator_name: selected.aggregator_name ?? "",
       payment_identifier: selected.code ?? "",
       payment_mode: modeOverride,
       name: selected.name,
@@ -520,7 +542,7 @@ const usePayment = (fpi) => {
       billing_address_id: address_id,
       aggregator_name: selected.aggregator_name,
       payment_identifier: selected.code ?? "",
-      merchant_code: selected.merchant_code,
+      merchant_code: selected.merchant_code ?? "",
       payment: selected,
       paymentflow: getPaymentflow(selected.aggregator_name),
       ...getStaffPayload(),
@@ -574,6 +596,19 @@ const usePayment = (fpi) => {
         });
 
         if (storeCreditApplied?.isFullyApplied) {
+          // When cart total is 0 (fully covered by credit note), we need to pass payment_methods
+          // with proper structure including payment_gateway
+          const creditNotePayment = {
+            mode: code ?? "",
+            name: code ?? "",
+            payment: "required",
+            payment_meta: {
+              merchant_code: merchant_code,
+              payment_gateway: aggregator_name || "Fynd",
+              payment_identifier: code ?? "",
+            },
+          };
+
           await fpi.payment.checkoutPayment({
             payment: partialPaymentOption?.list[0],
             id: cart_id,
@@ -585,6 +620,7 @@ const usePayment = (fpi) => {
             aggregator_name,
             payment_identifier: code ?? "",
             merchant_code,
+            payment_methods: [creditNotePayment],
           });
         }
       },
@@ -680,6 +716,13 @@ const usePayment = (fpi) => {
           });
           const payload = { payment_mode: "CARD", id: cart_id, address_id };
           const { id, is_redirection, ...options } = payload;
+
+          // Build current mode of payment with proper structure
+          const currentModeOfPayment = getCurrentModeOfPayment(
+            { payment_mode: "CARD", id: cart_id, address_id },
+            selectedCard
+          );
+
           const res = await fpi.payment.checkoutPayment({
             ...options,
             aggregator_name: selectedCard.aggregator_name,
@@ -696,7 +739,7 @@ const usePayment = (fpi) => {
             buy_now: buyNow,
             ...getStaffPayload(),
             ...(isStoreCreditApplied && {
-              payment_methods: ["store_credits", mode],
+              payment_methods: [currentModeOfPayment, storeCreditPayment],
               store_credit,
               partialPaymentOption,
             }),
@@ -923,37 +966,90 @@ const usePayment = (fpi) => {
 
       COD: async () => handlers.PP(),
       PP: async () => {
+        let validateCouponCode = true;
         setIsPaymentLoading(true);
-        const payload = { payment_mode: mode, id: cart_id, address_id };
-        addParamsToLocation({
-          ...getQueryParams(),
-          aggregator_name: selectedTabData?.aggregator_name,
-          payment_mode: mode,
-          payment_identifier: `${selectedTabData?.payment_mode_id}`,
-        });
-        const { id, is_redirection, ...options } = payload;
-        const basePayload = {
-          ...options,
-          aggregator_name: selectedTabData?.aggregator_name,
-          queryParams: getQueryParams(),
-          payment: selectedTabData,
-          address_id,
-          billing_address_id: address_id,
-          paymentflow: getPaymentflow(selectedTabData?.aggregator_name),
-          buy_now: buyNow,
-          ...getStaffPayload(),
-        };
-        const res = await fpi.payment.checkoutPayment({
-          ...basePayload,
-          ...(isStoreCreditApplied && {
-            payment_methods: ["store_credits", mode],
-            store_credit,
-            partialPaymentOption,
-          }),
-        });
-        if (res?.error?.message) {
+        if (bagData?.breakup_values?.coupon?.uid) {
+          const isvalid = await validateCoupon(validateCouponPayload);
+          validateCouponCode =
+            isvalid?.data?.validateCoupon?.coupon_validity?.valid;
+        }
+        if (validateCouponCode) {
+          const payload = { payment_mode: mode, id: cart_id, address_id };
+          addParamsToLocation({
+            ...getQueryParams(),
+            aggregator_name: selectedTabData?.aggregator_name,
+            payment_mode: mode,
+            payment_identifier: `${selectedTabData?.payment_mode_id}`,
+          });
+          const { id, is_redirection, ...options } = payload;
+
+          // Check if total is zero (zero-pay scenario)
+          const isZeroPay = getTotalValue() === 0;
+
+          // Build payment_methods for zero-pay or partial payment scenarios
+          let paymentMethodsConfig = {};
+          if (isStoreCreditApplied || isZeroPay) {
+            // For zero-pay, ensure we have proper aggregator_name
+            const aggregator =
+              selectedTabData?.aggregator_name ||
+              selectedTabData?.list?.[0]?.aggregator_name ||
+              "Fynd";
+
+            // Get current mode of payment with proper payment_meta structure including payment_gateway
+            const currentModeOfPayment = {
+              mode: mode,
+              name: mode,
+              payment: "required",
+              payment_meta: {
+                merchant_code: selectedTabData?.merchant_code || "",
+                payment_gateway: aggregator,
+                payment_identifier:
+                  selectedTabData?.code ||
+                  selectedTabData?.payment_mode_id ||
+                  "",
+              },
+            };
+
+            // When cart total is 0 (fully covered), only include the payment method
+            if (isZeroPay) {
+              paymentMethodsConfig = {
+                payment_methods: [currentModeOfPayment],
+              };
+            } else {
+              // Partial payment scenario - include both payment method and store credit
+              paymentMethodsConfig = {
+                payment_methods: [currentModeOfPayment, storeCreditPayment],
+                store_credit,
+                partialPaymentOption,
+              };
+            }
+          }
+
+          const basePayload = {
+            ...options,
+            aggregator_name:
+              selectedTabData?.aggregator_name ||
+              selectedTabData?.list?.[0]?.aggregator_name ||
+              "Fynd",
+            queryParams: getQueryParams(),
+            payment: selectedTabData,
+            address_id,
+            billing_address_id: address_id,
+            paymentflow: getPaymentflow(selectedTabData?.aggregator_name),
+            buy_now: buyNow,
+            ...getStaffPayload(),
+          };
+
+          const res = await fpi.payment.checkoutPayment({
+            ...basePayload,
+            ...paymentMethodsConfig,
+          });
+          if (res?.error?.message) {
+            setIsPaymentLoading(false);
+            setErrorMessage(res?.payload?.message);
+          }
+        } else {
           setIsPaymentLoading(false);
-          setErrorMessage(res?.payload?.message);
         }
       },
 
@@ -1050,7 +1146,7 @@ const usePayment = (fpi) => {
             payment: selectedOtherPayment,
             data: {
               ...pickLinkOrderData(linkOrderInfo),
-              merchant_order_id: linkOrderInfo?.data?.merchant_order_id,
+              merchant_order_id: linkOrderInfo?.data?.merchant_order_id || "",
               merchant_transaction_id:
                 linkOrderInfo?.data?.merchant_transaction_id || "",
               upi_app: "",
@@ -1202,6 +1298,10 @@ const usePayment = (fpi) => {
       setIsCreditNoteApplied(
         data?.validateCustomerAndCreditSummary?.is_applied
       );
+      fpi.custom.setValue(
+        "creditNoteApplied",
+        data?.validateCustomerAndCreditSummary?.is_applied
+      );
       return data?.validateCustomerAndCreditSummary;
     } catch (error) {
       console.error(error);
@@ -1262,6 +1362,8 @@ const usePayment = (fpi) => {
   const updateStoreCredits = async (store_credit = false) => {
     setIsLoading(true);
     setIsCreditNoteApplied(store_credit);
+    setSelectedTab("");
+    fpi.custom.setValue("creditNoteApplied", store_credit);
     setPartialPaymentOption((prev) => ({
       ...prev,
       list: [
@@ -1379,6 +1481,7 @@ const usePayment = (fpi) => {
     fetchCreditNoteBalance,
     isCreditNoteApplied,
     setIsPaymentLoading,
+    mopSelectionLoading,
   };
 };
 

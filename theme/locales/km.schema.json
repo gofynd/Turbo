@@ -45,6 +45,8 @@
       "size_selection_style": "រចនាប័ទ្មជ្រើសរើសទំហំ",
       "dropdown_style": "រចនាប័ទ្មទម្លាក់ចុះ",
       "block_style": "រចនាប័ទ្មទប់ស្កាត់",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "លាក់ទំហំតែមួយ",
       "price_tax_label_text": "អត្ថបទស្លាកតម្លៃពន្ធ",
       "redirect_link": "បញ្ជូនបន្តតំណ",

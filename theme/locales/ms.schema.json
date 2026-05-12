@@ -45,6 +45,8 @@
       "size_selection_style": "Gaya pemilihan saiz",
       "dropdown_style": "Gaya jatuh turun",
       "block_style": "Gaya blok",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Sembunyikan saiz tunggal",
       "price_tax_label_text": "Teks label cukai harga",
       "redirect_link": "Ubah hala Pautan",

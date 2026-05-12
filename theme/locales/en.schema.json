@@ -57,6 +57,8 @@
       "size_selection_style": "Size selection style",
       "dropdown_style": "Dropdown style",
       "block_style": "Block style",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Hide single size",
       "price_tax_label_text": "Price tax label text",
       "redirect_link": "Redirect Link",
@@ -140,7 +142,8 @@
         "logo_header": "Desktop Header Logo Max Height",
         "mobile_logo_header": "Mobile Header Logo Max Height",
         "mobile_logo_header_info": "Adjust the maximum height of the logo in the top mobile header",
-        "home_page": "Home Page"
+        "home_page": "Home Page",
+        "mobile_configuration": "Mobile Configuration"
       },
       "typography": {
         "font_header": "Font Header",
@@ -187,7 +190,7 @@
         "sticky_header_info": "Enable/Disable Sticky Header",
         "show_secondary_header_on_checkout": "Simplify Header on Cart/Checkout",
         "show_secondary_header_on_checkout_info": "Hide Navigation and make header simple and user friendly. It Hides Navigation search, account icon etc",
-"show_icon_text_in_header": "Show Icon Text in Header",
+        "show_icon_text_in_header": "Show Icon Text in Header",
         "show_icon_text_in_header_info": "Enable to show text labels alongside the icons in the header (e.g., Cart, Wishlist, Profile)",
         "profile_icon_text_label": "Profile Text",
         "wishlist_icon_text_label": "Wishlist Text",
@@ -285,6 +288,10 @@
       "home_page": {
         "initial_sections_count_label": "Initial Sections to Load",
         "initial_sections_count_load_info": "Number of sections to load initially before user scrolls. Remaining sections load on scroll."
+      },
+      "mobile_configuration": {
+        "show_mobile_icons": "Show Mobile Icons",
+        "show_mobile_icons_info": "Enable to show icons in the mobile"
       }
     },
     "sections": {
@@ -541,6 +548,7 @@
         "add_to_compare": "Add to Compare",
         "offers": "Offers",
         "show_offers": "Show Offers",
+        "show_description": "Show Description",
         "prod_meta": "Prod Meta",
         "return": "Return",
         "show_item_code": "Show Item code",

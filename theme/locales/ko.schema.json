@@ -45,6 +45,8 @@
       "size_selection_style": "사이즈 선택 스타일",
       "dropdown_style": "드롭다운 스타일",
       "block_style": "블록 스타일",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "싱글 사이즈 숨기기",
       "price_tax_label_text": "가격 세금 라벨 텍스트",
       "redirect_link": "리디렉션 링크",

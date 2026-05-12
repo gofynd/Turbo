@@ -17,7 +17,6 @@ import {
   CarouselContent,
   CarouselItem,
 } from "../../../../components/carousel/carousel";
-import { Skeleton } from "../../../../components/core/skeletons";
 
 function MobileSlider({
   images,
@@ -32,7 +31,6 @@ function MobileSlider({
   handleShare,
   showShareIcon = true,
   sources = [],
-  isDataLoad = false,
   renderTag, // Renders out-of-stock, custom badge (teaser_tag), or sale badge based on platform/section config
 }) {
   const { t } = useGlobalTranslation("translation");
@@ -174,11 +172,7 @@ function MobileSlider({
             >
               <div className={styles.mediaWrapper} key={i} data-carousel="item-wrapper">
                 {/* Sale Tag for mobile - Configuration-based */}
-                {isDataLoad ? (
-                  <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
-                ) : (
-                  renderTag()
-                )}
+                {renderTag()}
                 {media.type === "image" && (
                   <div onClick={() => onImageClick()}>
                     <FyImage

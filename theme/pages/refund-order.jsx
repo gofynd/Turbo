@@ -252,7 +252,6 @@ function Refund({ fpi }) {
 
       setIsValidOtp(true);
       setShouldCheckRefundModes(true);
-
     } catch (error) {
       if (error?.errors && error.errors.length) {
         showSnackbar(error.errors[0].message, "error");
@@ -267,13 +266,13 @@ function Refund({ fpi }) {
   ) => {
     // Section to map if the user is selecting from saved Banks
     if (selectedBank && selectedBankCheck) {
-      (ifscCode = selectedBank.ifsc_code),
+      ((ifscCode = selectedBank.ifsc_code),
         (accountNo = selectedBank.account_no),
         (accounHolder = selectedBank.account_holder),
         await verifyIfscCode(selectedBank.ifsc_code).then((data) => {
-          (verify_IFSC_code.bank_name = data.verify_IFSC_code.bank_name),
-            (verify_IFSC_code.branch_name = data.verify_IFSC_code.branch_name);
-        });
+          ((verify_IFSC_code.bank_name = data.verify_IFSC_code.bank_name),
+            (verify_IFSC_code.branch_name = data.verify_IFSC_code.branch_name));
+        }));
     }
     const beneficiaryDetailsPayload = {
       details: {
@@ -387,7 +386,7 @@ function Refund({ fpi }) {
 
   console.log(hasShipmentError, "hasShipmentError");
   const includesIgnoreCase = (str = "", keyword = "") =>
-    str?.toLowerCase().includes(keyword?.toLowerCase());
+    str?.toLowerCase()?.includes(keyword?.toLowerCase());
 
   const hasBankOrUpi =
     Array.isArray(refundOptions) &&
@@ -404,8 +403,8 @@ function Refund({ fpi }) {
     !hasBankOrUpi;
 
   useEffect(() => {
-    if (!shouldCheckRefundModes) return; 
-    if (!isRefundModesResolved || isRefundModesLoading) return; 
+    if (!shouldCheckRefundModes) return;
+    if (!isRefundModesResolved || isRefundModesLoading) return;
 
     if (!hasBankOrUpi) {
       return;
@@ -882,7 +881,7 @@ function BeneficiaryForm({
   const { addRefundBankAccountUsingOTP } = useRefundDetails(fpi);
   const bankFormFocusRef = useRef(null);
   const includesIgnoreCase = (str = "", keyword = "") =>
-    str?.toLowerCase().includes(keyword?.toLowerCase());
+    str?.toLowerCase()?.includes(keyword?.toLowerCase());
 
   const renderRefundOptions = refundOptions?.filter((item) => {
     return (
@@ -974,7 +973,7 @@ function BeneficiaryForm({
         suffix.trim() === ""
           ? upiSuggestions
           : upiSuggestions.filter((suggestion) =>
-              suggestion.toLowerCase().includes(suffix.toLowerCase())
+              suggestion?.toLowerCase()?.includes(suffix?.toLowerCase())
             );
       setFilteredUPISuggestions(filtered);
       setUPIAutoComplete(true);

@@ -53,6 +53,7 @@ export function fetchCartDetails(fpi, payload = {}) {
     buyNow: false,
     includeAllItems: true,
     includeBreakup: true,
+    includeCodCharges: true,
     ...payload,
   };
   return fpi?.executeGQL?.(CART_DETAILS, defaultPayload);
@@ -522,14 +523,7 @@ const useCart = (fpi, isActive = true) => {
     return res?.data?.productPrice || {};
   };
 
-  // user_cart_items_count is undefined until a real cart API response populates the store.
-  // On SPA nav it's already set (from header's CART_COUNT); on hard refresh it's undefined.
-  const hasCartCountBeenFetched =
-    cart_items?.user_cart_items_count !== undefined;
-
-  // Shimmer while loading, EXCEPT when we already know the cart is empty (SPA nav with count=0).
-  const showCartShimmer =
-    isLoading && (!hasCartCountBeenFetched || cartItemCount >= 1);
+  const showCartShimmer = isLoading;
 
   return {
     onApplyLoyaltyPoints,

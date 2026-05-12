@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 
 import { FDKLink } from "fdk-core/components";
-import { CategoriesPageShimmer } from "../components/core/skeletons";
 import styles from "../styles/categories.less";
 import CardList from "../components/card-list/card-list";
 import useCategories from "../page-layouts/categories/useCategories";
 import { detectMobileWidth } from "../helper/utils";
 import ScrollToTop from "../components/scroll-to-top/scroll-to-top";
 import EmptyState from "../components/empty-state/empty-state";
+import { CategoriesPageShimmer } from "../components/core/skeletons";
 import { CATEGORIES_LISTING } from "../queries/categoryQuery";
 import { useFPI, useGlobalTranslation } from "fdk-core/utils";
 
@@ -49,20 +49,25 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     setIsMobile(detectMobileWidth());
   }, []);
 
+  const showShimmer = props?.show_shimmer?.value ?? true;
+
+  useEffect(() => {
+    fpi.custom.setValue("categoriesShowShimmer", showShimmer);
+  }, [showShimmer]);
+
   if (!isLoading && !sortedCategories?.length) {
     return <EmptyState title={t("resource.categories.empty_state")} />;
   }
 
-  // Show shimmer when loading and no categories yet
   if (isLoading && !sortedCategories?.length) {
-    return (
-      <CategoriesPageShimmer
-        showTitle={!!heading}
-        showDescription={!!description}
-        showBreadcrumbs={true}
-        categoryCount={12}
-      />
-    );
+    if (showShimmer) {
+      return (
+        <div className="basePageContainer margin0auto">
+          <CategoriesPageShimmer categoryCount={12} />
+        </div>
+      );
+    }
+    return null;
   }
 
   return (
@@ -78,46 +83,36 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
           {t("resource.common.breadcrumb.categories")}
         </span>
       </div>
-
-      {!isLoading ? (
-        <div>
-          {heading && (
-            <h1 className={`${styles.categories__title} fontHeader`}>
-              {heading}
-            </h1>
-          )}
-          {description && (
-            <div
-              className={`${styles.categories__description} ${isMobile ? styles.b2 : styles.b1}`}
-            >
-              <p>{description}</p>
-            </div>
-          )}
-          <div className={styles.categories__cards}>
-            <CardList
-              cardList={sortedCategories}
-              cardType="CATEGORIES"
-              showOnlyLogo={!!logo_only}
-              globalConfig={globalConfig}
-              pageConfig={{
-                category_name_placement,
-                category_name_position,
-                category_name_text_alignment,
-                show_category_name,
-                img_container_bg: globalConfig?.img_container_bg,
-                img_fill: globalConfig?.img_fill,
-              }}
-            />
+      <div>
+        {heading && (
+          <h1 className={`${styles.categories__title} fontHeader`}>
+            {heading}
+          </h1>
+        )}
+        {description && (
+          <div
+            className={`${styles.categories__description} ${isMobile ? styles.b2 : styles.b1}`}
+          >
+            <p>{description}</p>
           </div>
+        )}
+        <div className={styles.categories__cards}>
+          <CardList
+            cardList={sortedCategories}
+            cardType="CATEGORIES"
+            showOnlyLogo={!!logo_only}
+            globalConfig={globalConfig}
+            pageConfig={{
+              category_name_placement,
+              category_name_position,
+              category_name_text_alignment,
+              show_category_name,
+              img_container_bg: globalConfig?.img_container_bg,
+              img_fill: globalConfig?.img_fill,
+            }}
+          />
         </div>
-      ) : (
-        <CategoriesPageShimmer
-          showTitle={!!heading}
-          showDescription={!!description}
-          showBreadcrumbs={false}
-          categoryCount={12}
-        />
-      )}
+      </div>
       {!!back_top && <ScrollToTop />}
     </div>
   );
@@ -213,10 +208,21 @@ export const settings = {
       label: "t:resource.sections.categories.category_name_text_alignment",
       info: "t:resource.sections.categories.category_name_text_alignment_info",
     },
+    {
+      type: "checkbox",
+      id: "show_shimmer",
+      label: "t:resource.common.show_shimmer",
+      info: "t:resource.common.show_shimmer_info",
+      default: true,
+    },
   ],
 };
 
-Component.serverFetch = async ({ fpi }) => {
+Component.serverFetch = async ({ fpi, props }) => {
+  fpi.custom.setValue(
+    "categoriesShowShimmer",
+    props?.show_shimmer?.value ?? true
+  );
   const response = await fpi.executeGQL(CATEGORIES_LISTING);
   if (!response?.data?.categories?.data) {
     return { categories: [] };

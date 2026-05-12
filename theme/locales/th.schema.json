@@ -45,6 +45,8 @@
       "size_selection_style": "รูปแบบการเลือกขนาด",
       "dropdown_style": "รูปแบบดร็อปดาวน์",
       "block_style": "สไตล์บล็อค",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "ซ่อนขนาดเดียว",
       "price_tax_label_text": "ข้อความบนฉลากภาษีราคา",
       "redirect_link": "ลิงค์เปลี่ยนเส้นทาง",

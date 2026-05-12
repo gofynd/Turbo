@@ -110,6 +110,7 @@
             "header_layout": "double",
             "is_header_map": false,
             "is_checkout_map": false,
+            "is_limited_stock": true,
             "is_store_locator_map": false,
             "map_api_key": "",
             "font_header": {
@@ -182,6 +183,7 @@
             "footer_image": true,
             "footer_image_desktop": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/desktop-footer-image.jpg",
             "footer_image_mobile": "https://cdn.pixelbin.io/v2/plain-salad-939443/original/mobile-footer-image.jpg",
+            "show_mobile_icons": true,
             "storefront_copilot_actions": false,
             "filter_toggle_button": false,
             "enable_swr_caching": false
@@ -217,6 +219,7 @@
               "enable_buy_now": true,
               "show_size_guide": true,
               "show_offers": true,
+              "show_description": false,
               "hide_single_size": false,
               "badge_logo_1": "",
               "badge_label_1": "",

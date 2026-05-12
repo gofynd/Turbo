@@ -75,7 +75,9 @@ function AddPayment({ shipment, fpi, getBeneficiaryDetails }) {
 
     const paymentLabel = selectedPayment
       .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map(
+        (word) => word?.charAt(0)?.toUpperCase() + word?.slice(1)?.toLowerCase()
+      )
       .join(" ");
 
     return `${t("resource.facets.add")} ${paymentLabel}`;

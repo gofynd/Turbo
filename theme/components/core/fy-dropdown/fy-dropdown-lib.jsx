@@ -140,8 +140,8 @@ const FyDropdown = ({
       setFilteredOptions(
         options.filter((option) =>
           (getOptionLabel(option) || "")
-            .toLowerCase()
-            .includes(value.toLowerCase())
+            ?.toLowerCase()
+            .includes(value?.toLowerCase())
         )
       );
       setIsOpen(true);

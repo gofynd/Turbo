@@ -95,7 +95,7 @@ export function Component({ blocks, globalConfig, fpi }) {
   const [mediaLoadError, setMediaLoadError] = useState(false);
 
   const includesIgnoreCase = (str = "", keyword = "") =>
-    str?.toLowerCase().includes(keyword.toLowerCase());
+    str?.toLowerCase()?.includes(keyword?.toLowerCase());
 
   useEffect(() => {
     if (

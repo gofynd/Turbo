@@ -16,7 +16,7 @@ import styles from "../styles/return-summary-status.less";
 import { useThemeConfig } from "../helper/hooks";
 
 const includesIgnoreCase = (str = "", keyword = "") =>
-  str?.toLowerCase().includes(keyword.toLowerCase());
+  str?.toLowerCase()?.includes(keyword?.toLowerCase());
 
 const getRefundIcon = (displayName) => {
   if (includesIgnoreCase(displayName, "bank")) return <BankIcon />;

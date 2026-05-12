@@ -14,7 +14,7 @@ import ThreeDIcon from "../../../../assets/images/3D.svg";
 import CarouselNavArrowIcon from "../../../../assets/images/carousel-nav-arrow.svg";
 import ArrowLeftIcon from "../../../../assets/images/arrow-left.svg";
 import ArrowRightIcon from "../../../../assets/images/arrow-right.svg";
-import { useGlobalTranslation, useGlobalStore, useFPI } from "fdk-core/utils";
+import { useGlobalTranslation } from "fdk-core/utils";
 import { Skeleton } from "../../../../components/core/skeletons";
 import { createPortal } from "react-dom";
 import WishlistIcon from "../../../../assets/images/wishlist";
@@ -39,12 +39,12 @@ function PdpImageGallery({
   handleShare,
   showShareIcon = true,
   imgSources = [],
-  isDataLoad = false,
   // Sale tag props (configuration-based)
   showSaleTag = false,
   showCustomBadge = true, // Platform setting: show_custom_badge (teaser_tag)
   displayMode = "carousel", // "carousel", "vertical", or "vertical-with-thumbnail"
   onLightboxStateChange, // Callback to notify parent about lightbox state
+  productDetails = null,
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [enableLightBox, setEnableLightBox] = useState(false);
@@ -55,9 +55,6 @@ function PdpImageGallery({
   const thumbnailSidebarRef = useRef(null);
   const mainImagesRefs = useRef([]);
   const verticalContainerRef = useRef(null);
-  const fpi = useFPI();
-  const product = useGlobalStore(fpi.getters.PRODUCT);
-  const productDetails = product.product_details;
   const handleVerticalContainerWheel = (event) => {
     const container = verticalContainerRef.current;
     if (!container) return;
@@ -286,6 +283,7 @@ function PdpImageGallery({
   };
 
   const renderTag = () => {
+    if (!productDetails) return null;
     // Check conditions in order of priority
     if (!productDetails.sizes?.sellable) {
       // Out of stock
@@ -305,7 +303,9 @@ function PdpImageGallery({
         </div>
       );
     } else if (
-      (productDetails.discount || productDetails.attributes?.discount) &&
+      (productDetails.discount ||
+        productDetails.attributes?.discount ||
+        productDetails.sizes?.discount) &&
       productDetails.sizes?.sellable &&
       showSaleTag
     ) {
@@ -370,11 +370,7 @@ function PdpImageGallery({
             />
           )}
           <div className={styles.saleTagContainer}>
-            {isDataLoad ? (
-              <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
-            ) : (
-              renderTag()
-            )}
+            {renderTag()}
           </div>
           {isCustomOrder && (
             <div className={`${styles.badge} ${styles.b4}`}>
@@ -548,11 +544,7 @@ function PdpImageGallery({
               </div>
             )} */}
             <div className={styles.saleTagContainer}>
-              {!isDataLoad ? (
-                renderTag()
-              ) : (
-                <Skeleton width={"44px"} className={styles.skeletonSaleTag} />
-              )}
+              {renderTag()}
             </div>
             {isCustomOrder && index === 0 && (
               <div className={`${styles.badge} ${styles.b4}`}>
@@ -681,14 +673,7 @@ function PdpImageGallery({
                   showWishlist={false}
                 />
                 <div className={styles.saleTagContainer}>
-                  {!isDataLoad ? (
-                    renderTag()
-                  ) : (
-                    <Skeleton
-                      width={"44px"}
-                      className={styles.skeletonSaleTag}
-                    />
-                  )}
+                  {renderTag()}
                 </div>
                 {isCustomOrder && index === 0 && (
                   <div className={`${styles.badge} ${styles.b4}`}>
@@ -743,7 +728,6 @@ function PdpImageGallery({
           handleShare={handleShare}
           showShareIcon={showShareIcon}
           renderTag={renderTag}
-          isDataLoad={isDataLoad}
         />
       </div>
 

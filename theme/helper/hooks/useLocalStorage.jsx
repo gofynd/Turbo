@@ -1,17 +1,29 @@
 import { useState, useEffect } from "react";
 
+const getSafeLocalStorage = () => {
+  try {
+    if (typeof window === "undefined") return null;
+    return window.localStorage;
+  } catch (error) {
+    return null;
+  }
+};
+
 export function useLocalStorage(key, initialValue, callback) {
   const [storedValue, setStoredValue] = useState(initialValue);
 
   useEffect(() => {
+    const storage = getSafeLocalStorage();
+    if (!storage) return;
+
     try {
-      const item = window.localStorage.getItem(key);
+      const item = storage.getItem(key);
       if (item !== null) {
         const value = JSON.parse(item);
         setStoredValue(value);
         callback?.(value);
       } else {
-        callback?.()
+        callback?.();
       }
     } catch (error) {
       console.warn(`Error reading localStorage key "${key}":`, error);
@@ -23,7 +35,11 @@ export function useLocalStorage(key, initialValue, callback) {
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+
+      const storage = getSafeLocalStorage();
+      if (!storage) return;
+
+      storage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
       console.warn(`Error setting localStorage key "${key}":`, error);
     }

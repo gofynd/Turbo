@@ -53,7 +53,7 @@ function AddressList({
     // Filter by search text if provided
     if (searchText) {
       filtered = filtered.filter((item) =>
-        item.display_address.toLowerCase().includes(searchText.toLowerCase())
+        item.display_address?.toLowerCase()?.includes(searchText?.toLowerCase())
       );
     }
 

@@ -91,6 +91,17 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
   const { cartOperationInProgress } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
 
   const { is_limited_stock, limited_stock_label } = props;
+  const rawLimitedStockLabel = limited_stock_label?.value;
+  const resolvedLimitedStockLabel = (() => {
+    const fallback = t("resource.common.limited_stock_label");
+    if (!rawLimitedStockLabel) return fallback;
+    if (rawLimitedStockLabel.startsWith("t:")) {
+      const key = rawLimitedStockLabel.slice(2);
+      const translated = t(key);
+      return translated === key ? fallback : translated;
+    }
+    return rawLimitedStockLabel;
+  })();
 
   const cartDeliveryLocation = useCartDeliveryLocation({ fpi });
   const cartShare = useCartShare({ fpi, cartData });
@@ -382,8 +393,8 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                           pincode={cartDeliveryLocation?.pincode}
                           isCartValid={isValid}
                           inValidCartMsg={cartData?.message}
-                          isLimitedStock={is_limited_stock?.value ?? false}
-                          limitedStockLabel={limited_stock_label?.value}
+                          isLimitedStock={is_limited_stock?.value ?? true}
+                          limitedStockLabel={resolvedLimitedStockLabel}
                           getDeliveryPromise={(promise) =>
                             getFormattedPromise(promise?.iso)
                           }

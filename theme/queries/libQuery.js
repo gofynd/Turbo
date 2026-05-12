@@ -193,6 +193,10 @@ export const GLOBAL_DATA = `query ApplicationConfiguration {
       accountkit {
         app_id
       }
+      apple {
+        app_id
+        redirect_uri
+      }
     }
     social {
       facebook

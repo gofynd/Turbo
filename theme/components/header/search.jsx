@@ -5,6 +5,7 @@ import {
   debounce,
   getProductImgAspectRatio,
 } from "../../helper/utils";
+import { useGlobalStore } from "fdk-core/utils";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import SearchIcon from "../../assets/images/single-row-search.svg";
@@ -25,6 +26,7 @@ function Search({
   customSearchWrapperClass = "",
   showCloseButton = true,
   alwaysOnSearch = false,
+  hideTriggerOnMobile = false,
 }) {
   const { t } = useGlobalTranslation("translation");
   const [searchData, setSearchData] = useState([]);
@@ -37,6 +39,7 @@ function Search({
   const [collectionsData, setCollectionsData] = useState([]);
   const [querySuggestions, setQuerySuggestions] = useState([]);
   const navigate = useNavigate();
+  const { openHeaderSearch } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
   const inputRef = useRef(null);
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
   const isAlgoliaEnabled = globalConfig?.algolia_enabled;
@@ -69,6 +72,28 @@ function Search({
     }
   };
 
+  const openSearchFromExternal = () => {
+    setShowSearch(true);
+    // Focus is handled by the mobile nav tap handler via the temp input trick.
+    // No focus() here — a delayed focus() would reopen the keyboard if the user
+    // had already tapped elsewhere in the 300ms window.
+    setTimeout(() => {
+      if (isRunningOnClient() && inputRef.current) {
+        const existingValue = inputRef.current?.value || searchText || "";
+        const len = existingValue.length;
+        inputRef.current?.setSelectionRange?.(len, len);
+        if (existingValue.length > 2) getEnterSearchData(existingValue);
+      }
+    }, 300);
+  };
+
+  useEffect(() => {
+    if (openHeaderSearch && fpi) {
+      openSearchFromExternal();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run when openHeaderSearch is triggered
+  }, [openHeaderSearch]);
+
   const collapseSearch = () => {
     setShowSearch(false);
     // setIsSearchFocused(false);
@@ -94,6 +119,14 @@ function Search({
   const closeSearch = () => {
     collapseSearch();
     clearAll();
+    // clearAll() re-focuses the input (so the cursor stays put when the
+    // user taps the in-overlay "Clear All" button). On close that focus is
+    // unwanted: the input becomes invisible but still focused, and on
+    // mobile any subsequent user gesture (e.g. tapping a page-level button
+    // like "Shop Now") could then pop the keyboard. Blur it explicitly.
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
   };
 
   const handleOutsideClick = () => {
@@ -203,6 +236,13 @@ function Search({
   };
   const redirectToProduct = (link = "/") => {
     if (link) navigate(link);
+    // Blur the input on navigate so the on-screen keyboard closes on mobile.
+    // Without this, the input is hidden by the closing overlay but still
+    // focused, so iOS keeps the keyboard up after pressing Enter / tapping a
+    // suggestion / "See all products".
+    if (isRunningOnClient() && inputRef.current) {
+      inputRef.current.blur();
+    }
     // When alwaysOnSearch is enabled, clear all search data and hide suggestions
     // but keep the search input visible
     if (alwaysOnSearch) {
@@ -270,7 +310,7 @@ function Search({
       }
     >
       <button
-        className={styles.searchIcon}
+        className={`${styles.searchIcon} ${hideTriggerOnMobile ? styles.hideTriggerOnMobile : ""}`.trim()}
         onClick={openSearch}
         aria-label="search"
         type="button"

@@ -426,7 +426,12 @@ export const detectMobileWidth = () => {
 };
 
 export function sanitizeHTMLTag(data) {
-  return typeof data === "string" ? data.replace(/[<>"]/g, "") : "";
+  return typeof data === "string"
+    ? data
+        .replace(/[<>"]/g, "")
+        .replace(/&nbsp;/gi, " ")
+        .replace(/&amp;/gi, "&")
+    : "";
 }
 
 export function sanitizeMetaDescription(data) {
@@ -770,7 +775,10 @@ export function createFieldValidation(field, t) {
   }
   return (v) => {
     const value = v?.display_name || v;
-    if (required && !value) {
+    const isEmptyOrWhitespace =
+      value == null ||
+      (typeof value === "string" && value.trim() === "");
+    if (required && isEmptyOrWhitespace) {
       return `${display_name} ${t("resource.common.address.is_required")}.`;
     }
 

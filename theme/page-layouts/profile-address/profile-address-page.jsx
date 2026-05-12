@@ -209,8 +209,8 @@ const ProfileAddressPage = ({ fpi }) => {
         delete obj[key]; // Removes undefined values directly from the original object
       }
     }
-    // Convert country object to string (uid/id/iso2) if it's an object
-    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    // Convert country object to country name string if it's an object
+    // Handles: countryCurrencies objects (with name/display_name/iso2) and API country objects
     if (obj.country && typeof obj.country === "object" && obj.country !== null) {
       obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
     }
@@ -221,7 +221,7 @@ const ProfileAddressPage = ({ fpi }) => {
     obj.country_phone_code = cleanCountryCode ? `+${cleanCountryCode}` : "";
     obj.phone = obj.phone.mobile;
     setAddressLoader(true);
-    addAddress(obj).then(async (res) => {
+    return addAddress(obj).then(async (res) => {
       if (res?.data?.addAddress?.success) {
         showSnackbar(
           t("resource.common.address.address_addition_success"),
@@ -231,24 +231,29 @@ const ProfileAddressPage = ({ fpi }) => {
           resetPage();
           setAddressLoader(false);
         });
+        window.scrollTo({ top: 0 });
+        return { success: true };
       } else {
-        showSnackbar(
-          res?.errors?.[0]?.message ??
-            t("resource.common.address.new_address_creation_failure"),
-          "error"
-        );
+        const fieldErrors = res?.errors?.[0]?.extensions?.details?.field_errors;
+        if (!fieldErrors || Object.keys(fieldErrors || {}).length === 0) {
+          showSnackbar(
+            res?.errors?.[0]?.message ??
+              t("resource.common.address.new_address_creation_failure"),
+            "error"
+          );
+        }
+        setAddressLoader(false);
+        window.scrollTo({ top: 0 });
+        return { success: false, errors: res?.errors };
       }
-      window.scrollTo({
-        top: 0,
-      });
     });
   };
 
   const updateAddressHandler = (obj) => {
-    // Convert country object to string (uid/id/iso2) if it's an object
-    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    // Convert country object to country name string if it's an object
+    // Handles: countryCurrencies objects (with name/display_name/iso2) and API country objects
     if (obj.country && typeof obj.country === "object" && obj.country !== null) {
-      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
+      obj.country = obj.country.display_name || obj.country.name || obj.country.iso2 || String(obj.country);
     }
     // Remove any existing country_phone_code to prevent accumulation of plus signs
     delete obj.country_phone_code;
@@ -257,7 +262,7 @@ const ProfileAddressPage = ({ fpi }) => {
     obj.country_phone_code = cleanCountryCode ? `+${cleanCountryCode}` : "";
     obj.phone = obj.phone.mobile;
     setAddressLoader(true);
-    updateAddress(obj, memoizedSelectedAdd?.id).then(async (res) => {
+    return updateAddress(obj, memoizedSelectedAdd?.id).then(async (res) => {
       if (res?.data?.updateAddress?.success) {
         showSnackbar(
           t("resource.common.address.address_update_success"),
@@ -267,16 +272,21 @@ const ProfileAddressPage = ({ fpi }) => {
           resetPage();
           setAddressLoader(false);
         });
+        window.scrollTo({ top: 0 });
+        return { success: true };
       } else {
-        showSnackbar(
-          res?.errors?.[0]?.message ??
-            t("resource.common.address.address_update_failure"),
-          "error"
-        );
+        const fieldErrors = res?.errors?.[0]?.extensions?.details?.field_errors;
+        if (!fieldErrors || Object.keys(fieldErrors || {}).length === 0) {
+          showSnackbar(
+            res?.errors?.[0]?.message ??
+              t("resource.common.address.address_update_failure"),
+            "error"
+          );
+        }
+        setAddressLoader(false);
+        window.scrollTo({ top: 0 });
+        return { success: false, errors: res?.errors };
       }
-      window.scrollTo({
-        top: 0,
-      });
     });
   };
 

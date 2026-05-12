@@ -18,12 +18,12 @@ export function Component({ props, blocks, preset, globalConfig }) {
   );
   const { totalCount = 0, ...wishlistData } = wishlistProps;
   const count = Number(totalCount) || 0;
-  const countLabel =
-    count === 1
-      ? `${count} ${t("resource.common.item")}`
-      : count > 1
-        ? `${count} ${t("resource.common.items")}`
-        : "";
+  let countLabel = "";
+  if (count === 1) {
+    countLabel = `${count} ${t("resource.common.item")}`;
+  } else if (count > 1) {
+    countLabel = `${count} ${t("resource.common.items")}`;
+  }
 
   const breadcrumbItems = useMemo(
     () => [
@@ -40,12 +40,14 @@ export function Component({ props, blocks, preset, globalConfig }) {
         <div className={styles.breadcrumbWrapper}>
           <Breadcrumb breadcrumb={breadcrumbItems} />
         </div>
-        <h1 className={`${styles.title} ${styles.boldmd}`}>
-          {title}
-          {countLabel && (
-            <span className={styles.titleCount}>{`(${countLabel})`}</span>
-          )}
-        </h1>
+        <div className={styles.wishlistTitleContainer}>
+          <h1 className={styles.title}>
+            {title}
+            {countLabel && (
+              <span className={styles.titleCount}>{`(${countLabel})`}</span>
+            )}
+          </h1>
+        </div>
         <WishlistShimmer />
       </div>
     );
@@ -56,12 +58,14 @@ export function Component({ props, blocks, preset, globalConfig }) {
       <div className={styles.breadcrumbWrapper}>
         <Breadcrumb breadcrumb={breadcrumbItems} />
       </div>
-      <h1 className={`${styles.title} ${styles.boldmd}`}>
-        {title}
-        {countLabel && (
-          <span className={styles.titleCount}>{`(${countLabel})`}</span>
-        )}
-      </h1>
+      <div className={styles.wishlistTitleContainer}>
+        <h1 className={styles.title}>
+          {title}
+          {countLabel && (
+            <span className={styles.titleCount}>{`(${countLabel})`}</span>
+          )}
+        </h1>
+      </div>
       <Wishlist showHeader={false} totalCount={totalCount} {...wishlistData} />
     </div>
   );

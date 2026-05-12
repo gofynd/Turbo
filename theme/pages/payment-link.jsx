@@ -28,9 +28,11 @@ function PaymentLink({ fpi }) {
     ...payment
   } = usePayment(fpi);
 
+  const { countryDetails } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
+
   const currencySymbol = useMemo(
-    () => bagData?.currency?.symbol || "₹",
-    [bagData?.currency?.symbol]
+    () => countryDetails?.currency?.symbol || bagData?.currency?.symbol || "₹",
+    [countryDetails?.currency, bagData?.currency?.symbol]
   );
 
   // Memoize all non-changing objects/functions

@@ -45,6 +45,8 @@
       "size_selection_style": "サイズ選択スタイル",
       "dropdown_style": "ドロップダウンスタイル",
       "block_style": "ブロック体",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "シングルサイズを非表示",
       "price_tax_label_text": "価格税ラベルテキスト",
       "redirect_link": "リダイレクトリンク",

@@ -13,16 +13,18 @@ import { isRunningOnClient } from "../../helper/utils";
 let sharedCartCache = null;
 let cacheToken = null;
 
-// Delay before clearing cartOperationInProgress after navigate to cart (allows cart to load without empty-state flash)
-const CART_OPERATION_CLEAR_DELAY_MS = 2500;
-
 const useSharedCart = (fpi) => {
-  const { t } = useGlobalTranslation("translation");
+  // 1. useState and useRef first
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [sharedCart, setSharedCart] = useState(sharedCartCache);
   const params = useParams();
   const token = useRef(params.token);
-  const [sharedCart, setSharedCart] = useState(sharedCartCache);
-  const [isLoading, setIsLoading] = useState(!sharedCartCache || cacheToken !== token?.current);
+  const [isLoading, setIsLoading] = useState(
+    !sharedCartCache || cacheToken !== token?.current
+  );
+  
+  // 2. Custom hooks (that may use hooks internally)
+  const { t } = useGlobalTranslation("translation");
   const { showSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -49,7 +51,7 @@ const useSharedCart = (fpi) => {
         // Cache the data
         sharedCartCache = cartData;
         cacheToken = token?.current;
-        
+
         const metaData = cartData?.shared_cart_details?.meta;
 
         // Parse meta if it's a JSON string, otherwise use as-is
@@ -105,16 +107,15 @@ const useSharedCart = (fpi) => {
       // return allItems;
       /* eslint no-param-reassign: "error" */
       const grpBySameSellerAndProduct = allItems.reduce((result, item) => {
-        // Customized items must not be merged with other items since each has
-        // unique customization data. Use article.uid as an isolated key.
-        const hasCustomization =
-          item.article?._custom_json?._display?.length > 0;
-        const groupKey = hasCustomization
-          ? item.article.uid
-          : `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`;
-        result[groupKey] = (result[groupKey] || []).concat(item);
+        result[
+          `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
+        ] = (
+          result[
+            `${item.article.seller.uid}${item.article.store.uid}${item.product.uid}`
+          ] || []
+        ).concat(item);
         return result;
-      }, {});
+      }, []);
 
       const updateArr = [];
       Object.entries(grpBySameSellerAndProduct).forEach(([key, value]) => {
@@ -134,18 +135,12 @@ const useSharedCart = (fpi) => {
 
   const updateCartWithSharedItem = (action, successInfo = null) => {
     try {
-      // Prevent cart page from showing "no items" flash while navigating after add
-      fpi.custom.setValue("cartOperationInProgress", true);
+      const payload = { action, token: token?.current?.toString() };
 
-      const payload = {
-        action,
-        token: token?.current?.toString(),
-      };
       fpi
         .executeGQL(UPDATE_CART_WITH_SHARED_ITEMS, payload)
         .then((res) => {
           if (res?.errors) {
-            fpi.custom.setValue("cartOperationInProgress", false);
             showSnackbar(
               res?.errors?.message ||
                 t("resource.cart.failed_to_action_cart", {
@@ -153,35 +148,42 @@ const useSharedCart = (fpi) => {
                 }),
               "error"
             );
-          } else {
-            // Clear the cache when cart is updated
-            sharedCartCache = null;
-            cacheToken = null;
-            // Note: shared_cart_staff_data is already stored in CUSTOM_VALUE store
-            // and will persist automatically. No need to manually preserve it here.
-            showSnackbar(
-              successInfo ??
-                t("resource.cart.cart_action_successful", {
-                  action: t(`resource.cart.${action}`),
-                }),
-              "success"
-            );
-            navigate("/cart/bag/");
-            // Clear after delay so cart page can load without showing empty state
-            setTimeout(() => {
-              fpi.custom.setValue("cartOperationInProgress", false);
-            }, CART_OPERATION_CLEAR_DELAY_MS);
+            return;
           }
+
+          // Clear cache when cart updated
+          sharedCartCache = null;
+          cacheToken = null;
+
+          const successMessage =
+            successInfo ??
+            t("resource.cart.cart_action_successful", {
+              action: t(`resource.cart.${action}`),
+            });
+
+          showSnackbar(successMessage, "success");
+
+          const baseTime = 1500;
+          const threshold = 30;
+          const extraTimePerChar = baseTime / threshold;
+          const messageLength = successMessage?.length || 0;
+          const extraTime = Math.max(
+            0,
+            (messageLength - threshold) * extraTimePerChar
+          );
+          const snackbarDuration = baseTime + extraTime;
+
+          setTimeout(() => {
+            navigate("/cart/bag/");
+          }, snackbarDuration + 200);
         })
         .catch((err) => {
-          fpi.custom.setValue("cartOperationInProgress", false);
           showSnackbar(
             err?.message || t("resource.common.error_message"),
             "error"
           );
         });
     } catch (err) {
-      fpi.custom.setValue("cartOperationInProgress", false);
       showSnackbar(err?.message || t("resource.common.error_message"), "error");
     }
   };

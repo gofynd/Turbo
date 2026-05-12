@@ -1,12 +1,12 @@
 import React, { useMemo, useEffect } from "react";
 import { useFPI } from "fdk-core/utils";
 import { useParams } from "react-router-dom";
-import { PLPShimmer } from "../components/core/skeletons";
 import ProductListing from "@gofynd/theme-template/pages/product-listing/product-listing";
 import "@gofynd/theme-template/pages/product-listing/index.css";
 import useCollectionListing from "../page-layouts/collection-listing/useCollectionListing";
 import { getHelmet } from "../providers/global-provider";
 import { isRunningOnClient, sanitizeHTMLTag } from "../helper/utils";
+import { PLPShimmer } from "../components/core/skeletons";
 import {
   COLLECTION_DETAILS,
   COLLECTION_WITH_ITEMS,
@@ -21,8 +21,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     return () => fpi.custom.setValue("collectionSectionMounted", false);
   }, []);
 
-  const isClient = typeof window !== "undefined";
-  const params = isClient ? useParams() : null;
+  const params = useParams(); // Always call unconditionally — Rules of Hooks
   const slug = props?.collection?.value // Don't replace with double ?? operator <----
     ? props?.collection?.value
     : params?.slug;
@@ -57,33 +56,41 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     return normalized || seoDescription;
   }, [seo?.description, listingProps?.description, seoDescription]);
 
-  if (listingProps?.isPageLoading && isRunningOnClient()) {
-    return (
-      <PLPShimmer
-        gridDesktop={props?.grid_desktop?.value || 4}
-        gridTablet={props?.grid_tablet?.value || 3}
-        gridMobile={props?.grid_mob?.value || 1}
-        showFilters={true}
-        showSortBy={true}
-        showPagination={props?.loading_options?.value === "pagination"}
-        productCount={props?.page_size?.value || 12}
-      />
-    );
-  }
+  const showShimmer = props?.show_shimmer?.value ?? true;
+
+  useEffect(() => {
+    fpi.custom.setValue("collectionShowShimmer", showShimmer);
+  }, [showShimmer]);
+
+  const shouldShowShimmer =
+    isRunningOnClient() && listingProps?.isPageLoading && showShimmer;
 
   return (
     <>
-      {getHelmet({
-        title,
-        description,
-        image: socialImage,
-        canonicalUrl,
-        url: pageUrl,
-        siteName: brandName,
-        ogType: "website",
-      })}
+      {!shouldShowShimmer &&
+        getHelmet({
+          title,
+          description,
+          image: socialImage,
+          canonicalUrl,
+          url: pageUrl,
+          siteName: brandName,
+          ogType: "website",
+        })}
       <div className="margin0auto basePageContainer">
-        <ProductListing {...listingProps} />
+        {shouldShowShimmer ? (
+          <PLPShimmer
+            gridDesktop={props?.grid_desktop?.value || 4}
+            gridTablet={props?.grid_tablet?.value || 3}
+            gridMobile={props?.grid_mob?.value || 1}
+            showFilters={true}
+            showSortBy={true}
+            showPagination={props?.loading_options?.value === "pagination"}
+            productCount={props?.page_size?.value || 12}
+          />
+        ) : (
+          <ProductListing {...listingProps} />
+        )}
       </div>
     </>
   );
@@ -354,6 +361,13 @@ export const settings = {
     },
     {
       type: "checkbox",
+      id: "show_shimmer",
+      label: "t:resource.common.show_shimmer",
+      info: "t:resource.common.show_shimmer_info",
+      default: true,
+    },
+    {
+      type: "checkbox",
       id: "hide_single_size",
       label: "t:resource.common.hide_single_size",
       default: false,
@@ -398,45 +412,93 @@ Component.serverFetch = async ({ fpi, router, props }) => {
     {};
   const isAlgoliaEnabled = globalConfig?.algolia_enabled || false;
 
-  // Parse filter & sort
+  const slug = props?.collection?.value
+    ? props?.collection?.value
+    : router?.params?.slug;
+
+  // Helper function to get valid filter keys from filters array
+  const getValidFilterKeys = (filters) => {
+    if (!filters || !Array.isArray(filters)) return new Set();
+    return new Set(filters.map((filter) => filter?.key?.name).filter(Boolean));
+  };
+
+  // Helper function to validate and build filter query
+  const buildFilterQuery = (filterQueryObj, validFilterKeys) => {
+    let query = "";
+    const skipKeys = new Set(["sort_on", "page_no", "q", "siteTheme"]);
+
+    Object.keys(filterQueryObj || {})
+      ?.filter((key) => !skipKeys.has(key) && validFilterKeys.has(key))
+      ?.forEach((key) => {
+        if (typeof filterQueryObj[key] === "string") {
+          query = query
+            ? `${query}:::${key}:${filterQueryObj[key]}`
+            : `${key}:${filterQueryObj[key]}`;
+        } else {
+          filterQueryObj[key]?.forEach((item) => {
+            query = query ? `${query}:::${key}:${item}` : `${key}:${item}`;
+          });
+        }
+      });
+
+    return query;
+  };
+
+  // Parse page_no and sort_on first (these don't need validation)
   Object.keys(router.filterQuery || {})?.forEach((key) => {
     if (key === "page_no") {
       pageNo = parseInt(router.filterQuery[key], 10);
     } else if (key === "sort_on") {
       sortQuery = router.filterQuery[key];
-    } else if (typeof router.filterQuery[key] === "string") {
-      filterQuery = filterQuery
-        ? `${filterQuery}:::${key}:${router.filterQuery[key]}`
-        : `${key}:${router.filterQuery[key]}`;
-    } else {
-      router.filterQuery[key]?.forEach((item) => {
-        filterQuery = filterQuery
-          ? `${filterQuery}:::${key}:${item}`
-          : `${key}:${item}`;
-      });
     }
   });
 
-  // Algolia filter formatting
+  // Algolia filter formatting (keep original - no validation)
   if (isAlgoliaEnabled) {
     const filterParams = [];
     const skipKeys = new Set(["sort_on", "page_no"]);
-    for (const [key, value] of Object.entries(router?.filterQuery || {})) {
-      if (skipKeys.has(key)) continue;
-      const decodedValue = Array.isArray(value)
-        ? value.map((v) => decodeURIComponent(v)).join("||")
-        : decodeURIComponent(value);
-      const existingParam = filterParams.find((param) =>
-        param.startsWith(`${key}:`)
-      );
-      if (existingParam) {
-        const updatedParam = `${existingParam}||${decodedValue}`;
-        filterParams[filterParams.indexOf(existingParam)] = updatedParam;
-      } else {
-        filterParams.push(`${key}:${decodedValue}`);
-      }
-    }
+    Object.entries(router?.filterQuery || {})
+      .filter(([key]) => !skipKeys.has(key))
+      .forEach(([key, value]) => {
+        const decodedValue = Array.isArray(value)
+          ? value.map((v) => decodeURIComponent(v)).join("||")
+          : decodeURIComponent(value);
+        const existingParam = filterParams.find((param) =>
+          param.startsWith(`${key}:`)
+        );
+        if (existingParam) {
+          const updatedParam = `${existingParam}||${decodedValue}`;
+          filterParams[filterParams.indexOf(existingParam)] = updatedParam;
+        } else {
+          filterParams.push(`${key}:${decodedValue}`);
+        }
+      });
     filterQuery = filterParams.join(":::");
+  } else {
+    // For non-Algolia, validate filters against available filter keys
+    let validFilterKeys = new Set();
+    try {
+      const initialPayload = {
+        slug,
+        filters: true,
+        first: 1,
+        pageType: "number",
+        pageNo: 1,
+      };
+      const initialResponse = await fpi.executeGQL(
+        COLLECTION_WITH_ITEMS,
+        initialPayload
+      );
+      const initialFilters =
+        initialResponse?.data?.collectionItems?.filters || [];
+      validFilterKeys = getValidFilterKeys(initialFilters);
+    } catch (error) {
+      // If we can't get filters, allow all filters (fallback behavior)
+      // This ensures the page still works even if filter validation fails
+      validFilterKeys = new Set(Object.keys(router.filterQuery || {}));
+    }
+    // Rebuild filter query with validated filters
+    filterQuery = buildFilterQuery(router.filterQuery, validFilterKeys);
   }
   // Don't replace with double ?? operator below -->
   const payload = {
@@ -521,6 +583,10 @@ Component.serverFetch = async ({ fpi, router, props }) => {
   };
 
   fpi.custom.setValue("collectionSectionMounted", true);
+  fpi.custom.setValue(
+    "collectionShowShimmer",
+    props?.show_shimmer?.value ?? true
+  );
   return Promise.all([getCollectionWithItems()]);
 };
 

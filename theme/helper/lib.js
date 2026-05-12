@@ -6,6 +6,14 @@ import {
   INTERNATIONAL,
 } from "../queries/libQuery";
 
+// Module-level flag to prevent redundant USER_DATA_QUERY calls across SPA navigations.
+// Resets on full page reload (login/logout) since the JS module re-evaluates.
+let userDataQueryFired = false;
+
+// Prefetch flag to ensure theme page prefetching runs only once per session.
+let prefetchTriggered = false;
+const PREFETCH_PAGE_VALUES = ["product-listing", "collection-listing"];
+
 export async function globalDataResolver({ fpi, applicationID }) {
   try {
     const response = await fpi.executeGQL(GLOBAL_DATA);
@@ -58,10 +66,81 @@ export async function globalDataResolver({ fpi, applicationID }) {
   }
 }
 
+function prefetchThemePages({ fpi, themeId }) {
+  if (prefetchTriggered || typeof window === "undefined") return;
+  prefetchTriggered = true;
+
+  const state = fpi.store.getState();
+  const company = parseInt(fpi.getters.THEME(state)?.company_id, 10);
+  const isEdit = !!state.custom?.isEdit;
+
+  if (isEdit) return;
+
+  const allPages = state.theme?.allPages || {};
+  const pagesToFetch = PREFETCH_PAGE_VALUES.filter((pv) => !allPages[pv]);
+
+  if (!pagesToFetch.length) return;
+
+  const schedule =
+    typeof requestIdleCallback === "function"
+      ? requestIdleCallback
+      : (cb) => setTimeout(cb, 2000);
+
+  schedule(() => {
+    // Fetch all pages concurrently using fpi.executeGQL with skipStoreUpdate
+    // to reuse auth headers without overwriting the active page (state.page).
+    Promise.all(
+      pagesToFetch.map((pageValue) =>
+        fpi
+          .executeGQL(
+            THEME_DATA,
+            {
+              themeId,
+              pageValue,
+              filters: true,
+              sectionPreviewHash: "",
+              company,
+              urlParams: "{}",
+            },
+            { skipStoreUpdate: true }
+          )
+          .then((res) => ({
+            pageValue,
+            pageDetail: res?.data?.theme?.theme_page_detail,
+          }))
+          .catch(() => null)
+      )
+    ).then((results) => {
+      const merged = {};
+      results.forEach((r) => {
+        if (r?.pageDetail) merged[r.pageValue] = r.pageDetail;
+      });
+      if (Object.keys(merged).length) {
+        // Re-read allPages at dispatch time to avoid overwriting entries
+        // that were added by real navigations during the prefetch window.
+        const latestAllPages = fpi.store.getState().theme?.allPages || {};
+        const newAllPages = { ...latestAllPages };
+        Object.keys(merged).forEach((pv) => {
+          if (!latestAllPages[pv]) {
+            newAllPages[pv] = merged[pv];
+          }
+        });
+        fpi.store.dispatch({
+          type: "theme/setData",
+          payload: { allPages: newAllPages },
+        });
+      }
+    });
+  });
+}
+
 export async function pageDataResolver({ fpi, router, themeId }) {
   const state = fpi.store.getState();
   const pageValue = getPageSlug(router);
-  if (!state?.auth?.user_data?.user_id) {
+  if (!state?.auth?.user_data?.user_id && !userDataQueryFired) {
+    if (typeof window !== "undefined") {
+      userDataQueryFired = true;
+    }
     fpi.executeGQL(USER_DATA_QUERY);
   }
   const APIs = [];
@@ -110,7 +189,29 @@ export async function pageDataResolver({ fpi, router, themeId }) {
       urlParams, // Pass URL parameters to GraphQL query
     };
 
-    APIs.push(fpi.executeGQL(THEME_DATA, values));
+    // Try to use cached page data from allPages to avoid redundant API calls
+    let usedCache = false;
+    try {
+      const allPages = state.theme?.allPages || {};
+      const cachedPage = allPages[pageValue];
+      if (cachedPage && filters && !sectionPreviewHash) {
+        const clonedPage = structuredClone(cachedPage);
+        fpi.store.dispatch({
+          type: "theme/setthemePageDetail",
+          payload: clonedPage,
+        });
+        usedCache = true;
+      }
+    } catch {
+      // Fallback: ignore cache errors, proceed with API call
+    }
+
+    if (!usedCache) {
+      APIs.push(fpi.executeGQL(THEME_DATA, values));
+    }
   }
+  // Prefetch frequently visited pages in the background after initial page load
+  prefetchThemePages({ fpi, themeId });
+
   return Promise.all(APIs);
 }

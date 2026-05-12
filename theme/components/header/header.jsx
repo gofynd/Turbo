@@ -1,5 +1,12 @@
 import { useLocation, useSearchParams } from "react-router-dom";
-import React, { useEffect, useLayoutEffect, useState, useMemo, useRef, Suspense } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useMemo,
+  useRef,
+  Suspense,
+} from "react";
 import { FDKLink } from "fdk-core/components";
 import {
   useGlobalStore,
@@ -74,6 +81,7 @@ function Header({ fpi }) {
     disable_cart = false,
     button_options = "all",
     show_quantity_control = false,
+    show_mobile_icons = false,
   } = globalConfig || {};
 
   const { openLogin } = useAccounts({ fpi });
@@ -270,7 +278,7 @@ function Header({ fpi }) {
 
   useEffect(() => {
     if (isRunningOnClient()) {
-      setTimeout(() => { }, 1000);
+      setTimeout(() => {}, 1000);
       const cssVariables = {
         "--headerHeight": `${headerHeight}px`,
       };
@@ -437,24 +445,33 @@ function Header({ fpi }) {
     <>
       {!isHeaderHidden && (
         <div
-          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${shouldBeTransparent && !sticky_header ? styles.transparentHeader : ""
-            } ${shouldBeTransparent && sticky_header ? styles.stickyTransparentHeader : ""}`}
+          className={`${styles.ctHeaderWrapper} fontBody ${isListingPage ? styles.listing : ""} ${
+            shouldBeTransparent && !sticky_header
+              ? styles.transparentHeader
+              : ""
+          } ${shouldBeTransparent && sticky_header ? styles.stickyTransparentHeader : ""}`}
           ref={headerRef}
         >
           <header
             data-transparent-header={
               shouldBeTransparent && !scrolled ? "true" : "false"
             }
-            className={`${styles.header} ${header_border ? styles.seperator : ""} ${enableTransition ? styles.enableTransition : ""
-              } ${shouldBeTransparent ? styles.transparentBackground : styles.solidBackground
-              } ${scrolled ? styles.scrolled : ""}`}
+            className={`${styles.header} ${header_border ? styles.seperator : ""} ${
+              enableTransition ? styles.enableTransition : ""
+            } ${
+              shouldBeTransparent
+                ? styles.transparentBackground
+                : styles.solidBackground
+            } ${scrolled ? styles.scrolled : ""}`}
           >
             <div
-              className={`${styles.headerContainer} ${shouldBeTransparent ? styles.paddingMobile : ""
+              className={`${styles.headerContainer} ${
+                shouldBeTransparent ? styles.paddingMobile : ""
               } basePageContainer margin0auto `}
             >
               <div
-                className={`${styles.desktop}  ${shouldBeTransparent ? styles.transparent_desktop : ""
+                className={`${styles.desktop}  ${
+                  shouldBeTransparent ? styles.transparent_desktop : ""
                 }`}
               >
                 <HeaderDesktop
@@ -474,20 +491,23 @@ function Header({ fpi }) {
                   deliveryPromise={deliveryPromise}
                   onServiceabilityClick={openServiceabilityModal}
                   hideNavList={hideNavList}
+                  shouldBeTransparent={shouldBeTransparent}
                 />
               </div>
               <div
-                className={`${styles.mobile}  ${shouldBeTransparent ? styles.transparent_mobile : ""
-                  }`}
+                className={`${styles.mobile}  ${
+                  shouldBeTransparent ? styles.transparent_mobile : ""
+                }`}
               >
                 <div
-                  className={`${styles.mobileTop} ${styles[header_layout]} ${styles[logo_menu_alignment]}  ${hideNavList &&
+                  className={`${styles.mobileTop} ${styles[header_layout]} ${styles[logo_menu_alignment]}  ${
+                    hideNavList &&
                     defaultHeaderName === "My Cart" &&
                     !cartBackNavigationList[currentStep] &&
                     logo_menu_alignment !== "layout_4"
-                    ? styles.leftLogo
-                    : ""
-                    }  ${shouldBeTransparent ? styles.transparent_mobile : ""}`}
+                      ? styles.leftLogo
+                      : ""
+                  }  ${shouldBeTransparent ? styles.transparent_mobile : ""}`}
                 >
                   {!hideNavList ? (
                     <Navigation
@@ -541,13 +561,14 @@ function Header({ fpi }) {
 
                   <FDKLink
                     to="/"
-                    className={`${styles.middle} ${styles.flexAlignCenter} ${hideNavList &&
+                    className={`${styles.middle} ${styles.flexAlignCenter} ${
+                      hideNavList &&
                       !checkoutId &&
                       logo_menu_alignment === "layout_4" &&
                       hideNavList
-                      ? styles.paddingRight
-                      : ""
-                      } ${hideNavList && checkoutId ? styles.visibilityNone : ""}`}
+                        ? styles.paddingRight
+                        : ""
+                    } ${hideNavList && checkoutId ? styles.visibilityNone : ""}`}
                   >
                     <img
                       style={{
@@ -563,10 +584,18 @@ function Header({ fpi }) {
                       <div
                         className={`${styles.icon} ${styles["right__icons--search"]}`}
                       >
-                        <Search globalConfig={globalConfig} fpi={fpi} />
+                        <Search
+                          globalConfig={globalConfig}
+                          fpi={fpi}
+                          hideTriggerOnMobile={show_mobile_icons}
+                        />
                       </div>
                       {!disable_cart && button_options !== "none" && (
-                        <div>
+                        <div
+                          className={
+                            show_mobile_icons ? styles.hideTriggerOnMobile : ""
+                          }
+                        >
                           <button
                             type="button"
                             className={`${styles.headerIcon} ${styles["right__icons--bag"]}`}

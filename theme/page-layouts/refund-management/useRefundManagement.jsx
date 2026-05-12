@@ -8,7 +8,7 @@ import {
 } from "../../queries/refundQuery";
 import { GET_SHIPMENT_DETAILS } from "../../queries/shipmentQuery";
 
-const useRefundManagement = (fpi,{ enabled = true } = {}) => {
+const useRefundManagement = (fpi, { enabled = true } = {}) => {
   const { showSnackbar } = useSnackbar();
   const [refundOptions, setRefundOptions] = useState([]);
   const [isRefundConfigEnable, setIsRefundConfigEnable] = useState(false);
@@ -23,7 +23,7 @@ const useRefundManagement = (fpi,{ enabled = true } = {}) => {
   const location = useLocation();
 
   const includesIgnoreCase = (str = "", keyword = "") =>
-    str?.toLowerCase().includes(keyword.toLowerCase());
+    str?.toLowerCase()?.includes(keyword?.toLowerCase());
 
   const fetchRefundModes = async () => {
     const url = window.location.href;

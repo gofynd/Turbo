@@ -19,9 +19,14 @@ const ProductListing = ({ fpi }) => {
   const department = searchParams.get("department") || "";
   const brand = searchParams.get("brand") || "";
   const category = searchParams.get("category") || "";
-  const { brandName, canonicalUrl, pageUrl, description: seoDescription, socialImage } =
-    useSeoMeta({ fpi, seo: seoData });
-  console.log("brand", brand);
+  const {
+    brandName,
+    canonicalUrl,
+    pageUrl,
+    description: seoDescription,
+    socialImage,
+  } = useSeoMeta({ fpi, seo: seoData });
+
   const title = useMemo(() => {
     const seoTitle = sanitizeHTMLTag(seoData?.title);
 
@@ -54,24 +59,24 @@ const ProductListing = ({ fpi }) => {
   }, [seoData?.description, t, seoDescription]);
 
   const isPageReady = page?.value === "product-listing";
-  const isSectionMounted = customValues?.plpSectionMounted;
-  const isClient = typeof window !== "undefined";
-  const showShimmer = isClient && (!isPageReady || !isSectionMounted);
 
   if (!isPageReady) {
-    return isClient ? (
-      <div className="margin0auto basePageContainer">
-        <PLPShimmer
-          gridDesktop={4}
-          gridTablet={3}
-          gridMobile={1}
-          showFilters={true}
-          showSortBy={true}
-          showPagination={true}
-          productCount={12}
-        />
-      </div>
-    ) : null;
+    if (customValues?.plpShowShimmer === true) {
+      return (
+        <div className="margin0auto basePageContainer">
+          <PLPShimmer
+            gridDesktop={4}
+            gridTablet={3}
+            gridMobile={1}
+            showFilters={true}
+            showSortBy={true}
+            showPagination={true}
+            productCount={12}
+          />
+        </div>
+      );
+    }
+    return null;
   }
 
   return (
@@ -85,32 +90,11 @@ const ProductListing = ({ fpi }) => {
         siteName: brandName,
         ogType: "website",
       })}
-      {showShimmer && (
-        <div className="margin0auto basePageContainer">
-          <PLPShimmer
-            gridDesktop={4}
-            gridTablet={3}
-            gridMobile={1}
-            showFilters={true}
-            showSortBy={true}
-            showPagination={true}
-            productCount={12}
-          />
-        </div>
-      )}
-      <div
-        style={
-          showShimmer
-            ? { visibility: "hidden", height: 0, overflow: "hidden" }
-            : undefined
-        }
-      >
-        <SectionRenderer
-          sections={sections}
-          fpi={fpi}
-          globalConfig={globalConfig}
-        />
-      </div>
+      <SectionRenderer
+        sections={sections}
+        fpi={fpi}
+        globalConfig={globalConfig}
+      />
     </>
   );
 };

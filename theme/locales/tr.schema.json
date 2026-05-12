@@ -45,6 +45,8 @@
       "size_selection_style": "Boyut seçimi stili",
       "dropdown_style": "Açılır menü stili",
       "block_style": "Blok stili",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Tek boyutu gizle",
       "price_tax_label_text": "Fiyat vergisi etiketi metni",
       "redirect_link": "Yönlendirme Bağlantısı",

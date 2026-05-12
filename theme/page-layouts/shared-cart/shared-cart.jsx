@@ -15,6 +15,7 @@ function SharedCart({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const { globalConfig } = useThemeConfig({ fpi });
   const { sections = [] } = page || {};
+
   const getPieces = useMemo(() => {
     return (
       sharedCartData?.items?.reduce(
@@ -23,6 +24,16 @@ function SharedCart({ fpi }) {
       ) || 0
     );
   }, [sharedCartData]);
+
+  // Now use getPieces in itemCountLabel
+  const itemCountLabel = useMemo(() => {
+    const bagItemsLength = bagItems?.length || 0;
+    let itmStrng =
+      bagItemsLength > 1
+        ? t("resource.common.item_simple_text_plural")
+        : t("resource.common.item_simple_text");
+    return `(${bagItemsLength} ${itmStrng} | ${getPieces} ${t("resource.common.qty")})`;
+  }, [bagItems, getPieces, t]);
   // Only render sections if the page value matches this component's expected page
   if (page?.value !== "shared-cart") {
     return <Loader />;
@@ -37,16 +48,6 @@ function SharedCart({ fpi }) {
       section.canvas === "right_panel" ||
       section.canvas?.value === "right_panel"
   );
-  console.log(leftSections, rightSections);
-
-  const itemCountLabel = useMemo(() => {
-    const bagItemsLength = bagItems?.length || 0;
-    let itmStrng =
-      bagItemsLength > 1
-        ? t("resource.common.item_simple_text_plural")
-        : t("resource.common.item_simple_text");
-    return `(${bagItemsLength} ${itmStrng} | ${getPieces} ${t("resource.common.qty")})`;
-  }, [bagItems, getPieces, t]);
 
   // Show loader until:
   // 1. Data is still loading, OR

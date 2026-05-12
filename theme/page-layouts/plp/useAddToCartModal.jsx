@@ -432,14 +432,12 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
     );
   }, [selectedSize]);
 
+  const deliveryPromise = productData?.productPrice?.delivery_promise;
+
   const tatMessage = useMemo(() => {
-    if (!productData?.productPrice?.delivery_promise) return "";
-    return getFormattedPromise(productData.productPrice.delivery_promise);
-  }, [
-    productData?.productPrice?.delivery_promise,
-    countryCode,
-    getFormattedPromise,
-  ]);
+    if (!deliveryPromise) return "";
+    return getFormattedPromise(deliveryPromise);
+  }, [deliveryPromise, countryCode, getFormattedPromise]);
 
   const moq = productData?.product?.moq;
   const incrementDecrementUnit = moq?.increment_unit ?? 1;

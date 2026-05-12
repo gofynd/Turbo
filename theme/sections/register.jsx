@@ -49,6 +49,14 @@ export const settings = {
       id: "image_banner",
       default: "",
       label: "t:resource.common.image_banner",
+      options: {
+        aspect_ratio: "3:4",
+        aspect_ratio_strict_check: false,
+        maxSize: 3072,
+        file_types: ["image/png", "image/jpeg"],
+        min_resolution: { width: 900, height: 1200 },
+        max_resolution: { width: 1500, height: 2000 },
+      },
     },
   ],
 };

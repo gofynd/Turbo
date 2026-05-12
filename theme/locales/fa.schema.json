@@ -45,6 +45,8 @@
       "size_selection_style": "سبک انتخاب سایز",
       "dropdown_style": "سبک کشویی",
       "block_style": "سبک بلوک",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "مخفی کردن تک سایز",
       "price_tax_label_text": "متن برچسب مالیات بر قیمت",
       "redirect_link": "لینک تغییر مسیر",

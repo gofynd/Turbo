@@ -84,10 +84,10 @@ const useAddress = (fpi, pageName) => {
   };
 
   const addAddress = (obj) => {
-    // Convert country object to string (uid/id/iso2) if it's an object
-    // Handles: API country objects (with id), countryCurrencies objects (with uid/iso2), and string values
+    // Convert country object to country name string if it's an object
+    // Handles: countryCurrencies objects (with name/display_name/iso2) and API country objects
     if (obj.country && typeof obj.country === "object" && obj.country !== null) {
-      obj.country = obj.country.uid || obj.country.id || obj.country.iso2 || String(obj.country);
+      obj.country = obj.country.display_name || obj.country.name || obj.country.iso2 || String(obj.country);
     }
     const payload = {
       address2Input: {
@@ -99,9 +99,9 @@ const useAddress = (fpi, pageName) => {
 
   const updateAddress = (data, addressId) => {
     const add = data;
-    // Convert country object to string (uid) if it's an object
-    if (add.country && typeof add.country === "object" && add.country.uid) {
-      add.country = add.country.uid;
+    // Convert country object to country name string if it's an object
+    if (add.country && typeof add.country === "object" && add.country !== null) {
+      add.country = add.country.display_name || add.country.name || add.country.iso2 || String(add.country);
     }
     delete add?.custom_json;
     delete add?.otherAddressType;

@@ -19,6 +19,7 @@ import useAddToCartModal from "./useAddToCartModal";
 import { useAccounts, useWishlist, useThemeConfig } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
 import useScrollRestoration from "./useScrollRestoration";
+import { prefetchCache } from "../../helper/prefetch-cache";
 
 const INFINITE_PAGE_SIZE = 12;
 const PAGES_TO_SHOW = 5;
@@ -58,6 +59,7 @@ const useProductListing = ({ fpi, props }) => {
     fpi,
     page: "product-listing",
   });
+
   const {
     desktop_banner = "",
     mobile_banner = "",
@@ -303,6 +305,49 @@ const useProductListing = ({ fpi, props }) => {
 
       if (loading_options === "pagination") payload.pageNo = pageNo || 1;
 
+      // Check prefetch cache before making a network request
+      const CACHE_KEY = `plp-${location?.search || ""}`;
+      const cached = prefetchCache.get(CACHE_KEY);
+
+      if (cached?.products) {
+        // Cache hit: render instantly with prefetched data (no shimmer)
+        fpi.custom.setValue("customProductList", cached.products);
+        setProductList(cached.products?.items || []);
+        setApiLoading(false);
+        setIsPageLoading(false);
+        prefetchCache.delete(CACHE_KEY);
+        // If prefetch fetched fewer items than page_size, silently refetch
+        const prefetchedCount = cached.products?.items?.length ?? 0;
+        if (prefetchedCount < pageSize) {
+          fetchProducts(payload);
+        }
+        return;
+      }
+
+      // Prefetch in-flight: piggyback on it instead of starting a duplicate request
+      const pending = prefetchCache.getPending(CACHE_KEY);
+      if (pending) {
+        let cancelled = false;
+        pending.then(() => {
+          if (cancelled) return;
+          const result = prefetchCache.get(CACHE_KEY);
+          if (result?.products) {
+            fpi.custom.setValue("customProductList", result.products);
+            setProductList(result.products?.items || []);
+            setApiLoading(false);
+            setIsPageLoading(false);
+            prefetchCache.delete(CACHE_KEY);
+          } else {
+            // Prefetch failed — fall back to normal fetch
+            fetchProducts(payload);
+          }
+        });
+        return () => {
+          cancelled = true;
+        };
+      }
+
+      // No cache, no in-flight — fetch normally
       fetchProducts(payload);
     }
   }, [location?.search, pincode, locationDetails, pageSize]);
@@ -441,9 +486,17 @@ const useProductListing = ({ fpi, props }) => {
     const searchParams = isClient ? new URLSearchParams(queryString) : null;
     const params = Array.from(searchParams?.entries() || []);
 
+    // Get valid filter keys from the filters array
+    const validFilterKeys = new Set(
+      (filters || []).map((filter) => filter?.key?.name).filter(Boolean)
+    );
+
     const result = params.reduce((acc, [key, value]) => {
       if (key !== "page_no" && key !== "sort_on" && key !== "q") {
-        acc.push(`${key}:${value}`);
+        // Only include filters that are in the valid filter keys list
+        if (validFilterKeys.has(key)) {
+          acc.push(`${key}:${value}`);
+        }
       }
       return acc;
     }, []);
@@ -472,10 +525,8 @@ const useProductListing = ({ fpi, props }) => {
         const newValues = existingValues.filter((v) => v !== value);
         searchParams.delete(name);
         newValues.forEach((v) => searchParams.append(name, v));
-      } else {
-        if (!existingValues.includes(value)) {
-          searchParams.append(name, value);
-        }
+      } else if (!existingValues.includes(value)) {
+        searchParams.append(name, value);
       }
     }
     searchParams?.delete("page_no");
@@ -697,7 +748,7 @@ const useProductListing = ({ fpi, props }) => {
     title: searchParams.get("q")
       ? `${t("resource.common.result_for")} "${searchParams.get("q")}"`
       : "",
-    description: description,
+    description,
     filterList,
     selectedFilters,
     sortList: sortOn,
@@ -733,9 +784,7 @@ const useProductListing = ({ fpi, props }) => {
     imagePlaceholder: productPlaceholder,
     showAddToCart:
       !isInternational && show_add_to_cart && !globalConfig?.disable_cart,
-    actionButtonText: card_cta_text
-      ? card_cta_text
-      : t("resource.common.add_to_cart"),
+    actionButtonText: card_cta_text || t("resource.common.add_to_cart"),
     stickyFilterTopOffset: headerHeight + 30,
     onResetFiltersClick: resetFilters,
     onColumnCountUpdate: handleColumnCountUpdate,
@@ -749,7 +798,7 @@ const useProductListing = ({ fpi, props }) => {
     // New function to handle product navigation
     onProductNavigation: handleProductNavigation,
     showColorVariants: globalConfig?.show_color_variants,
-    filterToggle: globalConfig?.filter_toggle_button
+    filterToggle: globalConfig?.filter_toggle_button,
   };
 };
 

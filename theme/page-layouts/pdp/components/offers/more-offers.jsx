@@ -12,6 +12,7 @@ function MoreOffers({
   promotionsList,
   sidebarActiveTab,
   onCloseDialog,
+  show_description = false,
 }) {
   const { t } = useGlobalTranslation("translation");
   const [activeTab, setActiveTab] = useState("coupons");
@@ -136,6 +137,15 @@ function MoreOffers({
                           </span>
                         </div>
                       )}
+                      {show_description &&
+                        activeTab === "coupons" &&
+                        item?.bodyText && (
+                          <div className={` ${styles.offerCardTitle}`}>
+                            <span className={styles.offerCardDescription}>
+                              {item?.bodyText}
+                            </span>
+                          </div>
+                        )}
                     </div>
                   )}
                   {item.offer_text && (

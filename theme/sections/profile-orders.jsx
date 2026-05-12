@@ -27,6 +27,8 @@ import { useAddressFormSchema, useSnackbar } from "../helper/hooks";
 import { usePolling } from "../helper/hooks/usePolling";
 import { detectMobileWidth, getGroupedShipmentBags } from "../helper/utils";
 import styles from "../styles/canvas-profile.less";
+import ProfileEmptyState from "@gofynd/theme-template/pages/profile/components/empty-state/empty-state";
+import "@gofynd/theme-template/pages/profile/components/empty-state/empty-state.css";
 
 export function Component({ props, blocks, preset, globalConfig }) {
   const fpi = useFPI();
@@ -534,7 +536,11 @@ export function Component({ props, blocks, preset, globalConfig }) {
           (ordersList?.items?.length === 0 ? (
             show_empty_state ? (
               <div className={styles.emptyState}>
-                <EmptyState title={t("resource.common.empty_state")} />
+                <ProfileEmptyState
+                  title={t("resource.common.empty_state")}
+                  btnTitle={t("resource.common.return_home")}
+                  onBtnClick={() => navigate("/")}
+                />
               </div>
             ) : (
               <div className={styles.emptyState}>

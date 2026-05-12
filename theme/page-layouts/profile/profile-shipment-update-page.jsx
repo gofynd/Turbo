@@ -207,10 +207,10 @@ function ProfileShipmentUpdatePage({ fpi }) {
   }, [shipmentDetails?.bags, params?.type]);
 
   const includesIgnoreCase = (str = "", keyword = "") =>
-    str?.toLowerCase().includes(keyword?.toLowerCase());
+    str?.toLowerCase()?.includes(keyword?.toLowerCase());
 
   const includesIgnoreCaseArr = (str = "", arr = []) =>
-    arr.some((item) => str.toLowerCase().includes(item.toLowerCase()));
+    arr.some((item) => str?.toLowerCase()?.includes(item?.toLowerCase()));
 
   const refundTypes = ["store credits", "settle off", "refund to source"];
 
@@ -1674,7 +1674,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
         suffix.trim() === ""
           ? upiSuggestions
           : upiSuggestions.filter((suggestion) =>
-              suggestion.toLowerCase().includes(suffix.toLowerCase())
+              suggestion?.toLowerCase()?.includes(suffix?.toLowerCase())
             );
       setFilteredUPISuggestions(filtered);
       setUPIAutoComplete(true);
@@ -1980,7 +1980,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                           <React.Fragment key={option.display_name}>
                             <div
                               className={styles.optionContainer}
-                              id={`refund-option-${option.display_name.toLowerCase().replace(/\s+/g, "-")}`}
+                              id={`refund-option-${option?.display_name?.toLowerCase()?.replace(/\s+/g, "-")}`}
                             >
                               <label className={styles.optionLabel}>
                                 <div className={styles.radioWrapper}>
@@ -2030,7 +2030,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
                                       setOtherUPI(false);
 
                                       setTimeout(() => {
-                                        const optionId = `refund-option-${option.display_name.toLowerCase().replace(/\s+/g, "-")}`;
+                                        const optionId = `refund-option-${option.display_name?.toLowerCase()?.replace(/\s+/g, "-")}`;
                                         document
                                           .getElementById(optionId)
                                           ?.scrollIntoView({
@@ -2272,8 +2272,8 @@ function ProfileShipmentUpdatePage({ fpi }) {
                                     <MessageCard
                                       message={
                                         option.display_name
-                                          .toLowerCase()
-                                          .includes("store credit")
+                                          ?.toLowerCase()
+                                          ?.includes("store credit")
                                           ? t(
                                               "resource.refund_order.refund_will_be_processed_instantly_store_creadit_msg"
                                             )

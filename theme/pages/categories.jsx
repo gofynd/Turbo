@@ -1,16 +1,17 @@
 import React, { useCallback, useMemo } from "react";
 
 import { SectionRenderer } from "fdk-core/components";
-import { useGlobalStore } from "fdk-core/utils";
+import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { useLocation } from "react-router-dom";
+import { CategoriesPageShimmer } from "../components/core/skeletons";
 import { sanitizeHTMLTag, isRunningOnClient } from "../helper/utils";
-import { useGlobalTranslation } from "fdk-core/utils";
 import { useThemeConfig } from "../helper/hooks";
 import { getHelmet } from "../providers/global-provider";
 
 function Categories({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const { t } = useGlobalTranslation("translation");
+  const customValues = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
   const THEME = useGlobalStore(fpi.getters.THEME);
   const CONFIGURATION = useGlobalStore(fpi.getters.CONFIGURATION);
   const location = useLocation();
@@ -117,25 +118,36 @@ function Categories({ fpi }) {
     CONFIGURATION?.application?.logo?.secure_url,
   ]);
 
+  const isPageReady = page?.value === "categories";
+
+  if (!isPageReady) {
+    if (customValues?.categoriesShowShimmer === true) {
+      return (
+        <div className="basePageContainer margin0auto">
+          <CategoriesPageShimmer categoryCount={12} />
+        </div>
+      );
+    }
+    return null;
+  }
+
   return (
-    page?.value === "categories" && (
-      <>
-        {getHelmet({
-          title: pageTitle,
-          description,
-          image: socialImage,
-          canonicalUrl,
-          url: pageUrl,
-          siteName: brandName,
-          ogType: "website",
-        })}
-        <SectionRenderer
-          sections={sections}
-          fpi={fpi}
-          globalConfig={globalConfig}
-        />
-      </>
-    )
+    <>
+      {getHelmet({
+        title: pageTitle,
+        description,
+        image: socialImage,
+        canonicalUrl,
+        url: pageUrl,
+        siteName: brandName,
+        ogType: "website",
+      })}
+      <SectionRenderer
+        sections={sections}
+        fpi={fpi}
+        globalConfig={globalConfig}
+      />
+    </>
   );
 }
 

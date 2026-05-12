@@ -45,6 +45,8 @@
       "size_selection_style": "Kiểu lựa chọn kích thước",
       "dropdown_style": "Kiểu thả xuống",
       "block_style": "Kiểu khối",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Ẩn kích thước đơn",
       "price_tax_label_text": "Văn bản nhãn giá thuế",
       "redirect_link": "Liên kết chuyển hướng",

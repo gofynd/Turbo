@@ -81,6 +81,7 @@ export function Component({ props, blocks, globalConfig, preset }) {
   const shouldOpenInNewTab =
     open_in_new_tab?.value === true || open_in_new_tab?.value === "true";
   const windowWidth = useWindowWidth();
+  const navigate = useNavigate();
 
   const plugins = useMemo(() => {
     if (autoplay?.value) {
@@ -95,38 +96,37 @@ export function Component({ props, blocks, globalConfig, preset }) {
     return [];
   }, [autoplay?.value, slide_interval?.value]);
 
-  // Only use mediaLayout when height_mode is explicitly configured
   const hasHeightConfig =
     height_mode?.value &&
     height_mode.value !== "auto" &&
     (height_mode.value === "aspect_ratio" ||
       height_mode.value === "fixed_height");
 
-  const mediaLayout = hasHeightConfig
-    ? getMediaLayout(
-        {
-          height_mode,
-          desktop_height,
-          mobile_height,
-          desktop_aspect_ratio,
-          mobile_aspect_ratio,
-        },
-        windowWidth <= 768,
-        16 / 5
-      )
-    : null;
+  const mediaLayout =
+    (hasHeightConfig
+      ? getMediaLayout(
+          {
+            height_mode,
+            desktop_height,
+            mobile_height,
+            desktop_aspect_ratio,
+            mobile_aspect_ratio,
+          },
+          windowWidth <= 768,
+          16 / 5
+        )
+      : null) || {};
+
+  const isAspectRatio = mediaLayout?.isAspectRatio ?? false;
+  const isFixedHeight = mediaLayout?.isFixedHeight ?? false;
+  const mediaWrapperStyle = mediaLayout?.style ?? undefined;
 
   const slideMediaClass = [
     styles.imageContainer,
-    mediaLayout
-      ? [
-          styles.mediaShell,
-          mediaLayout.isAspectRatio ? styles.mediaShellAspect : "",
-          mediaLayout.isFixedHeight ? styles.mediaShellFixedHeight : "",
-        ]
-      : [],
+    hasHeightConfig && styles.mediaShell,
+    isAspectRatio && styles.mediaShellAspect,
+    isFixedHeight && styles.mediaShellFixedHeight,
   ]
-    .flat()
     .filter(Boolean)
     .join(" ");
 
@@ -175,7 +175,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
                 ? HORIZONTAL_SPACING_TABLET
                 : HORIZONTAL_SPACING_DESKTOP;
           }
-
           break;
 
         case "top_center":
@@ -189,7 +188,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
             positions[`--left-position-${view}`] = "50%";
             positions[`--transform-${view}`] = "translateX(-50%)";
           }
-
           break;
 
         case "top_end":
@@ -205,7 +203,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
                 ? HORIZONTAL_SPACING_TABLET
                 : HORIZONTAL_SPACING_DESKTOP;
           }
-
           break;
 
         case "center_start":
@@ -215,7 +212,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
             view === "mobile"
               ? HORIZONTAL_SPACING_TABLET
               : HORIZONTAL_SPACING_DESKTOP;
-
           break;
 
         case "center_center":
@@ -227,7 +223,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
             positions[`--left-position-${view}`] = "50%";
             positions[`--transform-${view}`] = "translate(-50%, -50%)";
           }
-
           break;
 
         case "center_end":
@@ -237,7 +232,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
             view === "mobile"
               ? HORIZONTAL_SPACING_TABLET
               : HORIZONTAL_SPACING_DESKTOP;
-
           break;
 
         case "bottom_start":
@@ -253,7 +247,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
                 ? HORIZONTAL_SPACING_TABLET
                 : HORIZONTAL_SPACING_DESKTOP;
           }
-
           break;
 
         case "bottom_center":
@@ -267,7 +260,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
             positions[`--left-position-${view}`] = "50%";
             positions[`--transform-${view}`] = "translateX(-50%)";
           }
-
           break;
 
         case "bottom_end":
@@ -284,7 +276,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
                 ? HORIZONTAL_SPACING_TABLET
                 : HORIZONTAL_SPACING_DESKTOP;
           }
-
           break;
 
         default:
@@ -299,7 +290,6 @@ export function Component({ props, blocks, globalConfig, preset }) {
     paddingTop: `${padding_top?.value ?? 0}px`,
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
-  const navigate = useNavigate();
   return (
     <section className="remove-horizontal-scroll" style={dynamicStyles}>
       <Carousel
@@ -313,7 +303,7 @@ export function Component({ props, blocks, globalConfig, preset }) {
               {block.type === "gallery" ? (
                 <div
                   className={`${styles.blockItem} ${slideMediaClass}`}
-                  style={mediaLayout?.style}
+                  style={mediaWrapperStyle}
                 >
                   <FDKLink
                     to={
@@ -356,19 +346,12 @@ export function Component({ props, blocks, globalConfig, preset }) {
                       sources={getImgSrcSet(block, globalConfig, index)}
                       defer={index >= 1}
                       alt={block?.name || `slide-${index}`}
-                      {...(mediaLayout
-                        ? {
-                            isFixedAspectRatio: mediaLayout.isAspectRatio,
-                            aspectRatio: mediaLayout.aspectRatio ?? 16 / 5,
-                            mobileAspectRatio:
-                              mediaLayout.mobileAspectRatio ?? 3 / 4,
-                            isImageFill:
-                              mediaLayout.isAspectRatio ||
-                              mediaLayout.isFixedHeight,
-                          }
-                        : {
-                            isFixedAspectRatio: false,
-                          })}
+                      isFixedAspectRatio={isAspectRatio}
+                      aspectRatio={mediaLayout?.aspectRatio ?? 16 / 5}
+                      mobileAspectRatio={
+                        mediaLayout?.mobileAspectRatio ?? 3 / 4
+                      }
+                      isImageFill={isAspectRatio || isFixedHeight}
                     />
                   </FDKLink>
                 </div>

@@ -417,7 +417,7 @@
       "mobile_aspect_ratio": "Mobile Aspect Ratio",
       "aspect_ratio_help_text": "Enter ratios like 16:9, 3:1 or 100/37. Leave empty for default.",
       "see_all": "SEE ALL",
-"shipment_id": "Shipment ID",
+      "shipment_id": "Shipment ID",
       "no_product_found": "No Product Found",
       "select_payment_option": "Select a payment option to place order",
       "error_numbers_not_allowed": "Numbers are not allowed",
@@ -484,6 +484,7 @@
       "yes_caps": "YES",
       "no_caps": "NO",
       "confirm": "Confirm",
+      "limited_stock_label": "Hurry! Only {{qty}} Left",
       "social_accounts": {
         "continue_as": "Continue as",
         "login_with_facebook": "Login with Facebook",
@@ -1143,7 +1144,8 @@
       "reattempt_on": "Reattempt On",
       "choose_reattempt_date": "Choose when you'd like to schedule your delivery reattempt.",
       "address_details": "Address Details",
-      "max_characters_250": "Maximum allowed charcters is 250"
+      "max_characters_250": "Maximum allowed charcters is 250",
+      "email_updated_successfully": "Email updated successfully"
     },
     "footer": {
       "footer_logo_alt_text": "Footer Logo",

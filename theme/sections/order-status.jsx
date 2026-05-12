@@ -8,7 +8,10 @@ import CartGiftItem from "@gofynd/theme-template/pages/order-status/components/c
 import PriceBreakup from "@gofynd/theme-template/components/price-breakup/price-breakup";
 import FyButton from "@gofynd/theme-template/components/core/fy-button/fy-button";
 import "@gofynd/theme-template/components/core/fy-button/fy-button.css";
-import "@gofynd/theme-template/pages/order-status/order-status.css";
+import "@gofynd/theme-template/components/bag/bag.css";
+import "@gofynd/theme-template/components/accordion/accordion.css";
+import "@gofynd/theme-template/components/price-breakup/price-breakup.css";
+import "@gofynd/theme-template/pages/order-status/components/cart-gift-item/cart-gift-item.css";
 import TrueCheckIcon from "../assets/images/true-check.svg";
 import {
   numberWithCommas,
@@ -365,6 +368,11 @@ function ProductItem({
                   )}
                 </div>
               )}
+              {markedPrice > 0 && markedPrice > effectivePrice && (
+                <div className={styles.discount}>
+                  {Math.round(((markedPrice - effectivePrice) / markedPrice) * 100)}% OFF
+                </div>
+              )}
             </div>
             {accordionContent.length > 0 && (
               <div className={styles.productCustomizationContainer}>
@@ -517,6 +525,19 @@ function DeliveryAddress({ orderData, isLoggedIn, t }) {
     }
   };
 
+  const getPhoneNumber = (addr) => {
+    const countryCode = addr?.country_code || addr?.country_phone_code;
+    const phone = addr?.phone;
+
+    if (!phone) return null;
+
+    if (countryCode) {
+      return `${countryCode} ${phone}`;
+    }
+
+    return phone;
+  };
+
   const getAddressData = orderData?.shipments?.[0]?.delivery_address || {
     name: t("resource.order.john_doe"),
     address_type: "Home",
@@ -544,7 +565,7 @@ function DeliveryAddress({ orderData, isLoggedIn, t }) {
         </div>
         <div className={styles["address-phone"]}>
           <div className={styles.address}>{getFullAddress(getAddressData)}</div>
-          <div className={styles.phone}>{getAddressData?.phone}</div>
+          <div className={styles.phone}>{getPhoneNumber(getAddressData)}</div>
         </div>
       </div>
     </div>

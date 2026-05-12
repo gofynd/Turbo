@@ -76,8 +76,9 @@ function ProdDesc({ product, config, customClass }) {
     <div className={customClass}>
       {isDisplayDataAvailable() && (
         <div
-          className={`${styles.descContainerMobile} ${isDescriptionTabs() && styles.isDesktopHidden
-            }`}
+          className={`${styles.descContainerMobile} ${
+            isDescriptionTabs() && styles.isDesktopHidden
+          }`}
         >
           {productDescription?.details?.length > 0 && (
             <FyAccordion isOpen={config?.first_accordian_open?.value}>
@@ -119,10 +120,11 @@ function ProdDesc({ product, config, customClass }) {
                   <div className="h5">{attribute.title}</div>,
                   <div className={styles.pdpDetail}>
                     <ul
-                      className={`b2  ${config?.product_details_bullets?.value
-                        ? styles.bulletSpacing
-                        : styles.removeBullets
-                        }`}
+                      className={`b2  ${
+                        config?.product_details_bullets?.value
+                          ? styles.bulletSpacing
+                          : styles.removeBullets
+                      }`}
                     >
                       {attribute.details.map((property, val) => (
                         <li key={`${val}${index}`}>
@@ -167,17 +169,21 @@ function ProdDesc({ product, config, customClass }) {
                 {productDescription.title}
               </button>
             )}
-            {getGroupedAttributes().map((attribute) => (
-              <button
-                type="button"
-                key={attribute.tabId}
-                className={`${styles.tabs} ${activeTab === attribute.tabId && styles.active
-                  }`}
-                onClick={() => setActiveTab(attribute.tabId)}
-              >
-                {attribute.title}
-              </button>
-            ))}
+            {getGroupedAttributes().map(
+              (attribute) =>
+                attribute?.details?.length > 0 && (
+                  <button
+                    type="button"
+                    key={attribute.tabId}
+                    className={`${styles.tabs} ${
+                      activeTab === attribute.tabId && styles.active
+                    }`}
+                    onClick={() => setActiveTab(attribute.tabId)}
+                  >
+                    {attribute.title}
+                  </button>
+                )
+            )}
           </div>
           {isDisplayDataAvailable() && (
             <div className={`b2 ${styles.details}`}>

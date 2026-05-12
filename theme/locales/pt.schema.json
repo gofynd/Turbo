@@ -45,6 +45,8 @@
       "size_selection_style": "Estilo de seleção de tamanho",
       "dropdown_style": "Estilo suspenso",
       "block_style": "Estilo de bloco",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Ocultar tamanho único",
       "price_tax_label_text": "Texto do rótulo do imposto sobre o preço",
       "redirect_link": "Link de redirecionamento",

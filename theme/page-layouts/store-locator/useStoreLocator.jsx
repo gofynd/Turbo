@@ -410,7 +410,7 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
         if (!value) {
           return;
         }
-        const normalized = value.toLowerCase();
+        const normalized = value?.toLowerCase();
         if (!seen.has(normalized)) {
           seen.set(normalized, value);
         }
@@ -419,7 +419,7 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
       return Array.from(seen.values())
         .sort((a, b) => a.localeCompare(b))
         .map((value) => ({
-          key: `${field}-${value.toLowerCase().replace(/\s+/g, "-")}`,
+          key: `${field}-${value?.toLowerCase().replace(/\s+/g, "-")}`,
           display: value,
         }));
     },
@@ -543,20 +543,23 @@ const useStoreLocator = ({ fpi, stores: propStores = [] }) => {
   };
 
   // Handle city change - clear search when city is selected
-  const handleCityChange = useCallback((e) => {
-    const value = e?.target?.value || "";
-    setCityValue(value);
+  const handleCityChange = useCallback(
+    (e) => {
+      const value = e?.target?.value || "";
+      setCityValue(value);
 
-    // Clear search when city is selected
-    if (value && searchValue) {
-      setSearchValue("");
-    }
+      // Clear search when city is selected
+      if (value && searchValue) {
+        setSearchValue("");
+      }
 
-    // Clear selected store when city changes
-    if (selectedStore) {
-      setSelectedStore(null);
-    }
-  }, [searchValue, selectedStore]);
+      // Clear selected store when city changes
+      if (selectedStore) {
+        setSelectedStore(null);
+      }
+    },
+    [searchValue, selectedStore]
+  );
 
   // Handle get direction click - redirect to Google Maps
   const handleGetDirection = useCallback((store) => {

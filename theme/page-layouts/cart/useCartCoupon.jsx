@@ -20,18 +20,22 @@ const useCartCoupon = ({
   currentStepIdx = null,
   setIsLoading = () => {},
   setCheckoutAmount = () => {},
-  mopPayload = {},
 }) => {
   const { t } = useGlobalTranslation("translation");
   const coupons = useGlobalStore(fpi.getters.COUPONS);
+  const {
+    validateCouponPayload,
+    creditValidateCouponPayload,
+    inValidCouponData,
+    isCouponValid = true,
+    creditNoteApplied,
+  } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
   const { showSnackbar } = useSnackbar();
 
   const [isCouponListModalOpen, setIsCouponListModalOpen] = useState(false);
   const [isCouponSuccessModalOpen, setIsCouponSuccessModalOpen] =
     useState(false);
   const [error, setError] = useState(null);
-  const [isCouponValid, setIsCouponValid] = useState(true);
-  const [inValidCouponData, setInvalidCouponData] = useState({});
   const [searchParams] = useSearchParams();
 
   const buyNow = JSON.parse(searchParams?.get("buy_now") || "false");
@@ -67,16 +71,23 @@ const useCartCoupon = ({
   };
 
   const validateCoupon = async (payload) => {
-    const res = await fpi.executeGQL(VALIDATE_COUPON, payload);
+    let res = null;
+    if (creditNoteApplied && creditValidateCouponPayload) {
+      res = await fpi.executeGQL(VALIDATE_COUPON, creditValidateCouponPayload);
+    }
+    if (res?.data?.validateCoupon?.coupon_validity?.valid) {
+      res = await fpi.executeGQL(VALIDATE_COUPON, payload);
+    } else if (!creditNoteApplied) {
+      res = await fpi.executeGQL(VALIDATE_COUPON, payload);
+    }
     fpi.custom.setValue(
       "isCouponValid",
       res?.data?.validateCoupon?.coupon_validity?.valid
     );
-    setInvalidCouponData({
+    fpi.custom.setValue("inValidCouponData", {
       title: res?.data?.validateCoupon?.coupon_validity?.title,
       message: res?.data?.validateCoupon?.coupon_validity?.display_message_en,
     });
-    setIsCouponValid(res?.data?.validateCoupon?.coupon_validity?.valid);
   };
 
   const couponPaymentOptions = (data) => {
@@ -135,8 +146,8 @@ const useCartCoupon = ({
           couponError.isUserFacing = true;
           throw couponError;
         }
-        if (mopPayload) {
-          validateCoupon(mopPayload);
+        if (validateCouponPayload) {
+          validateCoupon(validateCouponPayload);
         }
         fpi.custom.setValue("isCouponApplied", couponBreakup.is_applied);
         setIsLoading(true);
@@ -207,7 +218,6 @@ const useCartCoupon = ({
     onApplyCouponClick,
     onRemoveCouponClick,
     isCouponValid,
-    setIsCouponValid,
     inValidCouponData,
   };
 };

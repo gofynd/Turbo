@@ -122,7 +122,7 @@ const useCompare = (fpi) => {
       });
   };
 
-  const fetchSuggestions = async (searchQuery) => {
+  const fetchSuggestions = async (searchQuery, currentCategory) => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -140,8 +140,8 @@ const useCompare = (fpi) => {
         values.search = searchQuery.trim();
       }
 
-      if (category?.keyValue?.firstValue) {
-        values.filterQuery = `${category.keyValue.key}:${category.keyValue.firstValue}`;
+      if (currentCategory?.keyValue?.firstValue) {
+        values.filterQuery = `${currentCategory.keyValue.key}:${currentCategory.keyValue.firstValue}`;
       }
 
       const res = await fpi.executeGQL(SEARCH_PRODUCT, values, {
@@ -165,8 +165,8 @@ const useCompare = (fpi) => {
   };
 
   const debouncedFetchSuggestions = useRef(
-    debounce((searchQuery) => {
-      fetchSuggestions(searchQuery);
+    debounce((searchQuery, currentCategory) => {
+      fetchSuggestions(searchQuery, currentCategory);
     }, 400)
   ).current;
 
@@ -228,6 +228,39 @@ const useCompare = (fpi) => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Sync category from global store (SSR hydration case)
+  // This ensures category is updated if SSR data arrives after initial render
+  useEffect(() => {
+    if (
+      compare_category_details?.keyValue?.firstValue &&
+      !category?.keyValue?.firstValue
+    ) {
+      setCategory(compare_category_details);
+    }
+  }, [compare_category_details?.keyValue?.firstValue]);
+
+  // Check on mount if localStorage slugs differ from SSR data
+  // This handles the case when user navigates from PDP after adding to compare
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+
+      const localStorageSlugs = initializeSlugs();
+      const ssrProductSlugs = compare_product_data?.map((p) => p.slug) || [];
+
+      // Check if localStorage has different slugs than what SSR fetched
+      const slugsMatch =
+        localStorageSlugs.length === ssrProductSlugs.length &&
+        localStorageSlugs.every((slug) => ssrProductSlugs.includes(slug));
+
+      if (!slugsMatch && localStorageSlugs.length > 0) {
+        // localStorage has different/new products, need to refetch
+        setIsSsrFetched(false);
+        setExistingSlugs(localStorageSlugs);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (!isSsrFetched) {
       if (existingSlugs.length) {
@@ -244,13 +277,26 @@ const useCompare = (fpi) => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    setSearchLoading(true);
-    debouncedFetchSuggestions(searchText.trim());
-  }, [searchText]);
+
+    // Only fetch suggestions if:
+    // 1. No products in compare (category is empty) - fetch all products
+    // 2. Products exist AND category is resolved - fetch filtered by category
+    // This prevents fetching unfiltered results when products exist but category isn't loaded yet
+    const hasProductsInCompare = existingSlugs?.length > 0;
+    const hasCategoryResolved = !!category?.keyValue?.firstValue;
+
+    if (!hasProductsInCompare || hasCategoryResolved) {
+      setSearchLoading(true);
+      // Pass current category to avoid stale closure issues
+      debouncedFetchSuggestions(searchText.trim(), category);
+    }
+  }, [searchText, category?.keyValue?.firstValue, existingSlugs?.length]);
 
   useEffect(() => {
-    if (category?.keyValue?.firstValue) {
-      fetchSuggestions("");
+    // Refetch suggestions when category becomes available
+    // This ensures we get filtered results once category is resolved
+    if (category?.keyValue?.firstValue && existingSlugs?.length > 0) {
+      fetchSuggestions("", category);
     }
   }, [category?.keyValue?.firstValue]);
 

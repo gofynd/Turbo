@@ -111,7 +111,6 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   const getBlockConfigValue = (block, id) => block?.props?.[id]?.value ?? "";
   const { showSnackbar } = useSnackbar();
-
   const imgSources = useMemo(() => {
     if (globalConfig?.img_hd) {
       return [];
@@ -134,6 +133,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       tax_label: "",
       mrp_label: false,
       show_offers: false,
+      show_description: false,
       show_logo: false,
     };
 
@@ -162,6 +162,8 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
       if (block.type === "offers") {
         currentProps.show_offers =
           getBlockConfigValue(block, "show_offers") || false;
+        currentProps.show_description =
+          getBlockConfigValue(block, "show_description") || false;
       }
 
       if (block.type === "pincode") {
@@ -178,6 +180,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   const {
     isProductDataLoading,
+    isCurrentProduct,
     productDetails,
     isLoading,
     isLoadingPriceBySize,
@@ -281,9 +284,6 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
 
   // Memoize combined images to prevent unnecessary re-renders and index resets
   const combinedImages = useMemo(() => {
-    console.log("[PDP combinedImages] media:", media?.map((m, i) => ({ i, url: m?.url?.slice(-40), type: m?.type })));
-    console.log("[PDP combinedImages] updatedImages:", updatedImages?.map((m, i) => ({ i, url: m?.url?.slice(-40), type: m?.type, index: m?.index })));
-
     if (updatedImages && Array.isArray(media) && media.length > 0) {
       // New indexed format: any image has an explicit index → replace at that position
       const hasIndexedImages = updatedImages.some(
@@ -304,13 +304,11 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
           // original image at that slot is swapped out, not duplicated
           result.splice(img.index, 1, img);
         }
-        console.log("[PDP combinedImages] result after indexed replace:", result?.map((m, i) => ({ i, url: m?.url?.slice(-40), type: m?.type })));
         // Non-indexed images fall back to prepend (legacy behavior)
         return nonIndexed.length > 0 ? [...nonIndexed, ...result] : result;
       }
       // Legacy / no-index format: prepend all updated images
       const legacyResult = [...updatedImages, ...media];
-      console.log("[PDP combinedImages] result after legacy prepend:", legacyResult?.map((m, i) => ({ i, url: m?.url?.slice(-40), type: m?.type })));
       return legacyResult;
     }
     return updatedImages || media || [];
@@ -687,7 +685,6 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                   globalConfig={globalConfig}
                   followed={followed}
                   imgSources={imgSources}
-                  isDataLoad={isPageLoading}
                   removeFromWishlist={removeFromWishlist}
                   addToWishList={addToWishList}
                   isCustomOrder={isMto}
@@ -707,6 +704,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                       : true
                   }
                   onLightboxStateChange={handleLightboxStateChange}
+                  productDetails={isCurrentProduct ? productDetails : null}
                 />
               </div>
             </div>
@@ -1333,18 +1331,36 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                                   )}
                                 </div>
                               )}
-                            {getBlockConfigValue(block, "is_limited_stock") &&
+                            {(block?.props?.is_limited_stock?.value ?? true) &&
                               productPriceBySlug?.quantity > 0 &&
                               productPriceBySlug?.quantity <=
                                 limitedStockQuantity && (
                                 <p className={styles.limitedQuantity}>
-                                  {getBlockConfigValue(
-                                    block,
-                                    "limited_stock_label"
-                                  ).replace(
-                                    /\{\{qty\}\}/g,
-                                    productPriceBySlug?.quantity
-                                  )}
+                                  {(() => {
+                                    const raw = getBlockConfigValue(
+                                      block,
+                                      "limited_stock_label"
+                                    );
+                                    const fallback = t(
+                                      "resource.common.limited_stock_label"
+                                    );
+                                    let label;
+                                    if (!raw) {
+                                      label = fallback;
+                                    } else if (raw.startsWith("t:")) {
+                                      const translated = t(raw.slice(2));
+                                      label =
+                                        translated === raw.slice(2)
+                                          ? fallback
+                                          : translated;
+                                    } else {
+                                      label = raw;
+                                    }
+                                    return label.replace(
+                                      /\{\{qty\}\}/g,
+                                      productPriceBySlug?.quantity
+                                    );
+                                  })()}
                                 </p>
                               )}
                           </div>
@@ -1767,6 +1783,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
             couponsList={coupons}
             promotionsList={promotions}
             sidebarActiveTab={sidebarActiveTab}
+            show_description={blockProps?.show_description}
           />
         </Suspense>
       )}
@@ -2123,6 +2140,12 @@ export const settings = {
           id: "show_offers",
           label: "t:resource.sections.product_description.show_offers",
           default: true,
+        },
+        {
+          type: "checkbox",
+          id: "show_description",
+          label: "t:resource.sections.product_description.show_description",
+          default: false,
         },
       ],
     },

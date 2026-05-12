@@ -45,6 +45,8 @@
       "size_selection_style": "Stijl van maatselectie",
       "dropdown_style": "Dropdown-stijl",
       "block_style": "Blokstijl",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Verberg enkele maat",
       "price_tax_label_text": "Prijsbelastinglabeltekst",
       "redirect_link": "Omleidingslink",

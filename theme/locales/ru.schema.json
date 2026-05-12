@@ -45,6 +45,8 @@
       "size_selection_style": "Стиль выбора размера",
       "dropdown_style": "Стиль раскрывающегося списка",
       "block_style": "Блочный стиль",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "Скрыть один размер",
       "price_tax_label_text": "Текст ценовой этикетки налога",
       "redirect_link": "Перенаправить ссылку",

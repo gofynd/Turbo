@@ -4,7 +4,12 @@ import styles from "./logout-modal.less";
 
 function LogoutModal({ isOpen, onClose, onConfirm }) {
   return (
-    <Modal isOpen={isOpen} closeDialog={onClose} isCancelable={true}>
+    <Modal
+      isOpen={isOpen}
+      closeDialog={onClose}
+      isCancelable={true}
+      dataModalType="logout"
+    >
       <div className={styles.logoutModalContent}>
         <div className={styles.modalHeader}>
           <h2 id="logout-modal-title" className={styles.modalTitle}>

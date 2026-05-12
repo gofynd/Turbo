@@ -97,15 +97,24 @@ const useProductDescription = ({
     [isPageLoading, cachedProductData]
   );
 
-  const product_details =
-    isPageLoading && !isEmptyOrNull(cachedProductData)
-      ? cachedProductData
-      : PRODUCT?.product_details || {};
+  const isCurrentProduct = PRODUCT?.product_details?.slug === slug;
 
-  const product_meta =
-    isPageLoading && !isEmptyOrNull(cachedProductData)
-      ? cachedProductData
-      : PRODUCT?.product_meta || {};
+  const getProductDetails = () => {
+    if (isPageLoading && !isEmptyOrNull(cachedProductData))
+      return cachedProductData;
+    if (isCurrentProduct) return PRODUCT?.product_details || {};
+    return cachedProductData || {};
+  };
+
+  const getProductMeta = () => {
+    if (isPageLoading && !isEmptyOrNull(cachedProductData))
+      return cachedProductData;
+    if (isCurrentProduct) return PRODUCT?.product_meta || {};
+    return cachedProductData || {};
+  };
+
+  const product_details = getProductDetails();
+  const product_meta = getProductMeta();
 
   const { product_price_with_fullfillment } = PRODUCT;
 
@@ -654,6 +663,7 @@ const useProductDescription = ({
 
   return {
     isProductDataLoading,
+    isCurrentProduct,
     productDetails: product_details || {},
     productMeta: product_meta?.sizes || {},
     productPriceBySlug,

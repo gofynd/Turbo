@@ -4,10 +4,12 @@ import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import { sanitizeHTMLTag } from "../helper/utils";
 import { getHelmet } from "../providers/global-provider";
 import useSeoMeta from "../helper/hooks/useSeoMeta";
+import { BrandsPageShimmer } from "../components/core/skeletons";
 
 function Brands({ fpi }) {
   const page = useGlobalStore(fpi.getters.PAGE) || {};
   const THEME = useGlobalStore(fpi.getters.THEME);
+  const customValues = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
   const { t } = useGlobalTranslation("translation");
   const seoData = page?.seo || {};
   const {
@@ -44,25 +46,36 @@ function Brands({ fpi }) {
     return normalized || seoDescription;
   }, [seoData?.description, seoDescription, sections]);
 
+  const isPageReady = page?.value === "brands";
+
+  if (!isPageReady) {
+    if (customValues?.brandsShowShimmer === true) {
+      return (
+        <div className="basePageContainer margin0auto">
+          <BrandsPageShimmer brandCount={12} />
+        </div>
+      );
+    }
+    return null;
+  }
+
   return (
-    page?.value === "brands" && (
-      <>
-        {getHelmet({
-          title,
-          description,
-          image: socialImage,
-          canonicalUrl,
-          url: pageUrl,
-          siteName: brandName,
-          ogType: "website",
-        })}
-        <SectionRenderer
-          sections={sections}
-          fpi={fpi}
-          globalConfig={globalConfig}
-        />
-      </>
-    )
+    <>
+      {getHelmet({
+        title,
+        description,
+        image: socialImage,
+        canonicalUrl,
+        url: pageUrl,
+        siteName: brandName,
+        ogType: "website",
+      })}
+      <SectionRenderer
+        sections={sections}
+        fpi={fpi}
+        globalConfig={globalConfig}
+      />
+    </>
   );
 }
 

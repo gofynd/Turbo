@@ -60,7 +60,9 @@ const FyImage = ({
   const dynamicStyles = {
     "--aspect-ratio-desktop": `${aspectRatio}`,
     "--aspect-ratio-mobile": `${mobileAspectRatio}`,
-    ...(bgColor && typeof bgColor === "string" && bgColor.trim() ? { "--bg-color": `${bgColor}` } : {}),
+    ...(bgColor && typeof bgColor === "string" && bgColor.trim()
+      ? { "--bg-color": `${bgColor}` }
+      : {}),
   };
 
   const overlayStyles = {
@@ -85,7 +87,7 @@ const FyImage = ({
 
   function isResizable() {
     const notResizableFormat = ["gif", "svg"];
-    return !notResizableFormat.includes(getImageType().toLowerCase());
+    return !notResizableFormat.includes(getImageType()?.toLowerCase());
   }
 
   const fallbackSrcset = () => {
@@ -173,8 +175,11 @@ const FyImage = ({
     // You can emit events or perform any other actions here
   };
 
-  const shouldFillImage =
-    !!(globalConfig?.img_fill || isImageCover || isImageFill);
+  const shouldFillImage = !!(
+    globalConfig?.img_fill ||
+    isImageCover ||
+    isImageFill
+  );
 
   return (
     <div

@@ -45,6 +45,8 @@
       "size_selection_style": "尺码选择款式",
       "dropdown_style": "下拉样式",
       "block_style": "块样式",
+      "show_shimmer": "Show loading shimmer",
+      "show_shimmer_info": "Show shimmer placeholder while page data is loading",
       "hide_single_size": "隐藏单个尺寸",
       "price_tax_label_text": "价格税标签文本",
       "redirect_link": "重定向链接",
