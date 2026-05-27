@@ -343,6 +343,7 @@ export const settings = {
         },
       ],
     },
+    
   ],
 };
 

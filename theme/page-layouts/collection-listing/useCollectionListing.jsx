@@ -22,10 +22,15 @@ import {
   useGlobalStore,
 } from "fdk-core/utils";
 import { prefetchCache } from "../../helper/prefetch-cache";
+import useListingScrollRestoration from "../plp/useListingScrollRestoration";
 
 const INFINITE_PAGE_SIZE = 12;
 const PAGES_TO_SHOW = 5;
 const PAGE_OFFSET = 2;
+const COLLECTION_SCROLL_RESTORE_STATE = [
+  { customKey: "customCollectionList", stateKey: "collectionListData" },
+  { customKey: "customCollection", stateKey: "collectionData" },
+];
 
 const useCollectionListing = ({ fpi, slug, props }) => {
   const { t } = useGlobalTranslation("translation");
@@ -103,6 +108,20 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     items,
   } = customCollectionList || {};
 
+  const canRestoreScroll =
+    loading_options === "infinite" || loading_options === "view_more";
+  const {
+    hasSavedState,
+    savedState,
+    isRestoringFromSavedState: isRestoringFromPDP,
+    createProductNavigationHandler,
+  } = useListingScrollRestoration({
+    fpi,
+    location,
+    canRestoreScroll,
+    restoreState: COLLECTION_SCROLL_RESTORE_STATE,
+  });
+
   const CACHE_KEY = `collection-${slug}`;
   // Prefetch only ever stores unfiltered page-1 data. If the current URL
   // has any query params (filters, sort, page_no), the cached payload
@@ -110,6 +129,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
   // the wrong products. Cache is only safe to consume on clean URLs.
   const isCacheUsable = () =>
     typeof window !== "undefined" && !location?.search;
+
   // Read cache once at mount — used by all three useState initializers below.
   // Must be a useState so the value is captured at first render only.
   const [_initialCache] = useState(() => {
@@ -118,15 +138,30 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     return prefetchCache.get(CACHE_KEY);
   });
 
-  const [productList, setProductList] = useState(
-    _initialCache ? (_initialCache.collectionItems?.items ?? undefined) : (items || undefined)
-  );
+  const [productList, setProductList] = useState(() => {
+    if (isRunningOnClient() && hasSavedState && savedState) {
+      return savedState.productList;
+    }
+    return _initialCache
+      ? (_initialCache.collectionItems?.items ?? undefined)
+      : items || undefined;
+  });
 
   const currentPage = pageInfo?.current ?? 1;
 
-  const [apiLoading, setApiLoading] = useState(_initialCache ? false : !isCollectionsSsrFetched);
+  const [apiLoading, setApiLoading] = useState(() => {
+    if (isRunningOnClient() && hasSavedState) {
+      return false;
+    }
+    return _initialCache ? false : !isCollectionsSsrFetched;
+  });
 
-  const [isPageLoading, setIsPageLoading] = useState(_initialCache ? false : !isCollectionsSsrFetched);
+  const [isPageLoading, setIsPageLoading] = useState(() => {
+    if (isRunningOnClient() && hasSavedState) {
+      return false;
+    }
+    return _initialCache ? false : !isCollectionsSsrFetched;
+  });
 
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const {
@@ -208,27 +243,31 @@ const useCollectionListing = ({ fpi, slug, props }) => {
   }, [location?.search, isClient]);
 
   useEffect(() => {
-    if (!isCollectionsSsrFetched) {
-      // Only consult the prefetch cache when the URL is clean (no filters,
-      // sort, or page_no). Prefetched data is unfiltered page 1; consuming
-      // it for any other request would render the wrong products.
-      const cacheUsable = isCacheUsable();
-      const cached = cacheUsable ? prefetchCache.get(CACHE_KEY) : null;
-      const cachePending = cacheUsable
-        ? prefetchCache.hasPending(CACHE_KEY)
-        : false;
+    // Skip API call if we're restoring from saved state
+    if (isRestoringFromPDP.current) {
+      isRestoringFromPDP.current = false;
+      return;
+    }
 
-      // If no immediate cache hit and we have stale data from a previous collection,
-      // set loading so the section shows blank instead of wrong products.
-      if (!cached?.collectionItems && !cachePending) {
-        setIsPageLoading(true);
-      }
-
+    if (!isCollectionsSsrFetched || locationDetails || location?.search) {
       // Build payload — needed for both cache-miss and background-refetch paths
       const searchParams = isClient
         ? new URLSearchParams(location?.search)
         : null;
       const pageNo = Number(searchParams?.get("page_no"));
+      // Only consult the prefetch cache when the URL is clean (no filters,
+      // sort, or page_no). Prefetched data is unfiltered page 1; consuming
+      // it for any other request would render the wrong products.
+      const cacheUsable = isCacheUsable();
+      const cached = cacheUsable ? prefetchCache.get(CACHE_KEY) : null;
+      const pending = cacheUsable ? prefetchCache.getPending(CACHE_KEY) : null;
+
+      // If no immediate cache hit and we have stale data from a previous collection,
+      // set loading so the section shows blank instead of wrong products.
+      if (!isCollectionsSsrFetched && !cached?.collectionItems && !pending) {
+        setIsPageLoading(true);
+      }
+
       const payload = {
         slug,
         pageType: "number",
@@ -238,7 +277,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       };
       if (loading_options === "pagination") payload.pageNo = pageNo || 1;
 
-      if (cached && cached.collectionItems) {
+      if (cached?.collectionItems) {
         // Cache hit: render instantly with prefetched data (no shimmer)
         fpi.custom.setValue("customCollectionList", cached.collectionItems);
         fpi.custom.setValue("customCollection", cached.collection);
@@ -256,7 +295,6 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       }
 
       // Prefetch in-flight: piggyback on it instead of starting a duplicate request
-      const pending = cacheUsable ? prefetchCache.getPending(CACHE_KEY) : null;
       if (pending) {
         let cancelled = false;
         pending.then(() => {
@@ -275,7 +313,9 @@ const useCollectionListing = ({ fpi, slug, props }) => {
             fetchProducts(payload);
           }
         });
-        return () => { cancelled = true; }; // cancel on unmount or dep change
+        return () => {
+          cancelled = true;
+        }; // cancel on unmount or dep change
       }
 
       // No cache, no in-flight — fetch normally
@@ -625,6 +665,15 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     ];
   }, [globalConfig?.img_hd, img_resize, img_resize_mobile]);
 
+  const handleProductNavigation = createProductNavigationHandler({
+    productList,
+    items,
+    stateToSave: {
+      collectionListData: customCollectionList,
+      collectionData: customCollection,
+    },
+  });
+
   return {
     seo,
     isProductCountDisplayed: product_number,
@@ -664,9 +713,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     imagePlaceholder: productPlaceholder,
     showAddToCart:
       !isInternational && show_add_to_cart && !globalConfig?.disable_cart,
-    actionButtonText: card_cta_text
-      ? card_cta_text
-      : t("resource.common.add_to_cart"),
+    actionButtonText: card_cta_text || t("resource.common.add_to_cart"),
     addToCartModalProps,
     stickyFilterTopOffset: headerHeight + 30,
     globalConfig,
@@ -681,6 +728,8 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     onWishlistClick: handleWishlistToggle,
     onViewMoreClick: handleLoadMoreProducts,
     onLoadMoreProducts: handleLoadMoreProducts,
+    // New function to handle product navigation
+    onProductNavigation: handleProductNavigation,
   };
 };
 

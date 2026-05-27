@@ -13,6 +13,7 @@ import {
   useWishlist,
   useThemeFeature,
   useLocaleDirection,
+  useWindowWidth,
 } from "../helper/hooks";
 import { FEATURED_COLLECTION } from "../queries/collectionsQuery";
 import styles from "../styles/sections/multi-collection-product-list.less";
@@ -23,7 +24,11 @@ import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import "@gofynd/theme-template/components/core/modal/modal.css";
 import "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
 import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide.css";
-import { isRunningOnClient, getProductImgAspectRatio } from "../helper/utils";
+import {
+  isRunningOnClient,
+  getProductImgAspectRatio,
+  getEffectiveCarouselControls,
+} from "../helper/utils";
 import useAddToCartModal from "../page-layouts/plp/useAddToCartModal";
 import { FDKLink, BlockRenderer } from "fdk-core/components";
 import { useNavigate } from "react-router-dom";
@@ -33,6 +38,7 @@ import {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 } from "../components/carousel";
 const Modal = lazy(
   () => import("@gofynd/theme-template/components/core/modal/modal")
@@ -107,6 +113,19 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
     tablet: per_row?.value > 2 ? 3 : 2,
     mobile: activeCollectionItems?.length >= 2 ? 2 : 1,
   };
+  const windowWidth = useWindowWidth();
+  const isDesktop = windowWidth >= 769;
+  const itemsPerView = isDesktop
+    ? columnCount.desktop
+    : windowWidth <= 480
+      ? columnCount.mobile
+      : columnCount.tablet;
+  const { showArrows, showDots } = getEffectiveCarouselControls(
+    globalConfig,
+    isDesktop,
+    activeCollectionItems?.length ?? 0,
+    itemsPerView
+  );
 
   const {
     handleAddToCart,
@@ -362,8 +381,17 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                         </CarouselItem>
                       ))}
                     </CarouselContent>
-                    <CarouselPrevious className={styles.carouselBtn} />
-                    <CarouselNext className={styles.carouselBtn} />
+                    {showArrows && (
+                      <>
+                        <CarouselPrevious className={styles.carouselBtn} />
+                        <CarouselNext className={styles.carouselBtn} />
+                      </>
+                    )}
+                    {showDots && (
+                      <CarouselDots
+                        productsPerRow={columnCount.mobile}
+                      />
+                    )}
                   </Carousel>
                 </div>
               )}
@@ -402,6 +430,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                 <AddToCart
                   {...restAddToModalProps}
                   globalConfig={globalConfig}
+                  isServiceable={is_serviceable}
                 />
               </Modal>
             </Suspense>

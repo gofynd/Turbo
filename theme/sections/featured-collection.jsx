@@ -18,7 +18,10 @@ import {
   useThemeFeature,
   useWindowWidth,
 } from "../helper/hooks";
-import { getProductImgAspectRatio } from "../helper/utils";
+import {
+  getProductImgAspectRatio,
+  getEffectiveCarouselControls,
+} from "../helper/utils";
 import "@gofynd/theme-template/page-layouts/plp/Components/size-guide/size-guide.css";
 import "@gofynd/theme-template/page-layouts/plp/Components/add-to-cart/add-to-cart.css";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
@@ -28,6 +31,7 @@ import {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 } from "../components/carousel";
 
 const Modal = React.lazy(
@@ -120,6 +124,7 @@ export function Component({ props, globalConfig }) {
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const i18nDetails = useGlobalStore(fpi.getters.i18N_DETAILS);
   const [isClient, setIsClient] = useState(false);
+  const [breakpoint, setBreakpoint] = useState("desktop");
 
   const imagesForScrollView = useMemo(() => {
     if (!getGallery) return [];
@@ -127,7 +132,47 @@ export function Component({ props, globalConfig }) {
   }, [getGallery, max_count?.value]);
   const { isRTL } = useLocaleDirection();
 
+  const isDesktop = breakpoint === "desktop";
+  const itemsPerView =
+    breakpoint === "desktop"
+      ? desktopCount
+      : breakpoint === "tablet"
+        ? 3
+        : itemCountMobile;
+  const { showArrows, showDots } = getEffectiveCarouselControls(
+    globalConfig,
+    isDesktop,
+    imagesForScrollView?.length ?? 0,
+    itemsPerView
+  );
+
+  useEffect(() => {
+    const mqDesktop = window.matchMedia("(min-width: 780px)");
+    const mqTablet = window.matchMedia(
+      "(min-width: 480px) and (max-width: 779px)"
+    );
+    const update = () => {
+      if (mqDesktop.matches) setBreakpoint("desktop");
+      else if (mqTablet.matches) setBreakpoint("tablet");
+      else setBreakpoint("mobile");
+    };
+    update();
+    mqDesktop.addEventListener("change", update);
+    mqTablet.addEventListener("change", update);
+    return () => {
+      mqDesktop.removeEventListener("change", update);
+      mqTablet.removeEventListener("change", update);
+    };
+  }, []);
+
   const itemLength = imagesForScrollView.length;
+  const loop =
+    itemLength >
+    (breakpoint === "desktop"
+      ? desktopCount
+      : breakpoint === "tablet"
+        ? 3
+        : itemCountMobile);
 
   const config = useMemo(
     () => ({
@@ -461,8 +506,18 @@ export function Component({ props, globalConfig }) {
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className={styles.carouselBtn} />
-                  <CarouselNext className={styles.carouselBtn} />
+                  {showArrows && (
+                    <>
+                      <CarouselPrevious className={styles.carouselBtn} />
+                      <CarouselNext className={styles.carouselBtn} />
+                    </>
+                  )}
+                  {showDots && (
+                    <CarouselDots
+                      breakpoint={breakpoint}
+                      productsPerRow={itemCountMobile}
+                    />
+                  )}
                 </Carousel>
               </div>
               {show_view_all?.value && (
@@ -664,8 +719,18 @@ export function Component({ props, globalConfig }) {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className={styles.carouselBtn} />
-              <CarouselNext className={styles.carouselBtn} />
+              {showArrows && (
+                <>
+                  <CarouselPrevious className={styles.carouselBtn} />
+                  <CarouselNext className={styles.carouselBtn} />
+                </>
+              )}
+              {showDots && (
+                <CarouselDots
+                  breakpoint={breakpoint}
+                  productsPerRow={itemCountMobile}
+                />
+              )}
             </Carousel>
           </div>
         )}

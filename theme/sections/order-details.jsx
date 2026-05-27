@@ -23,6 +23,7 @@ import {
 import OrderDeliveryIcon from "../assets/images/order-delivery.svg";
 import CrossIcon from "../assets/images/cross-black.svg";
 import DefaultImage from "../assets/images/default-image.svg";
+import ExchangeIcon from "../assets/images/exchange.svg";
 import { detectMobileWidth, translateDynamicLabel } from "../helper/utils";
 import ScheduleIcon from "../../theme/assets/images/schedule.svg";
 import OrderPendingIcon from "../assets/images/order-pending.svg";
@@ -112,6 +113,7 @@ export function Component({ blocks, globalConfig, fpi }) {
     bags: shipmentBags,
     bundleGroups,
     bundleGroupArticles,
+    freeGiftGroups,
   } = useMemo(() => {
     return getGroupedShipmentBags(shipmentDetails?.bags, {
       isPartialCheck: !!(shipmentDetails?.can_return && !initial),
@@ -130,7 +132,15 @@ export function Component({ blocks, globalConfig, fpi }) {
   const goToReasons = () => {
     if (shipmentDetails?.can_cancel || shipmentDetails?.can_return) {
       const querParams = new URLSearchParams(location.search);
-      querParams.set("selectedBagId", selectId);
+      // Include the parent bag and all its free gift children
+      const bagIdsToCancel = [selectId];
+      const freeGifts = freeGiftGroups?.[selectId] || [];
+      freeGifts.forEach((gift) => {
+        if (gift?.id) {
+          bagIdsToCancel.push(gift.id);
+        }
+      });
+      querParams.set("selectedBagId", bagIdsToCancel.join(","));
       navigate(
         goToLink + (querParams?.toString() ? `?${querParams.toString()}` : "")
       );
@@ -255,6 +265,10 @@ export function Component({ blocks, globalConfig, fpi }) {
     isPlatformConfigOff ||
     (isPlatformConfigOn && isShipmentModesOff && isCODRefund) ||
     refundMode?.refund_mode === "settle_offline";
+
+  const exchangeShipmentTag = shipmentDetails?.meta?.shipment_tags?.find(
+    (tag) => tag?.slug === "exchange"
+  )?.display_text;
 
   const breadcrumbItems = useMemo(
     () => [
@@ -389,15 +403,27 @@ export function Component({ blocks, globalConfig, fpi }) {
                     case "order_header":
                       return (
                         <>
-                          <div className={`${styles.shipmentHeader}`} key={key}>
-                            <div className="flexCenter">
-                              <OrderDeliveryIcon />
+                          <div className={styles.orderIdWrapper}>
+                            <div
+                              className={`${styles.shipmentHeader}`}
+                              key={key}
+                            >
+                              <div className="flexCenter">
+                                <OrderDeliveryIcon />
+                              </div>
+                              <div className={styles.title}>
+                                {shipmentDetails?.shipment_id}
+                              </div>
                             </div>
-                            <div className={styles.title}>
-                              {shipmentDetails?.shipment_id}
-                            </div>
+                            {exchangeShipmentTag && (
+                              <div className={styles.exchangeBadge}>
+                                <ExchangeIcon />
+                                <span className={styles.statusText}>
+                                  Exchange
+                                </span>
+                              </div>
+                            )}
                           </div>
-
                           {shipmentDetails?.shipment_status && (
                             <div className={styles.reattemptButtonCont}>
                               <div
@@ -498,6 +524,7 @@ export function Component({ blocks, globalConfig, fpi }) {
                                     bag={item}
                                     bundleGroups={bundleGroups}
                                     bundleGroupArticles={bundleGroupArticles}
+                                    freeGiftGroups={freeGiftGroups}
                                     initial={initial}
                                     onChangeValue={onselectreason}
                                     shipment={{

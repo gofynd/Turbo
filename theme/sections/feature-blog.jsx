@@ -5,18 +5,21 @@ import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import { FETCH_BLOGS_LIST } from "../queries/blogQuery";
 import { useGlobalStore, useFPI, useGlobalTranslation } from "fdk-core/utils";
-import { formatLocale } from "../helper/utils";
+import { formatLocale, getEffectiveCarouselControls } from "../helper/utils";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
+import { useWindowWidth } from "../helper/hooks";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 } from "../components/carousel";
 
 export function Component({ props, globalConfig }) {
   const fpi = useFPI();
+  const windowWidth = useWindowWidth();
   const { language, countryCode } =
     useGlobalStore(fpi.getters.i18N_DETAILS) || {};
   const locale = language?.locale || "en";
@@ -27,6 +30,14 @@ export function Component({ props, globalConfig }) {
   const { isRTL } = useLocaleDirection();
 
   const len = blogItems.length;
+  const isDesktop = windowWidth >= 769;
+  const itemsPerView = isDesktop ? 3 : 1;
+  const { showArrows, showDots } = getEffectiveCarouselControls(
+    globalConfig,
+    isDesktop,
+    len,
+    itemsPerView
+  );
 
   const options = useMemo(() => {
     return {
@@ -120,8 +131,15 @@ export function Component({ props, globalConfig }) {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className={styles.carouselBtn} />
-            <CarouselNext className={styles.carouselBtn} />
+            {showArrows && (
+              <>
+                <CarouselPrevious className={styles.carouselBtn} />
+                <CarouselNext className={styles.carouselBtn} />
+              </>
+            )}
+            {showDots && (
+              <CarouselDots productsPerRow={1} />
+            )}
           </Carousel>
         </div>
       )}

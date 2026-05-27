@@ -4,6 +4,7 @@ import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import styles from "../styles/sections/testimonials.less";
 import { useWindowWidth } from "../helper/hooks";
+import { getEffectiveCarouselControls } from "../helper/utils";
 import { useGlobalTranslation } from "fdk-core/utils";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import { BlockRenderer } from "fdk-core/components";
@@ -22,9 +23,12 @@ export function Component({ props, globalConfig, blocks, preset }) {
   const { title, autoplay, slide_interval, padding_top, padding_bottom } =
     props;
   const windowWidth = useWindowWidth();
+  const isMobile = windowWidth <= 480;
+  const isDesktop = windowWidth >= 769;
+  const itemsPerView = isMobile ? 1 : 2;
 
   const testimonialsList = useMemo(() => {
-    const blocksData = blocks?.length > 0 ? blocks : preset?.blocks;
+    const blocksData = blocks?.length > 0 ? blocks : preset?.blocks || [];
     const testimonial =
       blocksData.length !== 0 &&
       blocksData.filter(
@@ -36,25 +40,48 @@ export function Component({ props, globalConfig, blocks, preset }) {
           block.props.author_description
       );
     if (blocksData.length !== 0) {
-      if (windowWidth > 480) {
+      if (!isMobile) {
         return testimonial.slice(0, 8);
       }
       return testimonial.slice(0, 12);
     }
-  }, [blocks, preset]);
+    return [];
+  }, [blocks, preset, isMobile]);
 
-  const len = testimonialsList.length;
-  const autoplayEnabled = autoplay?.value && len > 2;
+  const shouldForceDesktopLoop =
+    isDesktop &&
+    testimonialsList.length > 1 &&
+    testimonialsList.length <= itemsPerView + 1;
+
+  // Duplicate short desktop lists so Embla can keep both arrows active and
+  // cycle testimonials the same way the mobile slider does.
+  const renderedTestimonials = useMemo(() => {
+    if (!shouldForceDesktopLoop) {
+      return testimonialsList;
+    }
+    return [...testimonialsList, ...testimonialsList];
+  }, [testimonialsList, shouldForceDesktopLoop]);
+
+  const len = renderedTestimonials.length;
+  const { showArrows, showDots } = getEffectiveCarouselControls(
+    globalConfig,
+    isDesktop,
+    shouldForceDesktopLoop ? len : testimonialsList.length,
+    itemsPerView
+  );
+  const shouldShowArrows =
+    showArrows || (shouldForceDesktopLoop && testimonialsList.length > 1);
+  const autoplayEnabled = autoplay?.value && len > itemsPerView;
   const autoplayDelay = Number(slide_interval?.value) * 1000 || 3000;
 
   const carouselProps = useMemo(() => {
     const opts = {
-      align: len > 2 ? "start" : "center",
+      align: len > itemsPerView ? "start" : "center",
       direction,
-      loop: len > 2,
+      loop: len > itemsPerView,
       draggable: true,
       containScroll: "trimSnaps",
-      slidesToScroll: 2,
+      slidesToScroll: shouldForceDesktopLoop ? 1 : itemsPerView,
       duration: 35,
       breakpoints: {
         "(max-width: 480px)": {
@@ -67,7 +94,14 @@ export function Component({ props, globalConfig, blocks, preset }) {
 
     const plugins = autoplayEnabled ? [Autoplay({ delay: autoplayDelay })] : [];
     return { opts, plugins };
-  }, [direction, len, autoplayEnabled, autoplayDelay]);
+  }, [
+    direction,
+    len,
+    itemsPerView,
+    shouldForceDesktopLoop,
+    autoplayEnabled,
+    autoplayDelay,
+  ]);
 
   const dynamicStyles = {
     paddingTop: `${padding_top?.value ?? 16}px`,
@@ -86,10 +120,10 @@ export function Component({ props, globalConfig, blocks, preset }) {
           testimonialsList?.length === 2 && styles.twoItem
         )}
       >
-        {testimonialsList?.length > 0 && (
+        {renderedTestimonials?.length > 0 && (
           <Carousel {...carouselProps}>
             <CarouselContent>
-              {testimonialsList?.map((block, index) => (
+              {renderedTestimonials?.map((block, index) => (
                 <CarouselItem key={index} className={styles.carouselItem}>
                   {block?.type === "testimonial" ? (
                     <TestimonialItem
@@ -103,10 +137,15 @@ export function Component({ props, globalConfig, blocks, preset }) {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className={styles.carouselBtn} />
-            {/* NOTE:  Enable if dots are required to be added in carousel */}
-            {/* <CarouselDots/> */}
-            <CarouselNext className={styles.carouselBtn} />
+            {shouldShowArrows && (
+              <>
+                <CarouselPrevious className={styles.carouselBtn} />
+                <CarouselNext className={styles.carouselBtn} />
+              </>
+            )}
+            {showDots && !shouldForceDesktopLoop && (
+              <CarouselDots productsPerRow={1} />
+            )}
           </Carousel>
         )}
       </div>

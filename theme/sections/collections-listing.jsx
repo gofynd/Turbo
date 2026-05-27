@@ -6,13 +6,15 @@ import { useGlobalStore, useFPI } from "fdk-core/utils";
 import placeholderImage from "../assets/images/placeholder/collections-listing.png";
 import CollectionCard from "../components/collection-card/collection-card";
 import useLocaleDirectionHook from "../helper/hooks/useLocaleDirection";
-import { isRunningOnClient } from "../helper/utils";
+import { isRunningOnClient, getEffectiveCarouselControls } from "../helper/utils";
+import { useWindowWidth } from "../helper/hooks";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 } from "../components/carousel";
 
 export function Component({ props, blocks, globalConfig, id: sectionId }) {
@@ -32,6 +34,8 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
 
   const itemsPerRowDesktop = Number(per_row?.value ?? 3);
   const itemsPerRowMobile = Number(per_row_mobile?.value ?? 1);
+  const windowWidth = useWindowWidth();
+  const isDesktop = windowWidth >= 769;
   // Keep layout decisions SSR-safe (no matchMedia branching)
   const itemsPerRow = itemsPerRowDesktop;
   const customValue = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) ?? {};
@@ -171,6 +175,13 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
   };
 
   const len = collectionsForScrollView.length;
+  const itemsPerView = isDesktop ? itemsPerRowDesktop : itemsPerRowMobile;
+  const { showArrows, showDots } = getEffectiveCarouselControls(
+    globalConfig,
+    isDesktop,
+    len,
+    itemsPerView
+  );
 
   const carouselProps = useMemo(() => {
     const opts = {
@@ -258,8 +269,15 @@ export function Component({ props, blocks, globalConfig, id: sectionId }) {
                 )
               )}
             </CarouselContent>
-            <CarouselPrevious className={styles.carouselBtn} />
-            <CarouselNext className={styles.carouselBtn} />
+            {showArrows && (
+              <>
+                <CarouselPrevious className={styles.carouselBtn} />
+                <CarouselNext className={styles.carouselBtn} />
+              </>
+            )}
+            {showDots && (
+              <CarouselDots productsPerRow={itemsPerRowMobile} />
+            )}
           </Carousel>
         </div>
       )}

@@ -35,6 +35,9 @@ function HeaderDesktop({
   onServiceabilityClick = () => {},
   languageIscCode,
   hideNavList,
+   // Mini-cart controls lifted from parent to avoid multiple renderer instances
+   openMiniCart,
+   isMiniCartEnabled,
   onLogoClick = () => {},
   shouldBeTransparent,
 }) {
@@ -48,6 +51,8 @@ function HeaderDesktop({
     show_icon_text_in_header = false,
   } = globalConfig || {};
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
+  const minicartEnabled = isMiniCartEnabled ?? globalConfig?.enable_minicart;
+  const handleOpenMiniCart = openMiniCart || (() => {});
 
   const getMenuMaxLength = () => {
     if (isDoubleRowHeader) {
@@ -80,6 +85,7 @@ function HeaderDesktop({
   const desktopLogoHeight = globalConfig?.desktop_logo_max_height || 65;
 
   return (
+    <>
     <div
       className={`${styles.headerDesktop}  ${
         styles[globalConfig.header_layout]
@@ -139,7 +145,7 @@ function HeaderDesktop({
             )}
         </div>
         <div className={`${styles.middle} ${styles.flexCenter}`}>
-          <FDKLink to="/" onClick={onLogoClick}>
+          <FDKLink to="/">
             <div
               className={styles.logoShell}
               style={{ "--logo-height": `${desktopLogoHeight}px` }}
@@ -250,7 +256,13 @@ function HeaderDesktop({
                 type="button"
                 className={`${styles.icon} ${styles["right__icons--bag"]} ${show_icon_text_in_header ? styles.navButton : ""}`}
                 aria-label={`${cartItemCount ?? 0} item in cart`}
-                onClick={() => checkLogin("cart")}
+                onClick={() => {
+                  if (minicartEnabled) {
+                    handleOpenMiniCart();
+                  } else {
+                    checkLogin("cart");
+                  }
+                }}
               >
                 <div>
                   <CartIcon
@@ -287,6 +299,7 @@ function HeaderDesktop({
         />
       )}
     </div>
+    </>
   );
 }
 

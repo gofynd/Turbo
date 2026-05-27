@@ -142,6 +142,7 @@ export const ORDER_LISTING = `query orders(
             value_of_good
           }
         }
+        meta 
         shipment_status {
           hex_code
           title

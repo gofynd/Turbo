@@ -26,6 +26,7 @@ export const GET_SHIPMENT_DETAILS = `query shipment(
       total_bags
       track_url
       traking_no
+      meta
       fulfillment_option {
         name
         slug

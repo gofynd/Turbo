@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState, useRef } from "react";
 import Values from "values.js";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useFPI, useGlobalStore } from "fdk-core/utils";
@@ -319,18 +319,36 @@ export function ThemeProvider({ children }) {
   }, [globalConfig?.show_quantity_control]);
 
   // to scroll top whenever path changes
+  const prevPathRef = useRef("");
   useEffect(() => {
+    const currentPath = location?.pathname || "";
+    const prevPath = prevPathRef.current;
+    const cameFromPDP = prevPath.startsWith("/product/");
+    const goingToListingPage =
+      currentPath.startsWith("/products") ||
+      currentPath.startsWith("/collection/") ||
+      currentPath.startsWith("/brands/") ||
+      currentPath.startsWith("/categories/") ||
+      currentPath.startsWith("/collections/");
+
+    // Skip scroll reset only when navigating from PDP to a listing page
+    // (to preserve scroll position). Reset scroll for all other navigations.
+    if (!(cameFromPDP && goingToListingPage)) {
+      window.scrollTo(0, 0);
+    }
+
+    prevPathRef.current = currentPath;
     return () =>
       setTimeout(() => {
         // Check if current page is PLP or PDP related
-        const currentPath = location?.pathname;
         const isPLPOrPDP =
           currentPath.startsWith("/product") ||
           currentPath === "/products" ||
           currentPath.startsWith("/products") ||
           currentPath.startsWith("/collection/") ||
           currentPath.startsWith("/brands/") ||
-          currentPath.startsWith("/categories/");
+          currentPath.startsWith("/categories/") ||
+          currentPath.startsWith("/collections/");
 
         // If navigating away from PLP/PDP, clean up scroll states
         if (!isPLPOrPDP) {
@@ -340,9 +358,6 @@ export function ThemeProvider({ children }) {
             }
           });
         }
-
-        // Standard scroll to top behavior
-        window?.scrollTo?.(0, 0);
       }, 0);
   }, [location?.pathname]);
 

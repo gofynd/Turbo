@@ -97,7 +97,11 @@ function Footer({ fpi }) {
   const logoMaxHeightMobile = globalConfig?.footer_logo_max_height_mobile || 25;
   const logoMaxHeightDesktop =
     globalConfig?.footer_logo_max_height_desktop || 36;
-  const { collapsible_footer_menu = false } = globalConfig || {};
+  const {
+    collapsible_footer_menu = false,
+    show_footer_logo = true,
+    show_footer_description = true,
+  } = globalConfig || {};
   const footerLogoStyle = {
     "--footer-logo-height": `${
       (isMobile ? logoMaxHeightMobile : logoMaxHeightDesktop) || 0
@@ -125,9 +129,14 @@ function Footer({ fpi }) {
     return {};
   };
 
+  // Footer logo: Use theme-configured logo if available, otherwise fallback to default logo
+  // This ensures stores without a configured logo still display a footer logo
   const getLogo = globalConfig?.logo
     ? globalConfig?.logo?.replace("original", "resize-h:100")
     : fallbackFooterLogo;
+
+  // Validate that logo is ready to render (either custom or fallback)
+  const hasValidLogo = Boolean(getLogo && getLogo.length > 0);
 
   const isSocialLinks = Object.values(contactInfo?.social_links ?? {}).some(
     (value) => value?.link?.trim?.()?.length > 0
@@ -146,8 +155,11 @@ function Footer({ fpi }) {
   const isFooterHidden = useMemo(() => {
     const regex =
       /^\/refund\/order\/([^/]+)\/shipment\/([^/]+)$|^\/cart\/bag\/?$|^\/cart\/checkout\/?$/;
-       const reattemptShipmentRegex = /^\/reattempt\/shipment\/[^/]+$/;
-    return regex.test(location?.pathname) || reattemptShipmentRegex.test(location?.pathname);
+    const reattemptShipmentRegex = /^\/reattempt\/shipment\/[^/]+$/;
+    return (
+      regex.test(location?.pathname) ||
+      reattemptShipmentRegex.test(location?.pathname)
+    );
   }, [location?.pathname]);
 
   const toggleKey = (key, value) => {
@@ -171,13 +183,15 @@ function Footer({ fpi }) {
           <div className={styles.footer__top}>
             <div className={styles.footerContainer}>
               <div className={`${styles["footer__top--wrapper"]}`}>
-                {(getLogo?.length > 0 || globalConfig?.footer_description) && (
-                  <div
+                {((hasValidLogo && show_footer_logo) || (globalConfig?.footer_description && show_footer_description)) && (                  <div
                     className={`${styles["footer__top--info"]} ${processFooterDescription.cleanedContent?.length < 83 ? styles["footer__top--unsetFlexWidth"] : ""}`}
                   >
-                    {getLogo?.length > 0 && (
+                    {hasValidLogo && show_footer_logo && (
                       <div className={`fx-footer-logo ${styles.logo}`}>
-                        <div className={styles.logoShell} style={footerLogoStyle}>
+                        <div
+                          className={styles.logoShell}
+                          style={footerLogoStyle}
+                        >
                           <img
                             src={getLogo}
                             loading="lazy"
@@ -187,7 +201,7 @@ function Footer({ fpi }) {
                         </div>
                       </div>
                     )}
-                    {globalConfig?.footer_description && (
+                   {globalConfig?.footer_description && show_footer_description && (
                       <div
                         ref={descriptionRef}
                         className={`${styles.description} b1 ${styles.fontBody}`}

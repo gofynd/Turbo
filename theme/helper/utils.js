@@ -23,6 +23,53 @@ export const debounce = (func, wait) => {
 export const getGlobalConfigValue = (globalConfig, id) =>
   globalConfig?.props?.[id] ?? "";
 
+/**
+ * Returns effective carousel control visibility based on viewport and config.
+ * Mobile/Tablet: arrows visible when selected AND content overflows; dots visible when selected.
+ * Desktop: arrows visible when selected AND content overflows; dots visible when selected.
+ * @param {Object} globalConfig - Theme global config
+ * @param {boolean} isDesktop - True when viewport is desktop (>= 769px)
+ * @param {number} itemLength - Total number of carousel items
+ * @param {number} itemsPerViewport - Items visible in viewport at once
+ * @returns {{ showArrows: boolean, showDots: boolean }}
+ */
+const getConfigValue = (val) =>
+  val != null && typeof val === "object" && "value" in val ? val.value : val;
+
+export const getEffectiveCarouselControls = (
+  globalConfig,
+  isDesktop,
+  itemLength,
+  itemsPerViewport
+) => {
+  const mobileRaw =
+    globalConfig?.carousel_controls_mobile ??
+    globalConfig?.props?.carousel_controls_mobile ??
+    "none";
+  const desktopRaw =
+    globalConfig?.carousel_controls_desktop ??
+    globalConfig?.props?.carousel_controls_desktop ??
+    "none";
+  const mobileConfig = getConfigValue(mobileRaw) ?? "none";
+  const desktopConfig = getConfigValue(desktopRaw) ?? "none";
+
+  if (isDesktop) {
+    const contentOverflows = itemLength > itemsPerViewport;
+    return {
+      showArrows:
+        desktopConfig === "show_arrow" && contentOverflows,
+      showDots: desktopConfig === "show_dots",
+    };
+  }
+
+  // Mobile & Tablet: arrows visible when selected AND content overflows
+  const contentOverflows = itemLength > itemsPerViewport;
+  return {
+    showArrows: mobileConfig === "show_arrow" && contentOverflows,
+    showDots: mobileConfig === "show_dots",
+  };
+};
+
 export const getSocialIcon = (title) =>
   title && typeof title === "string" ? `footer-${title.toLowerCase()}` : "";
 
@@ -123,6 +170,31 @@ export const useMobile = (breakpoint = 768) => {
   }, [breakpoint]);
 
   return isMobile;
+};
+
+/**
+ * Returns current breakpoint: "desktop" (>=780px), "tablet" (480-779px), or "mobile" (<480px)
+ */
+export const useBreakpoint = () => {
+  const [breakpoint, setBreakpoint] = useState("desktop");
+
+  useEffect(() => {
+    if (!isRunningOnClient()) return;
+    const handleResize = () => {
+      if (typeof window !== "undefined") {
+        const width = window?.innerWidth;
+        if (width >= 780) setBreakpoint("desktop");
+        else if (width >= 480) setBreakpoint("tablet");
+        else setBreakpoint("mobile");
+      }
+    };
+
+    handleResize();
+    window?.addEventListener("resize", handleResize);
+    return () => window?.removeEventListener("resize", handleResize);
+  }, []);
+
+  return breakpoint;
 };
 
 export const copyToClipboard = (str) => {
@@ -1181,6 +1253,7 @@ export function getGroupedShipmentBags(
       bags: [],
       bundleGroups: {},
       bundleGroupArticles: {},
+      freeGiftGroups: {},
     };
   }
 
@@ -1189,6 +1262,7 @@ export function getGroupedShipmentBags(
   const bundleGroupArticles = new Map();
   const hasBaseInBag = new Set();
   const bundleGroupRepresentative = new Map(); // Track first item of each bundle group
+  const freeGiftGroups = new Map(); // Track free gift items grouped by parent bag ID
 
   for (const bag of bags) {
     const bundleDetails = bag?.bundle_details;
@@ -1197,7 +1271,24 @@ export function getGroupedShipmentBags(
     const isPartialReturn =
       !!bundleDetails?.return_config?.allow_partial_return;
 
-    if (!includePromoBags && Object.keys(bag?.parent_promo_bags)?.length > 0) {
+    // Check if this is a free gift item
+    const isFreeGiftItem = bag?.meta?.extra_meta?.is_free_gift_item === true;
+    const parentPromoBags = bag?.parent_promo_bags || {};
+    const parentBagIds = Object.keys(parentPromoBags);
+
+    // Skip free gift items from main bag list (they'll be grouped under parent)
+    if (isFreeGiftItem && parentBagIds.length > 0) {
+      // Group free gifts by parent bag ID
+      parentBagIds.forEach((parentBagId) => {
+        if (!freeGiftGroups.has(parentBagId)) {
+          freeGiftGroups.set(parentBagId, []);
+        }
+        freeGiftGroups.get(parentBagId).push(bag);
+      });
+      continue; // Skip adding to main shipmentBags
+    }
+
+    if (!includePromoBags && parentBagIds.length > 0) {
       continue;
     }
 
@@ -1243,6 +1334,7 @@ export function getGroupedShipmentBags(
         [...articles.values()],
       ])
     ),
+    freeGiftGroups: Object.fromEntries(freeGiftGroups),
   };
 }
 

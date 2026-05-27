@@ -27,7 +27,10 @@ function Home({ numberOfSections, fpi }) {
     if (seoTitle) {
       return seoTitle;
     }
-    return `${brandName || t("resource.common.page_titles.home")} - Official Online Store`;
+    if (brandName) {
+      return brandName;
+    }
+    return `${t("resource.common.page_titles.home")} - Official Online Store`;
   }, [seoData?.title, brandName, t]);
 
   const renderSections = useMemo(

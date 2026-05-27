@@ -1,0 +1,31 @@
+@import "../../styles/main.less";
+
+.bagItemWrapper {
+  border-bottom: 1px solid #eee;
+  width: 100%;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  /* Suppress chip-review-item's own border so wrapper owns the divider */
+  :global([class*="chip-review-item__bag___"]) {
+    border-bottom: none !important;
+  }
+
+  /* Align free-gift container with item-details column (after 125px image) */
+  .freeGiftAligned {
+    padding-inline-start: 137px;
+    padding-inline-end: 10px;
+    padding-bottom: 12px;
+
+    @media @tablet {
+      padding-inline-start: 10px;
+    }
+
+    /* Reset FreeGiftItem's own margin-top so spacing is controlled by wrapper */
+    :global([class*="free-gift-item__freeArticleContainer___"]) {
+      margin-top: 0;
+    }
+  }
+}

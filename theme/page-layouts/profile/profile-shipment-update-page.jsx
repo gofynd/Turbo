@@ -162,6 +162,10 @@ function ProfileShipmentUpdatePage({ fpi }) {
 
   const queryParams = new URLSearchParams(location.search);
   const selected_bag_id = queryParams.get("selectedBagId") || "";
+
+  // Extract parent bag ID (first ID in comma-separated string) for fetching reasons
+  const parentBagId = selected_bag_id.split(",")[0];
+
   const updateType = (cancelBtn) => {
     if (shipmentDetails) {
       if (shipmentDetails?.can_cancel) {
@@ -185,7 +189,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
     if (shipmentDetails?.order_id) {
       getBagReasons({
         shipmentId: shipmentDetails?.shipment_id,
-        bagId: selected_bag_id,
+        bagId: parentBagId,
       });
     }
     return () => {};
@@ -244,7 +248,8 @@ function ProfileShipmentUpdatePage({ fpi }) {
     if (!bags) {
       return [];
     }
-    const selectedIdNum = Number(selected_bag_id);
+    // Use parent bag ID (first in comma-separated list) to find the bag
+    const selectedIdNum = Number(parentBagId);
     // 1) First check if the selected bag is part of a bundle group
     // Search in bundleGroups to identify which group contains the selected bag
     for (const [groupId, groupBags] of Object.entries(bundleGroups || {})) {
@@ -258,7 +263,7 @@ function ProfileShipmentUpdatePage({ fpi }) {
         return [
           {
             ...baseBag,
-            bag_ids: [selected_bag_id],
+            bag_ids: selected_bag_id.split(","),
           },
         ];
       }
@@ -270,12 +275,12 @@ function ProfileShipmentUpdatePage({ fpi }) {
       return [
         {
           ...directMatch,
-          bag_ids: [selected_bag_id],
+          bag_ids: selected_bag_id.split(","),
         },
       ];
     }
     return [];
-  }, [bags, bundleGroups, selected_bag_id]);
+  }, [bags, bundleGroups, selected_bag_id, parentBagId]);
 
   // useEffect(() => {
   //   const item = getBag?.[0];
@@ -1783,12 +1788,13 @@ function ProfileShipmentUpdatePage({ fpi }) {
                   <ShipmentUpdateItem
                     key={`shipment_item${index}`}
                     quantity={updatedQty}
-                    selectedBagId={selected_bag_id}
+                    selectedBagId={parentBagId}
                     updatedQuantity={(e) => updatedQuantity(e)}
                     item={item}
                     bundleGroups={bundleGroups}
                     bundleGroupArticles={bundleGroupArticles}
                     globalConfig={globalConfig}
+                    allBags={shipmentDetails?.bags}
                   ></ShipmentUpdateItem>
                 ))}
               </div>

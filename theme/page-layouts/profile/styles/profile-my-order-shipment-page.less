@@ -68,13 +68,54 @@
   color: @ButtonLink;
 }
 .shipmentWrapper {
+  .orderIdWrapper {
+    display: flex;
+    align-items: center;
+    @media @mobile {
+      display: block;
+    }
+    .exchangeBadge {
+      margin-inline-start: 8px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      background: var(--themeAccentL3);
+      padding: 2px 4px;
+      border-radius: 3px;
+      margin-top: 12px;
+      @media @tablet {
+        margin-top: 16px;
+      }
+      @media @mobile {
+        margin-top: 6px;
+        margin-inline-start: 16px;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      svg > path {
+        fill: var(--successText, #1c958f);
+      }
+    }
+
+    .statusText {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 1.4;
+      color: @SuccessText;
+    }
+  }
   .shipmentHeader {
-    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 16px;
-    padding: 20px 0px 8px 24px;
+    padding: 20px 0px 8px 0px;
 
     @media @tablet {
       padding: 16px 16px 0 16px;

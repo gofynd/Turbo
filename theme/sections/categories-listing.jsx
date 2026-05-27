@@ -8,6 +8,7 @@ import placeholderImage from "../assets/images/placeholder/categories-listing.pn
 import CategoriesCard from "../components/categories-card/categories-card";
 import { CATEGORIES_LISTING } from "../queries/categoryQuery";
 import { useWindowWidth } from "../helper/hooks";
+import { getEffectiveCarouselControls } from "../helper/utils";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import {
   Carousel,
@@ -15,6 +16,7 @@ import {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 } from "../components/carousel";
 import Autoplay from "embla-carousel-autoplay";
 
@@ -134,6 +136,14 @@ export function Component({ props, blocks, preset, globalConfig }) {
   const { isRTL } = useLocaleDirection();
 
   const len = imagesForScrollView.length;
+  const isDesktop = windowWidth >= 769;
+  const itemsPerView = isDesktop ? itemCount : windowWidth <= 480 ? itemCountMobile : 3;
+  const { showArrows, showDots } = getEffectiveCarouselControls(
+    globalConfig,
+    isDesktop,
+    len,
+    itemsPerView
+  );
 
   const autoplayEnabled = autoplay?.value && len > 2;
   const autoplayDelay = Number(play_slides?.value) * 1000 || 3000;
@@ -242,8 +252,15 @@ export function Component({ props, blocks, preset, globalConfig }) {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className={styles.carouselBtn} />
-            <CarouselNext className={styles.carouselBtn} />
+            {showArrows && (
+              <>
+                <CarouselPrevious className={styles.carouselBtn} />
+                <CarouselNext className={styles.carouselBtn} />
+              </>
+            )}
+            {showDots && (
+              <CarouselDots productsPerRow={itemCountMobile} />
+            )}
           </Carousel>
         </div>
       )}

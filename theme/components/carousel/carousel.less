@@ -2,6 +2,7 @@
 
 .carousel {
   position: relative;
+  overflow: visible;
 }
 
 .carouselContent {
@@ -36,6 +37,7 @@
 
 .carouselBtn {
   position: absolute;
+  z-index: 10;
   width: 1em;
   height: 1em;
   border-radius: 50%;
@@ -93,7 +95,13 @@
   margin-top: 16px;
 }
 
+.carouselDotsCompact {
+  flex-wrap: nowrap;
+  min-height: 16px;
+}
+
 .carouselDot {
+  flex-shrink: 0;
   width: 12px;
   height: 12px;
   border-radius: 25px;
@@ -102,15 +110,46 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Inactive compact tiers: large → medium → small (active uses base 12px below). */
+.carouselDotTierLarge {
+  width: 10px;
+  height: 10px;
+  opacity: 0.82;
+}
+
+.carouselDotTierMedium {
+  width: 8px;
+  height: 8px;
+  opacity: 0.68;
+}
+
+.carouselDotTierSmall {
+  width: 6px;
+  height: 6px;
+  opacity: 0.55;
 }
 
 .carouselDotActive {
   background-color: var(--textHeading, #222222);
+  opacity: 1;
 }
 
 .carouselDotInactive {
   background-color: var(--textSecondary, #6b6b6b);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carouselDot {
+    transition: background-color 0.2s ease;
+  }
 }
 
 .srOnly {

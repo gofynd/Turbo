@@ -23,6 +23,7 @@ import {
   useSnackbar,
   usePincodeInput,
   useThemeFeature,
+  useThemeConfig,
 } from "../../../helper/hooks";
 import { LOCALITY } from "../../../queries/logisticsQuery";
 import {
@@ -64,6 +65,9 @@ const useProductDescription = ({
 
   const { isServiceability, isCrossBorderOrder, isInternational } =
     useThemeFeature({ fpi });
+  const { globalConfig } = useThemeConfig({ fpi });
+  const isMiniCartEnabled =
+    globalConfig?.enable_minicart && !globalConfig?.disable_cart;
   const {
     isLoading: isCountryDetailsLoading,
     i18nDetails,
@@ -626,6 +630,9 @@ const useProductDescription = ({
             // fpi.executeGQL(CART_ITEMS_COUNT, null).then((res) => {
             if (!buyNow) {
               await fetchCartDetails(fpi);
+               if (isMiniCartEnabled) {
+                fpi?.custom?.setValue("openMiniCartTrigger", Date.now());
+              }
             }
             showSnackbar(
               translateDynamicLabel(outRes?.data?.addItemsToCart?.message, t) ||

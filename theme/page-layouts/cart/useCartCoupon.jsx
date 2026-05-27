@@ -70,6 +70,10 @@ const useCartCoupon = ({
     setIsCouponSuccessModalOpen(false);
   };
 
+  const onClearCouponError = () => {
+    setError(null);
+  };
+
   const validateCoupon = async (payload) => {
     let res = null;
     if (creditNoteApplied && creditValidateCouponPayload) {
@@ -113,7 +117,7 @@ const useCartCoupon = ({
     });
   };
 
-  const onApplyCouponClick = (couponCode) => {
+  const onApplyCouponClick = (couponCode, options = {}) => {
     const payload = {
       applyCouponRequestInput: { coupon_code: couponCode?.toString() },
       applyCouponId: cartData?.id?.toString(),
@@ -130,12 +134,15 @@ const useCartCoupon = ({
 
     fpi
       .executeGQL(APPLY_COUPON, payload)
-      .then((res) => {
-        const couponBreakup =
-          res?.data?.applyCoupon?.breakup_values?.coupon || {};
-        if (!(couponBreakup?.code && couponBreakup?.is_applied)) {
-          const cartTotal = res?.data?.applyCoupon?.breakup_values?.raw?.total;
+      .then((response) => {
+        const applyCoupon = response?.data?.applyCoupon;
+        const coupon = applyCoupon?.coupon || {};
+        const couponBreakup = applyCoupon?.breakup_values?.coupon || {};
+        const isCouponFailed = !coupon?.is_valid || !coupon?.is_applied;
+        if (isCouponFailed) {
+          const cartTotal = applyCoupon?.breakup_values?.raw?.total;
           const errorMsg =
+            coupon?.message ||
             couponBreakup?.message ||
             (typeof cartTotal === "number" && cartTotal <= 0
               ? t(
@@ -168,11 +175,15 @@ const useCartCoupon = ({
       })
       .catch((err) => {
         console.error("Error applying coupon or fetching cart:", err);
-        setError({
-          message: err?.isUserFacing
-            ? err.message
-            : t("resource.common.error_message"),
-        });
+        const errorMessage = err?.isUserFacing
+          ? err.message
+          : t("resource.common.error_message");
+        if (options?.errorDisplay === "toast") {
+          setError(null);
+          showSnackbar(errorMessage, "error");
+        } else {
+          setError({ message: errorMessage });
+        }
         setIsLoading(false);
       });
   };
@@ -215,6 +226,7 @@ const useCartCoupon = ({
     onCouponBoxClick,
     onCouponListCloseModalClick,
     onCouponSuccessCloseModalClick,
+    onClearCouponError,
     onApplyCouponClick,
     onRemoveCouponClick,
     isCouponValid,

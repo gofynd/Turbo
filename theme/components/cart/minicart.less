@@ -1,0 +1,646 @@
+@import "../../styles/main.less";
+
+.miniCartModal {
+  max-width: 440px !important;
+
+  @media @tablet {
+    max-width: 400px !important;
+  }
+
+  @media @mobile {
+    max-width: 100vw !important;
+  }
+}
+
+.customHeader {
+  display: flex;
+  gap: 10px;
+}
+
+.miniCartTitle {
+  color: @TextHeading;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.miniCartSubTitle {
+  color: @TextLabelPlaceholder;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-top: 0px !important;
+}
+
+.miniCart {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: @DialogBackground;
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #e6e6e6;
+  }
+
+  .headerTitles {
+    display: flex;
+    gap: 10px;
+
+    .title {
+      font-weight: 600;
+      font-size: 16px;
+      color: @TextHeading;
+    }
+
+    .subTitle {
+      font-size: 12px;
+      color: @TextLabel;
+    }
+  }
+
+  .closeBtn {
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    color: @TextHeading;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .emptyState {
+    padding: 24px 0;
+    text-align: center;
+    color: @TextLabel;
+  }
+
+  .item {
+    display: flex;
+    gap: 12px;
+  }
+
+  .shimmerList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .thumbnailWrapper {
+    border-radius: 8px;
+    max-width: 83px;
+
+    @media @mobile {
+      max-width: 75px;
+    }
+  }
+
+  .thumbnail {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #f7f7f7;
+  }
+
+  .thumbnailFallback {
+    width: 72px;
+    height: 90px;
+    border-radius: 8px;
+    background: #f0f0f0;
+  }
+
+  .itemInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .brandRows {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .brandName {
+    color: @TextHeading;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: normal;
+  }
+  .name {
+    color: @TextBody;
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .sizeAndColor {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    color: @TextLabel;
+  }
+
+  .priceRow {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .price {
+    font-weight: 600;
+    color: @TextHeading;
+  }
+
+  .itemPrice {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .effectivePrice {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    color: @TextHeading;
+  }
+
+  .markedPrice {
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    color: @TextLabelPlaceholder;
+    text-decoration: line-through;
+  }
+
+  .discount {
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .qtyControls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    border: 1px solid @OverlayPopupDividerStroke;
+    border-radius: 4px;
+    padding: 4px;
+  }
+
+  .qtyBtn {
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  .qtyCount {
+    min-width: 20px;
+    text-align: center;
+    color: @TextHeading;
+  }
+
+  .freeGiftsSection {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    background-color: @HighlightColor;
+    padding: 12px 16px;
+    border-radius: 4px;
+  }
+
+  .freeGiftsHeader {
+    font-weight: 600;
+    color: @TextHeading;
+  }
+
+  .freeGiftsList {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    border-radius: 4px;
+  }
+
+  .freeGiftCard {
+    min-width: 194px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #fff;
+    display: flex;
+    gap: 8px;
+  }
+
+  .freeGiftImage {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background: #f7f7f7;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      display: block;
+    }
+  }
+
+  .freeGiftImageFallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background: #f0f0f0;
+  }
+
+  .freeGiftInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .freeGiftName {
+    max-width: 117px;
+    color: @OldColorPaletteTextColorPrimary;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    font-weight: 400;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .freeGiftQty {
+    font-size: 12px;
+    color: @TextLabel;
+  }
+
+  .freeGiftTag {
+    color: #0d5e25;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .gstCardWrapper {
+    margin: 12px 0;
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid #e6e6e6;
+    padding: 16px;
+    background: @DialogBackground;
+    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.04);
+
+    .couponsSection {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #EDECE9;// hardcoded for now , need to remove after desginer's input
+      padding: 12px;
+      border-radius: 4px;
+
+      .couponToggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .couponTitleText {
+          color: @TextHeading;
+          font-weight: 600;
+          line-height: 130%;
+          flex: 1;
+        }
+
+        .couponToggleBtn {
+          height: 40px;
+          background: transparent;
+          color: @ButtonLink;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+
+      .couponInputRow {
+        display: flex;
+        gap: 8px;
+      }
+
+      .couponInput {
+        flex: 1;
+        padding: 16px;
+        border-radius: 4px;
+        background: @ThemePageBackground;
+      }
+
+      .couponApplyBtn {
+        display: flex;
+        padding: 12px 16px;
+        justify-content: center;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid @ButtonPrimary;
+        border-radius: 4px;
+        background: @ButtonSecondary;
+        color: @ButtonPrimary;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .couponError {
+        color: @ErrorText;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 140%;
+      }
+
+      .couponListTitleWrapper {
+        display: flex;
+        flex-direction: column;
+        background: @PageBackground;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .couponSectionTitle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px 0;
+        margin: 0;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 140%;
+        text-transform: uppercase;
+        color: @TextHeading;
+      }
+
+      .bestOfferContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background-color: @HighlightColor;
+        max-height: 280px;
+        overflow-y: auto;
+        padding: 0 0 8px;
+      }
+
+      .offerCard {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        background-color: @PageBackground;
+      }
+
+      .offerCardHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 12px;
+      }
+
+      .offerCardTitleCol {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 0;
+      }
+
+      .offerCardCodeTitle {
+        color: @TextHeading;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 140%;
+        word-break: break-word;
+      }
+
+      .offerCardSubtitle {
+        margin-top: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 140%;
+        color: @SuccessText;
+      }
+
+      .offerCardSubtitleWarn {
+        color: @ErrorText;
+      }
+
+      .offerCardApplyBtn,
+      .offerCardRemoveBtn {
+        flex-shrink: 0;
+        padding: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 140%;
+        text-transform: uppercase;
+        text-align: center;
+        white-space: nowrap;
+        color: @ButtonLink;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      .offerCardDivider {
+        width: 100%;
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px dashed @DividerStokes;
+      }
+
+      .offerCardExpires {
+        width: 100%;
+        margin: 0;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 140%;
+        color: @TextLabel;
+      }
+
+      .noCouponsAvailable {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 12px 8px;
+      }
+
+      .noCouponsIconWrap {
+        padding: 16px 0;
+
+        svg {
+          display: block;
+        }
+      }
+
+      .noCouponsTextCol {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+      }
+
+      .noCouponsHeading {
+        margin: 0;
+        color: @TextHeading;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 140%;
+      }
+
+      .noCouponsBody {
+        margin: 0;
+        color: @TextLabel;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 140%;
+      }
+
+    }
+
+    .billSummary {
+      margin: 12px 0;
+      border: 1px solid @OverlayPopupDividerStroke;
+      border-radius: 4px;
+
+      .billSummaryToggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        padding: 10px 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .billSummaryToggleArrow {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border: solid @TextHeading;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        transition: transform 0.2s ease;
+      }
+
+      .billSummaryToggleArrowOpen {
+        transform: rotate(-135deg);
+      }
+
+      .priceSummaryContainer {
+        border: none;
+      }
+    }
+
+    .summaryRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      color: @TextHeading;
+    }
+
+    .summaryTotal {
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+
+      button {
+        display: flex;
+        height: 40px;
+        padding: 12px 16px;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        flex: 1 0 0;
+      }
+    }
+
+    .primaryCta {
+      width: 100%;
+      height: 40px;
+      padding: 12px 16px;
+      border: 1px solid @ButtonPrimary;
+      background: @ButtonPrimary;
+      color: @ThemeAccentL5;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: -0.24px;
+      line-height: 16px;
+      white-space: nowrap;
+    }
+
+    .primaryCta:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .secondaryCta {
+      width: 100%;
+      height: 48px;
+      padding: 12px 16px;
+      border: 1px solid @ButtonPrimary;
+      background: @ButtonSecondary;
+      color: @ButtonPrimary;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+
+    .primaryCta:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .secondaryCta {
+      width: 100%;
+      height: 48px;
+      padding: 12px 16px;
+      border: 1px solid @ButtonPrimary;
+      background: @ButtonSecondary;
+      color: @ButtonPrimary;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 12px;
+    }
+
+    
+  }
+}

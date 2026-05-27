@@ -123,7 +123,9 @@
       "limited_stock_label": "Limited Stock label",
       "limited_stock_info": "Use {{qty}} in your message to automatically show the remaining quantity. Example: Hurry! Only {{qty}} left",
       "show_filter_toggle_button": "Show Filter Toggle Button",
-      "show_filter_toggle_button_info": "Enable to show a button that allows users to toggle the visibility of filters on the product listing page"
+      "show_filter_toggle_button_info": "Enable to show a button that allows users to toggle the visibility of filters on the product listing page",
+      "show_multiple_images": "Show Multiple Images",
+      "show_multiple_images_info": "Enable to show multiple images upon hover in Desktop and swiping in Mobile " 
     },
     "settings_schema": {
       "common": {
@@ -220,7 +222,11 @@
         "open_same_tab": "Open social links in same tab",
         "open_same_tab_info": "Check this to open social media links in the same tab instead of a new one",
         "footer_logo_max_height_mobile": "Footer Logo Max Height (Mobile)",
-        "footer_logo_max_height_desktop": "Footer Logo Max Height (Desktop)"
+        "footer_logo_max_height_desktop": "Footer Logo Max Height (Desktop)",
+        "show_footer_logo": "Show Footer Logo",
+        "show_footer_logo_info": "to hide/display the logo in the footer",
+        "show_footer_description": "Show Footer Description",
+        "show_footer_description_info": "to hide/display the description in the footer"
       },
       "cart_and_button_configuration": {
         "cart_options": "Cart Options",
@@ -239,7 +245,8 @@
         "all_three": "All three",
         "none": "None",
         "show_quantity_control": "Show Quantity Control",
-        "display_in_place_of_add_to_cart": "Displays in place of Add to Cart when enabled"
+        "display_in_place_of_add_to_cart": "Displays in place of Add to Cart when enabled",
+        "enable_minicart": "Enable Minicart"
       },
       "product_card_configuration": {
         "product_card_aspect_ratio": "Product Card Aspect Ratio",
@@ -264,6 +271,13 @@
         "hide_brand_name_info": "Brand name will not be shown in the product details modal"
       },
       "other_page_configuration": {
+        "carousel_controls_show_dots": "Show dots",
+        "carousel_controls_show_arrow": "Show arrow",
+        "carousel_controls_none": "None",
+        "carousel_controls_mobile": "Carousel Controls (Mobile & Tablet)",
+        "carousel_controls_mobile_info": "Arrows visible when content overflows. Dots visible when selected.",
+        "carousel_controls_desktop": "Carousel Controls (Desktop)",
+        "carousel_controls_desktop_info": "Arrows visible only when content overflows. Dots visible when selected.",
         "improve_image_quality": "Improve Image Quality",
         "upscale_images": "Upscale Images",
         "home_page_performance_impact": "This may affect your page performance. Applicable for home-page",
@@ -532,6 +546,8 @@
         "show_brand_breadcrumb": "Show Brand breadcrumb",
         "first_accordian_open": "First Accordian Open",
         "product_name": "Product Name",
+        "redirect_to_cart_page": "Redirect to Cart Page",
+        "redirect_to_cart_page_info": "Upon clicking on ADD TO CART redirect to Cart Page",
         "display_brand_name": "Display Brand name",
         "product_price": "Product Price",
         "display_mrp_label_text": "Display MRP label text",
@@ -569,7 +585,9 @@
         "badge_label_5": "Badge label 5",
         "badge_url_5": "Badge URL 5",
         "enable_scrollable_product_data": "Enable scrollable product data",
-        "keep_product_image_visible_msg": "Keep product images visible while scrolling product details."
+        "keep_product_image_visible_msg": "Keep product images visible while scrolling product details.",
+        "image_gallery_controls_mobile": "Image Gallery Controls (Mobile & Tablet)",
+        "image_gallery_controls_mobile_info": "Show arrows, dots, or none for the product image gallery on mobile and tablet. Desktop view is unchanged."
       },
       "raw_html": {
         "custom_html": "Custom HTML",

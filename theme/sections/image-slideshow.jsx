@@ -10,7 +10,7 @@ import styles from "../styles/sections/image-slideshow.less";
 import { useNavigate } from "fdk-core/utils";
 import useLocaleDirection from "../helper/hooks/useLocaleDirection";
 import { useWindowWidth } from "../helper/hooks";
-import { getDirectionAdaptiveValue } from "../helper/utils";
+import { getDirectionAdaptiveValue, getEffectiveCarouselControls } from "../helper/utils";
 import { DIRECTION_ADAPTIVE_CSS_PROPERTIES } from "../helper/constant";
 import { getMediaLayout } from "../helper/media-layout";
 import {
@@ -19,6 +19,7 @@ import {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 } from "../components/carousel";
 import Autoplay from "embla-carousel-autoplay";
 
@@ -290,6 +291,14 @@ export function Component({ props, blocks, globalConfig, preset }) {
     paddingTop: `${padding_top?.value ?? 0}px`,
     paddingBottom: `${padding_bottom?.value ?? 16}px`,
   };
+  const len = blocksData?.length ?? 0;
+  const isDesktop = windowWidth >= 769;
+  const { showArrows, showDots } = getEffectiveCarouselControls(
+    globalConfig,
+    isDesktop,
+    len,
+    1
+  );
   return (
     <section className="remove-horizontal-scroll" style={dynamicStyles}>
       <Carousel
@@ -361,8 +370,15 @@ export function Component({ props, blocks, globalConfig, preset }) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className={styles.carouselBtn} />
-        <CarouselNext className={styles.carouselBtn} />
+        {showArrows && (
+          <>
+            <CarouselPrevious className={styles.carouselBtn} />
+            <CarouselNext className={styles.carouselBtn} />
+          </>
+        )}
+        {showDots && (
+          <CarouselDots productsPerRow={1} />
+        )}
       </Carousel>
     </section>
   );

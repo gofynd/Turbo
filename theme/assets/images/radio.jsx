@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 function RadioIcon({ checked = false, ...props }) {
   if (checked) {
@@ -13,9 +13,9 @@ function RadioIcon({ checked = false, ...props }) {
         <g
           id="radio-selected"
           stroke="none"
-          stroke-width="1"
+          strokeWidth="1"
           fill="none"
-          fill-rule="evenodd"
+          fillRule="evenodd"
         >
           <path
             id="Rectangle"
@@ -50,9 +50,9 @@ function RadioIcon({ checked = false, ...props }) {
         transform="matrix(-1 0 0 1 24 0)"
         id="radio-regular"
         stroke="none"
-        stroke-width="1"
+        strokeWidth="1"
         fill="none"
-        fill-rule="evenodd"
+        fillRule="evenodd"
       >
         <path id="Rectangle" d="M0 0h24v24H0z"></path>
         <circle

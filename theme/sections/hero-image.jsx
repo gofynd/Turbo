@@ -33,6 +33,10 @@ export function Component({ props, globalConfig, blocks }) {
     mobile_height,
     desktop_aspect_ratio,
     mobile_aspect_ratio,
+    marquee_enabled,
+    marquee_motion_direction,
+    marquee_heading_gap,
+    marquee_speed,
   } = props;
 
   const windowWidth = useWindowWidth();
@@ -308,6 +312,25 @@ export function Component({ props, globalConfig, blocks }) {
   const isAspectRatio = mediaLayout?.isAspectRatio ?? false;
   const isFixedHeight = mediaLayout?.isFixedHeight ?? false;
   const mediaWrapperStyle = mediaLayout?.style ?? undefined;
+  const isMarqueeEnabled = !!marquee_enabled?.value;
+  const marqueeDirection =
+    marquee_motion_direction?.value === "backward" ? "backward" : "forward";
+  const headingGapValue = Number(marquee_heading_gap?.value);
+  const headingGap = Number.isFinite(headingGapValue)
+    ? Math.min(Math.max(headingGapValue, 0), 300)
+    : 48;
+  const marqueeSpeedValue = Number(marquee_speed?.value);
+  const marqueeSpeed = Number.isFinite(marqueeSpeedValue)
+    ? Math.min(Math.max(marqueeSpeedValue, 20), 50)
+    : 20;
+  const marqueeRepeatCount = Math.max(
+    2,
+    Math.min(32, Math.ceil(160 / Math.max(heading?.value?.length || 1, 1)))
+  );
+  const marqueeHeadingCopies = Array.from(
+    { length: marqueeRepeatCount },
+    (_, index) => `copy-${index}`
+  );
 
   const heroContainerClassNames = [
     styles.heroImageContainer,
@@ -317,6 +340,59 @@ export function Component({ props, globalConfig, blocks }) {
   ]
     .filter(Boolean)
     .join(" ");
+
+  const renderMarqueeItems = (groupLabel) =>
+    marqueeHeadingCopies.map((copyId) => (
+      <span
+        key={`${groupLabel}-${copyId}`}
+        className={styles.marqueeItem}
+        aria-hidden="true"
+      >
+        {heading?.value}
+      </span>
+    ));
+
+  const getMarqueeInlineOffset = (placement, view) => {
+    const HORIZONTAL_SPACING_TABLET = "1.75rem";
+    const HORIZONTAL_SPACING_DESKTOP = "2.5rem";
+
+    if (view === "mobile" && windowWidth <= 480) {
+      return "-1rem";
+    }
+
+    const horizontalSpacing =
+      view === "mobile"
+        ? HORIZONTAL_SPACING_TABLET
+        : HORIZONTAL_SPACING_DESKTOP;
+
+    if (placement?.endsWith("_center")) {
+      return "calc((100% - 100vw) / 2)";
+    }
+
+    if (placement?.endsWith("_end")) {
+      return `calc(100% + ${horizontalSpacing} - 100vw)`;
+    }
+
+    return `-${horizontalSpacing}`;
+  };
+
+  const getMarqueeInlineStyles = () => ({
+    "--marquee-inline-offset-desktop": getMarqueeInlineOffset(
+      text_placement_desktop?.value,
+      "desktop"
+    ),
+    "--marquee-inline-offset-mobile": getMarqueeInlineOffset(
+      text_placement_mobile?.value,
+      "mobile"
+    ),
+    "--marquee-heading-gap": `${headingGap}px`,
+    "--marquee-speed": `${marqueeSpeed}s`,
+  });
+
+  const overlayPositionStyles = {
+    ...getOverlayPositionStyles(),
+    ...getMarqueeInlineStyles(),
+  };
 
   return (
     <section style={dynamicStyles}>
@@ -334,8 +410,37 @@ export function Component({ props, globalConfig, blocks }) {
           alt={heading?.value || "Hero banner"}
         />
 
-        <div className={styles.overlayItems} style={getOverlayPositionStyles()}>
-          {heading?.value && (
+        <div
+          className={`${styles.overlayItems} ${
+            isMarqueeEnabled ? styles.overlayItemsMarquee : ""
+          }`}
+          style={overlayPositionStyles}
+        >
+          {heading?.value && isMarqueeEnabled && (
+            <div className={styles.marqueeViewport}>
+              <h1
+                className={`fx-title ${styles.header} ${styles.marqueeHeader} fontHeader`}
+                aria-label={heading.value}
+              >
+                <span
+                  className={`${styles.marqueeTrack} ${
+                    marqueeDirection === "backward"
+                      ? styles.marqueeTrackBackward
+                      : ""
+                  }`}
+                >
+                  <span className={styles.marqueeGroup}>
+                    {renderMarqueeItems("first")}
+                  </span>
+                  <span className={styles.marqueeGroup}>
+                    {renderMarqueeItems("second")}
+                  </span>
+                </span>
+              </h1>
+            </div>
+          )}
+
+          {heading?.value && !isMarqueeEnabled && (
             <h1 className={`fx-title ${styles.header} fontHeader`}>
               {heading?.value}
             </h1>
@@ -461,6 +566,49 @@ export const settings = {
       default: "t:resource.default_values.hero_image_heading",
       label: "t:resource.common.heading",
       info: "t:resource.common.section_heading_text",
+    },
+    {
+      type: "checkbox",
+      id: "marquee_enabled",
+      default: false,
+      label: "Enable marquee heading",
+    },
+    {
+      type: "radio",
+      id: "marquee_motion_direction",
+      default: "forward",
+      label: "Motion direction",
+      options: [
+        {
+          value: "forward",
+          text: "Forward",
+        },
+        {
+          value: "backward",
+          text: "Backward",
+        },
+      ],
+    },
+    {
+      type: "range",
+      id: "marquee_heading_gap",
+      min: 0,
+      max: 300,
+      step: 1,
+      unit: "px",
+      label: "Text heading gap",
+      default: 48,
+    },
+    {
+      type: "range",
+      id: "marquee_speed",
+      min: 20,
+      max: 50,
+      step: 1,
+      unit: "sec",
+      label: "Moving text speed",
+      info: "Lower value moves faster",
+      default: 20,
     },
     {
       type: "text",

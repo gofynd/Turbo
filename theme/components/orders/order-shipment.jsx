@@ -8,6 +8,7 @@ import {
 import { useLocation } from "react-router-dom";
 import styles from "./styles/order-shipment.less";
 import { formatLocale } from "../../helper/utils";
+import RefundToSourceIcon from "../../assets/images/exchange.svg";
 
 //force GIF to /original/ ---
 const isGifUrl = (url = "") => /\.gif(\?|#|$)/i.test(String(url || ""));
@@ -121,6 +122,9 @@ function OrderShipment({
             const totalItems = getTotalItems(shipment?.bags);
             const totalQuantity = getTotalQuantity(shipment?.bags);
             const statusTitle = shipment?.shipment_status?.title || "";
+            const exchangeShipmentTag = shipment?.meta?.shipment_tags?.find(
+              (tag) => tag?.slug === "exchange"
+            )?.display_text;
 
             return (
               <div
@@ -149,8 +153,13 @@ function OrderShipment({
                       defaultValue: "Shipment",
                     })}
                     : {shipment.shipment_id}
+                    {exchangeShipmentTag && (
+                      <div className={styles.exchangeBadge}>
+                        <RefundToSourceIcon />
+                        <span className={styles.statusText}>Exchange</span>
+                      </div>
+                    )}
                   </p>
-
                   <div className={styles.productMeta}>
                     <span className={styles.metaText}>
                       {totalItems}{" "}

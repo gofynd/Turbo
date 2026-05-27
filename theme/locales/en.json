@@ -793,6 +793,7 @@
       "where_is_my_order": "Where is my order",
       "track_order_caps": "TRACK ORDER",
       "where_is_order_id": "Where is Order Id",
+      "track_your_order": "Track Your Order",
       "john_doe": "John Doe",
       "status": "Status",
       "placed_caps": "PLACED",
@@ -907,7 +908,8 @@
       "prev": "Prev",
       "reset_all": "Reset All",
       "filtering_by": "Filtering by",
-      "request_reattempt_facet": "REQUEST REATTEMPT"
+      "request_reattempt_facet": "REQUEST REATTEMPT",
+      "best_offer_title":"BEST OFFER"	
     },
     "localization": {
       "select_language": "Select Language",
@@ -931,8 +933,8 @@
     },
     "wishlist": {
       "product_removed": "Products Removed From Wishlist",
-      "no_product_in_wishlist": "You do not have any product added to wishlist",
-      "add_products_to_wishlist": "Add products to wishlist",
+      "no_product_in_wishlist": "Your wishlist is empty",
+      "add_products_to_wishlist": "Save your favorite products here for easy access later.",
       "seo_description": "Save the products you love and build your wishlist. Easily revisit and purchase your favorite items anytime with just a few clicks.",
       "wishlist_icon_default_text": "Wishlist"
     },
@@ -989,6 +991,7 @@
       "select_this_address": "select this address",
       "use_gst": "USE GST",
       "enter_gstin": "Enter GSTIN",
+      "size_update_failed": "Size update failed",
       "gstin_applied_success": "GSTIN Applied Successfully!!! Claimed {{gst_credit}} GST input credit",
       "enter_gst_number": "Enter GST number to claim {{gst_credit}} input credit",
       "remove_item": "Remove Item",

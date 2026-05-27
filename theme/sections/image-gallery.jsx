@@ -5,17 +5,18 @@ import styles from "../styles/sections/image-gallery.less";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import placeholderImage from "../assets/images/placeholder/image-gallery.png";
-import { useLocaleDirection } from "../helper/hooks";
+import { useLocaleDirection, useWindowWidth } from "../helper/hooks";
+import { getEffectiveCarouselControls } from "../helper/utils";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
 } from "../components/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { getMediaLayout } from "../helper/media-layout";
-import { useWindowWidth } from "../helper/hooks";
 
 export function Component({ props, blocks = [], globalConfig = {}, preset }) {
   const {
@@ -238,8 +239,16 @@ const HorizontalLayout = ({
   isAspectRatio,
   isFixedHeight,
 }) => {
+  const windowWidth = useWindowWidth();
+  const isDesktop = windowWidth >= 769;
+  const len = items?.length ?? 0;
+  const { showArrows, showDots } = getEffectiveCarouselControls(
+    globalConfig,
+    isDesktop,
+    len,
+    isDesktop ? colCount : colCountMobile
+  );
   const { direction } = useLocaleDirection();
-  const len = items?.length;
 
   const carouselProps = useMemo(() => {
     const opts = {
@@ -316,8 +325,15 @@ const HorizontalLayout = ({
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className={styles.carouselBtn} />
-        <CarouselNext className={styles.carouselBtn} />
+        {showArrows && (
+          <>
+            <CarouselPrevious className={styles.carouselBtn} />
+            <CarouselNext className={styles.carouselBtn} />
+          </>
+        )}
+        {showDots && (
+          <CarouselDots productsPerRow={colCountMobile} />
+        )}
       </Carousel>
     </div>
   );

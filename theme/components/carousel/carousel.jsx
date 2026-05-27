@@ -2,8 +2,47 @@ import * as React from "react";
 import clsx from "clsx";
 import useEmblaCarousel from "embla-carousel-react";
 import ArrowLeftIcon from "./slide-arrow-left.svg";
+import {
+  getCarouselDotWindow,
+  getCarouselDotSizeTier,
+} from "./carousel-dot-utils";
 import styles from "./carousel.less";
-import { useMobile } from "../../helper/utils";
+
+/** When slide count exceeds this, dots use a sliding 5-dot viewport with tiered sizes. */
+export const CAROUSEL_DOTS_COMPACT_THRESHOLD = 5;
+
+/** Dots shown in the compact (windowed) row. */
+export const CAROUSEL_DOTS_WINDOW_SIZE = 5;
+
+/** @deprecated Use CAROUSEL_DOTS_WINDOW_SIZE */
+export const CAROUSEL_DOTS_VIEWPORT_SIZE = CAROUSEL_DOTS_WINDOW_SIZE;
+
+/**
+ * Viewport info for the sliding dot window (window start aligns with previous `ws` export).
+ *
+ * @param {number} selectedIndex
+ * @param {number} totalSlides
+ * @returns {{ compact: boolean, ws: number, visibleIndices: number[], hasLeft: boolean, hasRight: boolean }}
+ */
+export function getCarouselDotsViewport(selectedIndex, totalSlides) {
+  const { windowStart, visibleIndices } = getCarouselDotWindow(
+    totalSlides,
+    selectedIndex,
+    {
+      windowSize: CAROUSEL_DOTS_WINDOW_SIZE,
+      threshold: CAROUSEL_DOTS_COMPACT_THRESHOLD,
+    }
+  );
+  const compact = totalSlides > CAROUSEL_DOTS_COMPACT_THRESHOLD;
+  const windowEnd = windowStart + visibleIndices.length - 1;
+  return {
+    compact,
+    ws: windowStart,
+    visibleIndices,
+    hasLeft: compact && windowStart > 0,
+    hasRight: compact && windowEnd < totalSlides - 1,
+  };
+}
 
 const CarouselContext = React.createContext(null);
 
@@ -32,6 +71,7 @@ const Carousel = React.forwardRef(
   ) => {
     const [carouselRef, api] = useEmblaCarousel(
       {
+        loop: true,
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
       },
@@ -112,23 +152,38 @@ const Carousel = React.forwardRef(
       };
     }, [api, onSelect]);
 
+    const contextValue = React.useMemo(
+      () => ({
+        carouselRef,
+        api,
+        opts,
+        orientation:
+          orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+        scrollPrev,
+        scrollNext,
+        scrollTo,
+        canScrollPrev,
+        canScrollNext,
+        selectedIndex,
+        scrollSnaps,
+      }),
+      [
+        carouselRef,
+        api,
+        opts,
+        orientation,
+        scrollPrev,
+        scrollNext,
+        scrollTo,
+        canScrollPrev,
+        canScrollNext,
+        selectedIndex,
+        scrollSnaps,
+      ]
+    );
+
     return (
-      <CarouselContext.Provider
-        value={{
-          carouselRef,
-          api: api,
-          opts,
-          orientation:
-            orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
-          scrollPrev,
-          scrollNext,
-          scrollTo,
-          canScrollPrev,
-          canScrollNext,
-          selectedIndex,
-          scrollSnaps,
-        }}
-      >
+      <CarouselContext.Provider value={contextValue}>
         <div
           ref={ref}
           onKeyDownCapture={handleKeyDown}
@@ -247,6 +302,23 @@ const CarouselNext = React.forwardRef(
 );
 CarouselNext.displayName = "CarouselNext";
 
+/** @param {import('./carousel-dot-utils').CarouselDotSizeTier | null} tier */
+function carouselDotTierClass(tier) {
+  if (!tier || tier === "active") {
+    return null;
+  }
+  switch (tier) {
+    case "large":
+      return styles.carouselDotTierLarge;
+    case "medium":
+      return styles.carouselDotTierMedium;
+    case "small":
+      return styles.carouselDotTierSmall;
+    default:
+      return null;
+  }
+}
+
 const CarouselDots = React.forwardRef(
   (
     {
@@ -255,56 +327,82 @@ const CarouselDots = React.forwardRef(
       activeDotClassName,
       inactiveDotClassName,
       showOnSingleSlide = false,
+      productsPerRow, // consumed by parent, not passed to DOM
+      breakpoint, // consumed by parent, not passed to DOM
       ...props
     },
     ref
   ) => {
-    const isMobile = useMobile(480);
-
     const { scrollSnaps, selectedIndex, scrollTo } = useCarousel();
+    const total = scrollSnaps.length;
+    const compact = total > CAROUSEL_DOTS_COMPACT_THRESHOLD;
 
-    if (
-      !scrollSnaps.length ||
-      (scrollSnaps.length <= 1 && !showOnSingleSlide)
-    ) {
+    const { windowStart, visibleIndices } = React.useMemo(
+      () =>
+        getCarouselDotWindow(total, selectedIndex, {
+          windowSize: CAROUSEL_DOTS_WINDOW_SIZE,
+          threshold: CAROUSEL_DOTS_COMPACT_THRESHOLD,
+        }),
+      [total, selectedIndex]
+    );
+
+    if (!total || (total <= 1 && !showOnSingleSlide)) {
       return null;
     }
 
-    return isMobile ? (
-      <></>
-    ) : (
+    const renderDotButton = (index, tier) => {
+      const isActive = index === selectedIndex;
+      const sizeClass = compact ? carouselDotTierClass(tier) : null;
+
+      return (
+        <button
+          key={index}
+          type="button"
+          className={clsx(
+            styles.carouselDot,
+            sizeClass,
+            isActive ? styles.carouselDotActive : styles.carouselDotInactive,
+            dotClassName,
+            isActive ? activeDotClassName : inactiveDotClassName
+          )}
+          onClick={(event) => {
+            event.stopPropagation();
+            scrollTo(index);
+          }}
+          aria-label={`Go to slide ${index + 1}`}
+          aria-selected={isActive}
+          role="tab"
+        />
+      );
+    };
+
+    return (
       <div
         ref={ref}
-        className={clsx(styles.carouselDots, className)}
+        className={clsx(
+          styles.carouselDots,
+          compact && styles.carouselDotsCompact,
+          className
+        )}
         role="tablist"
         aria-label="Carousel pagination"
         {...props}
       >
-        {scrollSnaps.map((_, index) => {
-          const isActive = index === selectedIndex;
+        {!compact &&
+          scrollSnaps.map((_, index) => renderDotButton(index, null))}
 
-          return (
-            <button
-              key={index}
-              type="button"
-              className={clsx(
-                styles.carouselDot,
-                isActive
-                  ? styles.carouselDotActive
-                  : styles.carouselDotInactive,
-                dotClassName,
-                isActive ? activeDotClassName : inactiveDotClassName
-              )}
-              onClick={(event) => {
-                event.stopPropagation();
-                scrollTo(index);
-              }}
-              aria-label={`Go to slide ${index + 1}`}
-              aria-pressed={isActive}
-              role="tab"
-            />
-          );
-        })}
+        {compact &&
+          visibleIndices.map((index) =>
+            renderDotButton(
+              index,
+              getCarouselDotSizeTier(index, {
+                total,
+                selectedIndex,
+                windowStart,
+                windowSize: visibleIndices.length,
+              })
+            )
+          )}
       </div>
     );
   }

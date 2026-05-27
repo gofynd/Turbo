@@ -19,6 +19,7 @@ import {
   useSnackbar,
   useThemeFeature,
   useDeliverPromise,
+  useThemeConfig
 } from "../../helper/hooks";
 import {
   isEmptyOrNull,
@@ -64,6 +65,9 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
   const { isServiceability, isCrossBorderOrder } = useThemeFeature({ fpi });
   const { onUpdateCartItems, isCartUpdating, cartItems } = useCart(fpi, false);
   const { is_serviceable } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
+  const { globalConfig } = useThemeConfig({ fpi });
+  const isMiniCartEnabled =
+    globalConfig?.enable_minicart && !globalConfig?.disable_cart;
 
   const isMto = useMemo(
     () => productData?.product?.custom_order?.is_custom_order || false,
@@ -254,6 +258,12 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
     [fetchProductPrice, fpi]
   );
 
+  const triggerMiniCartOpen = useCallback(() => {
+    if (isMiniCartEnabled) {
+      fpi?.custom?.setValue("openMiniCartTrigger", Date.now());
+    }
+  }, [fpi, isMiniCartEnabled]);
+
   const handleSlugChange = useCallback(
     async (productSlug) => {
       setSlug(productSlug);
@@ -383,6 +393,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
               );
             }
           }
+          triggerMiniCartOpen();
           return outRes;
         });
       }
@@ -398,6 +409,7 @@ const useAddToCartModal = ({ fpi, pageConfig }) => {
       fetchCartDetails,
       showSnackbar,
       navigate,
+      triggerMiniCartOpen
     ]
   );
 

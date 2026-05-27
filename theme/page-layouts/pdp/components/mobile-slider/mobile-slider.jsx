@@ -16,7 +16,11 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  CarouselDots,
 } from "../../../../components/carousel/carousel";
+import { Skeleton } from "../../../../components/core/skeletons";
 
 function MobileSlider({
   images,
@@ -31,7 +35,9 @@ function MobileSlider({
   handleShare,
   showShareIcon = true,
   sources = [],
-  renderTag, // Renders out-of-stock, custom badge (teaser_tag), or sale badge based on platform/section config
+  renderTag, // Renders out-of-stock, custom badge (teaser_tag), or sale badge based on platform/section config,
+  showArrows = false,
+  showDots = true,
 }) {
   const { t } = useGlobalTranslation("translation");
   const { isRTL } = useLocaleDirection();
@@ -163,9 +169,16 @@ function MobileSlider({
       ></Slider> */}
 
       <Carousel opts={options} data-carousel="carousel">
+        {showArrows && (
+          <>
+            <CarouselPrevious />
+            <CarouselNext />
+          </>
+        )}
         <CarouselContent data-carousel="track">
           {images?.map((media, i) => (
             <CarouselItem
+              key={media?.url ?? i}
               style={{ flex: "0 0 100%" }}
               data-carousel="item"
               data-carousel-index={i}
@@ -269,6 +282,7 @@ function MobileSlider({
             </CarouselItem>
           ))}
         </CarouselContent>
+        {showDots && <CarouselDots showOnSingleSlide={false} />}
       </Carousel>
 
       {/* Removed share icon from slider */}

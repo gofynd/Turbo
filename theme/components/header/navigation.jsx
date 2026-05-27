@@ -39,6 +39,7 @@ function Navigation({
   const [sidebarl3Nav, setSidebarl3Nav] = useState({});
   const [activeItem, setActiveItem] = useState(null);
   const [hoveredL2Index, setHoveredL2Index] = useState(null);
+  const [l3FlyoutStyle, setL3FlyoutStyle] = useState({});
   const [isClient, setIsClient] = useState(false);
   const prevPathnameRef = useRef(location.pathname);
 
@@ -49,7 +50,63 @@ function Navigation({
   const handleMouseLeave = () => {
     setActiveItem(null);
     setHoveredL2Index(null);
+    setL3FlyoutStyle({});
   };
+
+  const getL3FlyoutStyle = useCallback(
+    (event, itemCount = 0) => {
+      if (!isRunningOnClient()) return {};
+
+      const itemRect = event.currentTarget.getBoundingClientRect();
+      const rootStyles = getComputedStyle(document.documentElement);
+      const headerOffset =
+        parseFloat(rootStyles.getPropertyValue("--headerHeight")) ||
+        staticHeight ||
+        0;
+      const viewportPadding = 8;
+      const maxHeight = Math.max(
+        120,
+        window.innerHeight - headerOffset - viewportPadding * 2
+      );
+      const estimatedHeight = Math.min((itemCount || 1) * 40 + 16, maxHeight);
+      const minTop = headerOffset + viewportPadding;
+      const maxTop = Math.max(
+        minTop,
+        window.innerHeight - estimatedHeight - viewportPadding
+      );
+      const top = Math.min(Math.max(itemRect.top, minTop), maxTop);
+      const availableHeight = Math.max(
+        120,
+        window.innerHeight - top - viewportPadding
+      );
+      const style = {
+        top: `${top}px`,
+        maxHeight: `${availableHeight}px`,
+      };
+
+      if (getLocaleDirection(fpi) === "rtl") {
+        style.right = `${window.innerWidth - itemRect.left}px`;
+      } else {
+        style.left = `${itemRect.right}px`;
+      }
+
+      return style;
+    },
+    [fpi, staticHeight]
+  );
+
+  const handleL2MouseEnter = useCallback(
+    (index, event, subNavigation = []) => {
+      setHoveredL2Index(index);
+      setL3FlyoutStyle(getL3FlyoutStyle(event, subNavigation.length));
+    },
+    [getL3FlyoutStyle]
+  );
+
+  const handleL2MouseLeave = useCallback(() => {
+    setHoveredL2Index(null);
+    setL3FlyoutStyle({});
+  }, []);
 
   const dropdownVariants = {
     hidden: { opacity: 0, y: -20 },
@@ -201,7 +258,10 @@ function Navigation({
           l1MenuClassName={navWeightClassName}
         ></MegaMenu>
       ) : isHorizontalNav ? (
-        <nav className={`${styles.nav} ${customClass}`}>
+        <nav
+          className={`${styles.nav} ${customClass}`}
+          style={{ "--navigation-header-height": `${staticHeight || 0}px` }}
+        >
           <AnimatePresence>
             <motion.ul
               className={styles.l1NavigationList}
@@ -264,8 +324,14 @@ function Navigation({
                             <li
                               key={`${l2nav.display}_${l2Index}_${index}`}
                               className={`${styles.l2NavigationList__item} b1 ${styles.fontBody}`}
-                              onMouseEnter={() => setHoveredL2Index(l2Index)}
-                              onMouseLeave={() => setHoveredL2Index(null)}
+                              onMouseEnter={(event) =>
+                                handleL2MouseEnter(
+                                  l2Index,
+                                  event,
+                                  l2nav.sub_navigation
+                                )
+                              }
+                              onMouseLeave={handleL2MouseLeave}
                             >
                               <div
                                 className={
@@ -294,6 +360,7 @@ function Navigation({
                                     hoveredL2Index === l2Index && (
                                       <motion.ul
                                         className={styles.l3NavigationList}
+                                        style={l3FlyoutStyle}
                                         initial={
                                           isClient
                                             ? { opacity: 0, x: -20 }
@@ -309,23 +376,25 @@ function Navigation({
                                         }
                                         transition={{ duration: 0.3 }}
                                       >
-                                        {l2nav.sub_navigation.map((l3nav, l3Index) => (
-                                          <li
-                                            key={`${l3nav.display}_${l3Index}_${l2Index}_${index}`}
-                                            className={`${styles.l3NavigationList__item} b1 ${styles.fontBody}`}
-                                          >
-                                            <FDKLink
-                                              action={l3nav?.action}
-                                              className={`${styles["l3NavigationList__item--wrapper"]}`}
+                                        {l2nav.sub_navigation.map(
+                                          (l3nav, l3Index) => (
+                                            <li
+                                              key={`${l3nav.display}_${l3Index}_${l2Index}_${index}`}
+                                              className={`${styles.l3NavigationList__item} b1 ${styles.fontBody}`}
                                             >
-                                              <span
-                                                className={`${styles.menuItem} ${styles.flexAlignCenter}`}
+                                              <FDKLink
+                                                action={l3nav?.action}
+                                                className={`${styles["l3NavigationList__item--wrapper"]}`}
                                               >
-                                                <span>{l3nav.display}</span>
-                                              </span>
-                                            </FDKLink>
-                                          </li>
-                                        ))}
+                                                <span
+                                                  className={`${styles.menuItem} ${styles.flexAlignCenter}`}
+                                                >
+                                                  <span>{l3nav.display}</span>
+                                                </span>
+                                              </FDKLink>
+                                            </li>
+                                          )
+                                        )}
                                       </motion.ul>
                                     )}
                                 </AnimatePresence>

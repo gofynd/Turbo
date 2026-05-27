@@ -5,6 +5,7 @@ import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import {
   getProductImgAspectRatio,
   isRunningOnClient,
+  getEffectiveCarouselControls,
   isValidCustomBadge,
 } from "../../../../helper/utils";
 import styles from "./image-gallery.less";
@@ -18,7 +19,7 @@ import { useGlobalTranslation } from "fdk-core/utils";
 import { Skeleton } from "../../../../components/core/skeletons";
 import { createPortal } from "react-dom";
 import WishlistIcon from "../../../../assets/images/wishlist";
-
+import { useFPI,useGlobalStore } from "fdk-core/utils";
 const LightboxImage = React.lazy(
   () => import("../lightbox-image/lightbox-image")
 );
@@ -44,7 +45,7 @@ function PdpImageGallery({
   showCustomBadge = true, // Platform setting: show_custom_badge (teaser_tag)
   displayMode = "carousel", // "carousel", "vertical", or "vertical-with-thumbnail"
   onLightboxStateChange, // Callback to notify parent about lightbox state
-  productDetails = null,
+  productDetails: productDetailsProp = null,
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [enableLightBox, setEnableLightBox] = useState(false);
@@ -55,6 +56,19 @@ function PdpImageGallery({
   const thumbnailSidebarRef = useRef(null);
   const mainImagesRefs = useRef([]);
   const verticalContainerRef = useRef(null);
+  const fpi = useFPI();
+  const product = useGlobalStore(fpi.getters.PRODUCT);
+  const productDetails = productDetailsProp ?? product?.product_details;
+
+  // Mobile/tablet carousel controls from carousel_controls_mobile setting
+  const { showArrows: mobileShowArrows, showDots: mobileShowDots } =
+    getEffectiveCarouselControls(
+      globalConfig,
+      false, // isDesktop - MobileSlider is for tablet/mobile only
+      images?.length ?? 0,
+      1 // itemsPerViewport - one image at a time on mobile
+    );
+
   const handleVerticalContainerWheel = (event) => {
     const container = verticalContainerRef.current;
     if (!container) return;
@@ -728,6 +742,8 @@ function PdpImageGallery({
           handleShare={handleShare}
           showShareIcon={showShareIcon}
           renderTag={renderTag}
+          showArrows={mobileShowArrows}
+          showDots={mobileShowDots}
         />
       </div>
 

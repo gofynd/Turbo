@@ -24,6 +24,7 @@ export const useAddressFormSchema = ({
   const { selectedAddress } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE);
   const locationDetails = useGlobalStore(fpi?.getters?.LOCATION_DETAILS);
   const isLoggedIn = useGlobalStore(fpi.getters.LOGGED_IN);
+  const platformData = useGlobalStore(fpi.getters.PLATFORM_DATA);
   const [formFields, SetFormFields] = useState(null);
   const [dropdownData, setDropdownData] = useState(null);
   const [disableField, setDisableField] = useState(null);
@@ -31,6 +32,9 @@ export const useAddressFormSchema = ({
   const { showSnackbar } = useSnackbar();
   const { isServiceability } = useThemeFeature({ fpi });
   const { isCheckoutMap } = useGoogleMapConfig({ fpi });
+  const isEmailRequired =
+    !!platformData?.required_fields?.email?.is_required &&
+    platformData?.required_fields?.email?.level === "hard";
 
   function isFieldAvailable({ key }) {
     const tempAddressItem = !selectedAddress?.id
@@ -161,14 +165,18 @@ export const useAddressFormSchema = ({
     const type =
       input === "textbox" ? (slug === "phone" ? "mobile" : "text") : input;
     const key = slug === "pincode" ? "area_code" : slug;
+    const emailFieldSchema =
+      slug === "email" ? { ...field, required: isEmailRequired } : null;
 
     const formField = {
       key,
       display,
       type,
-      required,
+      required: emailFieldSchema ? isEmailRequired : required,
       fullWidth: false,
-      validation: { validate: createFieldValidation(field, t) },
+      validation: {
+        validate: createFieldValidation(emailFieldSchema || field, t),
+      },
       disabled: addressItem?.[key]
         ? !addressItem[key]
         : locationDetails?.country_iso_code === countryIso &&
@@ -309,13 +317,13 @@ export const useAddressFormSchema = ({
       setDropdownData(null);
       setDisableField(null);
     };
-  }, [addressTemplate, addressFields, countryIso]); // Add countryIso as dependency
+  }, [addressTemplate, addressFields, countryIso, isEmailRequired]); // Add countryIso as dependency
 
   const formSchema = useMemo(() => {
     // If formFields is null/undefined, return empty array for backward compatibility
     // This ensures formSchema is always an array and doesn't break components expecting an array
     if (!formFields) return [];
-    
+
     // If dropdownData is not yet loaded, return formFields without dropdown options
     // This allows the form to render immediately with basic fields
     if (!dropdownData) return formFields;

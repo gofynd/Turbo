@@ -136,7 +136,31 @@
   color: @OldColorPaletteTextColorPrimary;
   margin: 0;
   white-space: pre-wrap;
-
+  display: flex;
+  @media @mobile {
+    display: block;
+  }
+  .exchangeBadge {
+    @media @mobile {
+      margin-inline-start: 0;
+      margin-top: 4px;
+    }
+    margin-inline-start: 8px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    background: var(--themeAccentL3);
+    padding: 2px 4px;
+    border-radius: 3px;
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+    svg > path {
+      fill: var(--successText, #1c958f);
+    }
+  }
   @media @mobile {
     font-size: 13px;
   }
@@ -163,12 +187,38 @@
   margin: 0 4px;
 }
 
+.freeGiftBadge {
+  background-color: @SuccessBackground;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.freeGiftText {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 1.4;
+  color: @SuccessText;
+  text-transform: lowercase;
+}
+
 .statusBadge {
   background-color: @SuccessBackground;
   padding: 4px;
   border-radius: 4px;
   display: inline-flex;
   align-self: flex-start;
+  &.exchangeIconBox {
+    align-items: center;
+    gap: 2px;
+  }
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .statusText {

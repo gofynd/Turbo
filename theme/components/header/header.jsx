@@ -36,6 +36,7 @@ import { LANGUAGES } from "../../queries/languageQuery";
 import I18Dropdown from "./i18n-dropdown";
 import Shimmer from "../shimmer/shimmer";
 import TruckIcon from "../../assets/images/truck.svg";
+import useMinicart from "../../page-layouts/cart/useMinicart";
 
 const LocationModal = React.lazy(
   () => import("./location-modal/location-modal")
@@ -83,6 +84,12 @@ function Header({ fpi }) {
     show_quantity_control = false,
     show_mobile_icons = false,
   } = globalConfig || {};
+
+  const isMiniCartEnabled = globalConfig?.enable_minicart;
+  const { MiniCartRenderer, openMiniCart } = useMinicart(
+    fpi,
+    isMiniCartEnabled
+  );
 
   const { openLogin } = useAccounts({ fpi });
   const shouldHide = location.pathname.startsWith("/payment/link/");
@@ -134,8 +141,17 @@ function Header({ fpi }) {
     const handleScroll = () => setScrolled(window.scrollY > 10);
 
     if (sticky_header && shouldBeTransparent) {
+      handleScroll();
+      const scrollSyncId = window.setTimeout(handleScroll, 0);
       window.addEventListener("scroll", handleScroll);
+
+      return () => {
+        window.clearTimeout(scrollSyncId);
+        window.removeEventListener("scroll", handleScroll);
+      };
     }
+
+    setScrolled(false);
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [sticky_header, shouldBeTransparent]);
@@ -491,7 +507,10 @@ function Header({ fpi }) {
                   deliveryPromise={deliveryPromise}
                   onServiceabilityClick={openServiceabilityModal}
                   hideNavList={hideNavList}
+                  openMiniCart={openMiniCart}
+                  isMiniCartEnabled={isMiniCartEnabled}
                   shouldBeTransparent={shouldBeTransparent}
+                  navigate={navigate}
                 />
               </div>
               <div
@@ -599,7 +618,13 @@ function Header({ fpi }) {
                           <button
                             type="button"
                             className={`${styles.headerIcon} ${styles["right__icons--bag"]}`}
-                            onClick={() => checkLogin("cart")}
+                            onClick={() => {
+                              if (isMiniCartEnabled) {
+                                openMiniCart();
+                              } else {
+                                checkLogin("cart");
+                              }
+                            }}
                             aria-label={`${cartItemCount ?? 0} ${t("resource.header.item_in_cart")}`}
                           >
                             <CartIcon
@@ -665,6 +690,7 @@ function Header({ fpi }) {
           />
         </Suspense>
       )}
+      {MiniCartRenderer && <MiniCartRenderer />}
     </>
   );
 }

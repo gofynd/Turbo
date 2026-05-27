@@ -212,6 +212,22 @@
       "category": "t:resource.settings_schema.common.footer",
       "label": "t:resource.settings_schema.footer.logo"
     },
+     {
+      "type": "checkbox",
+      "id": "show_footer_logo",
+      "default": true,
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.show_footer_logo",
+      "info": "t:resource.settings_schema.footer.show_footer_logo_info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_footer_description",
+      "default": true,
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.show_footer_description",
+      "info": "t:resource.settings_schema.footer.show_footer_description_info"
+    },
     {
       "type": "text",
       "id": "footer_description",
@@ -356,6 +372,14 @@
       "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "default": false,
       "info": "t:resource.settings_schema.cart_and_button_configuration.display_in_place_of_add_to_cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_minicart",
+      "label": "t:resource.settings_schema.cart_and_button_configuration.enable_minicart",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
+      "default": false,
+      "info": "t:resource.settings_schema.cart_and_button_configuration.enable_minicart"
     },
     {
       "type": "header",
@@ -530,6 +554,50 @@
       "category": "t:resource.settings_schema.common.other_page_configuration",
       "label": "t:resource.common.show_filter_toggle_button",
       "info": "t:resource.common.show_filter_toggle_button_info"
+    },
+    {
+      "type": "select",
+      "id": "carousel_controls_mobile",
+      "default": "none",
+      "category": "t:resource.settings_schema.common.other_page_configuration",
+      "label": "t:resource.settings_schema.other_page_configuration.carousel_controls_mobile",
+      "info": "t:resource.settings_schema.other_page_configuration.carousel_controls_mobile_info",
+      "options": [
+        {
+          "text": "t:resource.settings_schema.other_page_configuration.carousel_controls_show_dots",
+          "value": "show_dots"
+        },
+        {
+          "text": "t:resource.settings_schema.other_page_configuration.carousel_controls_show_arrow",
+          "value": "show_arrow"
+        },
+        {
+          "text": "t:resource.settings_schema.other_page_configuration.carousel_controls_none",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "carousel_controls_desktop",
+      "default": "none",
+      "category": "t:resource.settings_schema.common.other_page_configuration",
+      "label": "t:resource.settings_schema.other_page_configuration.carousel_controls_desktop",
+      "info": "t:resource.settings_schema.other_page_configuration.carousel_controls_desktop_info",
+      "options": [
+        {
+          "text": "t:resource.settings_schema.other_page_configuration.carousel_controls_show_dots",
+          "value": "show_dots"
+        },
+        {
+          "text": "t:resource.settings_schema.other_page_configuration.carousel_controls_show_arrow",
+          "value": "show_arrow"
+        },
+        {
+          "text": "t:resource.settings_schema.other_page_configuration.carousel_controls_none",
+          "value": "none"
+        }
+      ]
     },
     {
       "type": "header",

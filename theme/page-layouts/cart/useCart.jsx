@@ -130,7 +130,7 @@ const useCart = (fpi, isActive = true) => {
   }, [sections, cart_items]);
 
   useEffect(() => {
-    if (isActive) {
+    if (!isActive) return;
       // Only show full loading state on initial load (no cart items yet)
       // For subsequent refetches (e.g., after pincode change), keep showing existing cart
       // This prevents the "flash of empty cart" issue after login
@@ -139,8 +139,8 @@ const useCart = (fpi, isActive = true) => {
         setIsLoading(true);
       }
       fetchCartDetails(fpi, { buyNow }).then(() => setIsLoading(false));
-    }
-  }, [fpi, i18nDetails?.currency?.code, deliveryLocationStr]);
+    
+  }, [fpi, i18nDetails?.currency?.code, deliveryLocationStr,isActive]);
 
   const isAnonymous = appFeatures?.landing_page?.continue_as_guest;
   const isGstInput =

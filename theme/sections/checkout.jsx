@@ -817,7 +817,14 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                 <PriceBreakup
                   customClassName={styles.customStyles}
                   breakUpValues={breakupValues}
-                  cartItemCount={bagData?.items?.length}
+                  cartItemCount={
+                    bagData?.items?.reduce(
+                      (total, item) => total + (item?.quantity || 0),
+                      0
+                    ) ||
+                    bagData?.user_cart_items_count ||
+                    0
+                  }
                   currencySymbol={currencySymbol}
                   isLoading={isApiLoading}
                 />

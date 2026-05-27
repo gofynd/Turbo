@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   useGlobalStore,
   useGlobalTranslation,
@@ -18,33 +18,16 @@ import productPlaceholder from "../../assets/images/placeholder3x4.png";
 import useAddToCartModal from "./useAddToCartModal";
 import { useAccounts, useWishlist, useThemeConfig } from "../../helper/hooks";
 import useInternational from "../../components/header/useInternational";
-import useScrollRestoration from "./useScrollRestoration";
+import useMinicart from "../cart/useMinicart";
 import { prefetchCache } from "../../helper/prefetch-cache";
+import useListingScrollRestoration from "./useListingScrollRestoration";
 
 const INFINITE_PAGE_SIZE = 12;
 const PAGES_TO_SHOW = 5;
 const PAGE_OFFSET = 2;
-
-// Helper functions for managing scroll state
-const saveScrollState = (key, data) => {
-  if (isRunningOnClient()) {
-    sessionStorage.setItem(key, JSON.stringify(data));
-  }
-};
-
-const getScrollState = (key) => {
-  if (isRunningOnClient()) {
-    const data = sessionStorage.getItem(key);
-    return data ? JSON.parse(data) : null;
-  }
-  return null;
-};
-
-const clearScrollState = (key) => {
-  if (isRunningOnClient()) {
-    sessionStorage.removeItem(key);
-  }
-};
+const PLP_SCROLL_RESTORE_STATE = [
+  { customKey: "customProductList", stateKey: "productsListData" },
+];
 
 const useProductListing = ({ fpi, props }) => {
   const { t } = useGlobalTranslation("translation");
@@ -59,6 +42,9 @@ const useProductListing = ({ fpi, props }) => {
     fpi,
     page: "product-listing",
   });
+
+   const isMiniCartEnabled =
+    globalConfig?.enable_minicart && !globalConfig?.disable_cart;
 
   const {
     desktop_banner = "",
@@ -84,6 +70,7 @@ const useProductListing = ({ fpi, props }) => {
     size_selection_style = "dropdown",
     tax_label = "",
     show_size_guide = false,
+    show_multiple_images = false,
   } = Object.entries(props).reduce((acc, [key, { value }]) => {
     acc[key] = value;
     return acc;
@@ -110,24 +97,19 @@ const useProductListing = ({ fpi, props }) => {
 
   const { filters = [], sort_on: sortOn, page, items } = productsListData || {};
 
-  // Scroll restoration state - SSR-safe but functional
-  const scrollStateKey = `plp_scroll_${location.pathname}${location.search}`;
-
-  // SSR-safe scroll state detection
-  const scrollStateInfo = useMemo(() => {
-    if (!isRunningOnClient() || loading_options !== "infinite") {
-      return { hasSavedState: false, savedState: null };
-    }
-    const state = getScrollState(scrollStateKey);
-    if (state && Date.now() - state.timestamp <= 30 * 60 * 1000) {
-      return { hasSavedState: true, savedState: state };
-    } else if (state) {
-      clearScrollState(scrollStateKey);
-    }
-    return { hasSavedState: false, savedState: null };
-  }, [scrollStateKey, loading_options]);
-
-  const { hasSavedState, savedState } = scrollStateInfo;
+  const canRestoreScroll =
+    loading_options === "infinite" || loading_options === "view_more";
+  const {
+    hasSavedState,
+    savedState,
+    isRestoringFromSavedState: isRestoringFromPDP,
+    createProductNavigationHandler,
+  } = useListingScrollRestoration({
+    fpi,
+    location,
+    canRestoreScroll,
+    restoreState: PLP_SCROLL_RESTORE_STATE,
+  });
 
   // Initialize with proper defaults - this preserves the original functionality
   const [productList, setProductList] = useState(() => {
@@ -180,12 +162,6 @@ const useProductListing = ({ fpi, props }) => {
     getInitialResetFilterDisable
   );
 
-  const hasRestoredScroll = useRef(false);
-  const isRestoringFromPDP = useRef(hasSavedState);
-
-  // Use scroll restoration hook to prevent auto-scroll to top
-  useScrollRestoration(scrollStateKey, loading_options === "infinite");
-
   const isAlgoliaEnabled = globalConfig?.algolia_enabled;
 
   const breadcrumb = useMemo(
@@ -203,6 +179,8 @@ const useProductListing = ({ fpi, props }) => {
     pageConfig: addToCartConfigs,
   });
 
+     const { MiniCartRenderer } = useMinicart(fpi, isMiniCartEnabled);
+
   const pincode = useMemo(() => {
     if (!isClient) {
       return "";
@@ -214,56 +192,6 @@ const useProductListing = ({ fpi, props }) => {
       ""
     );
   }, [pincodeDetails, locationDetails, isClient]);
-
-  // Handle scroll restoration - runs after hydration but preserves UX
-  useEffect(() => {
-    if (hasSavedState && savedState && !hasRestoredScroll.current) {
-      // Store the saved data in global state to prevent refetching
-      fpi.custom.setValue("customProductList", savedState.productsListData);
-
-      // Restore scroll position smoothly
-      const restoreScroll = () => {
-        window.scrollTo(0, savedState.scrollPosition);
-        hasRestoredScroll.current = true;
-        clearScrollState(scrollStateKey);
-      };
-
-      // Use requestAnimationFrame for smooth restoration
-      if (document.readyState === "complete") {
-        requestAnimationFrame(restoreScroll);
-      } else {
-        window.addEventListener(
-          "load",
-          () => requestAnimationFrame(restoreScroll),
-          { once: true }
-        );
-      }
-    }
-  }, [hasSavedState, savedState, scrollStateKey, fpi]);
-
-  // Cleanup expired scroll states on mount
-  useEffect(() => {
-    if (isClient) {
-      const cleanupExpiredStates = () => {
-        const keys = [];
-        for (let i = 0; i < sessionStorage.length; i++) {
-          const key = sessionStorage.key(i);
-          if (key && key.startsWith("plp_scroll_")) {
-            keys.push(key);
-          }
-        }
-
-        keys.forEach((key) => {
-          const state = getScrollState(key);
-          if (state && Date.now() - state.timestamp > 30 * 60 * 1000) {
-            clearScrollState(key);
-          }
-        });
-      };
-
-      cleanupExpiredStates();
-    }
-  }, [isClient]);
 
   useEffect(() => {
     fpi.custom.setValue("isPlpSsrFetched", false);
@@ -716,29 +644,11 @@ const useProductListing = ({ fpi, props }) => {
     ];
   }, [globalConfig?.img_hd, img_resize, img_resize_mobile]);
 
-  // Function to save scroll state when navigating to PDP
-  const handleProductNavigation = () => {
-    if (
-      isClient &&
-      loading_options === "infinite" &&
-      (productList?.length > 0 || items?.length > 0)
-    ) {
-      const scrollPosition =
-        window.scrollY || document.documentElement.scrollTop;
-
-      // Only save if we have meaningful scroll position and loaded products
-      if (scrollPosition > 100 && (productList?.length || items?.length)) {
-        const stateToSave = {
-          scrollPosition,
-          productList: productList || items || [],
-          productsListData,
-          timestamp: Date.now(),
-          savedUrl: `${location.pathname}${location.search}`, // Store complete URL for validation
-        };
-        saveScrollState(scrollStateKey, stateToSave);
-      }
-    }
-  };
+  const handleProductNavigation = createProductNavigationHandler({
+    productList,
+    items,
+    stateToSave: { productsListData },
+  });
 
   return {
     breadcrumb,
@@ -799,6 +709,8 @@ const useProductListing = ({ fpi, props }) => {
     onProductNavigation: handleProductNavigation,
     showColorVariants: globalConfig?.show_color_variants,
     filterToggle: globalConfig?.filter_toggle_button,
+    MiniCartRenderer: isMiniCartEnabled ? MiniCartRenderer : null,
+    showMultipleImages: show_multiple_images,
   };
 };
 

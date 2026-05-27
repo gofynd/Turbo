@@ -94,6 +94,41 @@ export const SHARED_CART_DETAILS = `query sharedCartDetails($token: String!) {
             selling
           }
         }
+        promotions_applied {
+          amount
+          article_quantity
+          code
+          meta
+          mrp_promotion
+          offer_text
+          promo_id
+          promotion_group
+          promotion_name
+          promotion_type
+          applied_free_articles {
+            article_id
+            parent_item_identifier
+            quantity
+            free_gift_item_details {
+              item_brand_name
+              item_id
+              item_images_url
+              item_name
+              item_price_details {
+                currency
+                marked {
+                  min
+                  max
+                }
+                effective {
+                  min
+                  max
+                }
+              }
+              item_slug
+            }
+          }
+        }
       }
       shared_cart_details {
         created_on
