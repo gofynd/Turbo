@@ -207,6 +207,9 @@ export const GET_SHIPMENT_DETAILS = `query shipment(
         label_url
         updated_date
       }
+      credit_note {
+        credit_note_url
+      }
       fulfilling_store {
         code
         company_id
@@ -509,6 +512,9 @@ export const GET_SHIPMENT_CUSTOMER_DETAILS = `query shipment(
         invoice_url
         label_url
         updated_date
+      }
+      credit_note {
+        credit_note_url
       }
       fulfilling_store {
         code

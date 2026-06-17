@@ -119,11 +119,17 @@ const MiniCartCoupons = ({
     const trimmed = couponInput.trim();
     if (!trimmed) return;
     setShowCouponError(true);
-    onApplyCoupon(trimmed, { errorDisplay: "inline" });
+    onApplyCoupon(trimmed, {
+      errorDisplay: "inline",
+      fallbackErrorMessage: t("resource.cart.sorry_invalid_coupon"),
+    });
   };
 
   const handleSelectCoupon = (code = "") => {
-    onApplyCoupon(code, { errorDisplay: "toast" });
+    onApplyCoupon(code, {
+      errorDisplay: "toast",
+      fallbackErrorMessage: t("resource.cart.sorry_invalid_coupon"),
+    });
   };
 
   const handleCouponInputChange = (event) => {
@@ -223,6 +229,7 @@ const MiniCartBillSummary = ({
   cartItemCount = 0,
   currencySymbol = "",
   isLoading = false,
+  showCartDiscountPreview = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -243,6 +250,7 @@ const MiniCartBillSummary = ({
           currencySymbol={currencySymbol}
           isInternationalTaxLabel={false}
           isLoading={isLoading}
+          showTotalDiscount={showCartDiscountPreview}
           cardBorderRadius="0px"
           priceSummaryContainerClass={styles.priceSummaryContainer}
         />
@@ -445,6 +453,7 @@ const Minicart = ({
   onCouponBoxClick = () => {},
   onCouponListCloseModalClick = () => {},
   successCoupon,
+  showCartDiscountPreview = true,
 }) => {
   const { t } = useGlobalTranslation("translation");
 
@@ -631,6 +640,7 @@ const Minicart = ({
               cartItemCount={cartItemCount || miniCartItems.length}
               currencySymbol={currencySymbol}
               isLoading={isLoading}
+              showCartDiscountPreview={showCartDiscountPreview}
             />
             <div className={styles.actions}>
               <FyButton

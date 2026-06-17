@@ -663,7 +663,8 @@
         "wishlist": "Lista de desejos",
         "about_us": "Sobre nós",
         "blog": "Blog"
-      }
+      },
+      "verification_required": "Verificação necessária. Verifique seu e-mail/celular."
     },
     "categories": {
       "empty_state": "Nenhuma categoria encontrada"

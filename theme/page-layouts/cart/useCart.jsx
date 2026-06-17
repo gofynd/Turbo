@@ -59,7 +59,8 @@ export function fetchCartDetails(fpi, payload = {}) {
   return fpi?.executeGQL?.(CART_DETAILS, defaultPayload);
 }
 
-const useCart = (fpi, isActive = true) => {
+const useCart = (fpi, isActive = true, options = {}) => {
+  const { onCartUpdated } = options;
   const { t } = useGlobalTranslation("translation");
   const [searchParams] = useSearchParams();
   const CART = useGlobalStore(fpi.getters.CART);
@@ -333,6 +334,15 @@ const useCart = (fpi, isActive = true) => {
 
             if (isRewardApplied) {
               await onApplyLoyaltyPoints(true, false);
+            }
+
+            if (typeof onCartUpdated === "function") {
+              await onCartUpdated({
+                cartId: cartId || cart_items?.id,
+                buyNow,
+                operation,
+                item: itemDetails,
+              });
             }
           } else if (!isSizeUpdate) {
             showSnackbar(

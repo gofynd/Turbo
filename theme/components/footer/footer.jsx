@@ -101,6 +101,7 @@ function Footer({ fpi }) {
     collapsible_footer_menu = false,
     show_footer_logo = true,
     show_footer_description = true,
+    footer_navigation_alignment = "space-between",
   } = globalConfig || {};
   const footerLogoStyle = {
     "--footer-logo-height": `${
@@ -134,9 +135,11 @@ function Footer({ fpi }) {
   const getLogo = globalConfig?.logo
     ? globalConfig?.logo?.replace("original", "resize-h:100")
     : fallbackFooterLogo;
-
-  // Validate that logo is ready to render (either custom or fallback)
-  const hasValidLogo = Boolean(getLogo && getLogo.length > 0);
+  const hasFooterLogo = getLogo?.length > 0 && show_footer_logo;
+  const hasFooterDescription =
+    globalConfig?.footer_description && show_footer_description;
+  const applyFooterNavigationAlignment =
+    !hasFooterLogo || !hasFooterDescription;
 
   const isSocialLinks = Object.values(contactInfo?.social_links ?? {}).some(
     (value) => value?.link?.trim?.()?.length > 0
@@ -183,10 +186,11 @@ function Footer({ fpi }) {
           <div className={styles.footer__top}>
             <div className={styles.footerContainer}>
               <div className={`${styles["footer__top--wrapper"]}`}>
-                {((hasValidLogo && show_footer_logo) || (globalConfig?.footer_description && show_footer_description)) && (                  <div
-                    className={`${styles["footer__top--info"]} ${processFooterDescription.cleanedContent?.length < 83 ? styles["footer__top--unsetFlexWidth"] : ""}`}
+                {(hasFooterLogo || hasFooterDescription) && (
+                  <div
+                    className={`${styles["footer__top--info"]} ${processFooterDescription.cleanedContent?.length < 83 ? styles["footer__top--unsetFlexWidth"] : ""} ${hasFooterLogo && !hasFooterDescription ? styles["footer__top--logoOnly"] : ""}`}
                   >
-                    {hasValidLogo && show_footer_logo && (
+                    {hasFooterLogo && (
                       <div className={`fx-footer-logo ${styles.logo}`}>
                         <div
                           className={styles.logoShell}
@@ -201,7 +205,7 @@ function Footer({ fpi }) {
                         </div>
                       </div>
                     )}
-                   {globalConfig?.footer_description && show_footer_description && (
+                    {hasFooterDescription && (
                       <div
                         ref={descriptionRef}
                         className={`${styles.description} b1 ${styles.fontBody}`}
@@ -226,7 +230,7 @@ function Footer({ fpi }) {
                   </div>
                 )}
                 <div
-                  className={`${styles["footer__top--menu"]} ${collapsible_footer_menu ? styles.collapsibleMenu : ""}`}
+                  className={`${styles["footer__top--menu"]} ${collapsible_footer_menu ? styles.collapsibleMenu : ""} ${applyFooterNavigationAlignment ? styles[`navigationAlign-${footer_navigation_alignment}`] || "" : ""}`}
                 >
                   {FooterNavigation?.map((item, index) => (
                     <div

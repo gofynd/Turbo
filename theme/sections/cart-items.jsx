@@ -515,7 +515,14 @@ export function Component({ props, globalConfig = {}, blocks }) {
                                 ?.total_points <= 0
                             }
                           />
-                          Redeem all available points
+                          {cartData?.breakup_values?.loyalty_points?.points === cartData?.breakup_values?.loyalty_points?.total_points
+                            ? t("resource.cart.redeem_all_available_points")
+                            : t("resource.cart.redeem_points", {
+                                count:
+                                  cartData?.breakup_values?.loyalty_points
+                                    ?.points,
+                              })}
+ 
                         </label>
                       </div>
                       <div
@@ -578,6 +585,9 @@ export function Component({ props, globalConfig = {}, blocks }) {
                         currencySymbol={currencySymbol}
                         isInternationalTaxLabel={isCrossBorderOrder}
                         isLoading={showCartShimmer}
+                        showTotalDiscount={
+                          globalConfig?.show_cart_discount_preview !== false
+                        }
                       />
                     </div>
                   );

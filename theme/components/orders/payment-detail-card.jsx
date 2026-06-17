@@ -13,7 +13,9 @@ function PaymentDetailCard({ breakup, paymentInfo }) {
     return priceFormatCurrencySymbol(
       symbol,
       price,
-      formatLocale(locale, countryCode, true)
+      formatLocale(locale, countryCode, true),
+      null,
+      true
     );
   };
   return (

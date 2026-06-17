@@ -229,6 +229,40 @@
       "info": "t:resource.settings_schema.footer.show_footer_description_info"
     },
     {
+      "type": "select",
+      "id": "footer_navigation_alignment",
+      "default": "space-between",
+      "category": "t:resource.settings_schema.common.footer",
+      "label": "t:resource.settings_schema.footer.footer_navigation_alignment",
+      "info": "t:resource.settings_schema.footer.footer_navigation_alignment_info",
+      "options": [
+        {
+          "value": "left",
+          "text": "t:resource.settings_schema.footer.left"
+        },
+        {
+          "value": "center",
+          "text": "t:resource.settings_schema.footer.center"
+        },
+        {
+          "value": "right",
+          "text": "t:resource.settings_schema.footer.right"
+        },
+        {
+          "value": "space-between",
+          "text": "t:resource.settings_schema.footer.space_between"
+        },
+        {
+          "value": "space-around",
+          "text": "t:resource.settings_schema.footer.space_around"
+        },
+        {
+          "value": "space-evenly",
+          "text": "t:resource.settings_schema.footer.space_evenly"
+        }
+      ]
+    },
+    {
       "type": "text",
       "id": "footer_description",
       "label": "t:resource.common.description",
@@ -335,6 +369,14 @@
       "info": "t:resource.settings_schema.cart_and_button_configuration.applies_to_product_pdp_featured_section"
     },
     {
+      "type": "checkbox",
+      "id": "show_cart_discount_preview",
+      "label": "Show Cart Discount Preview",
+      "category": "t:resource.settings_schema.common.cart_and_button_configuration",
+      "default": true,
+      "info": "Displays the total discount greeting in cart and checkout price breakup"
+    },
+    {
       "type": "header",
       "category": "t:resource.settings_schema.common.cart_and_button_configuration",
       "value": "Buy Button Configurations"
@@ -427,6 +469,28 @@
       "info": "Show color variant dots on product cards"
     },
     {
+      "type": "select",
+      "id": "image_effects",
+      "category": "t:resource.settings_schema.common.product_card_configuration",
+      "default": "none",
+      "label": "Image effects",
+      "info": "Choose how product-card images behave on desktop hover and mobile interaction (none, zoom, or swap). For multiple images on hover, use the setting on the Product listing or Collection product grid section.",
+      "options": [
+        {
+          "text": "None",
+          "value": "none"
+        },
+        {
+          "text": "Zoom on hover",
+          "value": "zoom_on_hover"
+        },
+        {
+          "text": "Swap image",
+          "value": "swap_image"
+        }
+      ]
+    },
+    {
       "type": "range",
       "category": "t:resource.settings_schema.common.product_card_configuration",
       "id": "image_border_radius",
@@ -487,14 +551,6 @@
       "info": "t:resource.common.image_container_bg_color"
     },
     {
-      "type": "checkbox",
-      "id": "show_image_on_hover",
-      "category": "t:resource.settings_schema.common.product_card_configuration",
-      "label": "t:resource.settings_schema.product_card_configuration.show_image_on_hover",
-      "info": "t:resource.settings_schema.product_card_configuration.hover_image_display",
-      "default": false
-    },
-    {
       "type": "range",
       "id": "limited_stock_quantity",
       "category": "t:resource.settings_schema.common.product_card_configuration",
@@ -549,11 +605,35 @@
     },
     {
       "type": "checkbox",
+      "id": "enable_voice_search",
+      "default": false,
+      "category": "t:resource.settings_schema.common.other_page_configuration",
+      "label": "t:resource.settings_schema.other_page_configuration.enable_voice_search",
+      "info": "t:resource.settings_schema.other_page_configuration.enable_voice_search_info"
+    },
+    {
+      "type": "checkbox",
       "id": "filter_toggle_button",
       "default": false,
       "category": "t:resource.settings_schema.common.other_page_configuration",
       "label": "t:resource.common.show_filter_toggle_button",
       "info": "t:resource.common.show_filter_toggle_button_info"
+    },
+    {
+      "type": "text",
+      "id": "loyalty_points_label",
+      "category": "t:resource.settings_schema.common.other_page_configuration",
+      "label": "My Loyalty Points Label",
+      "default": "My Loyalty Points",
+      "info": "Controls the loyalty points label shown in profile navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_search_history",
+      "default": false,
+      "category": "t:resource.settings_schema.common.other_page_configuration",
+      "label": "t:resource.common.enable_search_history",
+      "info": "t:resource.common.search_history_info"
     },
     {
       "type": "select",

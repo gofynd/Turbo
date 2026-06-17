@@ -41,6 +41,10 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
     fpi.getters.APP_FEATURES
   );
   const breakupValues = bagData?.breakup_values?.display || [];
+  const cartItemCount =
+    bagData?.user_cart_items_count ||
+    bagData?.items?.reduce((total, item) => total + (item?.quantity || 0), 0) ||
+    0;
 
   // Calculate total price from breakupValues
   const totalPrice = useMemo(() => {
@@ -77,7 +81,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const { ...payment } = usePayment(fpi);
   const { getTotalValue, isCreditNoteApplied, fetchCreditNoteBalance } =
     payment;
-  const { currentStep = null } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
+  const { currentStep = null, checkoutMiniCartCartUpdatedAt } = useGlobalStore(fpi.getters.CUSTOM_VALUE);
 
   const [cancelQrPayment, setCancelQrPayment] = useState(null);
   const [checkoutAmount, setCheckoutAmount] = useState(0);
@@ -98,6 +102,7 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const checkoutAmountRef = useRef(0);
   const previousStepIdx = useRef(0);
   const navigateRef = useRef(navigate);
+  const lastProcessedMiniCartUpdateAt = useRef(null);
   const currencySymbol = useMemo(
     () => bagData?.currency?.symbol || "₹",
     [bagData]
@@ -466,6 +471,24 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
   const { onFailedGetCartShipmentDetails } = address;
 
   useEffect(() => {
+    const updateMeta = checkoutMiniCartCartUpdatedAt;
+    if (!updateMeta?.timestamp || !cart_id) {
+      return;
+    }
+
+    if (lastProcessedMiniCartUpdateAt.current === updateMeta.timestamp) {
+      return;
+    }
+
+    if (`${updateMeta.cartId || ""}` !== `${cart_id}`) {
+      return;
+    }
+
+    lastProcessedMiniCartUpdateAt.current = updateMeta.timestamp;
+    onFailedGetCartShipmentDetails?.();
+  }, [checkoutMiniCartCartUpdatedAt, cart_id, onFailedGetCartShipmentDetails]);
+
+  useEffect(() => {
     if (!address_id || hasAddressFromQuery.current) return;
     const hasPaymentParams = payment_mode || aggregator_name;
 
@@ -763,7 +786,8 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                     payment?.getCurrencySymbol ||
                       bagData?.currency?.symbol ||
                       "₹",
-                    formatLocale(locale, countryCode, true)
+                    formatLocale(locale, countryCode, true),
+                    null, true
                   )}
                   onPriceDetailsClick={onPriceDetailsClick}
                   isCartValid={isCartValid}
@@ -817,16 +841,12 @@ export function Component({ props = {}, globalConfig = {}, blocks = [] }) {
                 <PriceBreakup
                   customClassName={styles.customStyles}
                   breakUpValues={breakupValues}
-                  cartItemCount={
-                    bagData?.items?.reduce(
-                      (total, item) => total + (item?.quantity || 0),
-                      0
-                    ) ||
-                    bagData?.user_cart_items_count ||
-                    0
-                  }
+                  cartItemCount={cartItemCount}
                   currencySymbol={currencySymbol}
                   isLoading={isApiLoading}
+                  showTotalDiscount={
+                    globalConfig?.show_cart_discount_preview !== false
+                  }
                 />
               </>
             );

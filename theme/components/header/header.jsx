@@ -88,7 +88,8 @@ function Header({ fpi }) {
   const isMiniCartEnabled = globalConfig?.enable_minicart;
   const { MiniCartRenderer, openMiniCart } = useMinicart(
     fpi,
-    isMiniCartEnabled
+    isMiniCartEnabled,
+    globalConfig
   );
 
   const { openLogin } = useAccounts({ fpi });

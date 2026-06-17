@@ -663,7 +663,8 @@
         "wishlist": "Lista życzeń",
         "about_us": "O nas",
         "blog": "Blog"
-      }
+      },
+      "verification_required": "Wymagana weryfikacja. Zweryfikuj swój e-mail/telefon komórkowy."
     },
     "categories": {
       "empty_state": "Nie znaleziono kategorii"

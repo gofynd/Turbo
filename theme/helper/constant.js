@@ -100,6 +100,13 @@ export const ALL_PROFILE_MENU = [
     link: "/wishlist",
     disabled_cart: false,
   },
+  {
+    key: "loyalty_points",
+    icon: "loyaltyPoint",
+    display: "My Loyalty Points",
+    link: "/profile/loyalty-rewards",
+    disabled_cart: false,
+  },
 ];
 
 export const GENDER_OPTIONS = [

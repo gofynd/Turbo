@@ -60,8 +60,8 @@ function Navigation({
       const itemRect = event.currentTarget.getBoundingClientRect();
       const rootStyles = getComputedStyle(document.documentElement);
       const headerOffset =
-        parseFloat(rootStyles.getPropertyValue("--headerHeight")) ||
         staticHeight ||
+        parseFloat(rootStyles.getPropertyValue("--headerHeight")) ||
         0;
       const viewportPadding = 8;
       const maxHeight = Math.max(

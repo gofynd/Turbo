@@ -14,12 +14,21 @@ import React, {
   
   let activeMiniCartRendererId = null;
   
-  const useMinicart = (fpi, isActive = true) => {
+  const useMinicart = (fpi, isActive = true, globalConfig = {}) => {
     const navigate = useNavigate();
     const [isMiniCartOpen, setIsMiniCartOpen] = useState(false);
     const customValues = useGlobalStore(fpi.getters.CUSTOM_VALUE) || {};
     const lastMiniCartTrigger = useRef(null);
-    const cartState = useCart(fpi, isActive && isMiniCartOpen);
+    const cartState = useCart(fpi, isActive && isMiniCartOpen, {
+      onCartUpdated: async ({ cartId, buyNow, operation }) => {
+        fpi.custom.setValue("checkoutMiniCartCartUpdatedAt", {
+          timestamp: Date.now(),
+          cartId,
+          buyNow,
+          operation,
+        });
+      },
+    });
     const cartGst = useCartGst({ fpi, cartData: cartState.cartData });
     const cartCoupon = useCartCoupon({ fpi, cartData: cartState.cartData });
     const miniCartPropsRef = useRef(null);
@@ -104,8 +113,9 @@ import React, {
     }, [isActive]);
     const closeMiniCart = useCallback(() => {
       if (!isActive) return;
+      cartCoupon?.onClearCouponError?.();
       setIsMiniCartOpen(false);
-    }, [isActive]);
+    }, [cartCoupon?.onClearCouponError, isActive]);
     const toggleMiniCart = useCallback(() => {
       if (!isActive) return;
       setIsMiniCartOpen((prev) => !prev);
@@ -177,6 +187,8 @@ import React, {
               successCoupon: cartCoupon?.successCoupon,
               gstDetails: cartGst,
               isGstInput: cartState.isGstInput,
+              showCartDiscountPreview:
+                globalConfig?.show_cart_discount_preview !== false,
             }
           : null,
       [
@@ -214,8 +226,10 @@ import React, {
         cartCoupon?.isCouponSuccessModalOpen,
         cartCoupon?.onCouponSuccessCloseModalClick,
         cartCoupon?.onRemoveCouponClick,
+        cartCoupon?.onClearCouponError,
         cartGst,
         cartState.isGstInput,
+        globalConfig?.show_cart_discount_preview,
       ]
     );
   

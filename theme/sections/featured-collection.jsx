@@ -342,7 +342,12 @@ export function Component({ props, globalConfig }) {
 
   return (
     <>
-      <section className={styles.sectionWrapper} style={dynamicStyles}>
+      <section
+        className={`${styles.sectionWrapper} ${
+          itemCountMobile === 2 ? styles.mobileTwoItems : ""
+        }`}
+        style={dynamicStyles}
+      >
         <div
           className={`fx-title-block ${styles.titleBlock} ${desktop_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""} 
            ${mobile_layout?.value === "banner_horizontal_scroll" ? styles.hideOnDesktop : ""} 
@@ -1182,6 +1187,7 @@ const ProductCardItem = ({
           imgSrcSet={imgSrcSet}
           isSlider={isSlider}
           centerAlign={product_text_alignment?.value === "center"}
+          imageEffects={globalConfig?.image_effects || "none"}
         />
       </FDKLink>
     </div>

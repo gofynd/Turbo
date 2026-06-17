@@ -545,6 +545,9 @@ export function Component({ props = {}, globalConfig = {}, blocks }) {
                         currencySymbol={currencySymbol}
                         isInternationalTaxLabel={isCrossBorderOrder}
                         isLoading={showCartShimmer}
+                        showTotalDiscount={
+                          globalConfig?.show_cart_discount_preview !== false
+                        }
                       />
                     </div>
                   );

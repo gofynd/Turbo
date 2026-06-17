@@ -5,18 +5,31 @@ import {
   debounce,
   getProductImgAspectRatio,
 } from "../../helper/utils";
-import { useGlobalStore } from "fdk-core/utils";
+import {
+  useGlobalStore,
+  useGlobalTranslation,
+  useNavigate,
+} from "fdk-core/utils";
 import FyImage from "@gofynd/theme-template/components/core/fy-image/fy-image";
 import "@gofynd/theme-template/components/core/fy-image/fy-image.css";
 import SearchIcon from "../../assets/images/single-row-search.svg";
 import CloseIcon from "../../assets/images/close.svg";
 import InputSearchIcon from "../../assets/images/search-black.svg";
+import MicrophoneIcon from "../../assets/images/microphone.svg";
 import styles from "./styles/search.less";
 import { AUTOCOMPLETE } from "../../queries/headerQuery";
 import OutsideClickHandler from "react-outside-click-handler";
 import { FDKLink } from "fdk-core/components";
-import { useGlobalTranslation, useNavigate } from "fdk-core/utils";
 import SearchSuggestionsShimmer from "../shimmer/search-suggestions-shimmer";
+
+const SEARCH_HISTORY_KEY = "theme-search-history";
+const MAX_SEARCH_HISTORY_ITEMS = 5;
+const EMPTY_SEARCH_RESULT = {
+  products: [],
+  totalCount: 0,
+  collections: [],
+  querySuggestions: [],
+};
 
 function Search({
   screen,
@@ -38,11 +51,81 @@ function Search({
   const [hasInputValue, setHasInputValue] = useState(false); // Track if input has text immediately
   const [collectionsData, setCollectionsData] = useState([]);
   const [querySuggestions, setQuerySuggestions] = useState([]);
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [isListening, setIsListening] = useState(false);
+  const [isVoiceSupported, setIsVoiceSupported] = useState(false);
   const navigate = useNavigate();
   const { openHeaderSearch } = useGlobalStore(fpi?.getters?.CUSTOM_VALUE) || {};
   const inputRef = useRef(null);
+  const recognitionRef = useRef(null);
   const isDoubleRowHeader = globalConfig?.header_layout === "double";
   const isAlgoliaEnabled = globalConfig?.algolia_enabled;
+  const isSearchHistoryEnabled = globalConfig?.enable_search_history ?? false;
+
+  const readRecentSearches = useCallback(() => {
+    if (!isRunningOnClient()) return [];
+
+    try {
+      const storedHistory = window.localStorage.getItem(SEARCH_HISTORY_KEY);
+      const parsedHistory = JSON.parse(storedHistory || "[]");
+      return Array.isArray(parsedHistory)
+        ? parsedHistory.filter(
+            (item) => typeof item === "string" && item.trim()
+          )
+        : [];
+    } catch (error) {
+      return [];
+    }
+  }, []);
+
+  const persistRecentSearches = useCallback(
+    (history) => {
+      if (!isRunningOnClient()) return;
+
+      try {
+        window.localStorage.setItem(
+          SEARCH_HISTORY_KEY,
+          JSON.stringify(history)
+        );
+      } catch (error) {
+        // Search navigation should continue when browser storage is unavailable.
+      }
+      setRecentSearches(history);
+    },
+    [setRecentSearches]
+  );
+
+  const storeSearchHistory = useCallback(
+    (value) => {
+      if (!isSearchHistoryEnabled) return;
+
+      const normalizedValue = value?.trim();
+      if (!normalizedValue) return;
+
+      const updatedHistory = [
+        normalizedValue,
+        ...readRecentSearches().filter(
+          (item) => item.toLowerCase() !== normalizedValue.toLowerCase()
+        ),
+      ].slice(0, MAX_SEARCH_HISTORY_ITEMS);
+
+      persistRecentSearches(updatedHistory);
+    },
+    [isSearchHistoryEnabled, persistRecentSearches, readRecentSearches]
+  );
+
+  const handleRecentSearchDelete = useCallback(
+    (value) => {
+      if (!isSearchHistoryEnabled) return;
+
+      const updatedHistory = readRecentSearches().filter(
+        (item) => item.toLowerCase() !== value?.toLowerCase()
+      );
+      persistRecentSearches(updatedHistory);
+    },
+    [isSearchHistoryEnabled, persistRecentSearches, readRecentSearches]
+  );
+  const isVoiceSearchEnabled = globalConfig?.enable_voice_search;
 
   useEffect(() => {
     if (showSearch) {
@@ -55,6 +138,15 @@ function Search({
       document.body.classList.remove("noscroll");
     };
   }, [showSearch]);
+
+  useEffect(() => {
+    if (!isSearchHistoryEnabled) {
+      setRecentSearches([]);
+      return;
+    }
+
+    setRecentSearches(readRecentSearches());
+  }, [isSearchHistoryEnabled, readRecentSearches]);
 
   const openSearch = () => {
     setShowSearch(!showSearch);
@@ -94,6 +186,222 @@ function Search({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run when openHeaderSearch is triggered
   }, [openHeaderSearch]);
 
+  useEffect(() => {
+    if (isRunningOnClient()) {
+      const SR =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+      setIsVoiceSupported(!!SR);
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+        recognitionRef.current = null;
+      }
+    };
+  }, []);
+
+  const stopVoiceSearch = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.abort();
+    }
+    setIsListening(false);
+  };
+
+  const preventButtonFocus = useCallback((event) => {
+    event.preventDefault();
+  }, []);
+
+  const syncSearchInputValue = useCallback((value = "") => {
+    if (inputRef.current && inputRef.current.value !== value) {
+      inputRef.current.value = value;
+    }
+    setSearchText(value);
+    setHasInputValue(value.length > 0);
+  }, []);
+
+  const applySearchPreviewData = useCallback(
+    (value, data = EMPTY_SEARCH_RESULT, options = {}) => {
+      const {
+        products = [],
+        totalCount: nextTotalCount = 0,
+        collections = [],
+        querySuggestions: nextQuerySuggestions = [],
+      } = data;
+      const { forceNoProductsFallback = false } = options;
+
+      if (products.length > 0) {
+        setSearchData(products);
+        setTotalCount(nextTotalCount);
+        setCollectionsData(collections);
+        setQuerySuggestions(nextQuerySuggestions);
+      } else {
+        setSearchData([]);
+        setTotalCount(0);
+        setCollectionsData(forceNoProductsFallback ? [] : collections);
+        setQuerySuggestions(forceNoProductsFallback ? [] : nextQuerySuggestions);
+      }
+
+      setShowSearchSuggestions(value?.length > 2);
+    },
+    []
+  );
+
+  const fetchSearchPreviewData = useCallback(
+    (value) => {
+      const normalizedValue = value?.trim();
+      if (!normalizedValue) {
+        return Promise.resolve(EMPTY_SEARCH_RESULT);
+      }
+
+      if (isAlgoliaEnabled) {
+        const BASE_URL = `${window.location.origin}/ext/search/application/api/v1.0/products`;
+        const url = new URL(BASE_URL);
+        url.searchParams.append("page_size", "4");
+        url.searchParams.append("q", normalizedValue);
+
+        return fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            const productDataNormalization =
+              data.items?.map((item) => ({
+                ...item,
+                media: item.medias,
+              })) || [];
+
+            return {
+              ...EMPTY_SEARCH_RESULT,
+              products: productDataNormalization,
+              totalCount: data.page?.item_total || 0,
+            };
+          });
+      }
+
+      return fpi.executeGQL(AUTOCOMPLETE, { query: normalizedValue }).then(
+        (res) => {
+          const { items } = res?.data?.searchProduct || {};
+
+          const products =
+            items?.filter((item) => item.type === "product") || [];
+          const collections =
+            items?.filter(
+              (item) =>
+                item.type === "brand" ||
+                item.type === "category" ||
+                item.type === "collection"
+            ) || [];
+
+          return {
+            ...EMPTY_SEARCH_RESULT,
+            products: products.slice(0, 4),
+            totalCount: products.length,
+            collections: collections.map((item) => ({
+              ...item,
+              action: item.action,
+            })),
+          };
+        }
+      );
+    },
+    [fpi, isAlgoliaEnabled]
+  );
+
+  const getEnterSearchData = useCallback(
+    (value, options = {}) => {
+      const normalizedValue = value?.trim() || "";
+      setShowSearchSuggestions(false);
+
+      return fetchSearchPreviewData(normalizedValue)
+        .then((data) => {
+          applySearchPreviewData(normalizedValue, data, options);
+          return data;
+        })
+        .catch((error) => {
+          console.error("Search API error:", error);
+          applySearchPreviewData(normalizedValue, EMPTY_SEARCH_RESULT, options);
+          return EMPTY_SEARCH_RESULT;
+        });
+    },
+    [applySearchPreviewData, fetchSearchPreviewData]
+  );
+
+  const runSearch = (value) => {
+    const normalizedValue = value?.trim();
+    if (!normalizedValue) return;
+
+    storeSearchHistory(normalizedValue);
+    redirectToProduct(`/products/?q=${normalizedValue}`);
+  };
+
+  const toggleVoiceSearch = () => {
+    if (isListening) {
+      stopVoiceSearch();
+      return;
+    }
+
+    const SR =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+
+    // On mobile, dismiss the on-screen keyboard for better UX during voice search.
+    // Blur both the search input and any other focused element to ensure keyboard closes.
+    if (isRunningOnClient()) {
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
+      if (document.activeElement && document.activeElement !== document.body) {
+        document.activeElement.blur();
+      }
+    }
+
+    const recognition = new SR();
+    recognition.lang = document.documentElement.lang || "en";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results || [])
+        .map((result) => result?.[0]?.transcript || "")
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim();
+      const latestResult = event.results?.[event.results.length - 1];
+
+      if (transcript) {
+        syncSearchInputValue(transcript);
+      }
+
+      if (latestResult?.isFinal) {
+        setIsListening(false);
+        if (transcript) {
+          getEnterSearchData(transcript, {
+            forceNoProductsFallback: true,
+          }).finally(() => runSearch(transcript));
+        }
+      }
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    setShowSearchSuggestions(false);
+    setSearchData([]);
+    setCollectionsData([]);
+    setQuerySuggestions([]);
+    setTotalCount(0);
+    recognition.start();
+    setIsListening(true);
+  };
+
   const collapseSearch = () => {
     setShowSearch(false);
     // setIsSearchFocused(false);
@@ -117,6 +425,7 @@ function Search({
     }
   };
   const closeSearch = () => {
+    stopVoiceSearch();
     collapseSearch();
     clearAll();
     // clearAll() re-focuses the input (so the cursor stays put when the
@@ -134,83 +443,6 @@ function Search({
       closeSearch();
     }
   };
-
-  const getEnterSearchData = (searchText) => {
-    setShowSearchSuggestions(false);
-
-    if (isAlgoliaEnabled) {
-      const BASE_URL = `${window.location.origin}/ext/search/application/api/v1.0/products`;
-      const url = new URL(BASE_URL);
-      url.searchParams.append("page_size", "4");
-      url.searchParams.append("q", searchText);
-
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          const productDataNormalization = data.items?.map((item) => ({
-            ...item,
-            media: item.medias,
-          }));
-          if (productDataNormalization.length) {
-            setSearchData(productDataNormalization);
-            setTotalCount(data.page?.item_total || 0);
-            setQuerySuggestions([]);
-          } else {
-            setSearchData([]);
-            setTotalCount(0);
-            setQuerySuggestions([]);
-          }
-        })
-        .finally(() => {
-          setShowSearchSuggestions(searchText?.length > 2);
-        });
-    } else {
-      // Use only AUTOCOMPLETE API and handle products from the response
-      fpi
-        .executeGQL(AUTOCOMPLETE, { query: searchText })
-        .then((res) => {
-          const { items } = res?.data?.searchProduct || {};
-
-          // Separate products from brands/categories based on type
-          const products =
-            items?.filter((item) => item.type === "product") || [];
-          const collections =
-            items?.filter(
-              (item) =>
-                item.type === "brand" ||
-                item.type === "category" ||
-                item.type === "collection"
-            ) || [];
-
-          // Set product data (limit to 4 for consistency with UI)
-          const limitedProducts = products.slice(0, 4);
-          setSearchData(limitedProducts);
-          setTotalCount(products.length); // Total product count for "See all" link
-
-          // Set collections data
-          setCollectionsData(
-            collections.map((item) => ({
-              ...item,
-              action: item.action,
-            }))
-          );
-          // Current AUTOCOMPLETE response does not return separate query suggestions,
-          // so we clear any previous suggestions.
-          setQuerySuggestions([]);
-        })
-        .catch((error) => {
-          console.error("Search API error:", error);
-          // Fallback: clear data on error
-          setSearchData([]);
-          setTotalCount(0);
-          setCollectionsData([]);
-          setQuerySuggestions([]);
-        })
-        .finally(() => {
-          setShowSearchSuggestions(searchText?.length > 2);
-        });
-    }
-  };
   const groupedCollections = collectionsData.reduce((acc, item) => {
     if (!acc[item.type]) acc[item.type] = [];
     acc[item.type].push(item);
@@ -218,23 +450,26 @@ function Search({
   }, {});
 
   const setEnterSearchData = useCallback(
-    debounce((e) => {
+    debounce((value) => {
       if (!showSearch) {
         setShowSearch(true);
       }
-      setSearchText(e.target.value);
-      getEnterSearchData(e.target.value);
+      setSearchText(value);
+      getEnterSearchData(value);
     }, 400),
     []
   );
 
   const handleInputChange = (e) => {
+    const { value } = e.target;
     // Immediately update hasInputValue for label animation (no delay)
-    setHasInputValue(e.target.value.length > 0);
+    setSearchText(value);
+    setHasInputValue(value.length > 0);
     // Call debounced search function
-    setEnterSearchData(e);
+    setEnterSearchData(value);
   };
-  const redirectToProduct = (link = "/") => {
+  const redirectToProduct = (link = "/", searchQuery = "") => {
+    storeSearchHistory(searchQuery);
     if (link) navigate(link);
     // Blur the input on navigate so the on-screen keyboard closes on mobile.
     // Without this, the input is hidden by the closing overlay but still
@@ -262,7 +497,28 @@ function Search({
     }
   };
 
+  const handleRecentSearchClick = (value) => {
+    if (inputRef.current) {
+      inputRef.current.value = value;
+      inputRef.current.focus();
+    }
+    setSearchText(value);
+    setHasInputValue(true);
+    runSearch(value);
+  };
+
   const getProductSearchSuggestions = (results) => results?.slice(0, 4);
+  const currentInputValue = inputRef.current?.value || "";
+  const shouldShowSearchHistory =
+    showSearch &&
+    isSearchHistoryEnabled &&
+    !currentInputValue &&
+    recentSearches.length > 0;
+  const shouldShowSuggestions =
+    shouldShowSearchHistory || searchText?.length > 2;
+  const shouldShowSearchResults =
+    !shouldShowSearchHistory && showSearchSuggestions;
+
   const checkInput = () => {
     // Check the actual input value, not the debounced searchText state
     if (inputRef.current?.value) {
@@ -350,7 +606,7 @@ function Search({
                 onKeyUp={(e) =>
                   e.key === "Enter" &&
                   e.target?.value &&
-                  redirectToProduct(`/products/?q=${e.target?.value}`)
+                  runSearch(e.target?.value)
                 }
                 onFocus={() => setIsSearchFocused(true)}
                 // onBlur={checkInput}
@@ -363,6 +619,27 @@ function Search({
                   onClick={() => getEnterSearchData(searchText)}
                 />
               )} */}
+              {isVoiceSearchEnabled && isVoiceSupported && (
+                <button
+                  type="button"
+                  className={`${styles.voiceSearchBtn} ${isListening ? styles.voiceSearchBtnActive : ""}`.trim()}
+                  aria-label={
+                    isListening
+                      ? t("resource.facets.stop_voice_search")
+                      : t("resource.facets.start_voice_search")
+                  }
+                  title={
+                    isListening
+                      ? t("resource.facets.voice_search_listening")
+                      : t("resource.facets.search_by_voice")
+                  }
+                  onPointerDown={preventButtonFocus}
+                  onMouseDown={preventButtonFocus}
+                  onClick={toggleVoiceSearch}
+                >
+                  <MicrophoneIcon className={styles.voiceSearchIcon} />
+                </button>
+              )}
               {(hasInputValue || inputRef.current?.value) && (
                 <button
                   type="button"
@@ -395,10 +672,54 @@ function Search({
             )}
             <div
               className={styles.search__suggestions}
-              style={{ display: searchText?.length > 2 ? "block" : "none" }}
+              style={{ display: shouldShowSuggestions ? "block" : "none" }}
             >
               <div className={styles["search__suggestions--products"]}>
-                {showSearchSuggestions ? (
+                {/* eslint-disable-next-line no-nested-ternary */}
+                {shouldShowSearchHistory ? (
+                  <>
+                    <div
+                      className={`b1 ${styles["search__suggestions--title"]} fontBody`}
+                    >
+                      {t("resource.facets.recent_searches")}
+                    </div>
+                    <ul className={styles.searchHistoryList}>
+                      {recentSearches.map((item, index) => (
+                        <li
+                          key={`${item}-${index}`}
+                          className={styles.searchHistoryItem}
+                        >
+                          <button
+                            type="button"
+                            className={`${styles["search__suggestions--item"]} ${styles.searchHistoryButton}`}
+                            onClick={() => handleRecentSearchClick(item)}
+                          >
+                            <InputSearchIcon
+                              className={styles.searchHistoryIcon}
+                            />
+                            <span>{item}</span>
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.searchHistoryDeleteButton}
+                            aria-label={t(
+                              "resource.facets.delete_search_history_item",
+                              { item }
+                            )}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleRecentSearchDelete(item);
+                            }}
+                          >
+                            <CloseIcon />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : shouldShowSearchResults ? (
                   <>
                     {/* Query Suggestions Section */}
                     {querySuggestions.length > 0 && (
@@ -421,7 +742,10 @@ function Search({
                                 className={styles.linkButton}
                                 title={item.display}
                                 onClick={() =>
-                                  redirectToProduct(item.action?.path || "/")
+                                  redirectToProduct(
+                                    item.action?.path || "/",
+                                    searchText
+                                  )
                                 }
                               >
                                 {item.display}
@@ -468,7 +792,8 @@ function Search({
                                       data-search-collection-link={type}
                                       onClick={() =>
                                         redirectToProduct(
-                                          item.action?.path || "/"
+                                          item.action?.path || "/",
+                                          searchText
                                         )
                                       }
                                     >
@@ -498,7 +823,9 @@ function Search({
                                 <FDKLink
                                   key={index}
                                   action={product.action}
-                                  onClick={() => redirectToProduct(productUrl)}
+                                  onClick={() =>
+                                    redirectToProduct(productUrl, searchText)
+                                  }
                                   className={
                                     styles["search__suggestions--item-link"]
                                   }
@@ -534,7 +861,7 @@ function Search({
                       <div className={styles["search__suggestions--button"]}>
                         <FDKLink
                           to={`/products/?q=${searchText}`}
-                          onClick={() => redirectToProduct()}
+                          onClick={() => runSearch(searchText)}
                           className="btnLink fontBody"
                           title={`See all ${totalCount} products`}
                         >

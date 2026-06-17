@@ -15,7 +15,9 @@ import useInternational from "./useInternational";
 import { LOCALITY } from "../../queries/logisticsQuery";
 import { useSyncedState, useSnackbar } from "../../helper/hooks";
 import { LANGUAGES } from "../../queries/languageQuery";
+import qs from "qs";
 import { createLocalitiesPayload } from "../../helper/utils";
+import { refreshCurrentPageTheme } from "../../helper/lib";
 import InternationalIcon from "../../assets/images/international.svg";
 import ArrowDownIcon from "../../assets/images/arrow-down.svg";
 import CrossIcon from "../../assets/images/cross-black.svg";
@@ -29,7 +31,8 @@ const LocationModal = React.lazy(
   () => import("./location-modal/location-modal")
 );
 function I18Dropdown({ fpi, languageIscCode = [] }) {
-  const { locale } = useParams();
+  const routeParams = useParams();
+  const { locale } = routeParams;
   const { t } = useGlobalTranslation("translation");
   const {
     isInternational,
@@ -288,6 +291,19 @@ function I18Dropdown({ fpi, languageIscCode = [] }) {
       ).then(() => {
         fpi.custom.setValue("isI18ModalOpen", false);
         fpi.custom.setValue("showLanguageDropdown", false);
+        const filterQuery = qs.parse(location?.search || "", {
+          ignoreQueryPrefix: true,
+        });
+        refreshCurrentPageTheme({
+          fpi,
+          router: {
+            params: routeParams,
+            filterQuery,
+            pathname: location?.pathname,
+            path: location?.pathname,
+            search: location?.search,
+          },
+        });
       });
     }
   };

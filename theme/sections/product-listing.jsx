@@ -207,6 +207,13 @@ export const settings = {
       label: "t:resource.common.default_grid_layout_mobile",
     },
     {
+      type: "checkbox",
+      id: "show_multiple_images",
+      label: "t:resource.common.show_multiple_images",
+      info: "t:resource.common.show_multiple_images_info",
+      default: false,
+    },
+    {
       id: "description",
       type: "textarea",
       default: "",

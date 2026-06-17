@@ -51,15 +51,15 @@ function StoreLocator({
   setMapInitialized,
   // Options
   cityOptions = [],
+  sectionTitle = "Find a Store Near You",
+  description = "Locate your nearest store for in-store shopping & pickup.",
 }) {
   return (
     <div className={styles.storeLocatorContainer}>
       {/* Header Section */}
       <div className={styles.headerSection}>
-        <h2 className={styles.title}>Find a store near you</h2>
-        <p className={styles.description}>
-          Locate your nearest store for in-store shopping & pickup.
-        </p>
+        <h2 className={styles.title}>{sectionTitle}</h2>
+        <p className={styles.description}>{description}</p>
       </div>
 
       {/* Search Section */}

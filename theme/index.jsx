@@ -13,6 +13,7 @@ import {
   wrapFpiWithSWR,
   setupAutoRevalidation,
 } from "./helper/fpi-swr-wrapper";
+
 export default async ({
   applicationID,
   applicationToken,
@@ -139,6 +140,10 @@ export default async ({
     getFaq: () => import(/* webpackChunkName:"getFaq" */ "./pages/faq"),
     getProfileEmail: () =>
       import(/* webpackChunkName:"getProfileEmail" */ "./pages/profile-email"),
+    getProfileLoyaltyRewards: () =>
+      import(
+        /* webpackChunkName:"getProfileLoyaltyRewards" */ "./pages/profile-loyalty-rewards"
+      ),
     getVerifyEmail: () =>
       import(/* webpackChunkName:"getVerifyEmail" */ "./pages/verify-email"),
     getVerifyEmailLink: () =>

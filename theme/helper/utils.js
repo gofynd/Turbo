@@ -6,6 +6,7 @@ import {
   FLOAT_MAP,
   TEXT_ALIGNMENT_MAP,
   IMAGE_OPTIMIZATION_CONFIG,
+  RESPONSIVE_IMAGE_BREAKPOINTS,
 } from "./constant";
 import { useEffect, useState } from "react";
 
@@ -342,6 +343,46 @@ export function checkIfNumber(value) {
   return numberPattern.test(value);
 }
 
+const IMAGE_VARIANT_PATTERN =
+  /\/(?:original|\d+x\d+|resize-(?:w|h)?:[0-9]+(?:,(?:w|h)*:?[\d]*)?)\//;
+
+export const isGifImageUrl = (url = "") =>
+  /\.gif(\?|#|$)/i.test(String(url || ""));
+
+export const replaceImageVariant = (url = "", variant = "original") => {
+  if (!url) return url;
+  const normalizedVariant = String(variant || "original").replace(
+    /^\/|\/$/g,
+    ""
+  );
+  return IMAGE_VARIANT_PATTERN.test(url)
+    ? url.replace(IMAGE_VARIANT_PATTERN, `/${normalizedVariant}/`)
+    : url;
+};
+
+export const getResponsiveImageBaseUrl = (url = "", width = 200) => {
+  if (!url) return url;
+  if (isGifImageUrl(url)) {
+    return replaceImageVariant(url, "original");
+  }
+  const normalizedUrl = replaceImageVariant(url, "original");
+  return transformImage(normalizedUrl, width);
+};
+
+export const getResponsiveImageSrcSet = (
+  url = "",
+  sources = RESPONSIVE_IMAGE_BREAKPOINTS
+) => {
+  if (!url || isGifImageUrl(url)) {
+    return "";
+  }
+
+  const normalizedUrl = replaceImageVariant(url, "original");
+  return sources
+    .map((source) => `${transformImage(normalizedUrl, source.width)} ${source.width}w`)
+    .join(", ");
+};
+
 export function isEmptyOrNull(obj) {
   return (
     obj === null ||
@@ -537,6 +578,27 @@ export const getProductImgAspectRatio = (
   return defaultAspectRatio;
 };
 
+const SHOW_MULTIPLE_IMAGES_EFFECT = "show_multiple_images";
+
+/**
+ * Product listing / collection grid: multiple-image hover is controlled per section.
+ * Global `image_effects` supplies none / zoom / swap only. When the section has no
+ * `show_multiple_images` prop yet, keep legacy hover-image stores on swap behavior.
+ */
+export const getListingProductImageEffects = (globalConfig, sectionProps) => {
+  const globalRaw = globalConfig?.image_effects || "none";
+  const sectionVal = sectionProps?.show_multiple_images?.value;
+  const showMultiple =
+    sectionVal !== undefined && sectionVal !== null
+      ? Boolean(sectionVal)
+      : false;
+  const baseEffect =
+    globalRaw === SHOW_MULTIPLE_IMAGES_EFFECT ? "none" : globalRaw;
+  const legacyBaseEffect =
+    globalConfig?.show_image_on_hover === true ? "swap_image" : baseEffect;
+  return showMultiple ? SHOW_MULTIPLE_IMAGES_EFFECT : legacyBaseEffect;
+};
+
 /**
  * Format currency value with locale-aware number formatting
  * Uses native Intl.NumberFormat for optimal performance
@@ -549,7 +611,8 @@ export const currencyFormat = (
   value,
   currencySymbol,
   locale = "en-IN",
-  currencyCode = null
+  currencyCode = null,
+  forceDecimals = false
 ) => {
   if (value == null || value === "") return "";
 
@@ -576,7 +639,8 @@ export const currencyFormat = (
       : finalLocale;
 
     const formatter = new Intl.NumberFormat(localeString, {
-      maximumFractionDigits: 20,
+      minimumFractionDigits: forceDecimals ? 2 : 0,
+      maximumFractionDigits: forceDecimals ? 2 : 20,
       useGrouping: true,
     });
 
@@ -631,7 +695,8 @@ export function priceFormatCurrencySymbol(
   symbol,
   price = 0,
   locale = "en-IN",
-  currencyCode = null
+  currencyCode = null,
+  forceDecimals = false
 ) {
   if (price == null || price === "") return "";
 
@@ -661,7 +726,7 @@ export function priceFormatCurrencySymbol(
       : finalLocale;
 
     const formatter = new Intl.NumberFormat(localeString, {
-      minimumFractionDigits: 0,
+      minimumFractionDigits: forceDecimals ? 2 : 0,
       maximumFractionDigits: 2,
       useGrouping: true,
     });
@@ -681,12 +746,11 @@ export function priceFormatCurrencySymbol(
     return finalResult;
   } catch {
     // Fallback to basic formatting if locale is invalid
-    // eslint-disable-next-line no-console
     console.warn(
       `Invalid locale "${finalLocale}", falling back to default formatting`
     );
     const formattedPrice = num.toLocaleString("en-US", {
-      minimumFractionDigits: 0,
+      minimumFractionDigits: forceDecimals ? 2 : 0,
       maximumFractionDigits: 2,
     });
     const hasAlphabeticCurrency = /^[A-Za-z]+$/.test(symbol);
@@ -696,6 +760,7 @@ export function priceFormatCurrencySymbol(
     return `${symbol}${formattedPrice}`;
   }
 }
+
 
 export const getReviewRatingData = (customMeta) => {
   const data = {};

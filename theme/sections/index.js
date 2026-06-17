@@ -79,6 +79,8 @@ const ProfileDetailsFormSectionChunk = loadable(() => import(/* webpackChunkName
 
 const ProfileEmailSectionChunk = loadable(() => import(/* webpackChunkName:"ProfileEmailSectionChunk" */ './profile-email.jsx'));
 
+const ProfileLoyaltyRewardsSectionChunk = loadable(() => import(/* webpackChunkName:"ProfileLoyaltyRewardsSectionChunk" */ './profile-loyalty-rewards.jsx'));
+
 const ProfileNavigationMenuSectionChunk = loadable(() => import(/* webpackChunkName:"ProfileNavigationMenuSectionChunk" */ './profile-navigation-menu.jsx'));
 
 const ProfileOrdersSectionChunk = loadable(() => import(/* webpackChunkName:"ProfileOrdersSectionChunk" */ './profile-orders.jsx'));
@@ -196,6 +198,8 @@ const getbundle = (type) => {
             return (props) => <ProfileDetailsFormSectionChunk {...props}/>;
         case 'profile-email':
             return (props) => <ProfileEmailSectionChunk {...props}/>;
+        case 'profile-loyalty-rewards':
+            return (props) => <ProfileLoyaltyRewardsSectionChunk {...props}/>;
         case 'profile-navigation-menu':
             return (props) => <ProfileNavigationMenuSectionChunk {...props}/>;
         case 'profile-orders':
@@ -278,6 +282,7 @@ export default {
         'profile-address': { ...ProfileAddressSectionChunk, Component: getbundle('profile-address') },
         'profile-details-form': { ...ProfileDetailsFormSectionChunk, Component: getbundle('profile-details-form') },
         'profile-email': { ...ProfileEmailSectionChunk, Component: getbundle('profile-email') },
+        'profile-loyalty-rewards': { ...ProfileLoyaltyRewardsSectionChunk, Component: getbundle('profile-loyalty-rewards') },
         'profile-navigation-menu': { ...ProfileNavigationMenuSectionChunk, Component: getbundle('profile-navigation-menu') },
         'profile-orders': { ...ProfileOrdersSectionChunk, Component: getbundle('profile-orders') },
         'profile-phone': { ...ProfilePhoneSectionChunk, Component: getbundle('profile-phone') },

@@ -14,6 +14,13 @@ let userDataQueryFired = false;
 let prefetchTriggered = false;
 const PREFETCH_PAGE_VALUES = ["product-listing", "collection-listing"];
 
+// Captured from pageDataResolver so refreshCurrentPageTheme can build a valid
+// THEME_DATA payload without callers having to source themeId.
+let activeThemeId = null;
+// Monotonic token to drop stale Theme refreshes when the user changes location
+// faster than the network can respond.
+let latestRefreshToken = 0;
+
 export async function globalDataResolver({ fpi, applicationID }) {
   try {
     const response = await fpi.executeGQL(GLOBAL_DATA);
@@ -135,6 +142,7 @@ function prefetchThemePages({ fpi, themeId }) {
 }
 
 export async function pageDataResolver({ fpi, router, themeId }) {
+  activeThemeId = themeId;
   const state = fpi.store.getState();
   const pageValue = getPageSlug(router);
   if (!state?.auth?.user_data?.user_id && !userDataQueryFired) {
@@ -214,4 +222,77 @@ export async function pageDataResolver({ fpi, router, themeId }) {
   prefetchThemePages({ fpi, themeId });
 
   return Promise.all(APIs);
+}
+
+export async function refreshCurrentPageTheme({ fpi, router }) {
+  if (typeof window === "undefined") return;
+  if (!fpi || !router) return;
+  if (!activeThemeId) return;
+
+  try {
+    const state = fpi.store.getState();
+    // Source of truth for current page is the FPI store (matches what
+    // pageDataResolver reads as currentPageInStore). getPageSlug(router) is a
+    // fallback for router shapes we cannot construct from react-router alone.
+    const pageValue =
+      fpi.getters.PAGE(state)?.value || getPageSlug(router) || null;
+    if (!pageValue) return;
+    const isEdit = state?.custom?.isEdit;
+    const filters = !isEdit;
+    const sectionPreviewHash = router?.filterQuery?.sectionPreviewHash || "";
+    const company = parseInt(fpi.getters.THEME(state)?.company_id, 10);
+
+    const urlParamsObj = {};
+    if (router?.params && typeof router.params === "object") {
+      Object.keys(router.params).forEach((key) => {
+        urlParamsObj[key] = router.params[key];
+      });
+    }
+    if (router?.filterQuery && typeof router.filterQuery === "object") {
+      Object.keys(router.filterQuery).forEach((key) => {
+        if (
+          !key.startsWith("__") &&
+          key !== "isEdit" &&
+          key !== "sectionPreviewHash" &&
+          key !== "urlParams"
+        ) {
+          urlParamsObj[key] = router.filterQuery[key];
+        }
+      });
+    }
+    const urlParams = JSON.stringify(urlParamsObj);
+
+    latestRefreshToken += 1;
+    const myToken = latestRefreshToken;
+
+    const response = await fpi.executeGQL(THEME_DATA, {
+      themeId: activeThemeId,
+      pageValue,
+      filters,
+      sectionPreviewHash,
+      company,
+      urlParams,
+    });
+
+    if (myToken !== latestRefreshToken) return;
+
+    const pageDetail = response?.data?.theme?.theme_page_detail;
+    if (pageDetail) {
+      const currentAllPages = fpi.store.getState().theme?.allPages || {};
+      fpi.store.dispatch({
+        type: "theme/setData",
+        payload: {
+          allPages: { ...currentAllPages, [pageValue]: pageDetail },
+        },
+      });
+    }
+  } catch (error) {
+    try {
+      fpi.custom?.setValue?.("refreshCurrentPageThemeError", error);
+    } catch (_) {
+      // ignore secondary failures from the error reporter itself
+    }
+    // eslint-disable-next-line no-console
+    console.error("refreshCurrentPageTheme failed", error);
+  }
 }

@@ -125,7 +125,9 @@
       "show_filter_toggle_button": "Show Filter Toggle Button",
       "show_filter_toggle_button_info": "Enable to show a button that allows users to toggle the visibility of filters on the product listing page",
       "show_multiple_images": "Show Multiple Images",
-      "show_multiple_images_info": "Enable to show multiple images upon hover in Desktop and swiping in Mobile " 
+      "show_multiple_images_info": "Enable to show multiple images upon hover in Desktop and swiping in Mobile ",
+      "enable_search_history": "Enable Search History",
+      "search_history_info": "Show up to 5 recent searches in the search bar using browser-only storage"
     },
     "settings_schema": {
       "common": {
@@ -226,7 +228,15 @@
         "show_footer_logo": "Show Footer Logo",
         "show_footer_logo_info": "to hide/display the logo in the footer",
         "show_footer_description": "Show Footer Description",
-        "show_footer_description_info": "to hide/display the description in the footer"
+        "show_footer_description_info": "to hide/display the description in the footer",
+        "footer_navigation_alignment": "Footer Navigation Alignment",
+        "footer_navigation_alignment_info": "Applies when the footer logo and description is hidden",
+        "left": "Left",
+        "center": "Center",
+        "right": "Right",
+        "space_between": "Space Between",
+        "space_around": "Space Around",
+        "space_evenly": "Space Evenly"
       },
       "cart_and_button_configuration": {
         "cart_options": "Cart Options",
@@ -287,7 +297,9 @@
         "border_radius": "Border Radius",
         "button_border_radius": "Button Border Radius",
         "border_radius_for_button": "Border radius for Button",
-        "use_original_images": "Use Original Images"
+        "use_original_images": "Use Original Images",
+        "enable_voice_search": "Enable Voice Search",
+        "enable_voice_search_info": "Show a microphone button in the search bar to allow users to search by voice. Requires browser support for the Web Speech API."
       },
       "performance_and_caching": {
         "performance_and_caching": "Performance & Caching",

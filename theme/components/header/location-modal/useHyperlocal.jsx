@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useGlobalStore, useGlobalTranslation } from "fdk-core/utils";
 import {
   useThemeConfig,
@@ -7,9 +7,11 @@ import {
   useLocalStorage,
   useDeliverPromise,
 } from "../../../helper/hooks";
+import qs from "qs";
 import { ADDRESS_LIST } from "../../../queries/addressQuery";
 import { LOCALITY, DELIVERY_PROMISE } from "../../../queries/logisticsQuery";
 import { getAddressStr, isRunningOnClient } from "../../../helper/utils";
+import { refreshCurrentPageTheme } from "../../../helper/lib";
 
 const PINCODE_STORAGE_KEY = "fynd_guest_pincode";
 
@@ -20,6 +22,7 @@ const lastFetchedPincodeMap = new Map();
 const useHyperlocal = (fpi) => {
   const { t } = useGlobalTranslation("translation");
   const location = useLocation();
+  const params = useParams();
   const {
     isServiceabilityModalOpen = false,
     selectedAddress,
@@ -488,6 +491,22 @@ const useHyperlocal = (fpi) => {
     // If this is a full address, clear the persisted pincode to prevent overwriting
     if (address?.id) {
       clearPersistedPincode();
+    }
+
+    if (response?.data?.locality) {
+      const filterQuery = qs.parse(location?.search || "", {
+        ignoreQueryPrefix: true,
+      });
+      refreshCurrentPageTheme({
+        fpi,
+        router: {
+          params,
+          filterQuery,
+          pathname: location?.pathname,
+          path: location?.pathname,
+          search: location?.search,
+        },
+      });
     }
 
     return response;

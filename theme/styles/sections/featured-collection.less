@@ -18,6 +18,12 @@
     min-height: 420px;
   }
 
+  &.mobileTwoItems {
+    @media @mobile {
+      min-height: 0;
+    }
+  }
+
   .visibleOnMobile {
     @media @desktop {
       display: none;

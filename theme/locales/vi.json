@@ -663,7 +663,8 @@
         "wishlist": "Danh sách mong muốn",
         "about_us": "Về chúng tôi",
         "blog": "Blog"
-      }
+      },
+      "verification_required": "Cần xác minh. Vui lòng xác minh email/số điện thoại của bạn."
     },
     "categories": {
       "empty_state": "Không tìm thấy danh mục nào"

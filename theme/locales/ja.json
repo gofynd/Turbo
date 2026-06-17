@@ -663,7 +663,8 @@
         "wishlist": "ウィッシュリスト",
         "about_us": "私たちについて",
         "blog": "ブログ"
-      }
+      },
+      "verification_required": "認証が必要です。メール／携帯電話番号を認証してください。"
     },
     "categories": {
       "empty_state": "カテゴリが見つかりません"

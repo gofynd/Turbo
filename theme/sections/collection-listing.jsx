@@ -86,7 +86,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
             showFilters={true}
             showSortBy={true}
             showPagination={props?.loading_options?.value === "pagination"}
-            productCount={props?.page_size?.value || 12}
+            productCount={Number(props?.page_size?.value || 12)}
           />
         ) : (
           <ProductListing {...listingProps} />
@@ -268,6 +268,13 @@ export const settings = {
       label: "t:resource.common.default_grid_layout_mobile",
     },
     {
+      type: "checkbox",
+      id: "show_multiple_images",
+      label: "t:resource.common.show_multiple_images",
+      info: "t:resource.common.show_multiple_images_info",
+      default: false,
+    },
+    {
       id: "img_resize",
       label:
         "t:resource.sections.products_listing.image_size_for_tablet_desktop",
@@ -335,8 +342,7 @@ export const settings = {
       type: "text",
       id: "card_cta_text",
       label: "t:resource.common.button_text",
-      default:
-        "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
+      default: "t:resource.settings_schema.cart_and_button_configuration.add_to_cart",
     },
     {
       type: "checkbox",
@@ -405,7 +411,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
   const pageSize =
     props?.loading_options?.value === "infinite"
       ? 12
-      : (props?.page_size?.value ?? 12);
+      : Number(props?.page_size?.value ?? 12);
   const fpiState = fpi.store.getState();
   const globalConfig =
     fpiState?.theme?.theme?.config?.list?.[0]?.global_config?.custom?.props ||
@@ -523,7 +529,7 @@ Component.serverFetch = async ({ fpi, router, props }) => {
         "page_id",
         payload?.pageNo === 1 || !payload?.pageNo ? "*" : payload?.pageNo - 1
       );
-      url.searchParams.append("page_size", "12");
+      url.searchParams.append("page_size", payload?.first);
 
       if (payload?.sortOn) {
         url.searchParams.append("sort_on", payload?.sortOn);

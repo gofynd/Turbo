@@ -65,21 +65,64 @@
       line-height: 20px; /* 142.857% */
       letter-spacing: -0.28px;
     }
+    .voiceSearchBtn + .clearAllBtn {
+      right: 44px;
+    }
+    .voiceSearchBtn {
+      position: absolute;
+      right: 0px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      min-width: 32px;
+      min-height: 32px;
+      transition: background-color 0.2s ease;
+
+      @media @mobile {
+        min-width: 44px;
+        min-height: 44px;
+      }
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.06);
+      }
+    }
+    .voiceSearchBtnActive {
+      .voiceSearchIcon path {
+        fill: #d93025;
+      }
+      animation: voicePulse 1.5s ease-in-out infinite;
+    }
+    .voiceSearchIcon {
+      width: 20px;
+      height: 20px;
+
+      path {
+        fill: @TextHeading;
+        transition: fill 0.2s ease;
+      }
+    }
     &--text {
       background: @ThemeAccentL4;
       width: 100%;
-      padding: 7px 32px;
+      // padding: 7px 32px;
       font-size: 12px;
       line-height: 20px;
       border-radius: 4px;
       border: 1px solid @DividerStokes;
+      @media @mobile {
+        padding: 8px 92px 8px 8px;
+      }
       @media @desktop {
         font-size: 14px;
-        padding: 9px 38px;
-      }
-
-      @media @mobile {
-        font-size: 14px;
+        padding: 9px 104px 9px 12px;
       }
 
       &::placeholder {
@@ -97,10 +140,10 @@
       }
     }
     &--removeSpace {
-      padding: 9px 38px 9px 12px;
+      padding: 9px 104px 9px 12px;
 
       @media @mobile {
-        padding: 8px;
+        padding: 8px 92px 8px 8px;
       }
     }
     &--search-icon {
@@ -174,7 +217,7 @@
     &--item {
       cursor: pointer;
 
-      &:not(:last-child) {
+      &:not(:last-child):not(.searchHistoryButton) {
         margin-bottom: 12px;
         @media @desktop {
           margin-bottom: 8px;
@@ -219,6 +262,70 @@
     }
   }
 }
+
+.searchHistoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.searchHistoryItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: @ThemeAccentL4;
+  }
+}
+
+.searchHistoryButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: @TextHeading;
+  text-align: left;
+
+  .searchHistoryIcon {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+
+    path {
+      fill: @TextSecondary;
+    }
+  }
+}
+
+.searchHistoryDeleteButton {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  path {
+    fill: @TextSecondary;
+  }
+}
+
 .double-row-search .search__suggestions {
   @media @desktop {
     top: calc(100% + 6px);
@@ -405,6 +512,16 @@
 
 .querySuggestionsSection {
   margin-bottom: 16px;
+}
+
+@keyframes voicePulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* PRODUCTION-SAFE TRANSPARENT HEADER SUPPORT */

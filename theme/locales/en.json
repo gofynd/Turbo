@@ -407,6 +407,7 @@
       "loading": "Loading...",
       "height_mode": "Height Mode",
       "auto": "Auto",
+      "loyalty_reward_not_configured": "is not configured.",
       "fixed_height": "Fixed Height",
       "aspect_ratio": "Aspect Ratio",
       "desktop_height": "Desktop Height",
@@ -575,6 +576,7 @@
       "track": "TRACK",
       "need_help": "NEED HELP",
       "download_invoice": "DOWNLOAD INVOICE",
+      "download_credit_note": "DOWNLOAD CREDIT NOTE",
       "shipment": "Shipment",
       "awb": "AWB",
       "max_quantity": "Max quantity",
@@ -594,6 +596,7 @@
       "enter_otp": "Enter OTP",
       "fill_bank_account_details": "Fill Bank Account Details",
       "complete_verification": "Complete Verification",
+      "verification_required": "Verification required. Please verify your email/mobile.",
       "enter_valid_otp": "Please Enter Valid OTP",
       "mobile_number": "Mobile Number",
       "enter_valid_mobile_number": "Please Enter Valid Mobile Number",
@@ -718,7 +721,9 @@
       "size_measure_not_available_info_description": "We’re adding how to measure guide soon. Please contact us for assistance.",
       "order_not_accepting": "We’re currently not accepting new orders at this time. Please try again later.",
       "hide_filters": "Hide Filters",
-      "show_filters": "Show Filters"
+      "show_filters": "Show Filters",
+      "enable_search_history": "Enable Search History",
+      "search_history_info": "Show up to 5 recent searches in the search bar using browser-only storage"
     },
     "categories": {
       "empty_state": "No category found",
@@ -882,6 +887,10 @@
       "view_all": "VIEW ALL",
       "pick": "Pick",
       "search": "Search",
+      "start_voice_search": "Start voice search",
+      "stop_voice_search": "Stop voice search",
+      "voice_search_listening": "Listening...",
+      "search_by_voice": "Search by voice",
       "from": "From",
       "to": "To",
       "sort_by": "Sort by",
@@ -909,7 +918,9 @@
       "reset_all": "Reset All",
       "filtering_by": "Filtering by",
       "request_reattempt_facet": "REQUEST REATTEMPT",
-      "best_offer_title":"BEST OFFER"	
+      "best_offer_title": "BEST OFFER",
+      "recent_searches": "Recent Searches",
+      "delete_search_history_item": "Delete {{item}} from search history"
     },
     "localization": {
       "select_language": "Select Language",
@@ -1011,7 +1022,11 @@
       "add_to_cart_caps": "ADD TO CART",
       "merge": "merge",
       "replace": "replace",
-      "cart_icon_default_text": "Cart"
+      "cart_icon_default_text": "Cart",
+      "sorry_invalid_coupon": "Sorry, invalid coupon code.",
+      "redeem_all_available_points": "Redeem all available points",
+      "redeem_points_one": "Redeem {{count}} point",
+      "redeem_points_other": "Redeem {{count}} points"
     },
     "compare": {
       "product_comparison_limit": "You can only compare 4 products at a time",

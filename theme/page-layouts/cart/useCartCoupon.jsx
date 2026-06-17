@@ -146,9 +146,11 @@ const useCartCoupon = ({
             couponBreakup?.message ||
             (typeof cartTotal === "number" && cartTotal <= 0
               ? t(
-                  "resource.cart.coupon_code_not_applicable_items_are_already_at_the_best_price"
+                  "resource.dynamic_label.coupon_code_not_applicable_items_are_already_at_the_best_price"
                 )
-              : t("resource.common.error_message"));
+              : null) ||
+            options?.fallbackErrorMessage ||
+            t("resource.common.error_message");
           const couponError = new Error(errorMsg);
           couponError.isUserFacing = true;
           throw couponError;
@@ -177,7 +179,7 @@ const useCartCoupon = ({
         console.error("Error applying coupon or fetching cart:", err);
         const errorMessage = err?.isUserFacing
           ? err.message
-          : t("resource.common.error_message");
+          : options?.fallbackErrorMessage || t("resource.common.error_message");
         if (options?.errorDisplay === "toast") {
           setError(null);
           showSnackbar(errorMessage, "error");

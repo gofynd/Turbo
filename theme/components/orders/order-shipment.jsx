@@ -7,16 +7,14 @@ import {
 } from "fdk-core/utils";
 import { useLocation } from "react-router-dom";
 import styles from "./styles/order-shipment.less";
-import { formatLocale } from "../../helper/utils";
+import {
+  formatLocale,
+  getResponsiveImageBaseUrl,
+  getResponsiveImageSrcSet,
+} from "../../helper/utils";
 import RefundToSourceIcon from "../../assets/images/exchange.svg";
 
-//force GIF to /original/ ---
-const isGifUrl = (url = "") => /\.gif(\?|#|$)/i.test(String(url || ""));
-const toOriginalVariant = (url = "") => {
-  if (!url) return url;
-  if (url.includes("/original/")) return url;
-  return url.replace(/\/\d+x\d+\//, "/original/");
-};
+const ORDER_IMAGE_WIDTH = 200;
 
 function OrderShipment({
   orderInfo,
@@ -113,10 +111,12 @@ function OrderShipment({
         <div className={styles.productsContainer}>
           {orderInfo?.shipments?.map((shipment) => {
             const productImage = shipment?.bags?.[0]?.item?.image?.[0] || "";
-            // --- FIX: if gif, convert /270x0/..gif => /original/..gif ---
-            const finalProductImage = isGifUrl(productImage)
-              ? toOriginalVariant(productImage)
-              : productImage;
+            const finalProductImage = getResponsiveImageBaseUrl(
+              productImage,
+              ORDER_IMAGE_WIDTH
+            );
+            const finalProductImageSrcSet =
+              getResponsiveImageSrcSet(productImage);
 
             const brandName = getBrandName(shipment?.bags);
             const totalItems = getTotalItems(shipment?.bags);
@@ -136,6 +136,8 @@ function OrderShipment({
                 <div className={styles.productImage}>
                   <img
                     src={finalProductImage}
+                    srcSet={finalProductImageSrcSet}
+                    sizes="(max-width: 768px) 80px, 100px"
                     alt={brandName}
                     className={
                       globalConfig?.img_fill

@@ -663,7 +663,8 @@
         "wishlist": "Verlanglijst",
         "about_us": "Over ons",
         "blog": "Blog"
-      }
+      },
+      "verification_required": "Verificatie vereist. Verifieer uw e-mail/mobiel."
     },
     "categories": {
       "empty_state": "Geen categorie gevonden"

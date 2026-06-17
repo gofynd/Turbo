@@ -1,9 +1,12 @@
 import React, { useState, useMemo, useRef, useCallback } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import qs from "qs";
 import styles from "./location-modal.less";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import { useGlobalStore } from "fdk-core/utils";
 import { getAddressFromComponents } from "../../../helper/utils";
 import { LOCALITY, VALIDATE_ADDRESS } from "../../../queries/logisticsQuery";
+import { refreshCurrentPageTheme } from "../../../helper/lib";
 import {
   useGoogleMapConfig,
   useStateRef,
@@ -33,6 +36,8 @@ function LocationModal({
   onClose = () => {},
   onConfirm = () => {},
 }) {
+  const location = useLocation();
+  const params = useParams();
   const { isHeaderMap, mapApiKey } = useGoogleMapConfig({ fpi });
   const { isLoaded: isMapLoaded } = useJsApiLoader({
     googleMapsApiKey: mapApiKey,
@@ -153,6 +158,19 @@ function LocationModal({
   const handlePincodeSubmit = async ({ pincode }, { setError }) => {
     try {
       await fetchLocality(pincode);
+      const filterQuery = qs.parse(location?.search || "", {
+        ignoreQueryPrefix: true,
+      });
+      refreshCurrentPageTheme({
+        fpi,
+        router: {
+          params,
+          filterQuery,
+          pathname: location?.pathname,
+          path: location?.pathname,
+          search: location?.search,
+        },
+      });
       onConfirm({ area_code: pincode });
       // fetchDeliveryPromise()
       //   .then(() => {

@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { ALL_PROFILE_MENU } from "../helper/constant";
 import { FDKLink } from "fdk-core/components";
 import { useGlobalTranslation, useGlobalStore, useFPI } from "fdk-core/utils";
-import { useAccounts } from "../helper/hooks";
+import { useAccounts, useThemeConfig } from "../helper/hooks";
 import { getConfigFromProps } from "../helper/utils";
 import LogoutModal from "../components/profile/logout-modal";
 import styles from "../styles/profile-navigation-menu.less";
@@ -16,6 +16,7 @@ import AddressIcon from "../assets/images/address.svg";
 import CardIcon from "../assets/images/card.svg";
 import ReferNearnIcon from "../assets/images/refernearn.svg";
 import WishlistIcon from "../assets/images/wishlist.svg";
+import LoyaltyPointsIcon from "../assets/images/loyalty-rewards.svg";
 
 // Icon mapping
 const iconMap = {
@@ -26,6 +27,7 @@ const iconMap = {
   card: CardIcon,
   refernearn: ReferNearnIcon,
   wishlist: WishlistIcon,
+  loyaltyPoint: LoyaltyPointsIcon,
 };
 
 const DEFAULT_BLOCKS = [
@@ -39,6 +41,7 @@ export function Component({ props, blocks = [], preset, globalConfig }) {
   const fpi = useFPI();
   const { t } = useGlobalTranslation("translation");
   const { pathname, search } = useLocation();
+  const { globalConfig: themeGlobalConfig } = useThemeConfig({ fpi });
   const { first_name, last_name, profile_pic_url, user } = useGlobalStore(
     fpi.getters.USER_DATA
   );
@@ -80,6 +83,18 @@ export function Component({ props, blocks = [], preset, globalConfig }) {
   };
 
   const resolvedBlocks = blocks?.length ? blocks : DEFAULT_BLOCKS;
+
+  const getMenuLabel = (key, display, blockConfig) => {
+    if (key !== "loyalty_points") {
+      return t(display);
+    }
+
+    return (
+      themeGlobalConfig?.loyalty_points_label ||
+      blockConfig?.loyalty_points_label ||
+      t(display)
+    );
+  };
 
   // Clear sessionStorage when directly navigating to orders pages
   useEffect(() => {
@@ -156,7 +171,7 @@ export function Component({ props, blocks = [], preset, globalConfig }) {
     const menuItems = ALL_PROFILE_MENU.filter(({ key }) => {
       // Check if this menu item should be shown (default to true if not specified)
       const showKey = `show_${key}`;
-      return blockConfig?.[showKey] !== false;
+      return blockConfig?.[showKey] ?? key !== "loyalty_points";
     });
 
     if (!menuItems.length) {
@@ -168,6 +183,7 @@ export function Component({ props, blocks = [], preset, globalConfig }) {
         {menuItems.map(({ key, display, link, icon }) => {
           const IconComponent = iconMap[icon];
           const isActive = isMenuItemActive(link);
+          const menuLabel = getMenuLabel(key, display, blockConfig);
           return (
             <li
               className={`${styles.nav} ${isActive ? styles.selected : ""}`}
@@ -177,7 +193,7 @@ export function Component({ props, blocks = [], preset, globalConfig }) {
                 <span className={styles.menuIcon}>
                   {IconComponent && <IconComponent />}
                 </span>
-                <span className={styles.itemTitle}>{t(display)}</span>
+                <span className={styles.itemTitle}>{menuLabel}</span>
               </FDKLink>
             </li>
           );
@@ -376,6 +392,12 @@ export const settings = {
           label: "Show My Wishlist",
           default: true,
         },
+        {
+          type: "checkbox",
+          id: "show_loyalty_points",
+          label: "Show My Loyalty Points",
+          default: false,
+        },
       ],
     },
     {
@@ -402,18 +424,22 @@ export const settings = {
     blocks: [
       {
         type: "user-info",
+        name: "User Info",
         props: {},
       },
       {
         type: "account-heading",
+        name: "Account Heading",
         props: {},
       },
       {
         type: "profile-menu",
+        name: "Menu Items",
         props: {},
       },
       {
         type: "sign-out",
+        name: "Sign Out",
         props: {},
       },
     ],

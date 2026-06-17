@@ -65,6 +65,12 @@
         flex: unset;
       }
     }
+    &--logoOnly {
+      @media @desktop {
+        flex: 0 1 56px;
+        margin-bottom: 0;
+      }
+    }
     &--menu {
       &.collapsibleMenu {
         @media @mobile {
@@ -76,6 +82,60 @@
         display: flex;
         justify-content: space-between;
         //.column-gap(119px);
+      }
+      &.navigationAlign-left {
+        @media @desktop {
+          width: 100%;
+          flex: 1;
+          justify-content: flex-start;
+        }
+      }
+      &.navigationAlign-center {
+        @media @desktop {
+          width: 100%;
+          flex: 1;
+          justify-content: center;
+        }
+      }
+      &.navigationAlign-right {
+        @media @desktop {
+          width: 100%;
+          flex: 1;
+          justify-content: flex-end;
+        }
+      }
+      &.navigationAlign-space-between {
+        @media @desktop {
+          width: 100%;
+          flex: 1;
+          justify-content: space-between;
+        }
+      }
+      &.navigationAlign-space-around {
+        @media @desktop {
+          width: 100%;
+          flex: 1;
+          justify-content: space-around;
+        }
+      }
+      &.navigationAlign-space-evenly {
+        @media @desktop {
+          width: 100%;
+          flex: 1;
+          justify-content: space-evenly;
+        }
+      }
+      &.navigationAlign-left,
+      &.navigationAlign-center,
+      &.navigationAlign-right,
+      &.navigationAlign-space-between,
+      &.navigationAlign-space-around,
+      &.navigationAlign-space-evenly {
+        .linkBlock {
+          @media @desktop {
+            flex: unset;
+          }
+        }
       }
       @media @desktop {
         .column-gap(64px);

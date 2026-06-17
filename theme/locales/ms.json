@@ -663,7 +663,8 @@
         "wishlist": "Senarai Hajat",
         "about_us": "Tentang Kami",
         "blog": "Blog"
-      }
+      },
+      "verification_required": "Pengesahan diperlukan. Sila sahkan e-mel/telefon bimbit anda."
     },
     "categories": {
       "empty_state": "Tiada kategori ditemui"

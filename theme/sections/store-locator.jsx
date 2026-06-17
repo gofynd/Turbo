@@ -19,6 +19,12 @@ export const settings = {
       default: "Find a Store Near You",
       label: "Section Title",
     },
+    {
+      type: "text",
+      id: "description",
+      default: "Locate your nearest store for in-store shopping & pickup.",
+      label: "Description",
+    },
   ],
 };
 

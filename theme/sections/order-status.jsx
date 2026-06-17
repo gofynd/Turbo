@@ -503,7 +503,9 @@ function PaymentInfo({ orderData, isLoggedIn, locale, countryCode, t }) {
                   paymentInfo?.currency_symbol ||
                     orderData?.breakup_values?.[0]?.currency_symbol,
                   paymentInfo?.amount,
-                  formatLocale(locale, countryCode, true)
+                  formatLocale(locale, countryCode, true),
+                  null,
+                  true
                 )
               : null}
           </span>

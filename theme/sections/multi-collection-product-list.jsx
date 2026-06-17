@@ -375,6 +375,7 @@ export function Component({ props = {}, blocks = [], globalConfig = {} }) {
                                 imgSrcSet={imgSrcSet}
                                 isSlider
                                 isServiceable={is_serviceable}
+                                imageEffects={globalConfig?.image_effects || "none"}
                               />
                             </div>
                           </div>

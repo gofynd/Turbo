@@ -663,7 +663,8 @@
         "wishlist": "İstek Listesi",
         "about_us": "Hakkımızda",
         "blog": "Blog"
-      }
+      },
+      "verification_required": "Doğrulama gerekli. Lütfen e-postanızı/cep telefonunuzu doğrulayın."
     },
     "categories": {
       "empty_state": "Hiçbir kategori bulunamadı"

@@ -10,6 +10,7 @@ import { FOLLOWED_PRODUCTS_IDS } from "../../queries/wishlistQuery";
 import { WISHLIST_PAGE_SIZE } from "../../helper/constant";
 import {
   getProductImgAspectRatio,
+  getListingProductImageEffects,
   isRunningOnClient,
 } from "../../helper/utils";
 import productPlaceholder from "../../assets/images/placeholder3x4.png";
@@ -78,7 +79,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
   }, {});
 
   const pageSize =
-    loading_options === "infinite" ? INFINITE_PAGE_SIZE : page_size;
+    loading_options === "infinite" ? INFINITE_PAGE_SIZE : Number(page_size);
 
   const addToCartConfigs = {
     mandatory_pincode: props.mandatory_pincode?.value,
@@ -249,7 +250,15 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       return;
     }
 
-    if (!isCollectionsSsrFetched || locationDetails || location?.search) {
+    const pageSizeChanged =
+      pageInfo?.size != null && Number(pageInfo.size) !== pageSize;
+
+    if (
+      !isCollectionsSsrFetched ||
+      locationDetails ||
+      location?.search ||
+      pageSizeChanged
+    ) {
       // Build payload — needed for both cache-miss and background-refetch paths
       const searchParams = isClient
         ? new URLSearchParams(location?.search)
@@ -258,7 +267,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       // Only consult the prefetch cache when the URL is clean (no filters,
       // sort, or page_no). Prefetched data is unfiltered page 1; consuming
       // it for any other request would render the wrong products.
-      const cacheUsable = isCacheUsable();
+      const cacheUsable = isCacheUsable() && !pageSizeChanged;
       const cached = cacheUsable ? prefetchCache.get(CACHE_KEY) : null;
       const pending = cacheUsable ? prefetchCache.getPending(CACHE_KEY) : null;
 
@@ -321,7 +330,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
       // No cache, no in-flight — fetch normally
       fetchProducts(payload);
     }
-  }, [location?.search, locationDetails, slug]);
+  }, [location?.search, locationDetails, slug, pageSize, pageInfo?.size]);
 
   const convertQueryParamsForAlgolia = () => {
     if (typeof window === "undefined") return "";
@@ -709,7 +718,6 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     followedIdList,
     isImageFill: globalConfig?.img_fill,
     imageBackgroundColor: globalConfig?.img_container_bg,
-    showImageOnHover: globalConfig?.show_image_on_hover,
     imagePlaceholder: productPlaceholder,
     showAddToCart:
       !isInternational && show_add_to_cart && !globalConfig?.disable_cart,
@@ -730,6 +738,7 @@ const useCollectionListing = ({ fpi, slug, props }) => {
     onLoadMoreProducts: handleLoadMoreProducts,
     // New function to handle product navigation
     onProductNavigation: handleProductNavigation,
+    imageEffects: getListingProductImageEffects(globalConfig, props),
   };
 };
 

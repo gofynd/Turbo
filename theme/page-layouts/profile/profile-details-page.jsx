@@ -151,8 +151,7 @@ function ProfileDetailsPage({ fpi }) {
             // If verification is required, show message and stay on page
             // The user can verify through the profile section
             showSnackbar(
-              t("resource.common.verification_required") ||
-                "Verification required. Please verify your email/mobile.",
+              t("resource.common.verification_required"),
               "info",
               "top-center"
             );

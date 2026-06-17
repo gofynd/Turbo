@@ -10,7 +10,10 @@ import {
 } from "../../queries/wishlistQuery";
 import { useThemeConfig, useWishlist } from "../../helper/hooks/index";
 import EmptyState from "../../components/empty-state/empty-state";
-import { getProductImgAspectRatio } from "../../helper/utils";
+import {
+  getProductImgAspectRatio,
+  getListingProductImageEffects,
+} from "../../helper/utils";
 import placeholder from "../../assets/images/placeholder3x4.png";
 import useAddToCartModal from "../plp/useAddToCartModal";
 import useInternational from "../../components/header/useInternational";
@@ -239,7 +242,6 @@ const useWishlistPage = ({ fpi }) => {
     isSaleBadge: globalConfig?.show_sale_badge,
     isCustomBadge: globalConfig?.show_custom_badge,
     isPrice: globalConfig?.show_price,
-    showImageOnHover: globalConfig?.show_image_on_hover,
     imagePlaceholder: placeholder,
     imgSrcSet,
     aspectRatio: getProductImgAspectRatio(globalConfig),
@@ -255,6 +257,7 @@ const useWishlistPage = ({ fpi }) => {
       !isInternational && show_add_to_cart && !globalConfig?.disable_cart,
     actionButtonText: card_cta_text,
     globalConfig,
+    imageEffects: getListingProductImageEffects(globalConfig),
   };
 };
 

@@ -663,7 +663,8 @@
         "wishlist": "心愿单",
         "about_us": "关于我们",
         "blog": "博客"
-      }
+      },
+      "verification_required": "需要验证。请验证您的电子邮件/手机号码。"
     },
     "categories": {
       "empty_state": "未找到类别"

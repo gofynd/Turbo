@@ -16,7 +16,6 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
   const [selectedMetric, setSelectedMetric] = useState("cm");
   const [activeTab, setActiveTab] = useState("size_guide");
   const [touched, setTouched] = useState(false);
-
   const values = {
     in: t("resource.product.inch"),
     cm: t("resource.product.cm"),
@@ -25,7 +24,6 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
   const headers = Object.entries(productMeta?.size_chart?.headers ?? {}).filter(
     ([key, val]) => !key?.includes("__") && val !== null
   );
-
   useEffect(() => {
     if (productMeta?.size_chart?.unit) {
       setPreviewSelectedMetric(productMeta?.size_chart.unit);
@@ -57,7 +55,7 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
           finalVal += "-";
         }
         if (!Number.isNaN(Number(val[i]))) {
-          finalVal += (Number(val[i]) * 2.54).toFixed(1); // inches to cm
+          finalVal += (Number(val[i]) * 2.54).toFixed(2); // inches to cm
         } else {
           finalVal += val[i];
         }
@@ -73,7 +71,7 @@ function SizeGuide({ isOpen, productMeta, onCloseDialog }) {
           finalVal += "-";
         }
         if (!Number.isNaN(Number(val[i]))) {
-          finalVal += (Number(val[i]) / 2.54).toFixed(1); // cm to inches
+          finalVal += (Number(val[i]) / 2.54).toFixed(2); // cm to inches
         } else {
           finalVal += val[i];
         }

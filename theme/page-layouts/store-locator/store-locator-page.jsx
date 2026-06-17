@@ -11,6 +11,8 @@ function StoreLocatorWithMap({
   cityOptions,
   cityOptionsProp,
   handleCityChange,
+  sectionTitle,
+  description,
   restStoreLocatorProps,
 }) {
   const { isLoaded: isMapLoaded, loadError } = useJsApiLoader({
@@ -31,6 +33,8 @@ function StoreLocatorWithMap({
       handleCityChange={handleCityChange}
       isMapLoaded={isMapLoaded}
       loadError={loadError}
+      sectionTitle={sectionTitle}
+      description={description}
       cityOptions={cityOptionsProp.length > 0 ? cityOptionsProp : cityOptions}
     />
   );
@@ -41,6 +45,8 @@ function StoreLocatorWithoutMap({
   cityOptions,
   cityOptionsProp,
   handleCityChange,
+  sectionTitle,
+  description,
   restStoreLocatorProps,
 }) {
   return (
@@ -50,6 +56,8 @@ function StoreLocatorWithoutMap({
       handleCityChange={handleCityChange}
       isMapLoaded={false}
       loadError={null}
+      sectionTitle={sectionTitle}
+      description={description}
       cityOptions={cityOptionsProp.length > 0 ? cityOptionsProp : cityOptions}
     />
   );
@@ -59,6 +67,8 @@ function StoreLocatorPage({
   fpi,
   stores = [],
   cityOptions: cityOptionsProp = [],
+  section_title: sectionTitle = "Find a Store Near You",
+  description = "Locate your nearest store for in-store shopping & pickup.",
 }) {
   const storeLocatorProps = useStoreLocator({ fpi, stores });
   const { mapApiKey, cityOptions, handleCityChange, ...restStoreLocatorProps } =
@@ -73,6 +83,8 @@ function StoreLocatorPage({
         cityOptions={cityOptions}
         cityOptionsProp={cityOptionsProp}
         handleCityChange={handleCityChange}
+        sectionTitle={sectionTitle}
+        description={description}
         restStoreLocatorProps={restStoreLocatorProps}
       />
     );
@@ -83,6 +95,8 @@ function StoreLocatorPage({
       cityOptions={cityOptions}
       cityOptionsProp={cityOptionsProp}
       handleCityChange={handleCityChange}
+      sectionTitle={sectionTitle}
+      description={description}
       restStoreLocatorProps={restStoreLocatorProps}
     />
   );

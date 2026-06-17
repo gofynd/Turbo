@@ -12,6 +12,7 @@ import { FOLLOWED_PRODUCTS_IDS } from "../../queries/wishlistQuery";
 import { WISHLIST_PAGE_SIZE } from "../../helper/constant";
 import {
   getProductImgAspectRatio,
+  getListingProductImageEffects,
   isRunningOnClient,
 } from "../../helper/utils";
 import productPlaceholder from "../../assets/images/placeholder3x4.png";
@@ -43,7 +44,7 @@ const useProductListing = ({ fpi, props }) => {
     page: "product-listing",
   });
 
-   const isMiniCartEnabled =
+  const isMiniCartEnabled =
     globalConfig?.enable_minicart && !globalConfig?.disable_cart;
 
   const {
@@ -70,7 +71,6 @@ const useProductListing = ({ fpi, props }) => {
     size_selection_style = "dropdown",
     tax_label = "",
     show_size_guide = false,
-    show_multiple_images = false,
   } = Object.entries(props).reduce((acc, [key, { value }]) => {
     acc[key] = value;
     return acc;
@@ -179,7 +179,11 @@ const useProductListing = ({ fpi, props }) => {
     pageConfig: addToCartConfigs,
   });
 
-     const { MiniCartRenderer } = useMinicart(fpi, isMiniCartEnabled);
+  const { MiniCartRenderer } = useMinicart(
+    fpi,
+    isMiniCartEnabled,
+    globalConfig
+  );
 
   const pincode = useMemo(() => {
     if (!isClient) {
@@ -690,7 +694,6 @@ const useProductListing = ({ fpi, props }) => {
     addToCartModalProps,
     isImageFill: globalConfig?.img_fill,
     imageBackgroundColor: globalConfig?.img_container_bg,
-    showImageOnHover: globalConfig?.show_image_on_hover,
     imagePlaceholder: productPlaceholder,
     showAddToCart:
       !isInternational && show_add_to_cart && !globalConfig?.disable_cart,
@@ -708,9 +711,9 @@ const useProductListing = ({ fpi, props }) => {
     // New function to handle product navigation
     onProductNavigation: handleProductNavigation,
     showColorVariants: globalConfig?.show_color_variants,
+    imageEffects: getListingProductImageEffects(globalConfig, props),
     filterToggle: globalConfig?.filter_toggle_button,
     MiniCartRenderer: isMiniCartEnabled ? MiniCartRenderer : null,
-    showMultipleImages: show_multiple_images,
   };
 };
 

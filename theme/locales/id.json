@@ -663,7 +663,8 @@
         "wishlist": "Daftar Keinginan",
         "about_us": "Tentang Kami",
         "blog": "Blog"
-      }
+      },
+      "verification_required": "Verifikasi diperlukan. Silakan verifikasi email/ponsel Anda."
     },
     "categories": {
       "empty_state": "Tidak ada kategori yang ditemukan"

@@ -231,6 +231,7 @@ export function Component({ blocks, globalConfig, fpi }) {
   const refundModes = shipmentDetails?.refund_modes ?? [];
   const refundMode = refundModes[0];
   const hasRefundModes = refundModes.length > 0;
+  const currencySymbol = shipmentDetails?.prices?.currency_symbol || "₹";
 
   // 1) Platform-level refund config
   // is_refund_config_enabled = true  -> refund config ON on platform
@@ -799,7 +800,8 @@ export function Component({ blocks, globalConfig, fpi }) {
                                                       styles.headingText
                                                     }
                                                   >
-                                                    ₹{item?.refund_amount}
+                                                    {currencySymbol}
+                                                    {item?.refund_amount}
                                                   </span>{" "}
                                                   {t(
                                                     isRefundCompleted(
@@ -908,7 +910,8 @@ export function Component({ blocks, globalConfig, fpi }) {
                                                           styles.headingText
                                                         }
                                                       >
-                                                        ₹{item?.refund_amount}
+                                                        {currencySymbol}
+                                                        {item?.refund_amount}
                                                       </span>
                                                       &nbsp;
                                                       {t(
@@ -941,7 +944,8 @@ export function Component({ blocks, globalConfig, fpi }) {
                                                           styles.headingText
                                                         }
                                                       >
-                                                        ₹{item?.refund_amount}
+                                                        {currencySymbol}
+                                                        {item?.refund_amount}
                                                       </span>
                                                       &nbsp;
                                                       {t(
@@ -964,7 +968,8 @@ export function Component({ blocks, globalConfig, fpi }) {
                                                           styles.headingText
                                                         }
                                                       >
-                                                        ₹{item?.refund_amount}
+                                                        {currencySymbol}
+                                                        {item?.refund_amount}
                                                       </span>
                                                       &nbsp;
                                                       {t(
@@ -999,7 +1004,8 @@ export function Component({ blocks, globalConfig, fpi }) {
                                                           styles.headingText
                                                         }
                                                       >
-                                                        ₹{item?.refund_amount}
+                                                        {currencySymbol}
+                                                        {item?.refund_amount}
                                                       </span>
                                                       &nbsp;
                                                       {t(

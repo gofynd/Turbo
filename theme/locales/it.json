@@ -664,7 +664,8 @@
         "wishlist": "Lista dei desideri",
         "about_us": "Chi siamo",
         "blog": "Blog"
-      }
+      },
+      "verification_required": "Verifica richiesta. Verifica la tua email/numero di cellulare."
     },
     "categories": {
       "empty_state": "Nessuna categoria trovata"

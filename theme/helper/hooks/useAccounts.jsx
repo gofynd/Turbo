@@ -32,6 +32,12 @@ import {
 // import { loginUserInFb } from '../../helper/facebook.utils';
 // import { renderButton } from '../../helper/google.utils';
 
+export const REFERRAL_SIGNUP_EVENT = "storefront:referralSignup";
+// Session-scoped key used to defer the referral event until the user completes
+// email-link verification (verifyMobileOtp / updateProfile returns verify_email_link=true).
+// Dispatched and cleared from theme/sections/verify-email.jsx after VERIFY_EMAIL succeeds.
+export const REFERRAL_SIGNUP_PENDING_KEY = "fdk_referral_signup_pending";
+
 export const useAccounts = ({ fpi }) => {
   const { locale } = useParams();
   const { t } = useGlobalTranslation("translation");
@@ -216,6 +222,38 @@ export const useAccounts = ({ fpi }) => {
         fpi.executeGQL(USER_DATA_QUERY).catch(() => {
           // Silently fail - auth state is already correct
         });
+      }
+
+      if (registerToken && isRunningOnClient()) {
+        const needsMoreOtp =
+          !!updateProfileData?.verify_mobile_otp ||
+          !!updateProfileData?.verify_email_otp;
+        const needsEmailLink = !!updateProfileData?.verify_email_link;
+
+        if (!needsMoreOtp && !needsEmailLink) {
+          // Signup fully complete at this step — dispatch now.
+          try {
+            window.dispatchEvent(
+              new CustomEvent(REFERRAL_SIGNUP_EVENT, {
+                detail: updateProfileData,
+              })
+            );
+          } catch (err) {
+            console.warn("[Referral Signup Event] dispatch failed:", err);
+          }
+        } else if (!needsMoreOtp && needsEmailLink) {
+          // Signup completes after user clicks the email-link → defer dispatch
+          // to theme/sections/verify-email.jsx which reads this key on VERIFY_EMAIL success.
+          try {
+            sessionStorage.setItem(
+              REFERRAL_SIGNUP_PENDING_KEY,
+              JSON.stringify(updateProfileData)
+            );
+          } catch (err) {
+            // Silently handle storage errors (private mode, quota, etc.)
+          }
+        }
+        // If needsMoreOtp: do nothing here — verifyMobileOtp/verifyEmailOtp will handle it.
       }
 
       return updateProfileData;
@@ -443,7 +481,27 @@ export const useAccounts = ({ fpi }) => {
       if (res.errors) {
         throw res.errors?.[0];
       }
-      return res?.data?.registerWithForm;
+      const registerWithForm = res?.data?.registerWithForm;
+
+      // Fire only when signup is fully complete at this step (no OTP verification ahead).
+      // For OTP-required flows, the event fires from verifyMobileOtp / verifyEmailOtp instead.
+      const isSignupComplete =
+        !registerWithForm?.verify_mobile_otp &&
+        !registerWithForm?.verify_email_otp;
+
+      if (isRunningOnClient() && isSignupComplete) {
+        try {
+          window.dispatchEvent(
+            new CustomEvent(REFERRAL_SIGNUP_EVENT, {
+              detail: registerWithForm,
+            })
+          );
+        } catch (err) {
+          console.warn("[Referral Signup Event] dispatch failed:", err);
+        }
+      }
+
+      return registerWithForm;
     });
   };
 
@@ -631,12 +689,40 @@ export const useAccounts = ({ fpi }) => {
       if (res?.errors) {
         throw res?.errors?.[0];
       }
+      const verifyMobileOtpData = res?.data?.verifyMobileOTP;
       const {
         user_exists: userExists,
         email,
         verify_email_link: verifyEmailLink,
-      } = res?.data?.verifyMobileOTP || {};
+      } = verifyMobileOtpData || {};
+
       if (userExists) {
+        // Fire referral event only when signup is truly complete:
+        //   - registerToken truthy → this call is part of signup flow (not profile-phone management)
+        //   - userExists true && !verifyEmailLink → no follow-up email-link verification ahead
+        if (registerToken && !verifyEmailLink && isRunningOnClient()) {
+          try {
+            window.dispatchEvent(
+              new CustomEvent(REFERRAL_SIGNUP_EVENT, {
+                detail: verifyMobileOtpData,
+              })
+            );
+          } catch (err) {
+            console.warn("[Referral Signup Event] dispatch failed:", err);
+          }
+        } else if (registerToken && verifyEmailLink && isRunningOnClient()) {
+          // Signup completes when user clicks email-link → defer dispatch.
+          // theme/sections/verify-email.jsx reads this key on VERIFY_EMAIL success.
+          try {
+            sessionStorage.setItem(
+              REFERRAL_SIGNUP_PENDING_KEY,
+              JSON.stringify(verifyMobileOtpData)
+            );
+          } catch (err) {
+            // Silently handle storage errors
+          }
+        }
+
         if (verifyEmailLink) {
           if (isRedirection) {
             const queryParams = isRunningOnClient()
@@ -694,7 +780,9 @@ export const useAccounts = ({ fpi }) => {
       if (res?.errors) {
         throw res?.errors?.[0];
       }
-      const { user_exists: userExists } = res?.data?.verifyEmailOTP || {};
+      const verifyEmailOtpData = res?.data?.verifyEmailOTP;
+      const { user_exists: userExists } = verifyEmailOtpData || {};
+
       if (!userExists) {
         if (isRedirection) {
           navigate?.({
@@ -702,22 +790,39 @@ export const useAccounts = ({ fpi }) => {
             search: location.search,
           });
         }
-      } else if (isRedirection) {
-        const queryParams = isRunningOnClient()
-          ? new URLSearchParams(location.search)
-          : null;
-        const redirectUrl = queryParams?.get("redirectUrl") || "";
-        // URLSearchParams already decodes the value, but we try to decode again
-        // in case it was double-encoded. Use try-catch to handle edge cases.
-        let decodedUrl = redirectUrl;
-        try {
-          decodedUrl = decodeURIComponent(redirectUrl);
-        } catch (e) {
-          // If decoding fails, use the original value (already decoded by URLSearchParams)
-          decodedUrl = redirectUrl;
+      } else {
+        // Fire referral event only when signup is truly complete:
+        //   - registerToken truthy → this call is part of signup flow
+        //   - userExists true → onboarding finished, account is recognized
+        if (registerToken && isRunningOnClient()) {
+          try {
+            window.dispatchEvent(
+              new CustomEvent(REFERRAL_SIGNUP_EVENT, {
+                detail: verifyEmailOtpData,
+              })
+            );
+          } catch (err) {
+            console.warn("[Referral Signup Event] dispatch failed:", err);
+          }
         }
-        const finalUrl = getLocalizedRedirectUrl(decodedUrl, locale);
-        window.location.href = window.location.origin + finalUrl;
+
+        if (isRedirection) {
+          const queryParams = isRunningOnClient()
+            ? new URLSearchParams(location.search)
+            : null;
+          const redirectUrl = queryParams?.get("redirectUrl") || "";
+          // URLSearchParams already decodes the value, but we try to decode again
+          // in case it was double-encoded. Use try-catch to handle edge cases.
+          let decodedUrl = redirectUrl;
+          try {
+            decodedUrl = decodeURIComponent(redirectUrl);
+          } catch (e) {
+            // If decoding fails, use the original value (already decoded by URLSearchParams)
+            decodedUrl = redirectUrl;
+          }
+          const finalUrl = getLocalizedRedirectUrl(decodedUrl, locale);
+          window.location.href = window.location.origin + finalUrl;
+        }
       }
       return res?.data?.verifyEmailOTP;
     });

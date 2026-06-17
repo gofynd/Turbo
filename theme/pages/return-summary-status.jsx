@@ -26,9 +26,9 @@ const getRefundIcon = (displayName) => {
   return null;
 };
 
-const getRefundText = (item, shipmentDetails, t) => {
+const getRefundText = (item, shipmentDetails, t, currencySymbol) => {
   const { display_name, refund_amount, beneficiary_details } = item;
-  const baseAmount = `₹${refund_amount}`;
+  const baseAmount = `${currencySymbol}${refund_amount}`;
 
   if (includesIgnoreCase(display_name, "bank")) {
     if (!beneficiary_details?.account_no && !beneficiary_details?.vpa_address) {
@@ -174,6 +174,8 @@ const RefundDetailsSection = ({ shipmentDetails, t, isLoading }) => {
     !showContactSupport &&
     !showDefaultRefundToSourceMsg;
 
+  const currencySymbol = shipmentDetails?.prices?.currency_symbol || "₹";
+
   return (
     <div
       className={styles.titleGroup}
@@ -188,7 +190,8 @@ const RefundDetailsSection = ({ shipmentDetails, t, isLoading }) => {
           <div className={styles.amountInfo}>
             <span>{t("resource.refund_order.total_refund")}</span>
             <span className={styles.amountText}>
-              ₹{shipmentDetails?.prices?.refund_amount}
+              {currencySymbol}
+              {shipmentDetails?.prices?.refund_amount}
             </span>
           </div>
 
@@ -205,7 +208,8 @@ const RefundDetailsSection = ({ shipmentDetails, t, isLoading }) => {
                 <div className={styles.infoText}>
                   <h5>
                     <span className={styles.headingText}>
-                      ₹{shipmentDetails?.prices?.refund_amount}
+                      {currencySymbol}
+                      {shipmentDetails?.prices?.refund_amount}
                     </span>{" "}
                     {t(
                       "resource.refund_order.will_be_refunded_to_your_original_payment_method"
@@ -229,7 +233,7 @@ const RefundDetailsSection = ({ shipmentDetails, t, isLoading }) => {
                       {getRefundIcon(item?.display_name)}
                     </div>
                     <div className={styles.infoText}>
-                      {getRefundText(item, shipmentDetails, t)}
+                      {getRefundText(item, shipmentDetails, t, currencySymbol)}
                     </div>
                   </div>
                   <MessageCard
